@@ -1,0 +1,660 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCountryList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCountryList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCountryList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCountryList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCountry: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtCountryList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtCountryList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtCountryList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtCountryList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtCountryList._Name.ToClientList(mtCountryList)),
+            "Nationality": @Html.Raw(mtCountryList.Nationality.ToClientList(mtCountryList)),
+            "CallingCode": @Html.Raw(mtCountryList.CallingCode.ToClientList(mtCountryList)),
+            "CreatedByUserID": @Html.Raw(mtCountryList.CreatedByUserID.ToClientList(mtCountryList)),
+            "CreatedDateTime": @Html.Raw(mtCountryList.CreatedDateTime.ToClientList(mtCountryList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCountryList.LastUpdatedByUserID.ToClientList(mtCountryList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCountryList.LastUpdatedDateTime.ToClientList(mtCountryList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtCountryList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtCountryList.TotalRecords > 0 && mtCountryList.ExportOptions.Visible) {
+    mtCountryList.ExportOptions.Render("body");
+}
+@if (mtCountryList.ImportOptions.Visible) {
+    mtCountryList.ImportOptions.Render("body");
+}
+@if (mtCountryList.SearchOptions.Visible) {
+    mtCountryList.SearchOptions.Render("body");
+}
+@if (mtCountryList.FilterOptions.Visible) {
+    mtCountryList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtCountryList.ShowCurrentFilter) {
+    mtCountryList.ShowFilterList();
+}
+@if (!mtCountryList.IsModal) {
+<form name="fMTCountrysrch" id="fMTCountrysrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTCountrysrch_search_panel" class="mb-2 mb-sm-0 @(mtCountryList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCountryList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCountry: currentTable } });
+var currentForm;
+var fMTCountrysrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCountrysrch")
+        .setPageId("list")
+@if (mtCountryList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["Nationality", [], fields.Nationality.isInvalid],
+            ["CallingCode", [], fields.CallingCode.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtCountryList._Name.ToClientList(mtCountryList)),
+            "Nationality": @Html.Raw(mtCountryList.Nationality.ToClientList(mtCountryList)),
+            "CallingCode": @Html.Raw(mtCountryList.CallingCode.ToClientList(mtCountryList)),
+            "CreatedByUserID": @Html.Raw(mtCountryList.CreatedByUserID.ToClientList(mtCountryList)),
+            "CreatedDateTime": @Html.Raw(mtCountryList.CreatedDateTime.ToClientList(mtCountryList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCountryList.LastUpdatedByUserID.ToClientList(mtCountryList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCountryList.LastUpdatedDateTime.ToClientList(mtCountryList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtCountryList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtCountryList.IsExport() && Empty(mtCountryList.CurrentAction) && mtCountryList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtCountryList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtCountryList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtCountryList.RowType = RowType.Search;
+    mtCountryList.ResetAttributes();
+    await mtCountryList.RenderRow();
+}
+@if (mtCountryList._Name.Visible) { // mtCountryList._Name.Visible (begin)
+    if (!mtCountryList._Name.UseFilter) {
+        mtCountryList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCountryList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtCountryList._Name.IsInvalidClass)"
+            data-select2-id="fMTCountrysrch_x__Name"
+            data-table="MTCountry"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCountryList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCountryList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCountryList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCountryList._Name.EditAttributes)>
+            @(mtCountryList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCountryList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCountrysrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTCountrysrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTCountrysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCountry.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCountryList._Name.Visible (end) *@
+@if (mtCountryList.Nationality.Visible) { // mtCountryList.Nationality.Visible (begin)
+    if (!mtCountryList.Nationality.UseFilter) {
+        mtCountryList.SearchColumnCount++;
+    }
+    <div id="xs_Nationality" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCountryList.Nationality.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Nationality"
+            name="x_Nationality[]"
+            class="form-control ew-select@(mtCountryList.Nationality.IsInvalidClass)"
+            data-select2-id="fMTCountrysrch_x_Nationality"
+            data-table="MTCountry"
+            data-field="x_Nationality"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCountryList.Nationality.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCountryList.Nationality.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCountryList.Nationality.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCountryList.Nationality.EditAttributes)>
+            @(mtCountryList.Nationality.SelectOptionListHtml("x_Nationality", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCountryList.Nationality.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCountrysrch", function() {
+            var options = {
+                name: "x_Nationality",
+                selectId: "fMTCountrysrch_x_Nationality",
+                ajax: { id: "x_Nationality", form: "fMTCountrysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCountry.fields.Nationality.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCountryList.Nationality.Visible (end) *@
+@if (mtCountryList.CallingCode.Visible) { // mtCountryList.CallingCode.Visible (begin)
+    if (!mtCountryList.CallingCode.UseFilter) {
+        mtCountryList.SearchColumnCount++;
+    }
+    <div id="xs_CallingCode" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCountryList.CallingCode.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CallingCode"
+            name="x_CallingCode[]"
+            class="form-control ew-select@(mtCountryList.CallingCode.IsInvalidClass)"
+            data-select2-id="fMTCountrysrch_x_CallingCode"
+            data-table="MTCountry"
+            data-field="x_CallingCode"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCountryList.CallingCode.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCountryList.CallingCode.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCountryList.CallingCode.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCountryList.CallingCode.EditAttributes)>
+            @(mtCountryList.CallingCode.SelectOptionListHtml("x_CallingCode", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCountryList.CallingCode.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCountrysrch", function() {
+            var options = {
+                name: "x_CallingCode",
+                selectId: "fMTCountrysrch_x_CallingCode",
+                ajax: { id: "x_CallingCode", form: "fMTCountrysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCountry.fields.CallingCode.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCountryList.CallingCode.Visible (end) *@
+@if (mtCountryList.CreatedByUserID.Visible) { // mtCountryList.CreatedByUserID.Visible (begin)
+    if (!mtCountryList.CreatedByUserID.UseFilter) {
+        mtCountryList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCountryList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtCountryList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCountrysrch_x_CreatedByUserID"
+            data-table="MTCountry"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCountryList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCountryList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCountryList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCountryList.CreatedByUserID.EditAttributes)>
+            @(mtCountryList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCountryList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCountrysrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTCountrysrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTCountrysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCountry.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCountryList.CreatedByUserID.Visible (end) *@
+@if (mtCountryList.CreatedDateTime.Visible) { // mtCountryList.CreatedDateTime.Visible (begin)
+    if (!mtCountryList.CreatedDateTime.UseFilter) {
+        mtCountryList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCountryList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtCountryList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCountrysrch_x_CreatedDateTime"
+            data-table="MTCountry"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCountryList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCountryList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCountryList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCountryList.CreatedDateTime.EditAttributes)>
+            @(mtCountryList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCountryList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCountrysrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTCountrysrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTCountrysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCountry.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCountryList.CreatedDateTime.Visible (end) *@
+@if (mtCountryList.LastUpdatedByUserID.Visible) { // mtCountryList.LastUpdatedByUserID.Visible (begin)
+    if (!mtCountryList.LastUpdatedByUserID.UseFilter) {
+        mtCountryList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCountryList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtCountryList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCountrysrch_x_LastUpdatedByUserID"
+            data-table="MTCountry"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCountryList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCountryList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCountryList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCountryList.LastUpdatedByUserID.EditAttributes)>
+            @(mtCountryList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCountryList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCountrysrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTCountrysrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTCountrysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCountry.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCountryList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCountryList.LastUpdatedDateTime.Visible) { // mtCountryList.LastUpdatedDateTime.Visible (begin)
+    if (!mtCountryList.LastUpdatedDateTime.UseFilter) {
+        mtCountryList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCountryList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtCountryList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCountrysrch_x_LastUpdatedDateTime"
+            data-table="MTCountry"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCountryList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCountryList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCountryList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCountryList.LastUpdatedDateTime.EditAttributes)>
+            @(mtCountryList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCountryList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCountrysrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTCountrysrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTCountrysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCountry.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCountryList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtCountryList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtCountryList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtCountryList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtCountryList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTCountrysrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtCountryList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTCountrysrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtCountryList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTCountrysrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtCountryList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTCountrysrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtCountryList.ShowPageHeader()
+@mtCountryList.ShowMessages()
+<main class="list @(mtCountryList.TotalRecords == 0 && !mtCountryList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtCountryList.TotalRecords > 0 || !Empty(mtCountryList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCountryList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCountryList.TableGridClass)">
+<form name="@(mtCountryList.FormName)" id="@(mtCountryList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtCountryList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtCountryList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTCountry" class="card-body ew-grid-middle-panel @(mtCountryList.TableContainerClass)" style="@(mtCountryList.TableContainerStyle)">
+@if (mtCountryList.TotalRecords > 0 || mtCountryList.IsGridEdit || mtCountryList.IsMultiEdit) {
+<table id="tbl_MTCountrylist" class="@(mtCountryList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCountryList.RowType = RowType.Header;
+
+    // Render list options
+    await mtCountryList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCountryList.ListOptions.RenderHeader("left")
+@if (mtCountryList._Name.Visible) { // mtCountryList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtCountryList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCountry__Name" class="MTCountry__Name">@Html.Raw(mtCountryList.RenderFieldHeader(mtCountryList._Name))</div></th>
+} @* mtCountryList._Name.Visible (end) *@
+@if (mtCountryList.Nationality.Visible) { // mtCountryList.Nationality.Visible (begin)
+        <th data-name="Nationality" class="@(mtCountryList.Nationality.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCountry_Nationality" class="MTCountry_Nationality">@Html.Raw(mtCountryList.RenderFieldHeader(mtCountryList.Nationality))</div></th>
+} @* mtCountryList.Nationality.Visible (end) *@
+@if (mtCountryList.CallingCode.Visible) { // mtCountryList.CallingCode.Visible (begin)
+        <th data-name="CallingCode" class="@(mtCountryList.CallingCode.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCountry_CallingCode" class="MTCountry_CallingCode">@Html.Raw(mtCountryList.RenderFieldHeader(mtCountryList.CallingCode))</div></th>
+} @* mtCountryList.CallingCode.Visible (end) *@
+@if (mtCountryList.CreatedByUserID.Visible) { // mtCountryList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCountryList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCountry_CreatedByUserID" class="MTCountry_CreatedByUserID">@Html.Raw(mtCountryList.RenderFieldHeader(mtCountryList.CreatedByUserID))</div></th>
+} @* mtCountryList.CreatedByUserID.Visible (end) *@
+@if (mtCountryList.CreatedDateTime.Visible) { // mtCountryList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCountryList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCountry_CreatedDateTime" class="MTCountry_CreatedDateTime">@Html.Raw(mtCountryList.RenderFieldHeader(mtCountryList.CreatedDateTime))</div></th>
+} @* mtCountryList.CreatedDateTime.Visible (end) *@
+@if (mtCountryList.LastUpdatedByUserID.Visible) { // mtCountryList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCountryList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCountry_LastUpdatedByUserID" class="MTCountry_LastUpdatedByUserID">@Html.Raw(mtCountryList.RenderFieldHeader(mtCountryList.LastUpdatedByUserID))</div></th>
+} @* mtCountryList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCountryList.LastUpdatedDateTime.Visible) { // mtCountryList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCountryList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCountry_LastUpdatedDateTime" class="MTCountry_LastUpdatedDateTime">@Html.Raw(mtCountryList.RenderFieldHeader(mtCountryList.LastUpdatedDateTime))</div></th>
+} @* mtCountryList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCountryList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCountryList.PageNumber)">
+@{
+    await mtCountryList.SetupGrid();
+    bool eof = mtCountryList.Recordset == null; // DN
+}
+@while (mtCountryList.RecordCount < mtCountryList.StopRecord || SameString(mtCountryList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCountryList.RowIndex, "$rowindex$") &&
+        (!mtCountryList.IsGridAdd || mtCountryList.CurrentMode == "copy") &&
+        (!((mtCountryList.IsCopy || mtCountryList.IsAdd) && mtCountryList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCountryList.Recordset.ReadAsync();
+    mtCountryList.RecordCount++;
+    if (mtCountryList.RecordCount >= mtCountryList.StartRecord) {
+        await mtCountryList.SetupRow();
+    <tr @Html.Raw(mtCountryList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCountryList.ListOptions.RenderBody("left", mtCountryList.RowCount)
+    @if (mtCountryList._Name.Visible) { // mtCountryList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtCountryList._Name.CellAttributes)>
+<span id="el@(mtCountryList.RowCount)_MTCountry__Name" class="el_MTCountry__Name">
+<span @Html.Raw(mtCountryList._Name.ViewAttributes)>
+@Html.Raw(mtCountryList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCountryList._Name.Visible (end) *@
+    @if (mtCountryList.Nationality.Visible) { // mtCountryList.Nationality.Visible (begin)
+        <td data-name="Nationality" @Html.Raw(mtCountryList.Nationality.CellAttributes)>
+<span id="el@(mtCountryList.RowCount)_MTCountry_Nationality" class="el_MTCountry_Nationality">
+<span @Html.Raw(mtCountryList.Nationality.ViewAttributes)>
+@Html.Raw(mtCountryList.Nationality.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCountryList.Nationality.Visible (end) *@
+    @if (mtCountryList.CallingCode.Visible) { // mtCountryList.CallingCode.Visible (begin)
+        <td data-name="CallingCode" @Html.Raw(mtCountryList.CallingCode.CellAttributes)>
+<span id="el@(mtCountryList.RowCount)_MTCountry_CallingCode" class="el_MTCountry_CallingCode">
+<span @Html.Raw(mtCountryList.CallingCode.ViewAttributes)>
+@Html.Raw(mtCountryList.CallingCode.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCountryList.CallingCode.Visible (end) *@
+    @if (mtCountryList.CreatedByUserID.Visible) { // mtCountryList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCountryList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtCountryList.RowCount)_MTCountry_CreatedByUserID" class="el_MTCountry_CreatedByUserID">
+<span @Html.Raw(mtCountryList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCountryList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCountryList.CreatedByUserID.Visible (end) *@
+    @if (mtCountryList.CreatedDateTime.Visible) { // mtCountryList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCountryList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtCountryList.RowCount)_MTCountry_CreatedDateTime" class="el_MTCountry_CreatedDateTime">
+<span @Html.Raw(mtCountryList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCountryList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCountryList.CreatedDateTime.Visible (end) *@
+    @if (mtCountryList.LastUpdatedByUserID.Visible) { // mtCountryList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCountryList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtCountryList.RowCount)_MTCountry_LastUpdatedByUserID" class="el_MTCountry_LastUpdatedByUserID">
+<span @Html.Raw(mtCountryList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCountryList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCountryList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCountryList.LastUpdatedDateTime.Visible) { // mtCountryList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCountryList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtCountryList.RowCount)_MTCountry_LastUpdatedDateTime" class="el_MTCountry_LastUpdatedDateTime">
+<span @Html.Raw(mtCountryList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCountryList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCountryList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCountryList.ListOptions.RenderBody("right", mtCountryList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCountryList.RowIndex, "$rowindex$"))
+        mtCountryList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCountryList.IsCopy || mtCountryList.IsAdd) && mtCountryList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCountryList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCountryList.CurrentAction) && !mtCountryList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtCountryList.CloseRecordset(); }
+@if (!mtCountryList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtCountryList.IsGridAdd && !(mtCountryList.IsGridEdit && mtCountryList.ModalGridEdit) && !mtCountryList.IsMultiEdit) {
+@Html.Raw(mtCountryList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtCountryList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCountryList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtCountryList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtCountryList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCountry");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

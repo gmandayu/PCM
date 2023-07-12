@@ -1,0 +1,184 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (logEmailList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!logEmailList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!logEmailList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(logEmailList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { LogEmail: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(logEmailList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(logEmailList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(logEmailList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(logEmailList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!logEmailList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (logEmailList.TotalRecords > 0 && logEmailList.ExportOptions.Visible) {
+    logEmailList.ExportOptions.Render("body");
+}
+@if (logEmailList.ImportOptions.Visible) {
+    logEmailList.ImportOptions.Render("body");
+}
+</div>
+}
+@if (!logEmailList.IsModal) {
+}
+@logEmailList.ShowPageHeader()
+@logEmailList.ShowMessages()
+<main class="list @(logEmailList.TotalRecords == 0 && !logEmailList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (logEmailList.TotalRecords > 0 || !Empty(logEmailList.CurrentAction)) {
+<div class="card ew-card ew-grid@(logEmailList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(logEmailList.TableGridClass)">
+<form name="@(logEmailList.FormName)" id="@(logEmailList.FormName)" class="ew-form ew-list-form" action="@AppPath(logEmailList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (logEmailList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_LogEmail" class="card-body ew-grid-middle-panel @(logEmailList.TableContainerClass)" style="@(logEmailList.TableContainerStyle)">
+@if (logEmailList.TotalRecords > 0 || logEmailList.IsGridEdit || logEmailList.IsMultiEdit) {
+<table id="tbl_LogEmaillist" class="@(logEmailList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    logEmailList.RowType = RowType.Header;
+
+    // Render list options
+    await logEmailList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@logEmailList.ListOptions.RenderHeader("left")
+@* Render list options (header, right) *@
+@logEmailList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(logEmailList.PageNumber)">
+@{
+    await logEmailList.SetupGrid();
+    bool eof = logEmailList.Recordset == null; // DN
+}
+@while (logEmailList.RecordCount < logEmailList.StopRecord || SameString(logEmailList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(logEmailList.RowIndex, "$rowindex$") &&
+        (!logEmailList.IsGridAdd || logEmailList.CurrentMode == "copy") &&
+        (!((logEmailList.IsCopy || logEmailList.IsAdd) && logEmailList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await logEmailList.Recordset.ReadAsync();
+    logEmailList.RecordCount++;
+    if (logEmailList.RecordCount >= logEmailList.StartRecord) {
+        await logEmailList.SetupRow();
+    <tr @Html.Raw(logEmailList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @logEmailList.ListOptions.RenderBody("left", logEmailList.RowCount)
+    @* Render list options (body, right) *@
+    @logEmailList.ListOptions.RenderBody("right", logEmailList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(logEmailList.RowIndex, "$rowindex$"))
+        logEmailList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((logEmailList.IsCopy || logEmailList.IsAdd) && logEmailList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        logEmailList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(logEmailList.CurrentAction) && !logEmailList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ logEmailList.CloseRecordset(); }
+@if (!logEmailList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!logEmailList.IsGridAdd && !(logEmailList.IsGridEdit && logEmailList.ModalGridEdit) && !logEmailList.IsMultiEdit) {
+@Html.Raw(logEmailList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@logEmailList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@logEmailList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@logEmailList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!logEmailList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("LogEmail");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

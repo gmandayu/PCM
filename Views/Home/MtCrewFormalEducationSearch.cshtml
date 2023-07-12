@@ -1,0 +1,534 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewFormalEducationSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewFormalEducationSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewFormalEducationSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewFormalEducation: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewFormalEducationsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewFormalEducationsearch")
+        .setPageId("search")
+@if (mtCrewFormalEducationSearch.IsModal && mtCrewFormalEducationSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["EducationLevel", [], fields.EducationLevel.isInvalid],
+            ["SchoolName", [], fields.SchoolName.isInvalid],
+            ["City", [], fields.City.isInvalid],
+            ["StartDate", [ew.Validators.datetime(fields.StartDate.clientFormatPattern)], fields.StartDate.isInvalid],
+            ["EndDate", [ew.Validators.datetime(fields.EndDate.clientFormatPattern)], fields.EndDate.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewFormalEducationSearch.MTCrewID.ToClientList(mtCrewFormalEducationSearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewFormalEducationSearch.CreatedByUserID.ToClientList(mtCrewFormalEducationSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewFormalEducationSearch.LastUpdatedByUserID.ToClientList(mtCrewFormalEducationSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewFormalEducationSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewFormalEducationSearch.ShowPageHeader()
+@mtCrewFormalEducationSearch.ShowMessages()
+<form name="fMTCrewFormalEducationsearch" id="fMTCrewFormalEducationsearch" class="@(mtCrewFormalEducationSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewFormalEducationSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewFormalEducationSearch.MTCrewID.Visible) { // mtCrewFormalEducationSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(mtCrewFormalEducationSearch.MTCrewID.RowAttributes)>
+        <label class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_MTCrewID">@Html.Raw(mtCrewFormalEducationSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_MTCrewID" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mtCrewFormalEducationSearch.MTCrewID.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_MTCrewID" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_MTCrewID" id="sv_x_MTCrewID" value="@(RemoveHtml(ConvertToString(mtCrewFormalEducationSearch.MTCrewID.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.MTCrewID.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.MTCrewID.FormatPattern)" @Html.Raw(mtCrewFormalEducationSearch.MTCrewID.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="MTCrewFormalEducation" data-field="x_MTCrewID" data-input="sv_x_MTCrewID" data-value-separator="@(mtCrewFormalEducationSearch.MTCrewID.DisplayValueSeparatorAttribute)" name="x_MTCrewID" id="x_MTCrewID" value="@(HtmlEncode(mtCrewFormalEducationSearch.MTCrewID.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.MTCrewID.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMTCrewFormalEducationsearch"], function() {
+    fMTCrewFormalEducationsearch.createAutoSuggest(Object.assign({"id":"x_MTCrewID","forceSelect":false}, { lookupAllDisplayFields: @(mtCrewFormalEducationSearch.MTCrewID.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.MTCrewFormalEducation.fields.MTCrewID.autoSuggestOptions));
+});
+</script>
+@Html.Raw(mtCrewFormalEducationSearch.MTCrewID.Lookup.GetParamTag(mtCrewFormalEducationSearch, "p_x_MTCrewID"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.MTCrewID.Visible (end) *@
+@if (mtCrewFormalEducationSearch.EducationLevel.Visible) { // mtCrewFormalEducationSearch.EducationLevel.Visible (begin)
+    <div id="r_EducationLevel" class="row" @Html.Raw(mtCrewFormalEducationSearch.EducationLevel.RowAttributes)>
+        <label for="x_EducationLevel" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_EducationLevel">@Html.Raw(mtCrewFormalEducationSearch.EducationLevel.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EducationLevel" id="z_EducationLevel" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.EducationLevel.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_EducationLevel" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFormalEducationSearch.EducationLevel.InputTextType)" name="x_EducationLevel" id="x_EducationLevel" data-table="MTCrewFormalEducation" data-field="x_EducationLevel" value="@Html.Raw(mtCrewFormalEducationSearch.EducationLevel.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.EducationLevel.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.EducationLevel.FormatPattern)"@Html.Raw(mtCrewFormalEducationSearch.EducationLevel.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.EducationLevel.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.EducationLevel.Visible (end) *@
+@if (mtCrewFormalEducationSearch.SchoolName.Visible) { // mtCrewFormalEducationSearch.SchoolName.Visible (begin)
+    <div id="r_SchoolName" class="row" @Html.Raw(mtCrewFormalEducationSearch.SchoolName.RowAttributes)>
+        <label for="x_SchoolName" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_SchoolName">@Html.Raw(mtCrewFormalEducationSearch.SchoolName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SchoolName" id="z_SchoolName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.SchoolName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_SchoolName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFormalEducationSearch.SchoolName.InputTextType)" name="x_SchoolName" id="x_SchoolName" data-table="MTCrewFormalEducation" data-field="x_SchoolName" value="@Html.Raw(mtCrewFormalEducationSearch.SchoolName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.SchoolName.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.SchoolName.FormatPattern)"@Html.Raw(mtCrewFormalEducationSearch.SchoolName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.SchoolName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.SchoolName.Visible (end) *@
+@if (mtCrewFormalEducationSearch.City.Visible) { // mtCrewFormalEducationSearch.City.Visible (begin)
+    <div id="r_City" class="row" @Html.Raw(mtCrewFormalEducationSearch.City.RowAttributes)>
+        <label for="x_City" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_City">@Html.Raw(mtCrewFormalEducationSearch.City.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_City" id="z_City" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.City.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_City" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFormalEducationSearch.City.InputTextType)" name="x_City" id="x_City" data-table="MTCrewFormalEducation" data-field="x_City" value="@Html.Raw(mtCrewFormalEducationSearch.City.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.City.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.City.FormatPattern)"@Html.Raw(mtCrewFormalEducationSearch.City.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.City.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.City.Visible (end) *@
+@if (mtCrewFormalEducationSearch.StartDate.Visible) { // mtCrewFormalEducationSearch.StartDate.Visible (begin)
+    <div id="r_StartDate" class="row" @Html.Raw(mtCrewFormalEducationSearch.StartDate.RowAttributes)>
+        <label for="x_StartDate" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_StartDate">@Html.Raw(mtCrewFormalEducationSearch.StartDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_StartDate" id="z_StartDate" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.StartDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_StartDate" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFormalEducationSearch.StartDate.InputTextType)" name="x_StartDate" id="x_StartDate" data-table="MTCrewFormalEducation" data-field="x_StartDate" value="@Html.Raw(mtCrewFormalEducationSearch.StartDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.StartDate.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.StartDate.FormatPattern)"@Html.Raw(mtCrewFormalEducationSearch.StartDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.StartDate.GetErrorMessage(false))</div>
+@if (!mtCrewFormalEducationSearch.StartDate.ReadOnly && !mtCrewFormalEducationSearch.StartDate.Disabled && !mtCrewFormalEducationSearch.StartDate.EditAttrs.Is("readonly") && !mtCrewFormalEducationSearch.StartDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFormalEducationsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFormalEducationsearch", "x_StartDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.StartDate.Visible (end) *@
+@if (mtCrewFormalEducationSearch.EndDate.Visible) { // mtCrewFormalEducationSearch.EndDate.Visible (begin)
+    <div id="r_EndDate" class="row" @Html.Raw(mtCrewFormalEducationSearch.EndDate.RowAttributes)>
+        <label for="x_EndDate" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_EndDate">@Html.Raw(mtCrewFormalEducationSearch.EndDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_EndDate" id="z_EndDate" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.EndDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_EndDate" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFormalEducationSearch.EndDate.InputTextType)" name="x_EndDate" id="x_EndDate" data-table="MTCrewFormalEducation" data-field="x_EndDate" value="@Html.Raw(mtCrewFormalEducationSearch.EndDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.EndDate.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.EndDate.FormatPattern)"@Html.Raw(mtCrewFormalEducationSearch.EndDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.EndDate.GetErrorMessage(false))</div>
+@if (!mtCrewFormalEducationSearch.EndDate.ReadOnly && !mtCrewFormalEducationSearch.EndDate.Disabled && !mtCrewFormalEducationSearch.EndDate.EditAttrs.Is("readonly") && !mtCrewFormalEducationSearch.EndDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFormalEducationsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFormalEducationsearch", "x_EndDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.EndDate.Visible (end) *@
+@if (mtCrewFormalEducationSearch.CreatedByUserID.Visible) { // mtCrewFormalEducationSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewFormalEducationSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_CreatedByUserID">@Html.Raw(mtCrewFormalEducationSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewFormalEducationSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewFormalEducationsearch_x_CreatedByUserID"
+        data-table="MTCrewFormalEducation"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewFormalEducationSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewFormalEducationSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewFormalEducationSearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewFormalEducationSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewFormalEducationSearch.CreatedByUserID.Lookup.GetParamTag(mtCrewFormalEducationSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewFormalEducationsearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewFormalEducationsearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewFormalEducationsearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewFormalEducationsearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewFormalEducationsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewFormalEducationSearch.CreatedDateTime.Visible) { // mtCrewFormalEducationSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewFormalEducationSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_CreatedDateTime">@Html.Raw(mtCrewFormalEducationSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFormalEducationSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrewFormalEducation" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewFormalEducationSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewFormalEducationSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewFormalEducationSearch.CreatedDateTime.ReadOnly && !mtCrewFormalEducationSearch.CreatedDateTime.Disabled && !mtCrewFormalEducationSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewFormalEducationSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFormalEducationsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFormalEducationsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewFormalEducationSearch.LastUpdatedByUserID.Visible) { // mtCrewFormalEducationSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewFormalEducationSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_LastUpdatedByUserID">@Html.Raw(mtCrewFormalEducationSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewFormalEducationSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewFormalEducationsearch_x_LastUpdatedByUserID"
+        data-table="MTCrewFormalEducation"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewFormalEducationSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewFormalEducationSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewFormalEducationSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewFormalEducationSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewFormalEducationSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewFormalEducationSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewFormalEducationsearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewFormalEducationsearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewFormalEducationsearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewFormalEducationsearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewFormalEducationsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewFormalEducationSearch.LastUpdatedDateTime.Visible) { // mtCrewFormalEducationSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewFormalEducationSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewFormalEducationSearch.LeftColumnClass)"><span id="elh_MTCrewFormalEducation_LastUpdatedDateTime">@Html.Raw(mtCrewFormalEducationSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFormalEducationSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFormalEducationSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFormalEducation_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFormalEducationSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrewFormalEducation" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewFormalEducationSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFormalEducationSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFormalEducationSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewFormalEducationSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewFormalEducationSearch.LastUpdatedDateTime.ReadOnly && !mtCrewFormalEducationSearch.LastUpdatedDateTime.Disabled && !mtCrewFormalEducationSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewFormalEducationSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFormalEducationsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFormalEducationsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFormalEducationSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewFormalEducationSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewFormalEducationSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewFormalEducationsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewFormalEducationSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewFormalEducationsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewFormalEducationsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewFormalEducationSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewFormalEducationSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewFormalEducation");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

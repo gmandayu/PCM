@@ -1,0 +1,474 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (vCrewBlacklistForAdminSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!vCrewBlacklistForAdminSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vCrewBlacklistForAdminSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_CrewBlacklistForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fv_CrewBlacklistForAdminsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fv_CrewBlacklistForAdminsearch")
+        .setPageId("search")
+@if (vCrewBlacklistForAdminSearch.IsModal && vCrewBlacklistForAdminSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["CityOfBirth", [], fields.CityOfBirth.isInvalid],
+            ["DateOfBirth", [ew.Validators.datetime(fields.DateOfBirth.clientFormatPattern)], fields.DateOfBirth.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor_RankID", [ew.Validators.integer], fields.RankAppliedFor_RankID.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "WillAcceptLowRank": @Html.Raw(vCrewBlacklistForAdminSearch.WillAcceptLowRank.ToClientList(vCrewBlacklistForAdminSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (vCrewBlacklistForAdminSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@vCrewBlacklistForAdminSearch.ShowPageHeader()
+@vCrewBlacklistForAdminSearch.ShowMessages()
+<form name="fv_CrewBlacklistForAdminsearch" id="fv_CrewBlacklistForAdminsearch" class="@(vCrewBlacklistForAdminSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (vCrewBlacklistForAdminSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (vCrewBlacklistForAdminSearch.IndividualCodeNumber.Visible) { // vCrewBlacklistForAdminSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_IndividualCodeNumber">@Html.Raw(vCrewBlacklistForAdminSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="v_CrewBlacklistForAdmin" data-field="x_IndividualCodeNumber" value="@Html.Raw(vCrewBlacklistForAdminSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.IndividualCodeNumber.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.FullName.Visible) { // vCrewBlacklistForAdminSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_FullName">@Html.Raw(vCrewBlacklistForAdminSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="v_CrewBlacklistForAdmin" data-field="x_FullName" value="@Html.Raw(vCrewBlacklistForAdminSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.FullName.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.FullName.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.FullName.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.RequiredPhoto.Visible) { // vCrewBlacklistForAdminSearch.RequiredPhoto.Visible (begin)
+    <div id="r_RequiredPhoto" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.RequiredPhoto.RowAttributes)>
+        <label for="x_RequiredPhoto" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_RequiredPhoto">@Html.Raw(vCrewBlacklistForAdminSearch.RequiredPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RequiredPhoto" id="z_RequiredPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.RequiredPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_RequiredPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.RequiredPhoto.InputTextType)" name="x_RequiredPhoto" id="x_RequiredPhoto" data-table="v_CrewBlacklistForAdmin" data-field="x_RequiredPhoto" value="@Html.Raw(vCrewBlacklistForAdminSearch.RequiredPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.RequiredPhoto.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.RequiredPhoto.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.RequiredPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.RequiredPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.RequiredPhoto.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.VisaPhoto.Visible) { // vCrewBlacklistForAdminSearch.VisaPhoto.Visible (begin)
+    <div id="r_VisaPhoto" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.VisaPhoto.RowAttributes)>
+        <label for="x_VisaPhoto" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_VisaPhoto">@Html.Raw(vCrewBlacklistForAdminSearch.VisaPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VisaPhoto" id="z_VisaPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.VisaPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_VisaPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.VisaPhoto.InputTextType)" name="x_VisaPhoto" id="x_VisaPhoto" data-table="v_CrewBlacklistForAdmin" data-field="x_VisaPhoto" value="@Html.Raw(vCrewBlacklistForAdminSearch.VisaPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.VisaPhoto.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.VisaPhoto.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.VisaPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.VisaPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.VisaPhoto.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.CityOfBirth.Visible) { // vCrewBlacklistForAdminSearch.CityOfBirth.Visible (begin)
+    <div id="r_CityOfBirth" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.CityOfBirth.RowAttributes)>
+        <label for="x_CityOfBirth" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_CityOfBirth">@Html.Raw(vCrewBlacklistForAdminSearch.CityOfBirth.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CityOfBirth" id="z_CityOfBirth" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.CityOfBirth.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_CityOfBirth" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.CityOfBirth.InputTextType)" name="x_CityOfBirth" id="x_CityOfBirth" data-table="v_CrewBlacklistForAdmin" data-field="x_CityOfBirth" value="@Html.Raw(vCrewBlacklistForAdminSearch.CityOfBirth.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.CityOfBirth.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.CityOfBirth.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.CityOfBirth.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.CityOfBirth.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.CityOfBirth.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.DateOfBirth.Visible) { // vCrewBlacklistForAdminSearch.DateOfBirth.Visible (begin)
+    <div id="r_DateOfBirth" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.DateOfBirth.RowAttributes)>
+        <label for="x_DateOfBirth" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_DateOfBirth">@Html.Raw(vCrewBlacklistForAdminSearch.DateOfBirth.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateOfBirth" id="z_DateOfBirth" value="=">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.DateOfBirth.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_DateOfBirth" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.DateOfBirth.InputTextType)" name="x_DateOfBirth" id="x_DateOfBirth" data-table="v_CrewBlacklistForAdmin" data-field="x_DateOfBirth" value="@Html.Raw(vCrewBlacklistForAdminSearch.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.DateOfBirth.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.DateOfBirth.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.DateOfBirth.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.DateOfBirth.GetErrorMessage(false))</div>
+@if (!vCrewBlacklistForAdminSearch.DateOfBirth.ReadOnly && !vCrewBlacklistForAdminSearch.DateOfBirth.Disabled && !vCrewBlacklistForAdminSearch.DateOfBirth.EditAttrs.Is("readonly") && !vCrewBlacklistForAdminSearch.DateOfBirth.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_CrewBlacklistForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_CrewBlacklistForAdminsearch", "x_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.DateOfBirth.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.Gender.Visible) { // vCrewBlacklistForAdminSearch.Gender.Visible (begin)
+    <div id="r_Gender" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.Gender.RowAttributes)>
+        <label for="x_Gender" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_Gender">@Html.Raw(vCrewBlacklistForAdminSearch.Gender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Gender" id="z_Gender" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.Gender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_Gender" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.Gender.InputTextType)" name="x_Gender" id="x_Gender" data-table="v_CrewBlacklistForAdmin" data-field="x_Gender" value="@Html.Raw(vCrewBlacklistForAdminSearch.Gender.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.Gender.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.Gender.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.Gender.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.Gender.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.Gender.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.Visible) { // vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.Visible (begin)
+    <div id="r_RankAppliedFor_RankID" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.RowAttributes)>
+        <label for="x_RankAppliedFor_RankID" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_RankAppliedFor_RankID">@Html.Raw(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_RankAppliedFor_RankID" id="z_RankAppliedFor_RankID" value="=">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_RankAppliedFor_RankID" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.InputTextType)" name="x_RankAppliedFor_RankID" id="x_RankAppliedFor_RankID" data-table="v_CrewBlacklistForAdmin" data-field="x_RankAppliedFor_RankID" value="@Html.Raw(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.RankAppliedFor_RankID.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.WillAcceptLowRank.Visible) { // vCrewBlacklistForAdminSearch.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.WillAcceptLowRank.RowAttributes)>
+        <label class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_WillAcceptLowRank">@Html.Raw(vCrewBlacklistForAdminSearch.WillAcceptLowRank.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WillAcceptLowRank" id="z_WillAcceptLowRank" value="=">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.WillAcceptLowRank.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_WillAcceptLowRank" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(vCrewBlacklistForAdminSearch.WillAcceptLowRank.IsInvalidClass)" data-table="v_CrewBlacklistForAdmin" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(vCrewBlacklistForAdminSearch.WillAcceptLowRank.AdvancedSearch.SearchValue)" @Html.Raw(vCrewBlacklistForAdminSearch.WillAcceptLowRank.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.WillAcceptLowRank.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.WillAcceptLowRank.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.AvailableFrom.Visible) { // vCrewBlacklistForAdminSearch.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.AvailableFrom.RowAttributes)>
+        <label for="x_AvailableFrom" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_AvailableFrom">@Html.Raw(vCrewBlacklistForAdminSearch.AvailableFrom.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableFrom" id="z_AvailableFrom" value="=">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.AvailableFrom.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_AvailableFrom" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="v_CrewBlacklistForAdmin" data-field="x_AvailableFrom" value="@Html.Raw(vCrewBlacklistForAdminSearch.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.AvailableFrom.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.AvailableFrom.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.AvailableFrom.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.AvailableFrom.GetErrorMessage(false))</div>
+@if (!vCrewBlacklistForAdminSearch.AvailableFrom.ReadOnly && !vCrewBlacklistForAdminSearch.AvailableFrom.Disabled && !vCrewBlacklistForAdminSearch.AvailableFrom.EditAttrs.Is("readonly") && !vCrewBlacklistForAdminSearch.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_CrewBlacklistForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_CrewBlacklistForAdminsearch", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.AvailableFrom.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.AvailableUntil.Visible) { // vCrewBlacklistForAdminSearch.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.AvailableUntil.RowAttributes)>
+        <label for="x_AvailableUntil" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_AvailableUntil">@Html.Raw(vCrewBlacklistForAdminSearch.AvailableUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableUntil" id="z_AvailableUntil" value="=">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.AvailableUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_AvailableUntil" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="v_CrewBlacklistForAdmin" data-field="x_AvailableUntil" value="@Html.Raw(vCrewBlacklistForAdminSearch.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.AvailableUntil.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.AvailableUntil.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.AvailableUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.AvailableUntil.GetErrorMessage(false))</div>
+@if (!vCrewBlacklistForAdminSearch.AvailableUntil.ReadOnly && !vCrewBlacklistForAdminSearch.AvailableUntil.Disabled && !vCrewBlacklistForAdminSearch.AvailableUntil.EditAttrs.Is("readonly") && !vCrewBlacklistForAdminSearch.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_CrewBlacklistForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_CrewBlacklistForAdminsearch", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.AvailableUntil.Visible (end) *@
+@if (vCrewBlacklistForAdminSearch.EmployeeStatus.Visible) { // vCrewBlacklistForAdminSearch.EmployeeStatus.Visible (begin)
+    <div id="r_EmployeeStatus" class="row" @Html.Raw(vCrewBlacklistForAdminSearch.EmployeeStatus.RowAttributes)>
+        <label for="x_EmployeeStatus" class="@(vCrewBlacklistForAdminSearch.LeftColumnClass)"><span id="elh_v_CrewBlacklistForAdmin_EmployeeStatus">@Html.Raw(vCrewBlacklistForAdminSearch.EmployeeStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EmployeeStatus" id="z_EmployeeStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewBlacklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewBlacklistForAdminSearch.EmployeeStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewBlacklistForAdmin_EmployeeStatus" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewBlacklistForAdminSearch.EmployeeStatus.InputTextType)" name="x_EmployeeStatus" id="x_EmployeeStatus" data-table="v_CrewBlacklistForAdmin" data-field="x_EmployeeStatus" value="@Html.Raw(vCrewBlacklistForAdminSearch.EmployeeStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vCrewBlacklistForAdminSearch.EmployeeStatus.PlaceHolder))" data-format-pattern="@(vCrewBlacklistForAdminSearch.EmployeeStatus.FormatPattern)"@Html.Raw(vCrewBlacklistForAdminSearch.EmployeeStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewBlacklistForAdminSearch.EmployeeStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewBlacklistForAdminSearch.EmployeeStatus.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(vCrewBlacklistForAdminSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(vCrewBlacklistForAdminSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fv_CrewBlacklistForAdminsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (vCrewBlacklistForAdminSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fv_CrewBlacklistForAdminsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fv_CrewBlacklistForAdminsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(vCrewBlacklistForAdminSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@vCrewBlacklistForAdminSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("v_CrewBlacklistForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

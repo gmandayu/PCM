@@ -1,0 +1,363 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (register.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!register.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(register.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTUser: currentTable } });
+var currentPageID = ew.PAGE_ID = "register";
+var currentForm;
+var fregister;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fregister")
+        .setPageId("register")
+
+        // Add fields
+        .setFields([
+
+            ["_Email", [fields._Email.visible && fields._Email.required ? ew.Validators.required(fields._Email.caption) : null, ew.Validators.username(fields._Email.raw), ew.Validators.email], fields._Email.isInvalid],
+            ["c_Password", [ew.Validators.required(ew.language.phrase("ConfirmPassword")), ew.Validators.mismatchPassword], fields.Password.isInvalid],
+            ["Password", [fields.Password.visible && fields.Password.required ? ew.Validators.required(fields.Password.caption) : null, ew.Validators.password(fields.Password.raw)], fields.Password.isInvalid],
+            ["FullName", [fields.FullName.visible && fields.FullName.required ? ew.Validators.required(fields.FullName.caption) : null], fields.FullName.isInvalid],
+            ["SeafarerID", [fields.SeafarerID.visible && fields.SeafarerID.required ? ew.Validators.required(fields.SeafarerID.caption) : null], fields.SeafarerID.isInvalid],
+            ["IdentificationImage", [fields.IdentificationImage.visible && fields.IdentificationImage.required ? ew.Validators.fileRequired(fields.IdentificationImage.caption) : null], fields.IdentificationImage.isInvalid],
+            ["CrewAgency", [fields.CrewAgency.visible && fields.CrewAgency.required ? ew.Validators.required(fields.CrewAgency.caption) : null], fields.CrewAgency.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    function validateField (thisInstance, fieldName, errorMessage, predicate) {
+                        const fieldValue = $(thisInstance).fields(fieldName)[0].value;
+                        if (predicate(fieldValue)) {
+                            thisInstance.fields[fieldName].addError({ custom: errorMessage });
+                            thisInstance.fields[fieldName].updateFeedback();
+                            thisInstance.addError(fieldName, { custom: errorMessage });   
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                    function isRegexNotMatched(value) {
+                        const regex = /^\d{10}$/;
+                        return !regex.test(value);
+                    }
+                    const regexErrorMessageEnglish = "Must contain exactly 10 digits";
+                    const regexErrorMessageIndonesian = "Harus terdiri dari 10 digit angka";
+                    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+                    let formErrorCount = 0;
+                    if (selectedLanguage.id === 'en-US') {
+                        formErrorCount += validateField(this, "SeafarerID",  regexErrorMessageEnglish, isRegexNotMatched) ? 0 : 1;
+                    } else {
+                        formErrorCount += validateField(this, "SeafarerID",  regexErrorMessageIndonesian, isRegexNotMatched) ? 0 : 1;
+                    }
+                    return formErrorCount === 0;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CrewAgency": @Html.Raw(register.CrewAgency.ToClientList(register)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@register.ShowPageHeader()
+@register.ShowMessages()
+<form name="fregister" id="fregister" class="@(register.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@(ConvertToInt(register.IsModal))">
+@if (register.IsConfirm) { // Confirm page
+<input type="hidden" name="action" id="action" value="insert">
+<input type="hidden" name="confirm" id="confirm" value="confirm">
+} else {
+<input type="hidden" name="action" id="action" value="confirm">
+}
+<div class="ew-register-div"><!-- page* -->
+@if (register._Email.Visible) { // register._Email.Visible (begin)
+    <div id="r__Email" @Html.Raw(register._Email.RowAttributes)>
+        <label id="elh_MTUser__Email" for="x__Email" class="@(register.LeftColumnClass)">@Html.Raw(register._Email.Caption)@Html.Raw(register._Email.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register._Email.CellAttributes)>
+@if (!register.IsConfirm) { // _Email (begin)
+<span id="el_MTUser__Email">
+<input type="@(register._Email.InputTextType)" name="x__Email" id="x__Email" data-table="MTUser" data-field="x__Email" value="@Html.Raw(register._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(register._Email.PlaceHolder))" data-format-pattern="@(register._Email.FormatPattern)"@Html.Raw(register._Email.EditAttributes) aria-describedby="x__Email_help">
+@Html.Raw(register._Email.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register._Email.GetErrorMessage())</div>
+</span>
+} else { // _Email (confirm)
+<span id="el_MTUser__Email">
+<span @Html.Raw(register._Email.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register._Email.ViewValue)))"></span>
+<input type="hidden" data-table="MTUser" data-field="x__Email" data-hidden="1" name="x__Email" id="x__Email" value="@Html.Raw(HtmlEncode(register._Email.FormValue))">
+</span>
+} @* _Email (end) *@
+</div></div>
+    </div>
+} @* register._Email.Visible (end) *@
+@if (register.Password.Visible) { // register.Password.Visible (begin)
+    <div id="r_Password" @Html.Raw(register.Password.RowAttributes)>
+        <label id="elh_MTUser_Password" for="x_Password" class="@(register.LeftColumnClass)">@Html.Raw(register.Password.Caption)@Html.Raw(register.Password.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.Password.CellAttributes)>
+@if (!register.IsConfirm) { // Password (begin)
+<span id="el_MTUser_Password">
+<div class="input-group">
+    <input type="password" name="x_Password" id="x_Password" autocomplete="new-password" data-field="x_Password" size="30" maxlength="255" placeholder="@(HtmlEncode(register.Password.PlaceHolder))"@Html.Raw(register.Password.EditAttributes) aria-describedby="x_Password_help">
+    <button type="button" class="btn btn-default ew-toggle-password rounded-end" data-ew-action="password"><i class="fa-solid fa-eye"></i></button>
+</div>
+@Html.Raw(register.Password.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.Password.GetErrorMessage())</div>
+</span>
+} else { // Password (confirm)
+<span id="el_MTUser_Password">
+<span @Html.Raw(register.Password.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register.Password.ViewValue)))"></span>
+<input type="hidden" data-table="MTUser" data-field="x_Password" data-hidden="1" name="x_Password" id="x_Password" value="@Html.Raw(HtmlEncode(register.Password.FormValue))">
+</span>
+} @* Password (end) *@
+</div></div>
+    </div>
+} @* register.Password.Visible (end) *@
+@if (register.Password.Visible) { // register.Password.Visible (begin)
+    <div id="r_c_Password" class="row">
+        <label id="elh_c_MTUser_Password" for="c_Password" class="@(register.LeftColumnClass)">@Html.Raw(Language.Phrase("Confirm")) @Html.Raw(register.Password.Caption)@Html.Raw(register.Password.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.Password.CellAttributes)>
+@if (!register.IsConfirm) { // Password (begin)
+<span id="el_c_MTUser_Password">
+<div class="input-group">
+    <input type="password" name="c_Password" id="c_Password" autocomplete="new-password" data-field="c_Password" size="30" maxlength="255" placeholder="@(HtmlEncode(register.Password.PlaceHolder))"@Html.Raw(register.Password.EditAttributes) aria-describedby="x_Password_help">
+    <button type="button" class="btn btn-default ew-toggle-password rounded-end" data-ew-action="password"><i class="fa-solid fa-eye"></i></button>
+</div>
+@Html.Raw(register.Password.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.Password.GetErrorMessage())</div>
+</span>
+} else { // Password (confirm)
+<span id="el_c_MTUser_Password">
+<span @Html.Raw(register.Password.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register.Password.ViewValue)))"></span>
+<input type="hidden" data-table="MTUser" data-field="x_Password" data-hidden="1" name="c_Password" id="c_Password" value="@Html.Raw(HtmlEncode(register.Password.FormValue))">
+</span>
+} @* Password (end) *@
+</div></div>
+    </div>
+} @* register.Password.Visible (end) *@
+@if (register.FullName.Visible) { // register.FullName.Visible (begin)
+    <div id="r_FullName" @Html.Raw(register.FullName.RowAttributes)>
+        <label id="elh_MTUser_FullName" for="x_FullName" class="@(register.LeftColumnClass)">@Html.Raw(register.FullName.Caption)@Html.Raw(register.FullName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.FullName.CellAttributes)>
+@if (!register.IsConfirm) { // FullName (begin)
+<span id="el_MTUser_FullName">
+<input type="@(register.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="MTUser" data-field="x_FullName" value="@Html.Raw(register.FullName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(register.FullName.PlaceHolder))" data-format-pattern="@(register.FullName.FormatPattern)"@Html.Raw(register.FullName.EditAttributes) aria-describedby="x_FullName_help">
+@Html.Raw(register.FullName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.FullName.GetErrorMessage())</div>
+</span>
+} else { // FullName (confirm)
+<span id="el_MTUser_FullName">
+<span @Html.Raw(register.FullName.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register.FullName.ViewValue)))"></span>
+<input type="hidden" data-table="MTUser" data-field="x_FullName" data-hidden="1" name="x_FullName" id="x_FullName" value="@Html.Raw(HtmlEncode(register.FullName.FormValue))">
+</span>
+} @* FullName (end) *@
+</div></div>
+    </div>
+} @* register.FullName.Visible (end) *@
+@if (register.SeafarerID.Visible) { // register.SeafarerID.Visible (begin)
+    <div id="r_SeafarerID" @Html.Raw(register.SeafarerID.RowAttributes)>
+        <label id="elh_MTUser_SeafarerID" for="x_SeafarerID" class="@(register.LeftColumnClass)">@Html.Raw(register.SeafarerID.Caption)@Html.Raw(register.SeafarerID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.SeafarerID.CellAttributes)>
+@if (!register.IsConfirm) { // SeafarerID (begin)
+<span id="el_MTUser_SeafarerID">
+<input type="@(register.SeafarerID.InputTextType)" name="x_SeafarerID" id="x_SeafarerID" data-table="MTUser" data-field="x_SeafarerID" value="@Html.Raw(register.SeafarerID.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(register.SeafarerID.PlaceHolder))" data-format-pattern="@(register.SeafarerID.FormatPattern)"@Html.Raw(register.SeafarerID.EditAttributes) aria-describedby="x_SeafarerID_help">
+@Html.Raw(register.SeafarerID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.SeafarerID.GetErrorMessage())</div>
+</span>
+} else { // SeafarerID (confirm)
+<span id="el_MTUser_SeafarerID">
+<span @Html.Raw(register.SeafarerID.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register.SeafarerID.ViewValue)))"></span>
+<input type="hidden" data-table="MTUser" data-field="x_SeafarerID" data-hidden="1" name="x_SeafarerID" id="x_SeafarerID" value="@Html.Raw(HtmlEncode(register.SeafarerID.FormValue))">
+</span>
+} @* SeafarerID (end) *@
+</div></div>
+    </div>
+} @* register.SeafarerID.Visible (end) *@
+@if (register.IdentificationImage.Visible) { // register.IdentificationImage.Visible (begin)
+    <div id="r_IdentificationImage" @Html.Raw(register.IdentificationImage.RowAttributes)>
+        <label id="elh_MTUser_IdentificationImage" class="@(register.LeftColumnClass)">@Html.Raw(register.IdentificationImage.Caption)@Html.Raw(register.IdentificationImage.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.IdentificationImage.CellAttributes)>
+@if (!register.IsConfirm) { // IdentificationImage (begin)
+<span id="el_MTUser_IdentificationImage">
+<div id="fd_x_IdentificationImage" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_IdentificationImage"
+        name="x_IdentificationImage"
+        class="form-control ew-file-input"
+        title="@(register.IdentificationImage.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="MTUser"
+        data-field="x_IdentificationImage"
+        data-size="100"
+        data-accept-file-types="@(register.IdentificationImage.AcceptFileTypes)"
+        data-max-file-size="@(register.IdentificationImage.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(register.IdentificationImage.ImageCropper ? 0 : 1)"
+        aria-describedby="x_IdentificationImage_help"
+        @Html.Raw((register.IdentificationImage.ReadOnly || register.IdentificationImage.Disabled) ? " disabled" : "")
+        @Html.Raw(register.IdentificationImage.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(register.IdentificationImage.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.IdentificationImage.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_IdentificationImage" id= "fn_x_IdentificationImage" value="@(register.IdentificationImage.Upload.FileName)">
+<input type="hidden" name="fa_x_IdentificationImage" id= "fa_x_IdentificationImage" value="0">
+<table id="ft_x_IdentificationImage" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+} else { // IdentificationImage (confirm)
+<span id="el_MTUser_IdentificationImage">
+<div id="fd_x_IdentificationImage">
+    <input
+        type="file"
+        id="x_IdentificationImage"
+        name="x_IdentificationImage"
+        class="form-control ew-file-input d-none"
+        title="@(register.IdentificationImage.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="MTUser"
+        data-field="x_IdentificationImage"
+        data-size="100"
+        data-accept-file-types="@(register.IdentificationImage.AcceptFileTypes)"
+        data-max-file-size="@(register.IdentificationImage.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(register.IdentificationImage.ImageCropper ? 0 : 1)"
+        aria-describedby="x_IdentificationImage_help"
+        @Html.Raw(register.IdentificationImage.EditAttributes)
+    >
+</div>
+@Html.Raw(register.IdentificationImage.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.IdentificationImage.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_IdentificationImage" id= "fn_x_IdentificationImage" value="@(register.IdentificationImage.Upload.FileName)">
+<input type="hidden" name="fa_x_IdentificationImage" id= "fa_x_IdentificationImage" value="0">
+<table id="ft_x_IdentificationImage" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+} @* IdentificationImage (end) *@
+</div></div>
+    </div>
+} @* register.IdentificationImage.Visible (end) *@
+@if (register.CrewAgency.Visible) { // register.CrewAgency.Visible (begin)
+    <div id="r_CrewAgency" @Html.Raw(register.CrewAgency.RowAttributes)>
+        <label id="elh_MTUser_CrewAgency" for="x_CrewAgency" class="@(register.LeftColumnClass)">@Html.Raw(register.CrewAgency.Caption)@Html.Raw(register.CrewAgency.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.CrewAgency.CellAttributes)>
+@if (!register.IsConfirm) { // CrewAgency (begin)
+<span id="el_MTUser_CrewAgency">
+    <select
+        id="x_CrewAgency"
+        name="x_CrewAgency"
+        class="form-select ew-select@(register.CrewAgency.IsInvalidClass)"
+        data-select2-id="fregister_x_CrewAgency"
+        data-table="MTUser"
+        data-field="x_CrewAgency"
+        data-value-separator="@(register.CrewAgency.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(register.CrewAgency.PlaceHolder))"
+        @Html.Raw(register.CrewAgency.EditAttributes)>
+        @(register.CrewAgency.SelectOptionListHtml("x_CrewAgency"))
+    </select>
+    @Html.Raw(register.CrewAgency.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(register.CrewAgency.GetErrorMessage())</div>
+<script>
+loadjs.ready("fregister", function() {
+    var options = { name: "x_CrewAgency", selectId: "fregister_x_CrewAgency" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fregister.lists.CrewAgency?.lookupOptions.length) {
+        options.data = { id: "x_CrewAgency", form: "fregister" };
+    } else {
+        options.ajax = { id: "x_CrewAgency", form: "fregister", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTUser.fields.CrewAgency.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+} else { // CrewAgency (confirm)
+<span id="el_MTUser_CrewAgency">
+<span @Html.Raw(register.CrewAgency.ViewAttributes)>
+<span class="form-control-plaintext">@Html.Raw(register.CrewAgency.DisplayValue(register.CrewAgency.ViewValue))</span></span>
+<input type="hidden" data-table="MTUser" data-field="x_CrewAgency" data-hidden="1" name="x_CrewAgency" id="x_CrewAgency" value="@Html.Raw(HtmlEncode(register.CrewAgency.FormValue))">
+</span>
+} @* CrewAgency (end) *@
+</div></div>
+    </div>
+} @* register.CrewAgency.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(register.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(register.OffsetColumnClass)"><!-- buttons offset -->
+@if (!register.IsConfirm) { // Confirm page
+    <button class="btn btn-primary ew-btn disabled enable-on-init" name="btn-action" id="btn-action" type="submit" form="fregister" data-ew-action="set-action" data-value="confirm">@Html.Raw(Language.Phrase("RegisterBtn"))</button>
+} else {
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fregister">@Html.Raw(Language.Phrase("ConfirmBtn"))</button>
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="submit" form="fregister" data-ew-action="set-action" data-value="cancel">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(register.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@register.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTUser");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your startup script here
+    // document.write("page loaded");
+});
+</script>

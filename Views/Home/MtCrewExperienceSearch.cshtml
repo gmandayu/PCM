@@ -1,0 +1,832 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewExperienceSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewExperienceSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewExperienceSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewExperience: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewExperiencesearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewExperiencesearch")
+        .setPageId("search")
+@if (mtCrewExperienceSearch.IsModal && mtCrewExperienceSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CompanyName", [], fields.CompanyName.isInvalid],
+            ["FlagName_CountryID", [], fields.FlagName_CountryID.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["MTVesselTypeID", [], fields.MTVesselTypeID.isInvalid],
+            ["GRT", [ew.Validators.integer], fields.GRT.isInvalid],
+            ["DWT", [ew.Validators.integer], fields.DWT.isInvalid],
+            ["MainEngine", [], fields.MainEngine.isInvalid],
+            ["BHP", [ew.Validators.integer], fields.BHP.isInvalid],
+            ["MTRankID", [], fields.MTRankID.isInvalid],
+            ["DateFrom", [ew.Validators.datetime(fields.DateFrom.clientFormatPattern)], fields.DateFrom.isInvalid],
+            ["SignOnPortName", [], fields.SignOnPortName.isInvalid],
+            ["DateUntil", [ew.Validators.datetime(fields.DateUntil.clientFormatPattern)], fields.DateUntil.isInvalid],
+            ["SignOffPortName", [], fields.SignOffPortName.isInvalid],
+            ["SignOffReason", [], fields.SignOffReason.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewExperienceSearch.MTCrewID.ToClientList(mtCrewExperienceSearch)),
+            "FlagName_CountryID": @Html.Raw(mtCrewExperienceSearch.FlagName_CountryID.ToClientList(mtCrewExperienceSearch)),
+            "MTVesselTypeID": @Html.Raw(mtCrewExperienceSearch.MTVesselTypeID.ToClientList(mtCrewExperienceSearch)),
+            "MTRankID": @Html.Raw(mtCrewExperienceSearch.MTRankID.ToClientList(mtCrewExperienceSearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewExperienceSearch.CreatedByUserID.ToClientList(mtCrewExperienceSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewExperienceSearch.LastUpdatedByUserID.ToClientList(mtCrewExperienceSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewExperienceSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewExperienceSearch.ShowPageHeader()
+@mtCrewExperienceSearch.ShowMessages()
+<form name="fMTCrewExperiencesearch" id="fMTCrewExperiencesearch" class="@(mtCrewExperienceSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewExperienceSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewExperienceSearch.MTCrewID.Visible) { // mtCrewExperienceSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(mtCrewExperienceSearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_MTCrewID">@Html.Raw(mtCrewExperienceSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_MTCrewID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTCrewID"
+        name="x_MTCrewID"
+        class="form-select ew-select@(mtCrewExperienceSearch.MTCrewID.IsInvalidClass)"
+        data-select2-id="fMTCrewExperiencesearch_x_MTCrewID"
+        data-table="MTCrewExperience"
+        data-field="x_MTCrewID"
+        data-value-separator="@(mtCrewExperienceSearch.MTCrewID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewExperienceSearch.MTCrewID.PlaceHolder))"
+        @Html.Raw(mtCrewExperienceSearch.MTCrewID.EditAttributes)>
+        @(mtCrewExperienceSearch.MTCrewID.SelectOptionListHtml("x_MTCrewID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.MTCrewID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewExperienceSearch.MTCrewID.Lookup.GetParamTag(mtCrewExperienceSearch, "p_x_MTCrewID"))
+<script>
+loadjs.ready("fMTCrewExperiencesearch", function() {
+    var options = { name: "x_MTCrewID", selectId: "fMTCrewExperiencesearch_x_MTCrewID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewExperiencesearch.lists.MTCrewID?.lookupOptions.length) {
+        options.data = { id: "x_MTCrewID", form: "fMTCrewExperiencesearch" };
+    } else {
+        options.ajax = { id: "x_MTCrewID", form: "fMTCrewExperiencesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewExperience.fields.MTCrewID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.MTCrewID.Visible (end) *@
+@if (mtCrewExperienceSearch.CompanyName.Visible) { // mtCrewExperienceSearch.CompanyName.Visible (begin)
+    <div id="r_CompanyName" class="row" @Html.Raw(mtCrewExperienceSearch.CompanyName.RowAttributes)>
+        <label for="x_CompanyName" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_CompanyName">@Html.Raw(mtCrewExperienceSearch.CompanyName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CompanyName" id="z_CompanyName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.CompanyName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_CompanyName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.CompanyName.InputTextType)" name="x_CompanyName" id="x_CompanyName" data-table="MTCrewExperience" data-field="x_CompanyName" value="@Html.Raw(mtCrewExperienceSearch.CompanyName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.CompanyName.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.CompanyName.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.CompanyName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.CompanyName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.CompanyName.Visible (end) *@
+@if (mtCrewExperienceSearch.FlagName_CountryID.Visible) { // mtCrewExperienceSearch.FlagName_CountryID.Visible (begin)
+    <div id="r_FlagName_CountryID" class="row" @Html.Raw(mtCrewExperienceSearch.FlagName_CountryID.RowAttributes)>
+        <label for="x_FlagName_CountryID" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_FlagName_CountryID">@Html.Raw(mtCrewExperienceSearch.FlagName_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_FlagName_CountryID" id="z_FlagName_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.FlagName_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_FlagName_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_FlagName_CountryID"
+        name="x_FlagName_CountryID"
+        class="form-select ew-select@(mtCrewExperienceSearch.FlagName_CountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewExperiencesearch_x_FlagName_CountryID"
+        data-table="MTCrewExperience"
+        data-field="x_FlagName_CountryID"
+        data-value-separator="@(mtCrewExperienceSearch.FlagName_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewExperienceSearch.FlagName_CountryID.PlaceHolder))"
+        @Html.Raw(mtCrewExperienceSearch.FlagName_CountryID.EditAttributes)>
+        @(mtCrewExperienceSearch.FlagName_CountryID.SelectOptionListHtml("x_FlagName_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.FlagName_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewExperienceSearch.FlagName_CountryID.Lookup.GetParamTag(mtCrewExperienceSearch, "p_x_FlagName_CountryID"))
+<script>
+loadjs.ready("fMTCrewExperiencesearch", function() {
+    var options = { name: "x_FlagName_CountryID", selectId: "fMTCrewExperiencesearch_x_FlagName_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewExperiencesearch.lists.FlagName_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_FlagName_CountryID", form: "fMTCrewExperiencesearch" };
+    } else {
+        options.ajax = { id: "x_FlagName_CountryID", form: "fMTCrewExperiencesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewExperience.fields.FlagName_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.FlagName_CountryID.Visible (end) *@
+@if (mtCrewExperienceSearch.VesselName.Visible) { // mtCrewExperienceSearch.VesselName.Visible (begin)
+    <div id="r_VesselName" class="row" @Html.Raw(mtCrewExperienceSearch.VesselName.RowAttributes)>
+        <label for="x_VesselName" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_VesselName">@Html.Raw(mtCrewExperienceSearch.VesselName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VesselName" id="z_VesselName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.VesselName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_VesselName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.VesselName.InputTextType)" name="x_VesselName" id="x_VesselName" data-table="MTCrewExperience" data-field="x_VesselName" value="@Html.Raw(mtCrewExperienceSearch.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.VesselName.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.VesselName.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.VesselName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.VesselName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.VesselName.Visible (end) *@
+@if (mtCrewExperienceSearch.MTVesselTypeID.Visible) { // mtCrewExperienceSearch.MTVesselTypeID.Visible (begin)
+    <div id="r_MTVesselTypeID" class="row" @Html.Raw(mtCrewExperienceSearch.MTVesselTypeID.RowAttributes)>
+        <label for="x_MTVesselTypeID" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_MTVesselTypeID">@Html.Raw(mtCrewExperienceSearch.MTVesselTypeID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTVesselTypeID" id="z_MTVesselTypeID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.MTVesselTypeID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_MTVesselTypeID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTVesselTypeID"
+        name="x_MTVesselTypeID"
+        class="form-select ew-select@(mtCrewExperienceSearch.MTVesselTypeID.IsInvalidClass)"
+        data-select2-id="fMTCrewExperiencesearch_x_MTVesselTypeID"
+        data-table="MTCrewExperience"
+        data-field="x_MTVesselTypeID"
+        data-value-separator="@(mtCrewExperienceSearch.MTVesselTypeID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewExperienceSearch.MTVesselTypeID.PlaceHolder))"
+        @Html.Raw(mtCrewExperienceSearch.MTVesselTypeID.EditAttributes)>
+        @(mtCrewExperienceSearch.MTVesselTypeID.SelectOptionListHtml("x_MTVesselTypeID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.MTVesselTypeID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewExperienceSearch.MTVesselTypeID.Lookup.GetParamTag(mtCrewExperienceSearch, "p_x_MTVesselTypeID"))
+<script>
+loadjs.ready("fMTCrewExperiencesearch", function() {
+    var options = { name: "x_MTVesselTypeID", selectId: "fMTCrewExperiencesearch_x_MTVesselTypeID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewExperiencesearch.lists.MTVesselTypeID?.lookupOptions.length) {
+        options.data = { id: "x_MTVesselTypeID", form: "fMTCrewExperiencesearch" };
+    } else {
+        options.ajax = { id: "x_MTVesselTypeID", form: "fMTCrewExperiencesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewExperience.fields.MTVesselTypeID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.MTVesselTypeID.Visible (end) *@
+@if (mtCrewExperienceSearch.GRT.Visible) { // mtCrewExperienceSearch.GRT.Visible (begin)
+    <div id="r_GRT" class="row" @Html.Raw(mtCrewExperienceSearch.GRT.RowAttributes)>
+        <label for="x_GRT" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_GRT">@Html.Raw(mtCrewExperienceSearch.GRT.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_GRT" id="z_GRT" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.GRT.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_GRT" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.GRT.InputTextType)" name="x_GRT" id="x_GRT" data-table="MTCrewExperience" data-field="x_GRT" value="@Html.Raw(mtCrewExperienceSearch.GRT.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.GRT.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.GRT.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.GRT.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.GRT.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.GRT.Visible (end) *@
+@if (mtCrewExperienceSearch.DWT.Visible) { // mtCrewExperienceSearch.DWT.Visible (begin)
+    <div id="r_DWT" class="row" @Html.Raw(mtCrewExperienceSearch.DWT.RowAttributes)>
+        <label for="x_DWT" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_DWT">@Html.Raw(mtCrewExperienceSearch.DWT.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DWT" id="z_DWT" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.DWT.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_DWT" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.DWT.InputTextType)" name="x_DWT" id="x_DWT" data-table="MTCrewExperience" data-field="x_DWT" value="@Html.Raw(mtCrewExperienceSearch.DWT.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.DWT.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.DWT.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.DWT.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.DWT.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.DWT.Visible (end) *@
+@if (mtCrewExperienceSearch.MainEngine.Visible) { // mtCrewExperienceSearch.MainEngine.Visible (begin)
+    <div id="r_MainEngine" class="row" @Html.Raw(mtCrewExperienceSearch.MainEngine.RowAttributes)>
+        <label for="x_MainEngine" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_MainEngine">@Html.Raw(mtCrewExperienceSearch.MainEngine.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MainEngine" id="z_MainEngine" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.MainEngine.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_MainEngine" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.MainEngine.InputTextType)" name="x_MainEngine" id="x_MainEngine" data-table="MTCrewExperience" data-field="x_MainEngine" value="@Html.Raw(mtCrewExperienceSearch.MainEngine.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.MainEngine.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.MainEngine.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.MainEngine.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.MainEngine.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.MainEngine.Visible (end) *@
+@if (mtCrewExperienceSearch.BHP.Visible) { // mtCrewExperienceSearch.BHP.Visible (begin)
+    <div id="r_BHP" class="row" @Html.Raw(mtCrewExperienceSearch.BHP.RowAttributes)>
+        <label for="x_BHP" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_BHP">@Html.Raw(mtCrewExperienceSearch.BHP.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_BHP" id="z_BHP" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.BHP.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_BHP" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.BHP.InputTextType)" name="x_BHP" id="x_BHP" data-table="MTCrewExperience" data-field="x_BHP" value="@Html.Raw(mtCrewExperienceSearch.BHP.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.BHP.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.BHP.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.BHP.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.BHP.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.BHP.Visible (end) *@
+@if (mtCrewExperienceSearch.MTRankID.Visible) { // mtCrewExperienceSearch.MTRankID.Visible (begin)
+    <div id="r_MTRankID" class="row" @Html.Raw(mtCrewExperienceSearch.MTRankID.RowAttributes)>
+        <label for="x_MTRankID" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_MTRankID">@Html.Raw(mtCrewExperienceSearch.MTRankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTRankID" id="z_MTRankID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.MTRankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_MTRankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTRankID"
+        name="x_MTRankID"
+        class="form-select ew-select@(mtCrewExperienceSearch.MTRankID.IsInvalidClass)"
+        data-select2-id="fMTCrewExperiencesearch_x_MTRankID"
+        data-table="MTCrewExperience"
+        data-field="x_MTRankID"
+        data-value-separator="@(mtCrewExperienceSearch.MTRankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewExperienceSearch.MTRankID.PlaceHolder))"
+        @Html.Raw(mtCrewExperienceSearch.MTRankID.EditAttributes)>
+        @(mtCrewExperienceSearch.MTRankID.SelectOptionListHtml("x_MTRankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.MTRankID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewExperienceSearch.MTRankID.Lookup.GetParamTag(mtCrewExperienceSearch, "p_x_MTRankID"))
+<script>
+loadjs.ready("fMTCrewExperiencesearch", function() {
+    var options = { name: "x_MTRankID", selectId: "fMTCrewExperiencesearch_x_MTRankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewExperiencesearch.lists.MTRankID?.lookupOptions.length) {
+        options.data = { id: "x_MTRankID", form: "fMTCrewExperiencesearch" };
+    } else {
+        options.ajax = { id: "x_MTRankID", form: "fMTCrewExperiencesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewExperience.fields.MTRankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.MTRankID.Visible (end) *@
+@if (mtCrewExperienceSearch.DateFrom.Visible) { // mtCrewExperienceSearch.DateFrom.Visible (begin)
+    <div id="r_DateFrom" class="row" @Html.Raw(mtCrewExperienceSearch.DateFrom.RowAttributes)>
+        <label for="x_DateFrom" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_DateFrom">@Html.Raw(mtCrewExperienceSearch.DateFrom.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateFrom" id="z_DateFrom" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.DateFrom.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_DateFrom" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.DateFrom.InputTextType)" name="x_DateFrom" id="x_DateFrom" data-table="MTCrewExperience" data-field="x_DateFrom" value="@Html.Raw(mtCrewExperienceSearch.DateFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.DateFrom.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.DateFrom.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.DateFrom.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.DateFrom.GetErrorMessage(false))</div>
+@if (!mtCrewExperienceSearch.DateFrom.ReadOnly && !mtCrewExperienceSearch.DateFrom.Disabled && !mtCrewExperienceSearch.DateFrom.EditAttrs.Is("readonly") && !mtCrewExperienceSearch.DateFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewExperiencesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewExperiencesearch", "x_DateFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.DateFrom.Visible (end) *@
+@if (mtCrewExperienceSearch.SignOnPortName.Visible) { // mtCrewExperienceSearch.SignOnPortName.Visible (begin)
+    <div id="r_SignOnPortName" class="row" @Html.Raw(mtCrewExperienceSearch.SignOnPortName.RowAttributes)>
+        <label for="x_SignOnPortName" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_SignOnPortName">@Html.Raw(mtCrewExperienceSearch.SignOnPortName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SignOnPortName" id="z_SignOnPortName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.SignOnPortName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_SignOnPortName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.SignOnPortName.InputTextType)" name="x_SignOnPortName" id="x_SignOnPortName" data-table="MTCrewExperience" data-field="x_SignOnPortName" value="@Html.Raw(mtCrewExperienceSearch.SignOnPortName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.SignOnPortName.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.SignOnPortName.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.SignOnPortName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.SignOnPortName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.SignOnPortName.Visible (end) *@
+@if (mtCrewExperienceSearch.DateUntil.Visible) { // mtCrewExperienceSearch.DateUntil.Visible (begin)
+    <div id="r_DateUntil" class="row" @Html.Raw(mtCrewExperienceSearch.DateUntil.RowAttributes)>
+        <label for="x_DateUntil" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_DateUntil">@Html.Raw(mtCrewExperienceSearch.DateUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateUntil" id="z_DateUntil" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.DateUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_DateUntil" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.DateUntil.InputTextType)" name="x_DateUntil" id="x_DateUntil" data-table="MTCrewExperience" data-field="x_DateUntil" value="@Html.Raw(mtCrewExperienceSearch.DateUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.DateUntil.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.DateUntil.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.DateUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.DateUntil.GetErrorMessage(false))</div>
+@if (!mtCrewExperienceSearch.DateUntil.ReadOnly && !mtCrewExperienceSearch.DateUntil.Disabled && !mtCrewExperienceSearch.DateUntil.EditAttrs.Is("readonly") && !mtCrewExperienceSearch.DateUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewExperiencesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewExperiencesearch", "x_DateUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.DateUntil.Visible (end) *@
+@if (mtCrewExperienceSearch.SignOffPortName.Visible) { // mtCrewExperienceSearch.SignOffPortName.Visible (begin)
+    <div id="r_SignOffPortName" class="row" @Html.Raw(mtCrewExperienceSearch.SignOffPortName.RowAttributes)>
+        <label for="x_SignOffPortName" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_SignOffPortName">@Html.Raw(mtCrewExperienceSearch.SignOffPortName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SignOffPortName" id="z_SignOffPortName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.SignOffPortName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_SignOffPortName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.SignOffPortName.InputTextType)" name="x_SignOffPortName" id="x_SignOffPortName" data-table="MTCrewExperience" data-field="x_SignOffPortName" value="@Html.Raw(mtCrewExperienceSearch.SignOffPortName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.SignOffPortName.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.SignOffPortName.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.SignOffPortName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.SignOffPortName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.SignOffPortName.Visible (end) *@
+@if (mtCrewExperienceSearch.SignOffReason.Visible) { // mtCrewExperienceSearch.SignOffReason.Visible (begin)
+    <div id="r_SignOffReason" class="row" @Html.Raw(mtCrewExperienceSearch.SignOffReason.RowAttributes)>
+        <label for="x_SignOffReason" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_SignOffReason">@Html.Raw(mtCrewExperienceSearch.SignOffReason.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SignOffReason" id="z_SignOffReason" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.SignOffReason.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_SignOffReason" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.SignOffReason.InputTextType)" name="x_SignOffReason" id="x_SignOffReason" data-table="MTCrewExperience" data-field="x_SignOffReason" value="@Html.Raw(mtCrewExperienceSearch.SignOffReason.EditValue)" size="50" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.SignOffReason.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.SignOffReason.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.SignOffReason.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.SignOffReason.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.SignOffReason.Visible (end) *@
+@if (mtCrewExperienceSearch.CreatedByUserID.Visible) { // mtCrewExperienceSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewExperienceSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_CreatedByUserID">@Html.Raw(mtCrewExperienceSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewExperienceSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewExperiencesearch_x_CreatedByUserID"
+        data-table="MTCrewExperience"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewExperienceSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewExperienceSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewExperienceSearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewExperienceSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewExperienceSearch.CreatedByUserID.Lookup.GetParamTag(mtCrewExperienceSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewExperiencesearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewExperiencesearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewExperiencesearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewExperiencesearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewExperiencesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewExperience.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewExperienceSearch.CreatedDateTime.Visible) { // mtCrewExperienceSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewExperienceSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_CreatedDateTime">@Html.Raw(mtCrewExperienceSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrewExperience" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewExperienceSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewExperienceSearch.CreatedDateTime.ReadOnly && !mtCrewExperienceSearch.CreatedDateTime.Disabled && !mtCrewExperienceSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewExperienceSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewExperiencesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewExperiencesearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewExperienceSearch.LastUpdatedByUserID.Visible) { // mtCrewExperienceSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewExperienceSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_LastUpdatedByUserID">@Html.Raw(mtCrewExperienceSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewExperienceSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewExperiencesearch_x_LastUpdatedByUserID"
+        data-table="MTCrewExperience"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewExperienceSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewExperienceSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewExperienceSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewExperienceSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewExperienceSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewExperienceSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewExperiencesearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewExperiencesearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewExperiencesearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewExperiencesearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewExperiencesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewExperience.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewExperienceSearch.LastUpdatedDateTime.Visible) { // mtCrewExperienceSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewExperienceSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewExperienceSearch.LeftColumnClass)"><span id="elh_MTCrewExperience_LastUpdatedDateTime">@Html.Raw(mtCrewExperienceSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewExperienceSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewExperienceSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewExperience_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewExperienceSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrewExperience" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewExperienceSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewExperienceSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewExperienceSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewExperienceSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewExperienceSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewExperienceSearch.LastUpdatedDateTime.ReadOnly && !mtCrewExperienceSearch.LastUpdatedDateTime.Disabled && !mtCrewExperienceSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewExperienceSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewExperiencesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewExperiencesearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewExperienceSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewExperienceSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewExperienceSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewExperiencesearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewExperienceSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewExperiencesearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewExperiencesearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewExperienceSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewExperienceSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewExperience");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

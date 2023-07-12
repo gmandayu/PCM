@@ -1,0 +1,400 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCountrySearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCountrySearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCountrySearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCountry: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCountrysearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCountrysearch")
+        .setPageId("search")
+@if (mtCountrySearch.IsModal && mtCountrySearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["Nationality", [], fields.Nationality.isInvalid],
+            ["CallingCode", [], fields.CallingCode.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CreatedByUserID": @Html.Raw(mtCountrySearch.CreatedByUserID.ToClientList(mtCountrySearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCountrySearch.LastUpdatedByUserID.ToClientList(mtCountrySearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCountrySearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCountrySearch.ShowPageHeader()
+@mtCountrySearch.ShowMessages()
+<form name="fMTCountrysearch" id="fMTCountrysearch" class="@(mtCountrySearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCountrySearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCountrySearch._Name.Visible) { // mtCountrySearch._Name.Visible (begin)
+    <div id="r__Name" class="row" @Html.Raw(mtCountrySearch._Name.RowAttributes)>
+        <label for="x__Name" class="@(mtCountrySearch.LeftColumnClass)"><span id="elh_MTCountry__Name">@Html.Raw(mtCountrySearch._Name.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Name" id="z__Name" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCountrySearch.RightColumnClass)">
+            <div @Html.Raw(mtCountrySearch._Name.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCountry__Name" class="ew-search-field ew-search-field-single">
+<input type="@(mtCountrySearch._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTCountry" data-field="x__Name" value="@Html.Raw(mtCountrySearch._Name.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCountrySearch._Name.PlaceHolder))" data-format-pattern="@(mtCountrySearch._Name.FormatPattern)"@Html.Raw(mtCountrySearch._Name.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCountrySearch._Name.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCountrySearch._Name.Visible (end) *@
+@if (mtCountrySearch.Nationality.Visible) { // mtCountrySearch.Nationality.Visible (begin)
+    <div id="r_Nationality" class="row" @Html.Raw(mtCountrySearch.Nationality.RowAttributes)>
+        <label for="x_Nationality" class="@(mtCountrySearch.LeftColumnClass)"><span id="elh_MTCountry_Nationality">@Html.Raw(mtCountrySearch.Nationality.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Nationality" id="z_Nationality" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCountrySearch.RightColumnClass)">
+            <div @Html.Raw(mtCountrySearch.Nationality.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCountry_Nationality" class="ew-search-field ew-search-field-single">
+<input type="@(mtCountrySearch.Nationality.InputTextType)" name="x_Nationality" id="x_Nationality" data-table="MTCountry" data-field="x_Nationality" value="@Html.Raw(mtCountrySearch.Nationality.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCountrySearch.Nationality.PlaceHolder))" data-format-pattern="@(mtCountrySearch.Nationality.FormatPattern)"@Html.Raw(mtCountrySearch.Nationality.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCountrySearch.Nationality.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCountrySearch.Nationality.Visible (end) *@
+@if (mtCountrySearch.CallingCode.Visible) { // mtCountrySearch.CallingCode.Visible (begin)
+    <div id="r_CallingCode" class="row" @Html.Raw(mtCountrySearch.CallingCode.RowAttributes)>
+        <label for="x_CallingCode" class="@(mtCountrySearch.LeftColumnClass)"><span id="elh_MTCountry_CallingCode">@Html.Raw(mtCountrySearch.CallingCode.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CallingCode" id="z_CallingCode" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCountrySearch.RightColumnClass)">
+            <div @Html.Raw(mtCountrySearch.CallingCode.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCountry_CallingCode" class="ew-search-field ew-search-field-single">
+<input type="@(mtCountrySearch.CallingCode.InputTextType)" name="x_CallingCode" id="x_CallingCode" data-table="MTCountry" data-field="x_CallingCode" value="@Html.Raw(mtCountrySearch.CallingCode.EditValue)" size="30" maxlength="4" placeholder="@Html.Raw(HtmlEncode(mtCountrySearch.CallingCode.PlaceHolder))" data-format-pattern="@(mtCountrySearch.CallingCode.FormatPattern)"@Html.Raw(mtCountrySearch.CallingCode.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCountrySearch.CallingCode.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCountrySearch.CallingCode.Visible (end) *@
+@if (mtCountrySearch.CreatedByUserID.Visible) { // mtCountrySearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCountrySearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCountrySearch.LeftColumnClass)"><span id="elh_MTCountry_CreatedByUserID">@Html.Raw(mtCountrySearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCountrySearch.RightColumnClass)">
+            <div @Html.Raw(mtCountrySearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCountry_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCountrySearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCountrysearch_x_CreatedByUserID"
+        data-table="MTCountry"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCountrySearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCountrySearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCountrySearch.CreatedByUserID.EditAttributes)>
+        @(mtCountrySearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCountrySearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCountrySearch.CreatedByUserID.Lookup.GetParamTag(mtCountrySearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCountrysearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCountrysearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCountrysearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCountrysearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCountrysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCountry.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCountrySearch.CreatedByUserID.Visible (end) *@
+@if (mtCountrySearch.CreatedDateTime.Visible) { // mtCountrySearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCountrySearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCountrySearch.LeftColumnClass)"><span id="elh_MTCountry_CreatedDateTime">@Html.Raw(mtCountrySearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCountrySearch.RightColumnClass)">
+            <div @Html.Raw(mtCountrySearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCountry_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCountrySearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCountry" data-field="x_CreatedDateTime" value="@Html.Raw(mtCountrySearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCountrySearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCountrySearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCountrySearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCountrySearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCountrySearch.CreatedDateTime.ReadOnly && !mtCountrySearch.CreatedDateTime.Disabled && !mtCountrySearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCountrySearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCountrysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCountrysearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCountrySearch.CreatedDateTime.Visible (end) *@
+@if (mtCountrySearch.LastUpdatedByUserID.Visible) { // mtCountrySearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCountrySearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCountrySearch.LeftColumnClass)"><span id="elh_MTCountry_LastUpdatedByUserID">@Html.Raw(mtCountrySearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCountrySearch.RightColumnClass)">
+            <div @Html.Raw(mtCountrySearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCountry_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCountrySearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCountrysearch_x_LastUpdatedByUserID"
+        data-table="MTCountry"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCountrySearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCountrySearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCountrySearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCountrySearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCountrySearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCountrySearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCountrySearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCountrysearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCountrysearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCountrysearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCountrysearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCountrysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCountry.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCountrySearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCountrySearch.LastUpdatedDateTime.Visible) { // mtCountrySearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCountrySearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCountrySearch.LeftColumnClass)"><span id="elh_MTCountry_LastUpdatedDateTime">@Html.Raw(mtCountrySearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCountrySearch.RightColumnClass)">
+            <div @Html.Raw(mtCountrySearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCountry_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCountrySearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCountry" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCountrySearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCountrySearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCountrySearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCountrySearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCountrySearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCountrySearch.LastUpdatedDateTime.ReadOnly && !mtCountrySearch.LastUpdatedDateTime.Disabled && !mtCountrySearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCountrySearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCountrysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCountrysearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCountrySearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCountrySearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCountrySearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCountrysearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCountrySearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCountrysearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCountrysearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCountrySearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCountrySearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCountry");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

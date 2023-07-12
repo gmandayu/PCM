@@ -1,0 +1,159 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCurrencyAdd.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCurrencyAdd.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCurrencyAdd.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCurrency: currentTable } });
+var currentPageID = ew.PAGE_ID = "add";
+var currentForm;
+var fMTCurrencyadd;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCurrencyadd")
+        .setPageId("add")
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [fields._Name.visible && fields._Name.required ? ew.Validators.required(fields._Name.caption) : null], fields._Name.isInvalid],
+            ["Code", [fields.Code.visible && fields.Code.required ? ew.Validators.required(fields.Code.caption) : null], fields.Code.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    function validateFieldWithRegex (thisInstance, fieldName, errorMessage, regex) {
+                        const fieldValue = $(thisInstance).fields(fieldName)[0].value;
+                        if (!regex.test(fieldValue)) {
+                            thisInstance.fields[fieldName].addError({ custom: errorMessage });
+                            thisInstance.fields[fieldName].updateFeedback();
+                            thisInstance.addError(fieldName, { custom: errorMessage });   
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                    const regex = /^[A-Z]{3}$/;
+                    const regexErrorMessageEnglish = "Must contain 3 uppercase alphabet";
+                    const regexErrorMessageIndonesian = "Harus terdiri dari 3 alfabet kapital";
+                    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+                    let formErrorCount = 0;
+                    if (selectedLanguage.id === 'en-US') {
+                        formErrorCount += validateFieldWithRegex(this, "Code",  regexErrorMessageEnglish, regex) ? 0 : 1;
+                    } else {
+                        formErrorCount += validateFieldWithRegex(this, "Code",  regexErrorMessageIndonesian, regex) ? 0 : 1;
+                    }
+                    return formErrorCount === 0;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCurrencyAdd.ShowPageHeader()
+@mtCurrencyAdd.ShowMessages()
+<form name="fMTCurrencyadd" id="fMTCurrencyadd" class="@(mtCurrencyAdd.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="insert">
+<input type="hidden" name="modal" value="@ConvertToInt(mtCurrencyAdd.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mtCurrencyAdd.OldKeyName)" value="@Html.Raw(mtCurrencyAdd.OldKey)">
+<div class="ew-add-div"><!-- page* -->
+@if (mtCurrencyAdd._Name.Visible) { // mtCurrencyAdd._Name.Visible (begin)
+    <div id="r__Name" @Html.Raw(mtCurrencyAdd._Name.RowAttributes)>
+        <label id="elh_MTCurrency__Name" for="x__Name" class="@(mtCurrencyAdd.LeftColumnClass)">@Html.Raw(mtCurrencyAdd._Name.Caption)@Html.Raw(mtCurrencyAdd._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtCurrencyAdd.RightColumnClass)"><div @Html.Raw(mtCurrencyAdd._Name.CellAttributes)>
+<span id="el_MTCurrency__Name">
+<input type="@(mtCurrencyAdd._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTCurrency" data-field="x__Name" value="@Html.Raw(mtCurrencyAdd._Name.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCurrencyAdd._Name.PlaceHolder))" data-format-pattern="@(mtCurrencyAdd._Name.FormatPattern)"@Html.Raw(mtCurrencyAdd._Name.EditAttributes) aria-describedby="x__Name_help">
+@Html.Raw(mtCurrencyAdd._Name.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtCurrencyAdd._Name.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtCurrencyAdd._Name.Visible (end) *@
+@if (mtCurrencyAdd.Code.Visible) { // mtCurrencyAdd.Code.Visible (begin)
+    <div id="r_Code" @Html.Raw(mtCurrencyAdd.Code.RowAttributes)>
+        <label id="elh_MTCurrency_Code" for="x_Code" class="@(mtCurrencyAdd.LeftColumnClass)">@Html.Raw(mtCurrencyAdd.Code.Caption)@Html.Raw(mtCurrencyAdd.Code.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtCurrencyAdd.RightColumnClass)"><div @Html.Raw(mtCurrencyAdd.Code.CellAttributes)>
+<span id="el_MTCurrency_Code">
+<input type="@(mtCurrencyAdd.Code.InputTextType)" name="x_Code" id="x_Code" data-table="MTCurrency" data-field="x_Code" value="@Html.Raw(mtCurrencyAdd.Code.EditValue)" size="30" maxlength="3" placeholder="@Html.Raw(HtmlEncode(mtCurrencyAdd.Code.PlaceHolder))" data-format-pattern="@(mtCurrencyAdd.Code.FormatPattern)"@Html.Raw(mtCurrencyAdd.Code.EditAttributes) aria-describedby="x_Code_help">
+@Html.Raw(mtCurrencyAdd.Code.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtCurrencyAdd.Code.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtCurrencyAdd.Code.Visible (end) *@
+</div><!-- /page* -->
+@{ mtCurrencyAdd.CloseRecordset(); }
+@Html.Raw(mtCurrencyAdd.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mtCurrencyAdd.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCurrencyadd">@Html.Raw(Language.Phrase("AddBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCurrencyadd" data-href="@AppPath(mtCurrencyAdd.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCurrencyAdd.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@mtCurrencyAdd.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCurrency");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

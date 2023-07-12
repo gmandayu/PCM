@@ -1,0 +1,553 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewAppraisalForAdminSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewAppraisalForAdminSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewAppraisalForAdminSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewAppraisalForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fCrewAppraisalForAdminsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewAppraisalForAdminsearch")
+        .setPageId("search")
+@if (crewAppraisalForAdminSearch.IsModal && crewAppraisalForAdminSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["MTRankID", [], fields.MTRankID.isInvalid],
+            ["Questionnaire", [], fields.Questionnaire.isInvalid],
+            ["Approved", [], fields.Approved.isInvalid],
+            ["AverageRating", [], fields.AverageRating.isInvalid],
+            ["Rehire", [], fields.Rehire.isInvalid],
+            ["Promote", [], fields.Promote.isInvalid],
+            ["Appraiser", [], fields.Appraiser.isInvalid],
+            ["DateInput", [ew.Validators.datetime(fields.DateInput.clientFormatPattern)], fields.DateInput.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CreatedByUserID", [ew.Validators.integer], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [ew.Validators.integer], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTRankID": @Html.Raw(crewAppraisalForAdminSearch.MTRankID.ToClientList(crewAppraisalForAdminSearch)),
+            "Approved": @Html.Raw(crewAppraisalForAdminSearch.Approved.ToClientList(crewAppraisalForAdminSearch)),
+            "Rehire": @Html.Raw(crewAppraisalForAdminSearch.Rehire.ToClientList(crewAppraisalForAdminSearch)),
+            "Promote": @Html.Raw(crewAppraisalForAdminSearch.Promote.ToClientList(crewAppraisalForAdminSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (crewAppraisalForAdminSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@crewAppraisalForAdminSearch.ShowPageHeader()
+@crewAppraisalForAdminSearch.ShowMessages()
+<form name="fCrewAppraisalForAdminsearch" id="fCrewAppraisalForAdminsearch" class="@(crewAppraisalForAdminSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (crewAppraisalForAdminSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (crewAppraisalForAdminSearch.VesselName.Visible) { // crewAppraisalForAdminSearch.VesselName.Visible (begin)
+    <div id="r_VesselName" class="row" @Html.Raw(crewAppraisalForAdminSearch.VesselName.RowAttributes)>
+        <label for="x_VesselName" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_VesselName">@Html.Raw(crewAppraisalForAdminSearch.VesselName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VesselName" id="z_VesselName" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.VesselName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_VesselName" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.VesselName.InputTextType)" name="x_VesselName" id="x_VesselName" data-table="CrewAppraisalForAdmin" data-field="x_VesselName" value="@Html.Raw(crewAppraisalForAdminSearch.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.VesselName.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.VesselName.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.VesselName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.VesselName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.VesselName.Visible (end) *@
+@if (crewAppraisalForAdminSearch.MTRankID.Visible) { // crewAppraisalForAdminSearch.MTRankID.Visible (begin)
+    <div id="r_MTRankID" class="row" @Html.Raw(crewAppraisalForAdminSearch.MTRankID.RowAttributes)>
+        <label for="x_MTRankID" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_MTRankID">@Html.Raw(crewAppraisalForAdminSearch.MTRankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTRankID" id="z_MTRankID" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.MTRankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_MTRankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTRankID"
+        name="x_MTRankID"
+        class="form-select ew-select@(crewAppraisalForAdminSearch.MTRankID.IsInvalidClass)"
+        data-select2-id="fCrewAppraisalForAdminsearch_x_MTRankID"
+        data-table="CrewAppraisalForAdmin"
+        data-field="x_MTRankID"
+        data-value-separator="@(crewAppraisalForAdminSearch.MTRankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewAppraisalForAdminSearch.MTRankID.PlaceHolder))"
+        @Html.Raw(crewAppraisalForAdminSearch.MTRankID.EditAttributes)>
+        @(crewAppraisalForAdminSearch.MTRankID.SelectOptionListHtml("x_MTRankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.MTRankID.GetErrorMessage(false))</div>
+@Html.Raw(crewAppraisalForAdminSearch.MTRankID.Lookup.GetParamTag(crewAppraisalForAdminSearch, "p_x_MTRankID"))
+<script>
+loadjs.ready("fCrewAppraisalForAdminsearch", function() {
+    var options = { name: "x_MTRankID", selectId: "fCrewAppraisalForAdminsearch_x_MTRankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewAppraisalForAdminsearch.lists.MTRankID?.lookupOptions.length) {
+        options.data = { id: "x_MTRankID", form: "fCrewAppraisalForAdminsearch" };
+    } else {
+        options.ajax = { id: "x_MTRankID", form: "fCrewAppraisalForAdminsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.MTRankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.MTRankID.Visible (end) *@
+@if (crewAppraisalForAdminSearch.Questionnaire.Visible) { // crewAppraisalForAdminSearch.Questionnaire.Visible (begin)
+    <div id="r_Questionnaire" class="row" @Html.Raw(crewAppraisalForAdminSearch.Questionnaire.RowAttributes)>
+        <label for="x_Questionnaire" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_Questionnaire">@Html.Raw(crewAppraisalForAdminSearch.Questionnaire.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Questionnaire" id="z_Questionnaire" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.Questionnaire.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_Questionnaire" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.Questionnaire.InputTextType)" name="x_Questionnaire" id="x_Questionnaire" data-table="CrewAppraisalForAdmin" data-field="x_Questionnaire" value="@Html.Raw(crewAppraisalForAdminSearch.Questionnaire.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.Questionnaire.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.Questionnaire.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.Questionnaire.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.Questionnaire.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.Questionnaire.Visible (end) *@
+@if (crewAppraisalForAdminSearch.Approved.Visible) { // crewAppraisalForAdminSearch.Approved.Visible (begin)
+    <div id="r_Approved" class="row" @Html.Raw(crewAppraisalForAdminSearch.Approved.RowAttributes)>
+        <label class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_Approved">@Html.Raw(crewAppraisalForAdminSearch.Approved.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Approved" id="z_Approved" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.Approved.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_Approved" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(crewAppraisalForAdminSearch.Approved.IsInvalidClass)" data-table="CrewAppraisalForAdmin" data-field="x_Approved" data-boolean name="x_Approved" id="x_Approved" value="1" checked="@ConvertToBool(crewAppraisalForAdminSearch.Approved.AdvancedSearch.SearchValue)" @Html.Raw(crewAppraisalForAdminSearch.Approved.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.Approved.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.Approved.Visible (end) *@
+@if (crewAppraisalForAdminSearch.AverageRating.Visible) { // crewAppraisalForAdminSearch.AverageRating.Visible (begin)
+    <div id="r_AverageRating" class="row" @Html.Raw(crewAppraisalForAdminSearch.AverageRating.RowAttributes)>
+        <label for="x_AverageRating" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_AverageRating">@Html.Raw(crewAppraisalForAdminSearch.AverageRating.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AverageRating" id="z_AverageRating" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.AverageRating.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_AverageRating" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.AverageRating.InputTextType)" name="x_AverageRating" id="x_AverageRating" data-table="CrewAppraisalForAdmin" data-field="x_AverageRating" value="@Html.Raw(crewAppraisalForAdminSearch.AverageRating.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.AverageRating.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.AverageRating.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.AverageRating.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.AverageRating.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.AverageRating.Visible (end) *@
+@if (crewAppraisalForAdminSearch.Rehire.Visible) { // crewAppraisalForAdminSearch.Rehire.Visible (begin)
+    <div id="r_Rehire" class="row" @Html.Raw(crewAppraisalForAdminSearch.Rehire.RowAttributes)>
+        <label class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_Rehire">@Html.Raw(crewAppraisalForAdminSearch.Rehire.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Rehire" id="z_Rehire" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.Rehire.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_Rehire" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(crewAppraisalForAdminSearch.Rehire.IsInvalidClass)" data-table="CrewAppraisalForAdmin" data-field="x_Rehire" data-boolean name="x_Rehire" id="x_Rehire" value="1" checked="@ConvertToBool(crewAppraisalForAdminSearch.Rehire.AdvancedSearch.SearchValue)" @Html.Raw(crewAppraisalForAdminSearch.Rehire.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.Rehire.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.Rehire.Visible (end) *@
+@if (crewAppraisalForAdminSearch.Promote.Visible) { // crewAppraisalForAdminSearch.Promote.Visible (begin)
+    <div id="r_Promote" class="row" @Html.Raw(crewAppraisalForAdminSearch.Promote.RowAttributes)>
+        <label class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_Promote">@Html.Raw(crewAppraisalForAdminSearch.Promote.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Promote" id="z_Promote" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.Promote.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_Promote" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(crewAppraisalForAdminSearch.Promote.IsInvalidClass)" data-table="CrewAppraisalForAdmin" data-field="x_Promote" data-boolean name="x_Promote" id="x_Promote" value="1" checked="@ConvertToBool(crewAppraisalForAdminSearch.Promote.AdvancedSearch.SearchValue)" @Html.Raw(crewAppraisalForAdminSearch.Promote.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.Promote.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.Promote.Visible (end) *@
+@if (crewAppraisalForAdminSearch.Appraiser.Visible) { // crewAppraisalForAdminSearch.Appraiser.Visible (begin)
+    <div id="r_Appraiser" class="row" @Html.Raw(crewAppraisalForAdminSearch.Appraiser.RowAttributes)>
+        <label for="x_Appraiser" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_Appraiser">@Html.Raw(crewAppraisalForAdminSearch.Appraiser.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Appraiser" id="z_Appraiser" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.Appraiser.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_Appraiser" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.Appraiser.InputTextType)" name="x_Appraiser" id="x_Appraiser" data-table="CrewAppraisalForAdmin" data-field="x_Appraiser" value="@Html.Raw(crewAppraisalForAdminSearch.Appraiser.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.Appraiser.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.Appraiser.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.Appraiser.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.Appraiser.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.Appraiser.Visible (end) *@
+@if (crewAppraisalForAdminSearch.DateInput.Visible) { // crewAppraisalForAdminSearch.DateInput.Visible (begin)
+    <div id="r_DateInput" class="row" @Html.Raw(crewAppraisalForAdminSearch.DateInput.RowAttributes)>
+        <label for="x_DateInput" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_DateInput">@Html.Raw(crewAppraisalForAdminSearch.DateInput.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateInput" id="z_DateInput" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.DateInput.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_DateInput" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.DateInput.InputTextType)" name="x_DateInput" id="x_DateInput" data-table="CrewAppraisalForAdmin" data-field="x_DateInput" value="@Html.Raw(crewAppraisalForAdminSearch.DateInput.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.DateInput.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.DateInput.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.DateInput.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.DateInput.GetErrorMessage(false))</div>
+@if (!crewAppraisalForAdminSearch.DateInput.ReadOnly && !crewAppraisalForAdminSearch.DateInput.Disabled && !crewAppraisalForAdminSearch.DateInput.EditAttrs.Is("readonly") && !crewAppraisalForAdminSearch.DateInput.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewAppraisalForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewAppraisalForAdminsearch", "x_DateInput", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.DateInput.Visible (end) *@
+@if (crewAppraisalForAdminSearch.MTCrewID.Visible) { // crewAppraisalForAdminSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(crewAppraisalForAdminSearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_MTCrewID">@Html.Raw(crewAppraisalForAdminSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_MTCrewID" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.MTCrewID.InputTextType)" name="x_MTCrewID" id="x_MTCrewID" data-table="CrewAppraisalForAdmin" data-field="x_MTCrewID" value="@Html.Raw(crewAppraisalForAdminSearch.MTCrewID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.MTCrewID.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.MTCrewID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.MTCrewID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.MTCrewID.Visible (end) *@
+@if (crewAppraisalForAdminSearch.CreatedByUserID.Visible) { // crewAppraisalForAdminSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(crewAppraisalForAdminSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_CreatedByUserID">@Html.Raw(crewAppraisalForAdminSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_CreatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.CreatedByUserID.InputTextType)" name="x_CreatedByUserID" id="x_CreatedByUserID" data-table="CrewAppraisalForAdmin" data-field="x_CreatedByUserID" value="@Html.Raw(crewAppraisalForAdminSearch.CreatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.CreatedByUserID.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.CreatedByUserID.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.CreatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.CreatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.CreatedByUserID.Visible (end) *@
+@if (crewAppraisalForAdminSearch.CreatedDateTime.Visible) { // crewAppraisalForAdminSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(crewAppraisalForAdminSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_CreatedDateTime">@Html.Raw(crewAppraisalForAdminSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="CrewAppraisalForAdmin" data-field="x_CreatedDateTime" value="@Html.Raw(crewAppraisalForAdminSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.CreatedDateTime.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!crewAppraisalForAdminSearch.CreatedDateTime.ReadOnly && !crewAppraisalForAdminSearch.CreatedDateTime.Disabled && !crewAppraisalForAdminSearch.CreatedDateTime.EditAttrs.Is("readonly") && !crewAppraisalForAdminSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewAppraisalForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewAppraisalForAdminsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.CreatedDateTime.Visible (end) *@
+@if (crewAppraisalForAdminSearch.LastUpdatedByUserID.Visible) { // crewAppraisalForAdminSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(crewAppraisalForAdminSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_LastUpdatedByUserID">@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.LastUpdatedByUserID.InputTextType)" name="x_LastUpdatedByUserID" id="x_LastUpdatedByUserID" data-table="CrewAppraisalForAdmin" data-field="x_LastUpdatedByUserID" value="@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.LastUpdatedByUserID.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.LastUpdatedByUserID.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.LastUpdatedByUserID.Visible (end) *@
+@if (crewAppraisalForAdminSearch.LastUpdatedDateTime.Visible) { // crewAppraisalForAdminSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(crewAppraisalForAdminSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(crewAppraisalForAdminSearch.LeftColumnClass)"><span id="elh_CrewAppraisalForAdmin_LastUpdatedDateTime">@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewAppraisalForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewAppraisalForAdminSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewAppraisalForAdmin_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewAppraisalForAdminSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="CrewAppraisalForAdmin" data-field="x_LastUpdatedDateTime" value="@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewAppraisalForAdminSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(crewAppraisalForAdminSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!crewAppraisalForAdminSearch.LastUpdatedDateTime.ReadOnly && !crewAppraisalForAdminSearch.LastUpdatedDateTime.Disabled && !crewAppraisalForAdminSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !crewAppraisalForAdminSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewAppraisalForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewAppraisalForAdminsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewAppraisalForAdminSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(crewAppraisalForAdminSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(crewAppraisalForAdminSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCrewAppraisalForAdminsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (crewAppraisalForAdminSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCrewAppraisalForAdminsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fCrewAppraisalForAdminsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(crewAppraisalForAdminSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@crewAppraisalForAdminSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewAppraisalForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

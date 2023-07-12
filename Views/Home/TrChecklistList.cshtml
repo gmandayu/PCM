@@ -1,0 +1,608 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trChecklistList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!trChecklistList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!trChecklistList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trChecklistList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRChecklist: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(trChecklistList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(trChecklistList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(trChecklistList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(trChecklistList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "CreatedByUserID": @Html.Raw(trChecklistList.CreatedByUserID.ToClientList(trChecklistList)),
+            "CreatedDateTime": @Html.Raw(trChecklistList.CreatedDateTime.ToClientList(trChecklistList)),
+            "LastUpdatedByUserID": @Html.Raw(trChecklistList.LastUpdatedByUserID.ToClientList(trChecklistList)),
+            "LastUpdatedDateTime": @Html.Raw(trChecklistList.LastUpdatedDateTime.ToClientList(trChecklistList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!trChecklistList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (trChecklistList.TotalRecords > 0 && trChecklistList.ExportOptions.Visible) {
+    trChecklistList.ExportOptions.Render("body");
+}
+@if (trChecklistList.ImportOptions.Visible) {
+    trChecklistList.ImportOptions.Render("body");
+}
+@if (trChecklistList.SearchOptions.Visible) {
+    trChecklistList.SearchOptions.Render("body");
+}
+@if (trChecklistList.FilterOptions.Visible) {
+    trChecklistList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (trChecklistList.ShowCurrentFilter) {
+    trChecklistList.ShowFilterList();
+}
+@if (!trChecklistList.IsModal) {
+<form name="fTRChecklistsrch" id="fTRChecklistsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fTRChecklistsrch_search_panel" class="mb-2 mb-sm-0 @(trChecklistList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trChecklistList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRChecklist: currentTable } });
+var currentForm;
+var fTRChecklistsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fTRChecklistsrch")
+        .setPageId("list")
+@if (trChecklistList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["DocumentDate", [], fields.DocumentDate.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid],
+            ["InterviewedByPersonOneDate", [], fields.InterviewedByPersonOneDate.isInvalid],
+            ["InterviewedByPersonTwoDate", [], fields.InterviewedByPersonTwoDate.isInvalid],
+            ["InterviewedByPersonThreeDate", [], fields.InterviewedByPersonThreeDate.isInvalid],
+            ["InterviewedByPersonOneAttachment", [], fields.InterviewedByPersonOneAttachment.isInvalid],
+            ["InterviewedByPersonTwoAttachment", [], fields.InterviewedByPersonTwoAttachment.isInvalid],
+            ["InterviewedByPersonThreeAttachment", [], fields.InterviewedByPersonThreeAttachment.isInvalid],
+            ["ApprovedByUserID1", [], fields.ApprovedByUserID1.isInvalid],
+            ["ApprovedByUserID2", [], fields.ApprovedByUserID2.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CreatedByUserID": @Html.Raw(trChecklistList.CreatedByUserID.ToClientList(trChecklistList)),
+            "CreatedDateTime": @Html.Raw(trChecklistList.CreatedDateTime.ToClientList(trChecklistList)),
+            "LastUpdatedByUserID": @Html.Raw(trChecklistList.LastUpdatedByUserID.ToClientList(trChecklistList)),
+            "LastUpdatedDateTime": @Html.Raw(trChecklistList.LastUpdatedDateTime.ToClientList(trChecklistList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await trChecklistList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!trChecklistList.IsExport() && Empty(trChecklistList.CurrentAction) && trChecklistList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(trChecklistList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + trChecklistList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    trChecklistList.RowType = RowType.Search;
+    trChecklistList.ResetAttributes();
+    await trChecklistList.RenderRow();
+}
+@if (trChecklistList.CreatedByUserID.Visible) { // trChecklistList.CreatedByUserID.Visible (begin)
+    if (!trChecklistList.CreatedByUserID.UseFilter) {
+        trChecklistList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trChecklistList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(trChecklistList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fTRChecklistsrch_x_CreatedByUserID"
+            data-table="TRChecklist"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trChecklistList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trChecklistList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trChecklistList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trChecklistList.CreatedByUserID.EditAttributes)>
+            @(trChecklistList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trChecklistList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRChecklistsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fTRChecklistsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fTRChecklistsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRChecklist.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trChecklistList.CreatedByUserID.Visible (end) *@
+@if (trChecklistList.CreatedDateTime.Visible) { // trChecklistList.CreatedDateTime.Visible (begin)
+    if (!trChecklistList.CreatedDateTime.UseFilter) {
+        trChecklistList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trChecklistList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(trChecklistList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fTRChecklistsrch_x_CreatedDateTime"
+            data-table="TRChecklist"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trChecklistList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trChecklistList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trChecklistList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trChecklistList.CreatedDateTime.EditAttributes)>
+            @(trChecklistList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trChecklistList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRChecklistsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fTRChecklistsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fTRChecklistsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRChecklist.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trChecklistList.CreatedDateTime.Visible (end) *@
+@if (trChecklistList.LastUpdatedByUserID.Visible) { // trChecklistList.LastUpdatedByUserID.Visible (begin)
+    if (!trChecklistList.LastUpdatedByUserID.UseFilter) {
+        trChecklistList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trChecklistList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(trChecklistList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fTRChecklistsrch_x_LastUpdatedByUserID"
+            data-table="TRChecklist"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trChecklistList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trChecklistList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trChecklistList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trChecklistList.LastUpdatedByUserID.EditAttributes)>
+            @(trChecklistList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trChecklistList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRChecklistsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fTRChecklistsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fTRChecklistsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRChecklist.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trChecklistList.LastUpdatedByUserID.Visible (end) *@
+@if (trChecklistList.LastUpdatedDateTime.Visible) { // trChecklistList.LastUpdatedDateTime.Visible (begin)
+    if (!trChecklistList.LastUpdatedDateTime.UseFilter) {
+        trChecklistList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trChecklistList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(trChecklistList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fTRChecklistsrch_x_LastUpdatedDateTime"
+            data-table="TRChecklist"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trChecklistList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trChecklistList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trChecklistList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trChecklistList.LastUpdatedDateTime.EditAttributes)>
+            @(trChecklistList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trChecklistList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRChecklistsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fTRChecklistsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fTRChecklistsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRChecklist.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trChecklistList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(trChecklistList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(trChecklistList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(trChecklistList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(trChecklistList.BasicSearch.SessionType == "" ? " active" : "")" form="fTRChecklistsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(trChecklistList.BasicSearch.SessionType == "=" ? " active" : "")" form="fTRChecklistsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(trChecklistList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fTRChecklistsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(trChecklistList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fTRChecklistsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@trChecklistList.ShowPageHeader()
+@trChecklistList.ShowMessages()
+<main class="list @(trChecklistList.TotalRecords == 0 && !trChecklistList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (trChecklistList.TotalRecords > 0 || !Empty(trChecklistList.CurrentAction)) {
+<div class="card ew-card ew-grid@(trChecklistList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(trChecklistList.TableGridClass)">
+<form name="@(trChecklistList.FormName)" id="@(trChecklistList.FormName)" class="ew-form ew-list-form" action="@AppPath(trChecklistList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (trChecklistList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_TRChecklist" class="card-body ew-grid-middle-panel @(trChecklistList.TableContainerClass)" style="@(trChecklistList.TableContainerStyle)">
+@if (trChecklistList.TotalRecords > 0 || trChecklistList.IsGridEdit || trChecklistList.IsMultiEdit) {
+<table id="tbl_TRChecklistlist" class="@(trChecklistList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    trChecklistList.RowType = RowType.Header;
+
+    // Render list options
+    await trChecklistList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@trChecklistList.ListOptions.RenderHeader("left")
+@if (trChecklistList.DocumentDate.Visible) { // trChecklistList.DocumentDate.Visible (begin)
+        <th data-name="DocumentDate" class="@(trChecklistList.DocumentDate.HeaderCellClass)"><div id="elh_TRChecklist_DocumentDate" class="TRChecklist_DocumentDate">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.DocumentDate))</div></th>
+} @* trChecklistList.DocumentDate.Visible (end) *@
+@if (trChecklistList.CreatedByUserID.Visible) { // trChecklistList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(trChecklistList.CreatedByUserID.HeaderCellClass)"><div id="elh_TRChecklist_CreatedByUserID" class="TRChecklist_CreatedByUserID">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.CreatedByUserID))</div></th>
+} @* trChecklistList.CreatedByUserID.Visible (end) *@
+@if (trChecklistList.CreatedDateTime.Visible) { // trChecklistList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(trChecklistList.CreatedDateTime.HeaderCellClass)"><div id="elh_TRChecklist_CreatedDateTime" class="TRChecklist_CreatedDateTime">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.CreatedDateTime))</div></th>
+} @* trChecklistList.CreatedDateTime.Visible (end) *@
+@if (trChecklistList.LastUpdatedByUserID.Visible) { // trChecklistList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(trChecklistList.LastUpdatedByUserID.HeaderCellClass)"><div id="elh_TRChecklist_LastUpdatedByUserID" class="TRChecklist_LastUpdatedByUserID">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.LastUpdatedByUserID))</div></th>
+} @* trChecklistList.LastUpdatedByUserID.Visible (end) *@
+@if (trChecklistList.LastUpdatedDateTime.Visible) { // trChecklistList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(trChecklistList.LastUpdatedDateTime.HeaderCellClass)"><div id="elh_TRChecklist_LastUpdatedDateTime" class="TRChecklist_LastUpdatedDateTime">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.LastUpdatedDateTime))</div></th>
+} @* trChecklistList.LastUpdatedDateTime.Visible (end) *@
+@if (trChecklistList.InterviewedByPersonOneDate.Visible) { // trChecklistList.InterviewedByPersonOneDate.Visible (begin)
+        <th data-name="InterviewedByPersonOneDate" class="@(trChecklistList.InterviewedByPersonOneDate.HeaderCellClass)"><div id="elh_TRChecklist_InterviewedByPersonOneDate" class="TRChecklist_InterviewedByPersonOneDate">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.InterviewedByPersonOneDate))</div></th>
+} @* trChecklistList.InterviewedByPersonOneDate.Visible (end) *@
+@if (trChecklistList.InterviewedByPersonTwoDate.Visible) { // trChecklistList.InterviewedByPersonTwoDate.Visible (begin)
+        <th data-name="InterviewedByPersonTwoDate" class="@(trChecklistList.InterviewedByPersonTwoDate.HeaderCellClass)"><div id="elh_TRChecklist_InterviewedByPersonTwoDate" class="TRChecklist_InterviewedByPersonTwoDate">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.InterviewedByPersonTwoDate))</div></th>
+} @* trChecklistList.InterviewedByPersonTwoDate.Visible (end) *@
+@if (trChecklistList.InterviewedByPersonThreeDate.Visible) { // trChecklistList.InterviewedByPersonThreeDate.Visible (begin)
+        <th data-name="InterviewedByPersonThreeDate" class="@(trChecklistList.InterviewedByPersonThreeDate.HeaderCellClass)"><div id="elh_TRChecklist_InterviewedByPersonThreeDate" class="TRChecklist_InterviewedByPersonThreeDate">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.InterviewedByPersonThreeDate))</div></th>
+} @* trChecklistList.InterviewedByPersonThreeDate.Visible (end) *@
+@if (trChecklistList.InterviewedByPersonOneAttachment.Visible) { // trChecklistList.InterviewedByPersonOneAttachment.Visible (begin)
+        <th data-name="InterviewedByPersonOneAttachment" class="@(trChecklistList.InterviewedByPersonOneAttachment.HeaderCellClass)"><div id="elh_TRChecklist_InterviewedByPersonOneAttachment" class="TRChecklist_InterviewedByPersonOneAttachment">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.InterviewedByPersonOneAttachment))</div></th>
+} @* trChecklistList.InterviewedByPersonOneAttachment.Visible (end) *@
+@if (trChecklistList.InterviewedByPersonTwoAttachment.Visible) { // trChecklistList.InterviewedByPersonTwoAttachment.Visible (begin)
+        <th data-name="InterviewedByPersonTwoAttachment" class="@(trChecklistList.InterviewedByPersonTwoAttachment.HeaderCellClass)"><div id="elh_TRChecklist_InterviewedByPersonTwoAttachment" class="TRChecklist_InterviewedByPersonTwoAttachment">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.InterviewedByPersonTwoAttachment))</div></th>
+} @* trChecklistList.InterviewedByPersonTwoAttachment.Visible (end) *@
+@if (trChecklistList.InterviewedByPersonThreeAttachment.Visible) { // trChecklistList.InterviewedByPersonThreeAttachment.Visible (begin)
+        <th data-name="InterviewedByPersonThreeAttachment" class="@(trChecklistList.InterviewedByPersonThreeAttachment.HeaderCellClass)"><div id="elh_TRChecklist_InterviewedByPersonThreeAttachment" class="TRChecklist_InterviewedByPersonThreeAttachment">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.InterviewedByPersonThreeAttachment))</div></th>
+} @* trChecklistList.InterviewedByPersonThreeAttachment.Visible (end) *@
+@if (trChecklistList.ApprovedByUserID1.Visible) { // trChecklistList.ApprovedByUserID1.Visible (begin)
+        <th data-name="ApprovedByUserID1" class="@(trChecklistList.ApprovedByUserID1.HeaderCellClass)"><div id="elh_TRChecklist_ApprovedByUserID1" class="TRChecklist_ApprovedByUserID1">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.ApprovedByUserID1))</div></th>
+} @* trChecklistList.ApprovedByUserID1.Visible (end) *@
+@if (trChecklistList.ApprovedByUserID2.Visible) { // trChecklistList.ApprovedByUserID2.Visible (begin)
+        <th data-name="ApprovedByUserID2" class="@(trChecklistList.ApprovedByUserID2.HeaderCellClass)"><div id="elh_TRChecklist_ApprovedByUserID2" class="TRChecklist_ApprovedByUserID2">@Html.Raw(trChecklistList.RenderFieldHeader(trChecklistList.ApprovedByUserID2))</div></th>
+} @* trChecklistList.ApprovedByUserID2.Visible (end) *@
+@* Render list options (header, right) *@
+@trChecklistList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(trChecklistList.PageNumber)">
+@{
+    await trChecklistList.SetupGrid();
+    bool eof = trChecklistList.Recordset == null; // DN
+}
+@while (trChecklistList.RecordCount < trChecklistList.StopRecord || SameString(trChecklistList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(trChecklistList.RowIndex, "$rowindex$") &&
+        (!trChecklistList.IsGridAdd || trChecklistList.CurrentMode == "copy") &&
+        (!((trChecklistList.IsCopy || trChecklistList.IsAdd) && trChecklistList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await trChecklistList.Recordset.ReadAsync();
+    trChecklistList.RecordCount++;
+    if (trChecklistList.RecordCount >= trChecklistList.StartRecord) {
+        await trChecklistList.SetupRow();
+    <tr @Html.Raw(trChecklistList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @trChecklistList.ListOptions.RenderBody("left", trChecklistList.RowCount)
+    @if (trChecklistList.DocumentDate.Visible) { // trChecklistList.DocumentDate.Visible (begin)
+        <td data-name="DocumentDate" @Html.Raw(trChecklistList.DocumentDate.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_DocumentDate" class="el_TRChecklist_DocumentDate">
+<span @Html.Raw(trChecklistList.DocumentDate.ViewAttributes)>
+@Html.Raw(trChecklistList.DocumentDate.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.DocumentDate.Visible (end) *@
+    @if (trChecklistList.CreatedByUserID.Visible) { // trChecklistList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(trChecklistList.CreatedByUserID.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_CreatedByUserID" class="el_TRChecklist_CreatedByUserID">
+<span @Html.Raw(trChecklistList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(trChecklistList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.CreatedByUserID.Visible (end) *@
+    @if (trChecklistList.CreatedDateTime.Visible) { // trChecklistList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(trChecklistList.CreatedDateTime.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_CreatedDateTime" class="el_TRChecklist_CreatedDateTime">
+<span @Html.Raw(trChecklistList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(trChecklistList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.CreatedDateTime.Visible (end) *@
+    @if (trChecklistList.LastUpdatedByUserID.Visible) { // trChecklistList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(trChecklistList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_LastUpdatedByUserID" class="el_TRChecklist_LastUpdatedByUserID">
+<span @Html.Raw(trChecklistList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(trChecklistList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.LastUpdatedByUserID.Visible (end) *@
+    @if (trChecklistList.LastUpdatedDateTime.Visible) { // trChecklistList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(trChecklistList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_LastUpdatedDateTime" class="el_TRChecklist_LastUpdatedDateTime">
+<span @Html.Raw(trChecklistList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(trChecklistList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.LastUpdatedDateTime.Visible (end) *@
+    @if (trChecklistList.InterviewedByPersonOneDate.Visible) { // trChecklistList.InterviewedByPersonOneDate.Visible (begin)
+        <td data-name="InterviewedByPersonOneDate" @Html.Raw(trChecklistList.InterviewedByPersonOneDate.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_InterviewedByPersonOneDate" class="el_TRChecklist_InterviewedByPersonOneDate">
+<span @Html.Raw(trChecklistList.InterviewedByPersonOneDate.ViewAttributes)>
+@Html.Raw(trChecklistList.InterviewedByPersonOneDate.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.InterviewedByPersonOneDate.Visible (end) *@
+    @if (trChecklistList.InterviewedByPersonTwoDate.Visible) { // trChecklistList.InterviewedByPersonTwoDate.Visible (begin)
+        <td data-name="InterviewedByPersonTwoDate" @Html.Raw(trChecklistList.InterviewedByPersonTwoDate.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_InterviewedByPersonTwoDate" class="el_TRChecklist_InterviewedByPersonTwoDate">
+<span @Html.Raw(trChecklistList.InterviewedByPersonTwoDate.ViewAttributes)>
+@Html.Raw(trChecklistList.InterviewedByPersonTwoDate.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.InterviewedByPersonTwoDate.Visible (end) *@
+    @if (trChecklistList.InterviewedByPersonThreeDate.Visible) { // trChecklistList.InterviewedByPersonThreeDate.Visible (begin)
+        <td data-name="InterviewedByPersonThreeDate" @Html.Raw(trChecklistList.InterviewedByPersonThreeDate.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_InterviewedByPersonThreeDate" class="el_TRChecklist_InterviewedByPersonThreeDate">
+<span @Html.Raw(trChecklistList.InterviewedByPersonThreeDate.ViewAttributes)>
+@Html.Raw(trChecklistList.InterviewedByPersonThreeDate.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.InterviewedByPersonThreeDate.Visible (end) *@
+    @if (trChecklistList.InterviewedByPersonOneAttachment.Visible) { // trChecklistList.InterviewedByPersonOneAttachment.Visible (begin)
+        <td data-name="InterviewedByPersonOneAttachment" @Html.Raw(trChecklistList.InterviewedByPersonOneAttachment.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_InterviewedByPersonOneAttachment" class="el_TRChecklist_InterviewedByPersonOneAttachment">
+<span @Html.Raw(trChecklistList.InterviewedByPersonOneAttachment.ViewAttributes)>
+@Html.Raw(trChecklistList.InterviewedByPersonOneAttachment.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.InterviewedByPersonOneAttachment.Visible (end) *@
+    @if (trChecklistList.InterviewedByPersonTwoAttachment.Visible) { // trChecklistList.InterviewedByPersonTwoAttachment.Visible (begin)
+        <td data-name="InterviewedByPersonTwoAttachment" @Html.Raw(trChecklistList.InterviewedByPersonTwoAttachment.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_InterviewedByPersonTwoAttachment" class="el_TRChecklist_InterviewedByPersonTwoAttachment">
+<span @Html.Raw(trChecklistList.InterviewedByPersonTwoAttachment.ViewAttributes)>
+@Html.Raw(trChecklistList.InterviewedByPersonTwoAttachment.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.InterviewedByPersonTwoAttachment.Visible (end) *@
+    @if (trChecklistList.InterviewedByPersonThreeAttachment.Visible) { // trChecklistList.InterviewedByPersonThreeAttachment.Visible (begin)
+        <td data-name="InterviewedByPersonThreeAttachment" @Html.Raw(trChecklistList.InterviewedByPersonThreeAttachment.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_InterviewedByPersonThreeAttachment" class="el_TRChecklist_InterviewedByPersonThreeAttachment">
+<span @Html.Raw(trChecklistList.InterviewedByPersonThreeAttachment.ViewAttributes)>
+@Html.Raw(trChecklistList.InterviewedByPersonThreeAttachment.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.InterviewedByPersonThreeAttachment.Visible (end) *@
+    @if (trChecklistList.ApprovedByUserID1.Visible) { // trChecklistList.ApprovedByUserID1.Visible (begin)
+        <td data-name="ApprovedByUserID1" @Html.Raw(trChecklistList.ApprovedByUserID1.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_ApprovedByUserID1" class="el_TRChecklist_ApprovedByUserID1">
+<span @Html.Raw(trChecklistList.ApprovedByUserID1.ViewAttributes)>
+@Html.Raw(trChecklistList.ApprovedByUserID1.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.ApprovedByUserID1.Visible (end) *@
+    @if (trChecklistList.ApprovedByUserID2.Visible) { // trChecklistList.ApprovedByUserID2.Visible (begin)
+        <td data-name="ApprovedByUserID2" @Html.Raw(trChecklistList.ApprovedByUserID2.CellAttributes)>
+<span id="el@(trChecklistList.RowCount)_TRChecklist_ApprovedByUserID2" class="el_TRChecklist_ApprovedByUserID2">
+<span @Html.Raw(trChecklistList.ApprovedByUserID2.ViewAttributes)>
+@Html.Raw(trChecklistList.ApprovedByUserID2.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistList.ApprovedByUserID2.Visible (end) *@
+    @* Render list options (body, right) *@
+    @trChecklistList.ListOptions.RenderBody("right", trChecklistList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(trChecklistList.RowIndex, "$rowindex$"))
+        trChecklistList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((trChecklistList.IsCopy || trChecklistList.IsAdd) && trChecklistList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        trChecklistList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(trChecklistList.CurrentAction) && !trChecklistList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ trChecklistList.CloseRecordset(); }
+@if (!trChecklistList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!trChecklistList.IsGridAdd && !(trChecklistList.IsGridEdit && trChecklistList.ModalGridEdit) && !trChecklistList.IsMultiEdit) {
+@Html.Raw(trChecklistList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@trChecklistList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@trChecklistList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@trChecklistList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!trChecklistList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TRChecklist");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

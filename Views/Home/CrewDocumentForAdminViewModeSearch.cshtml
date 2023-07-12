@@ -1,0 +1,554 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewDocumentForAdminViewModeSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewDocumentForAdminViewModeSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewDocumentForAdminViewModeSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewDocumentForAdminViewMode: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fCrewDocumentForAdminViewModesearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewDocumentForAdminViewModesearch")
+        .setPageId("search")
+@if (crewDocumentForAdminViewModeSearch.IsModal && crewDocumentForAdminViewModeSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["MTDocumentID", [], fields.MTDocumentID.isInvalid],
+            ["Number", [], fields.Number.isInvalid],
+            ["CountryOfIssue_CountryID", [], fields.CountryOfIssue_CountryID.isInvalid],
+            ["DateOfIssue", [ew.Validators.datetime(fields.DateOfIssue.clientFormatPattern)], fields.DateOfIssue.isInvalid],
+            ["PlaceOfIssue", [], fields.PlaceOfIssue.isInvalid],
+            ["DateValidUntil", [ew.Validators.datetime(fields.DateValidUntil.clientFormatPattern)], fields.DateValidUntil.isInvalid],
+            ["Image", [], fields.Image.isInvalid],
+            ["CreatedByUserID", [ew.Validators.integer], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [ew.Validators.integer], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid],
+            ["IsDraft", [], fields.IsDraft.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CountryOfIssue_CountryID": @Html.Raw(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.ToClientList(crewDocumentForAdminViewModeSearch)),
+            "IsDraft": @Html.Raw(crewDocumentForAdminViewModeSearch.IsDraft.ToClientList(crewDocumentForAdminViewModeSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (crewDocumentForAdminViewModeSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@crewDocumentForAdminViewModeSearch.ShowPageHeader()
+@crewDocumentForAdminViewModeSearch.ShowMessages()
+<form name="fCrewDocumentForAdminViewModesearch" id="fCrewDocumentForAdminViewModesearch" class="@(crewDocumentForAdminViewModeSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (crewDocumentForAdminViewModeSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (crewDocumentForAdminViewModeSearch.MTCrewID.Visible) { // crewDocumentForAdminViewModeSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_MTCrewID">@Html.Raw(crewDocumentForAdminViewModeSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_MTCrewID" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.MTCrewID.InputTextType)" name="x_MTCrewID" id="x_MTCrewID" data-table="CrewDocumentForAdminViewMode" data-field="x_MTCrewID" value="@Html.Raw(crewDocumentForAdminViewModeSearch.MTCrewID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.MTCrewID.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.MTCrewID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.MTCrewID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.MTCrewID.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.MTDocumentID.Visible) { // crewDocumentForAdminViewModeSearch.MTDocumentID.Visible (begin)
+    <div id="r_MTDocumentID" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.MTDocumentID.RowAttributes)>
+        <label for="x_MTDocumentID" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_MTDocumentID">@Html.Raw(crewDocumentForAdminViewModeSearch.MTDocumentID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTDocumentID" id="z_MTDocumentID" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.MTDocumentID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_MTDocumentID" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.MTDocumentID.InputTextType)" name="x_MTDocumentID" id="x_MTDocumentID" data-table="CrewDocumentForAdminViewMode" data-field="x_MTDocumentID" value="@Html.Raw(crewDocumentForAdminViewModeSearch.MTDocumentID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.MTDocumentID.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.MTDocumentID.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.MTDocumentID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.MTDocumentID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.MTDocumentID.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.Number.Visible) { // crewDocumentForAdminViewModeSearch.Number.Visible (begin)
+    <div id="r_Number" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.Number.RowAttributes)>
+        <label for="x_Number" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_Number">@Html.Raw(crewDocumentForAdminViewModeSearch.Number.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Number" id="z_Number" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.Number.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_Number" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.Number.InputTextType)" name="x_Number" id="x_Number" data-table="CrewDocumentForAdminViewMode" data-field="x_Number" value="@Html.Raw(crewDocumentForAdminViewModeSearch.Number.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.Number.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.Number.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.Number.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.Number.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.Number.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.Visible) { // crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.Visible (begin)
+    <div id="r_CountryOfIssue_CountryID" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.RowAttributes)>
+        <label for="x_CountryOfIssue_CountryID" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_CountryOfIssue_CountryID">@Html.Raw(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CountryOfIssue_CountryID" id="z_CountryOfIssue_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_CountryOfIssue_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CountryOfIssue_CountryID"
+        name="x_CountryOfIssue_CountryID"
+        class="form-select ew-select@(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.IsInvalidClass)"
+        data-select2-id="fCrewDocumentForAdminViewModesearch_x_CountryOfIssue_CountryID"
+        data-table="CrewDocumentForAdminViewMode"
+        data-field="x_CountryOfIssue_CountryID"
+        data-value-separator="@(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.PlaceHolder))"
+        @Html.Raw(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.EditAttributes)>
+        @(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.SelectOptionListHtml("x_CountryOfIssue_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.Lookup.GetParamTag(crewDocumentForAdminViewModeSearch, "p_x_CountryOfIssue_CountryID"))
+<script>
+loadjs.ready("fCrewDocumentForAdminViewModesearch", function() {
+    var options = { name: "x_CountryOfIssue_CountryID", selectId: "fCrewDocumentForAdminViewModesearch_x_CountryOfIssue_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewDocumentForAdminViewModesearch.lists.CountryOfIssue_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_CountryOfIssue_CountryID", form: "fCrewDocumentForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_CountryOfIssue_CountryID", form: "fCrewDocumentForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewDocumentForAdminViewMode.fields.CountryOfIssue_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.CountryOfIssue_CountryID.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.DateOfIssue.Visible) { // crewDocumentForAdminViewModeSearch.DateOfIssue.Visible (begin)
+    <div id="r_DateOfIssue" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.DateOfIssue.RowAttributes)>
+        <label for="x_DateOfIssue" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_DateOfIssue">@Html.Raw(crewDocumentForAdminViewModeSearch.DateOfIssue.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateOfIssue" id="z_DateOfIssue" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.DateOfIssue.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_DateOfIssue" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.DateOfIssue.InputTextType)" name="x_DateOfIssue" id="x_DateOfIssue" data-table="CrewDocumentForAdminViewMode" data-field="x_DateOfIssue" value="@Html.Raw(crewDocumentForAdminViewModeSearch.DateOfIssue.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.DateOfIssue.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.DateOfIssue.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.DateOfIssue.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.DateOfIssue.GetErrorMessage(false))</div>
+@if (!crewDocumentForAdminViewModeSearch.DateOfIssue.ReadOnly && !crewDocumentForAdminViewModeSearch.DateOfIssue.Disabled && !crewDocumentForAdminViewModeSearch.DateOfIssue.EditAttrs.Is("readonly") && !crewDocumentForAdminViewModeSearch.DateOfIssue.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewDocumentForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewDocumentForAdminViewModesearch", "x_DateOfIssue", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.DateOfIssue.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.PlaceOfIssue.Visible) { // crewDocumentForAdminViewModeSearch.PlaceOfIssue.Visible (begin)
+    <div id="r_PlaceOfIssue" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.PlaceOfIssue.RowAttributes)>
+        <label for="x_PlaceOfIssue" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_PlaceOfIssue">@Html.Raw(crewDocumentForAdminViewModeSearch.PlaceOfIssue.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PlaceOfIssue" id="z_PlaceOfIssue" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.PlaceOfIssue.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_PlaceOfIssue" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.PlaceOfIssue.InputTextType)" name="x_PlaceOfIssue" id="x_PlaceOfIssue" data-table="CrewDocumentForAdminViewMode" data-field="x_PlaceOfIssue" value="@Html.Raw(crewDocumentForAdminViewModeSearch.PlaceOfIssue.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.PlaceOfIssue.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.PlaceOfIssue.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.PlaceOfIssue.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.PlaceOfIssue.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.PlaceOfIssue.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.DateValidUntil.Visible) { // crewDocumentForAdminViewModeSearch.DateValidUntil.Visible (begin)
+    <div id="r_DateValidUntil" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.DateValidUntil.RowAttributes)>
+        <label for="x_DateValidUntil" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_DateValidUntil">@Html.Raw(crewDocumentForAdminViewModeSearch.DateValidUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateValidUntil" id="z_DateValidUntil" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.DateValidUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_DateValidUntil" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.DateValidUntil.InputTextType)" name="x_DateValidUntil" id="x_DateValidUntil" data-table="CrewDocumentForAdminViewMode" data-field="x_DateValidUntil" value="@Html.Raw(crewDocumentForAdminViewModeSearch.DateValidUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.DateValidUntil.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.DateValidUntil.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.DateValidUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.DateValidUntil.GetErrorMessage(false))</div>
+@if (!crewDocumentForAdminViewModeSearch.DateValidUntil.ReadOnly && !crewDocumentForAdminViewModeSearch.DateValidUntil.Disabled && !crewDocumentForAdminViewModeSearch.DateValidUntil.EditAttrs.Is("readonly") && !crewDocumentForAdminViewModeSearch.DateValidUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewDocumentForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewDocumentForAdminViewModesearch", "x_DateValidUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.DateValidUntil.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.Image.Visible) { // crewDocumentForAdminViewModeSearch.Image.Visible (begin)
+    <div id="r_Image" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.Image.RowAttributes)>
+        <label class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_Image">@Html.Raw(crewDocumentForAdminViewModeSearch.Image.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Image" id="z_Image" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.Image.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_Image" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.Image.InputTextType)" name="x_Image" id="x_Image" data-table="CrewDocumentForAdminViewMode" data-field="x_Image" value="@Html.Raw(crewDocumentForAdminViewModeSearch.Image.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.Image.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.Image.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.Image.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.Image.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.Image.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.CreatedByUserID.Visible) { // crewDocumentForAdminViewModeSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_CreatedByUserID">@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_CreatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.CreatedByUserID.InputTextType)" name="x_CreatedByUserID" id="x_CreatedByUserID" data-table="CrewDocumentForAdminViewMode" data-field="x_CreatedByUserID" value="@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.CreatedByUserID.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.CreatedByUserID.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.CreatedByUserID.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.CreatedDateTime.Visible) { // crewDocumentForAdminViewModeSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_CreatedDateTime">@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="CrewDocumentForAdminViewMode" data-field="x_CreatedDateTime" value="@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.CreatedDateTime.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!crewDocumentForAdminViewModeSearch.CreatedDateTime.ReadOnly && !crewDocumentForAdminViewModeSearch.CreatedDateTime.Disabled && !crewDocumentForAdminViewModeSearch.CreatedDateTime.EditAttrs.Is("readonly") && !crewDocumentForAdminViewModeSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewDocumentForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewDocumentForAdminViewModesearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.CreatedDateTime.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.Visible) { // crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_LastUpdatedByUserID">@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.InputTextType)" name="x_LastUpdatedByUserID" id="x_LastUpdatedByUserID" data-table="CrewDocumentForAdminViewMode" data-field="x_LastUpdatedByUserID" value="@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.LastUpdatedByUserID.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.Visible) { // crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_LastUpdatedDateTime">@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="CrewDocumentForAdminViewMode" data-field="x_LastUpdatedDateTime" value="@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.ReadOnly && !crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.Disabled && !crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewDocumentForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewDocumentForAdminViewModesearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.LastUpdatedDateTime.Visible (end) *@
+@if (crewDocumentForAdminViewModeSearch.IsDraft.Visible) { // crewDocumentForAdminViewModeSearch.IsDraft.Visible (begin)
+    <div id="r_IsDraft" class="row" @Html.Raw(crewDocumentForAdminViewModeSearch.IsDraft.RowAttributes)>
+        <label class="@(crewDocumentForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewDocumentForAdminViewMode_IsDraft">@Html.Raw(crewDocumentForAdminViewModeSearch.IsDraft.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_IsDraft" id="z_IsDraft" value="=">
+</span>
+        </label>
+        <div class="@(crewDocumentForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewDocumentForAdminViewModeSearch.IsDraft.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewDocumentForAdminViewMode_IsDraft" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(crewDocumentForAdminViewModeSearch.IsDraft.IsInvalidClass)" data-table="CrewDocumentForAdminViewMode" data-field="x_IsDraft" data-boolean name="x_IsDraft" id="x_IsDraft" value="1" checked="@ConvertToBool(crewDocumentForAdminViewModeSearch.IsDraft.AdvancedSearch.SearchValue)" @Html.Raw(crewDocumentForAdminViewModeSearch.IsDraft.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminViewModeSearch.IsDraft.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewDocumentForAdminViewModeSearch.IsDraft.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(crewDocumentForAdminViewModeSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(crewDocumentForAdminViewModeSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCrewDocumentForAdminViewModesearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (crewDocumentForAdminViewModeSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCrewDocumentForAdminViewModesearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fCrewDocumentForAdminViewModesearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(crewDocumentForAdminViewModeSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@crewDocumentForAdminViewModeSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewDocumentForAdminViewMode");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

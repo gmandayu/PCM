@@ -1,0 +1,1009 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewAppraisalForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewAppraisalForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewAppraisalForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewAppraisalForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewAppraisalForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewAppraisalForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewAppraisalForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewAppraisalForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewAppraisalForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "VesselName": @Html.Raw(crewAppraisalForAdminList.VesselName.ToClientList(crewAppraisalForAdminList)),
+            "MTRankID": @Html.Raw(crewAppraisalForAdminList.MTRankID.ToClientList(crewAppraisalForAdminList)),
+            "Questionnaire": @Html.Raw(crewAppraisalForAdminList.Questionnaire.ToClientList(crewAppraisalForAdminList)),
+            "Approved": @Html.Raw(crewAppraisalForAdminList.Approved.ToClientList(crewAppraisalForAdminList)),
+            "AverageRating": @Html.Raw(crewAppraisalForAdminList.AverageRating.ToClientList(crewAppraisalForAdminList)),
+            "Rehire": @Html.Raw(crewAppraisalForAdminList.Rehire.ToClientList(crewAppraisalForAdminList)),
+            "Promote": @Html.Raw(crewAppraisalForAdminList.Promote.ToClientList(crewAppraisalForAdminList)),
+            "Appraiser": @Html.Raw(crewAppraisalForAdminList.Appraiser.ToClientList(crewAppraisalForAdminList)),
+            "DateInput": @Html.Raw(crewAppraisalForAdminList.DateInput.ToClientList(crewAppraisalForAdminList)),
+            "MTCrewID": @Html.Raw(crewAppraisalForAdminList.MTCrewID.ToClientList(crewAppraisalForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewAppraisalForAdminList.CreatedByUserID.ToClientList(crewAppraisalForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewAppraisalForAdminList.CreatedDateTime.ToClientList(crewAppraisalForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewAppraisalForAdminList.LastUpdatedByUserID.ToClientList(crewAppraisalForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewAppraisalForAdminList.LastUpdatedDateTime.ToClientList(crewAppraisalForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewAppraisalForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewAppraisalForAdminList.TotalRecords > 0 && crewAppraisalForAdminList.ExportOptions.Visible) {
+    crewAppraisalForAdminList.ExportOptions.Render("body");
+}
+@if (crewAppraisalForAdminList.ImportOptions.Visible) {
+    crewAppraisalForAdminList.ImportOptions.Render("body");
+}
+@if (crewAppraisalForAdminList.SearchOptions.Visible) {
+    crewAppraisalForAdminList.SearchOptions.Render("body");
+}
+@if (crewAppraisalForAdminList.FilterOptions.Visible) {
+    crewAppraisalForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewAppraisalForAdminList.ShowCurrentFilter) {
+    crewAppraisalForAdminList.ShowFilterList();
+}
+@if (!crewAppraisalForAdminList.IsModal) {
+<form name="fCrewAppraisalForAdminsrch" id="fCrewAppraisalForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewAppraisalForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewAppraisalForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewAppraisalForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewAppraisalForAdmin: currentTable } });
+var currentForm;
+var fCrewAppraisalForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewAppraisalForAdminsrch")
+        .setPageId("list")
+@if (crewAppraisalForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["MTRankID", [], fields.MTRankID.isInvalid],
+            ["Questionnaire", [], fields.Questionnaire.isInvalid],
+            ["Approved", [], fields.Approved.isInvalid],
+            ["AverageRating", [], fields.AverageRating.isInvalid],
+            ["Rehire", [], fields.Rehire.isInvalid],
+            ["Promote", [], fields.Promote.isInvalid],
+            ["Appraiser", [], fields.Appraiser.isInvalid],
+            ["DateInput", [], fields.DateInput.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "VesselName": @Html.Raw(crewAppraisalForAdminList.VesselName.ToClientList(crewAppraisalForAdminList)),
+            "MTRankID": @Html.Raw(crewAppraisalForAdminList.MTRankID.ToClientList(crewAppraisalForAdminList)),
+            "Questionnaire": @Html.Raw(crewAppraisalForAdminList.Questionnaire.ToClientList(crewAppraisalForAdminList)),
+            "Approved": @Html.Raw(crewAppraisalForAdminList.Approved.ToClientList(crewAppraisalForAdminList)),
+            "AverageRating": @Html.Raw(crewAppraisalForAdminList.AverageRating.ToClientList(crewAppraisalForAdminList)),
+            "Rehire": @Html.Raw(crewAppraisalForAdminList.Rehire.ToClientList(crewAppraisalForAdminList)),
+            "Promote": @Html.Raw(crewAppraisalForAdminList.Promote.ToClientList(crewAppraisalForAdminList)),
+            "Appraiser": @Html.Raw(crewAppraisalForAdminList.Appraiser.ToClientList(crewAppraisalForAdminList)),
+            "DateInput": @Html.Raw(crewAppraisalForAdminList.DateInput.ToClientList(crewAppraisalForAdminList)),
+            "MTCrewID": @Html.Raw(crewAppraisalForAdminList.MTCrewID.ToClientList(crewAppraisalForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewAppraisalForAdminList.CreatedByUserID.ToClientList(crewAppraisalForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewAppraisalForAdminList.CreatedDateTime.ToClientList(crewAppraisalForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewAppraisalForAdminList.LastUpdatedByUserID.ToClientList(crewAppraisalForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewAppraisalForAdminList.LastUpdatedDateTime.ToClientList(crewAppraisalForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewAppraisalForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewAppraisalForAdminList.IsExport() && Empty(crewAppraisalForAdminList.CurrentAction) && crewAppraisalForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewAppraisalForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewAppraisalForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewAppraisalForAdminList.RowType = RowType.Search;
+    crewAppraisalForAdminList.ResetAttributes();
+    await crewAppraisalForAdminList.RenderRow();
+}
+@if (crewAppraisalForAdminList.VesselName.Visible) { // crewAppraisalForAdminList.VesselName.Visible (begin)
+    if (!crewAppraisalForAdminList.VesselName.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_VesselName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.VesselName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VesselName"
+            name="x_VesselName[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.VesselName.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_VesselName"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_VesselName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.VesselName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.VesselName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.VesselName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.VesselName.EditAttributes)>
+            @(crewAppraisalForAdminList.VesselName.SelectOptionListHtml("x_VesselName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.VesselName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_VesselName",
+                selectId: "fCrewAppraisalForAdminsrch_x_VesselName",
+                ajax: { id: "x_VesselName", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.VesselName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.VesselName.Visible (end) *@
+@if (crewAppraisalForAdminList.MTRankID.Visible) { // crewAppraisalForAdminList.MTRankID.Visible (begin)
+    if (!crewAppraisalForAdminList.MTRankID.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTRankID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.MTRankID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTRankID"
+            name="x_MTRankID[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.MTRankID.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_MTRankID"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_MTRankID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.MTRankID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.MTRankID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.MTRankID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.MTRankID.EditAttributes)>
+            @(crewAppraisalForAdminList.MTRankID.SelectOptionListHtml("x_MTRankID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.MTRankID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_MTRankID",
+                selectId: "fCrewAppraisalForAdminsrch_x_MTRankID",
+                ajax: { id: "x_MTRankID", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.MTRankID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.MTRankID.Visible (end) *@
+@if (crewAppraisalForAdminList.Questionnaire.Visible) { // crewAppraisalForAdminList.Questionnaire.Visible (begin)
+    if (!crewAppraisalForAdminList.Questionnaire.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Questionnaire" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.Questionnaire.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Questionnaire"
+            name="x_Questionnaire[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.Questionnaire.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_Questionnaire"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_Questionnaire"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.Questionnaire.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.Questionnaire.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.Questionnaire.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.Questionnaire.EditAttributes)>
+            @(crewAppraisalForAdminList.Questionnaire.SelectOptionListHtml("x_Questionnaire", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.Questionnaire.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_Questionnaire",
+                selectId: "fCrewAppraisalForAdminsrch_x_Questionnaire",
+                ajax: { id: "x_Questionnaire", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.Questionnaire.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.Questionnaire.Visible (end) *@
+@if (crewAppraisalForAdminList.Approved.Visible) { // crewAppraisalForAdminList.Approved.Visible (begin)
+    if (!crewAppraisalForAdminList.Approved.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Approved" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.Approved.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Approved"
+            name="x_Approved[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.Approved.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_Approved"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_Approved"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.Approved.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.Approved.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.Approved.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.Approved.EditAttributes)>
+            @(crewAppraisalForAdminList.Approved.SelectOptionListHtml("x_Approved", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.Approved.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_Approved",
+                selectId: "fCrewAppraisalForAdminsrch_x_Approved",
+                ajax: { id: "x_Approved", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.Approved.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.Approved.Visible (end) *@
+@if (crewAppraisalForAdminList.AverageRating.Visible) { // crewAppraisalForAdminList.AverageRating.Visible (begin)
+    if (!crewAppraisalForAdminList.AverageRating.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_AverageRating" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.AverageRating.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AverageRating"
+            name="x_AverageRating[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.AverageRating.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_AverageRating"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_AverageRating"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.AverageRating.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.AverageRating.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.AverageRating.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.AverageRating.EditAttributes)>
+            @(crewAppraisalForAdminList.AverageRating.SelectOptionListHtml("x_AverageRating", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.AverageRating.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_AverageRating",
+                selectId: "fCrewAppraisalForAdminsrch_x_AverageRating",
+                ajax: { id: "x_AverageRating", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.AverageRating.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.AverageRating.Visible (end) *@
+@if (crewAppraisalForAdminList.Rehire.Visible) { // crewAppraisalForAdminList.Rehire.Visible (begin)
+    if (!crewAppraisalForAdminList.Rehire.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Rehire" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.Rehire.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Rehire"
+            name="x_Rehire[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.Rehire.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_Rehire"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_Rehire"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.Rehire.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.Rehire.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.Rehire.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.Rehire.EditAttributes)>
+            @(crewAppraisalForAdminList.Rehire.SelectOptionListHtml("x_Rehire", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.Rehire.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_Rehire",
+                selectId: "fCrewAppraisalForAdminsrch_x_Rehire",
+                ajax: { id: "x_Rehire", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.Rehire.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.Rehire.Visible (end) *@
+@if (crewAppraisalForAdminList.Promote.Visible) { // crewAppraisalForAdminList.Promote.Visible (begin)
+    if (!crewAppraisalForAdminList.Promote.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Promote" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.Promote.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Promote"
+            name="x_Promote[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.Promote.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_Promote"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_Promote"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.Promote.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.Promote.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.Promote.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.Promote.EditAttributes)>
+            @(crewAppraisalForAdminList.Promote.SelectOptionListHtml("x_Promote", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.Promote.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_Promote",
+                selectId: "fCrewAppraisalForAdminsrch_x_Promote",
+                ajax: { id: "x_Promote", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.Promote.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.Promote.Visible (end) *@
+@if (crewAppraisalForAdminList.Appraiser.Visible) { // crewAppraisalForAdminList.Appraiser.Visible (begin)
+    if (!crewAppraisalForAdminList.Appraiser.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Appraiser" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.Appraiser.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Appraiser"
+            name="x_Appraiser[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.Appraiser.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_Appraiser"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_Appraiser"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.Appraiser.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.Appraiser.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.Appraiser.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.Appraiser.EditAttributes)>
+            @(crewAppraisalForAdminList.Appraiser.SelectOptionListHtml("x_Appraiser", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.Appraiser.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_Appraiser",
+                selectId: "fCrewAppraisalForAdminsrch_x_Appraiser",
+                ajax: { id: "x_Appraiser", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.Appraiser.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.Appraiser.Visible (end) *@
+@if (crewAppraisalForAdminList.DateInput.Visible) { // crewAppraisalForAdminList.DateInput.Visible (begin)
+    if (!crewAppraisalForAdminList.DateInput.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateInput" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.DateInput.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateInput"
+            name="x_DateInput[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.DateInput.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_DateInput"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_DateInput"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.DateInput.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.DateInput.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.DateInput.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.DateInput.EditAttributes)>
+            @(crewAppraisalForAdminList.DateInput.SelectOptionListHtml("x_DateInput", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.DateInput.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_DateInput",
+                selectId: "fCrewAppraisalForAdminsrch_x_DateInput",
+                ajax: { id: "x_DateInput", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.DateInput.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.DateInput.Visible (end) *@
+@if (crewAppraisalForAdminList.MTCrewID.Visible) { // crewAppraisalForAdminList.MTCrewID.Visible (begin)
+    if (!crewAppraisalForAdminList.MTCrewID.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_MTCrewID"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.MTCrewID.EditAttributes)>
+            @(crewAppraisalForAdminList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewAppraisalForAdminsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.MTCrewID.Visible (end) *@
+@if (crewAppraisalForAdminList.CreatedByUserID.Visible) { // crewAppraisalForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewAppraisalForAdminList.CreatedByUserID.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_CreatedByUserID"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewAppraisalForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewAppraisalForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewAppraisalForAdminList.CreatedDateTime.Visible) { // crewAppraisalForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewAppraisalForAdminList.CreatedDateTime.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_CreatedDateTime"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewAppraisalForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewAppraisalForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewAppraisalForAdminList.LastUpdatedByUserID.Visible) { // crewAppraisalForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewAppraisalForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewAppraisalForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewAppraisalForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewAppraisalForAdminList.LastUpdatedDateTime.Visible) { // crewAppraisalForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewAppraisalForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewAppraisalForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewAppraisalForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewAppraisalForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewAppraisalForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewAppraisalForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewAppraisalForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewAppraisalForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewAppraisalForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewAppraisalForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewAppraisalForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewAppraisalForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewAppraisalForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewAppraisalForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewAppraisalForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewAppraisalForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewAppraisalForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewAppraisalForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewAppraisalForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewAppraisalForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewAppraisalForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewAppraisalForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewAppraisalForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewAppraisalForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewAppraisalForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewAppraisalForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewAppraisalForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewAppraisalForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewAppraisalForAdminList.ShowPageHeader()
+@crewAppraisalForAdminList.ShowMessages()
+<main class="list @(crewAppraisalForAdminList.TotalRecords == 0 && !crewAppraisalForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewAppraisalForAdminList.TotalRecords > 0 || !Empty(crewAppraisalForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewAppraisalForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewAppraisalForAdminList.TableGridClass)">
+<form name="@(crewAppraisalForAdminList.FormName)" id="@(crewAppraisalForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewAppraisalForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewAppraisalForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewAppraisalForAdmin" class="card-body ew-grid-middle-panel @(crewAppraisalForAdminList.TableContainerClass)" style="@(crewAppraisalForAdminList.TableContainerStyle)">
+@if (crewAppraisalForAdminList.TotalRecords > 0 || crewAppraisalForAdminList.IsGridEdit || crewAppraisalForAdminList.IsMultiEdit) {
+<table id="tbl_CrewAppraisalForAdminlist" class="@(crewAppraisalForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewAppraisalForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewAppraisalForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewAppraisalForAdminList.ListOptions.RenderHeader("left")
+@if (crewAppraisalForAdminList.VesselName.Visible) { // crewAppraisalForAdminList.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(crewAppraisalForAdminList.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_VesselName" class="CrewAppraisalForAdmin_VesselName">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.VesselName))</div></th>
+} @* crewAppraisalForAdminList.VesselName.Visible (end) *@
+@if (crewAppraisalForAdminList.MTRankID.Visible) { // crewAppraisalForAdminList.MTRankID.Visible (begin)
+        <th data-name="MTRankID" class="@(crewAppraisalForAdminList.MTRankID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_MTRankID" class="CrewAppraisalForAdmin_MTRankID">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.MTRankID))</div></th>
+} @* crewAppraisalForAdminList.MTRankID.Visible (end) *@
+@if (crewAppraisalForAdminList.Questionnaire.Visible) { // crewAppraisalForAdminList.Questionnaire.Visible (begin)
+        <th data-name="Questionnaire" class="@(crewAppraisalForAdminList.Questionnaire.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_Questionnaire" class="CrewAppraisalForAdmin_Questionnaire">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.Questionnaire))</div></th>
+} @* crewAppraisalForAdminList.Questionnaire.Visible (end) *@
+@if (crewAppraisalForAdminList.Approved.Visible) { // crewAppraisalForAdminList.Approved.Visible (begin)
+        <th data-name="Approved" class="@(crewAppraisalForAdminList.Approved.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_Approved" class="CrewAppraisalForAdmin_Approved">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.Approved))</div></th>
+} @* crewAppraisalForAdminList.Approved.Visible (end) *@
+@if (crewAppraisalForAdminList.AverageRating.Visible) { // crewAppraisalForAdminList.AverageRating.Visible (begin)
+        <th data-name="AverageRating" class="@(crewAppraisalForAdminList.AverageRating.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_AverageRating" class="CrewAppraisalForAdmin_AverageRating">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.AverageRating))</div></th>
+} @* crewAppraisalForAdminList.AverageRating.Visible (end) *@
+@if (crewAppraisalForAdminList.Rehire.Visible) { // crewAppraisalForAdminList.Rehire.Visible (begin)
+        <th data-name="Rehire" class="@(crewAppraisalForAdminList.Rehire.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_Rehire" class="CrewAppraisalForAdmin_Rehire">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.Rehire))</div></th>
+} @* crewAppraisalForAdminList.Rehire.Visible (end) *@
+@if (crewAppraisalForAdminList.Promote.Visible) { // crewAppraisalForAdminList.Promote.Visible (begin)
+        <th data-name="Promote" class="@(crewAppraisalForAdminList.Promote.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_Promote" class="CrewAppraisalForAdmin_Promote">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.Promote))</div></th>
+} @* crewAppraisalForAdminList.Promote.Visible (end) *@
+@if (crewAppraisalForAdminList.Appraiser.Visible) { // crewAppraisalForAdminList.Appraiser.Visible (begin)
+        <th data-name="Appraiser" class="@(crewAppraisalForAdminList.Appraiser.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_Appraiser" class="CrewAppraisalForAdmin_Appraiser">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.Appraiser))</div></th>
+} @* crewAppraisalForAdminList.Appraiser.Visible (end) *@
+@if (crewAppraisalForAdminList.DateInput.Visible) { // crewAppraisalForAdminList.DateInput.Visible (begin)
+        <th data-name="DateInput" class="@(crewAppraisalForAdminList.DateInput.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_DateInput" class="CrewAppraisalForAdmin_DateInput">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.DateInput))</div></th>
+} @* crewAppraisalForAdminList.DateInput.Visible (end) *@
+@if (crewAppraisalForAdminList.MTCrewID.Visible) { // crewAppraisalForAdminList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewAppraisalForAdminList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_MTCrewID" class="CrewAppraisalForAdmin_MTCrewID">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.MTCrewID))</div></th>
+} @* crewAppraisalForAdminList.MTCrewID.Visible (end) *@
+@if (crewAppraisalForAdminList.CreatedByUserID.Visible) { // crewAppraisalForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewAppraisalForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_CreatedByUserID" class="CrewAppraisalForAdmin_CreatedByUserID">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.CreatedByUserID))</div></th>
+} @* crewAppraisalForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewAppraisalForAdminList.CreatedDateTime.Visible) { // crewAppraisalForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewAppraisalForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_CreatedDateTime" class="CrewAppraisalForAdmin_CreatedDateTime">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.CreatedDateTime))</div></th>
+} @* crewAppraisalForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewAppraisalForAdminList.LastUpdatedByUserID.Visible) { // crewAppraisalForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewAppraisalForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_LastUpdatedByUserID" class="CrewAppraisalForAdmin_LastUpdatedByUserID">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewAppraisalForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewAppraisalForAdminList.LastUpdatedDateTime.Visible) { // crewAppraisalForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewAppraisalForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewAppraisalForAdmin_LastUpdatedDateTime" class="CrewAppraisalForAdmin_LastUpdatedDateTime">@Html.Raw(crewAppraisalForAdminList.RenderFieldHeader(crewAppraisalForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewAppraisalForAdminList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewAppraisalForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewAppraisalForAdminList.PageNumber)">
+@{
+    await crewAppraisalForAdminList.SetupGrid();
+    bool eof = crewAppraisalForAdminList.Recordset == null; // DN
+}
+@while (crewAppraisalForAdminList.RecordCount < crewAppraisalForAdminList.StopRecord || SameString(crewAppraisalForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewAppraisalForAdminList.RowIndex, "$rowindex$") &&
+        (!crewAppraisalForAdminList.IsGridAdd || crewAppraisalForAdminList.CurrentMode == "copy") &&
+        (!((crewAppraisalForAdminList.IsCopy || crewAppraisalForAdminList.IsAdd) && crewAppraisalForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewAppraisalForAdminList.Recordset.ReadAsync();
+    crewAppraisalForAdminList.RecordCount++;
+    if (crewAppraisalForAdminList.RecordCount >= crewAppraisalForAdminList.StartRecord) {
+        await crewAppraisalForAdminList.SetupRow();
+    <tr @Html.Raw(crewAppraisalForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewAppraisalForAdminList.ListOptions.RenderBody("left", crewAppraisalForAdminList.RowCount)
+    @if (crewAppraisalForAdminList.VesselName.Visible) { // crewAppraisalForAdminList.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(crewAppraisalForAdminList.VesselName.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_VesselName" class="el_CrewAppraisalForAdmin_VesselName">
+<span @Html.Raw(crewAppraisalForAdminList.VesselName.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.VesselName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.VesselName.Visible (end) *@
+    @if (crewAppraisalForAdminList.MTRankID.Visible) { // crewAppraisalForAdminList.MTRankID.Visible (begin)
+        <td data-name="MTRankID" @Html.Raw(crewAppraisalForAdminList.MTRankID.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_MTRankID" class="el_CrewAppraisalForAdmin_MTRankID">
+<span @Html.Raw(crewAppraisalForAdminList.MTRankID.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.MTRankID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.MTRankID.Visible (end) *@
+    @if (crewAppraisalForAdminList.Questionnaire.Visible) { // crewAppraisalForAdminList.Questionnaire.Visible (begin)
+        <td data-name="Questionnaire" @Html.Raw(crewAppraisalForAdminList.Questionnaire.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_Questionnaire" class="el_CrewAppraisalForAdmin_Questionnaire">
+<span @Html.Raw(crewAppraisalForAdminList.Questionnaire.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.Questionnaire.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.Questionnaire.Visible (end) *@
+    @if (crewAppraisalForAdminList.Approved.Visible) { // crewAppraisalForAdminList.Approved.Visible (begin)
+        <td data-name="Approved" @Html.Raw(crewAppraisalForAdminList.Approved.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_Approved" class="el_CrewAppraisalForAdmin_Approved">
+<span @Html.Raw(crewAppraisalForAdminList.Approved.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Approved_@(crewAppraisalForAdminList.RowCount)" class="form-check-input" value="@(crewAppraisalForAdminList.Approved.GetViewValue())" disabled checked="@(ConvertToBool(crewAppraisalForAdminList.Approved.CurrentValue))">
+    <label class="form-check-label" for="x_Approved_@(crewAppraisalForAdminList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.Approved.Visible (end) *@
+    @if (crewAppraisalForAdminList.AverageRating.Visible) { // crewAppraisalForAdminList.AverageRating.Visible (begin)
+        <td data-name="AverageRating" @Html.Raw(crewAppraisalForAdminList.AverageRating.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_AverageRating" class="el_CrewAppraisalForAdmin_AverageRating">
+<span @Html.Raw(crewAppraisalForAdminList.AverageRating.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.AverageRating.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.AverageRating.Visible (end) *@
+    @if (crewAppraisalForAdminList.Rehire.Visible) { // crewAppraisalForAdminList.Rehire.Visible (begin)
+        <td data-name="Rehire" @Html.Raw(crewAppraisalForAdminList.Rehire.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_Rehire" class="el_CrewAppraisalForAdmin_Rehire">
+<span @Html.Raw(crewAppraisalForAdminList.Rehire.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Rehire_@(crewAppraisalForAdminList.RowCount)" class="form-check-input" value="@(crewAppraisalForAdminList.Rehire.GetViewValue())" disabled checked="@(ConvertToBool(crewAppraisalForAdminList.Rehire.CurrentValue))">
+    <label class="form-check-label" for="x_Rehire_@(crewAppraisalForAdminList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.Rehire.Visible (end) *@
+    @if (crewAppraisalForAdminList.Promote.Visible) { // crewAppraisalForAdminList.Promote.Visible (begin)
+        <td data-name="Promote" @Html.Raw(crewAppraisalForAdminList.Promote.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_Promote" class="el_CrewAppraisalForAdmin_Promote">
+<span @Html.Raw(crewAppraisalForAdminList.Promote.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Promote_@(crewAppraisalForAdminList.RowCount)" class="form-check-input" value="@(crewAppraisalForAdminList.Promote.GetViewValue())" disabled checked="@(ConvertToBool(crewAppraisalForAdminList.Promote.CurrentValue))">
+    <label class="form-check-label" for="x_Promote_@(crewAppraisalForAdminList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.Promote.Visible (end) *@
+    @if (crewAppraisalForAdminList.Appraiser.Visible) { // crewAppraisalForAdminList.Appraiser.Visible (begin)
+        <td data-name="Appraiser" @Html.Raw(crewAppraisalForAdminList.Appraiser.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_Appraiser" class="el_CrewAppraisalForAdmin_Appraiser">
+<span @Html.Raw(crewAppraisalForAdminList.Appraiser.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.Appraiser.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.Appraiser.Visible (end) *@
+    @if (crewAppraisalForAdminList.DateInput.Visible) { // crewAppraisalForAdminList.DateInput.Visible (begin)
+        <td data-name="DateInput" @Html.Raw(crewAppraisalForAdminList.DateInput.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_DateInput" class="el_CrewAppraisalForAdmin_DateInput">
+<span @Html.Raw(crewAppraisalForAdminList.DateInput.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.DateInput.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.DateInput.Visible (end) *@
+    @if (crewAppraisalForAdminList.MTCrewID.Visible) { // crewAppraisalForAdminList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewAppraisalForAdminList.MTCrewID.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_MTCrewID" class="el_CrewAppraisalForAdmin_MTCrewID">
+<span @Html.Raw(crewAppraisalForAdminList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.MTCrewID.Visible (end) *@
+    @if (crewAppraisalForAdminList.CreatedByUserID.Visible) { // crewAppraisalForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewAppraisalForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_CreatedByUserID" class="el_CrewAppraisalForAdmin_CreatedByUserID">
+<span @Html.Raw(crewAppraisalForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewAppraisalForAdminList.CreatedDateTime.Visible) { // crewAppraisalForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewAppraisalForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_CreatedDateTime" class="el_CrewAppraisalForAdmin_CreatedDateTime">
+<span @Html.Raw(crewAppraisalForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewAppraisalForAdminList.LastUpdatedByUserID.Visible) { // crewAppraisalForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewAppraisalForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_LastUpdatedByUserID" class="el_CrewAppraisalForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewAppraisalForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewAppraisalForAdminList.LastUpdatedDateTime.Visible) { // crewAppraisalForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewAppraisalForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewAppraisalForAdminList.RowCount)_CrewAppraisalForAdmin_LastUpdatedDateTime" class="el_CrewAppraisalForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewAppraisalForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewAppraisalForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewAppraisalForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewAppraisalForAdminList.ListOptions.RenderBody("right", crewAppraisalForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewAppraisalForAdminList.RowIndex, "$rowindex$"))
+        crewAppraisalForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewAppraisalForAdminList.IsCopy || crewAppraisalForAdminList.IsAdd) && crewAppraisalForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewAppraisalForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewAppraisalForAdminList.CurrentAction) && !crewAppraisalForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewAppraisalForAdminList.CloseRecordset(); }
+@if (!crewAppraisalForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewAppraisalForAdminList.IsGridAdd && !(crewAppraisalForAdminList.IsGridEdit && crewAppraisalForAdminList.ModalGridEdit) && !crewAppraisalForAdminList.IsMultiEdit) {
+@Html.Raw(crewAppraisalForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewAppraisalForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewAppraisalForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewAppraisalForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewAppraisalForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewAppraisalForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

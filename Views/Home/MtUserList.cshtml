@@ -1,0 +1,560 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtUserList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtUserList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtUserList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtUserList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTUser: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtUserList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtUserList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtUserList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtUserList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Email": @Html.Raw(mtUserList._Email.ToClientList(mtUserList)),
+            "FullName": @Html.Raw(mtUserList.FullName.ToClientList(mtUserList)),
+            "MTUserLevelID": @Html.Raw(mtUserList.MTUserLevelID.ToClientList(mtUserList)),
+            "SeafarerID": @Html.Raw(mtUserList.SeafarerID.ToClientList(mtUserList)),
+            "CrewAgency": @Html.Raw(mtUserList.CrewAgency.ToClientList(mtUserList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtUserList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtUserList.TotalRecords > 0 && mtUserList.ExportOptions.Visible) {
+    mtUserList.ExportOptions.Render("body");
+}
+@if (mtUserList.ImportOptions.Visible) {
+    mtUserList.ImportOptions.Render("body");
+}
+@if (mtUserList.SearchOptions.Visible) {
+    mtUserList.SearchOptions.Render("body");
+}
+@if (mtUserList.FilterOptions.Visible) {
+    mtUserList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtUserList.ShowCurrentFilter) {
+    mtUserList.ShowFilterList();
+}
+@if (!mtUserList.IsModal) {
+<form name="fMTUsersrch" id="fMTUsersrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTUsersrch_search_panel" class="mb-2 mb-sm-0 @(mtUserList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtUserList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTUser: currentTable } });
+var currentForm;
+var fMTUsersrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTUsersrch")
+        .setPageId("list")
+@if (mtUserList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Email", [], fields._Email.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["MTUserLevelID", [], fields.MTUserLevelID.isInvalid],
+            ["SeafarerID", [], fields.SeafarerID.isInvalid],
+            ["CrewAgency", [], fields.CrewAgency.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Email": @Html.Raw(mtUserList._Email.ToClientList(mtUserList)),
+            "FullName": @Html.Raw(mtUserList.FullName.ToClientList(mtUserList)),
+            "MTUserLevelID": @Html.Raw(mtUserList.MTUserLevelID.ToClientList(mtUserList)),
+            "SeafarerID": @Html.Raw(mtUserList.SeafarerID.ToClientList(mtUserList)),
+            "CrewAgency": @Html.Raw(mtUserList.CrewAgency.ToClientList(mtUserList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtUserList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtUserList.IsExport() && Empty(mtUserList.CurrentAction) && mtUserList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtUserList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtUserList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtUserList.RowType = RowType.Search;
+    mtUserList.ResetAttributes();
+    await mtUserList.RenderRow();
+}
+@if (mtUserList._Email.Visible) { // mtUserList._Email.Visible (begin)
+    if (!mtUserList._Email.UseFilter) {
+        mtUserList.SearchColumnCount++;
+    }
+    <div id="xs__Email" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtUserList._Email.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Email"
+            name="x__Email[]"
+            class="form-control ew-select@(mtUserList._Email.IsInvalidClass)"
+            data-select2-id="fMTUsersrch_x__Email"
+            data-table="MTUser"
+            data-field="x__Email"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtUserList._Email.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtUserList._Email.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtUserList._Email.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtUserList._Email.EditAttributes)>
+            @(mtUserList._Email.SelectOptionListHtml("x__Email", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtUserList._Email.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTUsersrch", function() {
+            var options = {
+                name: "x__Email",
+                selectId: "fMTUsersrch_x__Email",
+                ajax: { id: "x__Email", form: "fMTUsersrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTUser.fields._Email.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtUserList._Email.Visible (end) *@
+@if (mtUserList.FullName.Visible) { // mtUserList.FullName.Visible (begin)
+    if (!mtUserList.FullName.UseFilter) {
+        mtUserList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtUserList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FullName"
+            name="x_FullName[]"
+            class="form-control ew-select@(mtUserList.FullName.IsInvalidClass)"
+            data-select2-id="fMTUsersrch_x_FullName"
+            data-table="MTUser"
+            data-field="x_FullName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtUserList.FullName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtUserList.FullName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtUserList.FullName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtUserList.FullName.EditAttributes)>
+            @(mtUserList.FullName.SelectOptionListHtml("x_FullName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtUserList.FullName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTUsersrch", function() {
+            var options = {
+                name: "x_FullName",
+                selectId: "fMTUsersrch_x_FullName",
+                ajax: { id: "x_FullName", form: "fMTUsersrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTUser.fields.FullName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtUserList.FullName.Visible (end) *@
+@if (mtUserList.MTUserLevelID.Visible) { // mtUserList.MTUserLevelID.Visible (begin)
+    if (!mtUserList.MTUserLevelID.UseFilter) {
+        mtUserList.SearchColumnCount++;
+    }
+    <div id="xs_MTUserLevelID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtUserList.MTUserLevelID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTUserLevelID"
+            name="x_MTUserLevelID[]"
+            class="form-control ew-select@(mtUserList.MTUserLevelID.IsInvalidClass)"
+            data-select2-id="fMTUsersrch_x_MTUserLevelID"
+            data-table="MTUser"
+            data-field="x_MTUserLevelID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtUserList.MTUserLevelID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtUserList.MTUserLevelID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtUserList.MTUserLevelID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtUserList.MTUserLevelID.EditAttributes)>
+            @(mtUserList.MTUserLevelID.SelectOptionListHtml("x_MTUserLevelID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtUserList.MTUserLevelID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTUsersrch", function() {
+            var options = {
+                name: "x_MTUserLevelID",
+                selectId: "fMTUsersrch_x_MTUserLevelID",
+                ajax: { id: "x_MTUserLevelID", form: "fMTUsersrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTUser.fields.MTUserLevelID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtUserList.MTUserLevelID.Visible (end) *@
+@if (mtUserList.SeafarerID.Visible) { // mtUserList.SeafarerID.Visible (begin)
+    if (!mtUserList.SeafarerID.UseFilter) {
+        mtUserList.SearchColumnCount++;
+    }
+    <div id="xs_SeafarerID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtUserList.SeafarerID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_SeafarerID"
+            name="x_SeafarerID[]"
+            class="form-control ew-select@(mtUserList.SeafarerID.IsInvalidClass)"
+            data-select2-id="fMTUsersrch_x_SeafarerID"
+            data-table="MTUser"
+            data-field="x_SeafarerID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtUserList.SeafarerID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtUserList.SeafarerID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtUserList.SeafarerID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtUserList.SeafarerID.EditAttributes)>
+            @(mtUserList.SeafarerID.SelectOptionListHtml("x_SeafarerID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtUserList.SeafarerID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTUsersrch", function() {
+            var options = {
+                name: "x_SeafarerID",
+                selectId: "fMTUsersrch_x_SeafarerID",
+                ajax: { id: "x_SeafarerID", form: "fMTUsersrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTUser.fields.SeafarerID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtUserList.SeafarerID.Visible (end) *@
+@if (mtUserList.CrewAgency.Visible) { // mtUserList.CrewAgency.Visible (begin)
+    if (!mtUserList.CrewAgency.UseFilter) {
+        mtUserList.SearchColumnCount++;
+    }
+    <div id="xs_CrewAgency" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtUserList.CrewAgency.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CrewAgency"
+            name="x_CrewAgency[]"
+            class="form-control ew-select@(mtUserList.CrewAgency.IsInvalidClass)"
+            data-select2-id="fMTUsersrch_x_CrewAgency"
+            data-table="MTUser"
+            data-field="x_CrewAgency"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtUserList.CrewAgency.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtUserList.CrewAgency.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtUserList.CrewAgency.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtUserList.CrewAgency.EditAttributes)>
+            @(mtUserList.CrewAgency.SelectOptionListHtml("x_CrewAgency", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtUserList.CrewAgency.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTUsersrch", function() {
+            var options = {
+                name: "x_CrewAgency",
+                selectId: "fMTUsersrch_x_CrewAgency",
+                ajax: { id: "x_CrewAgency", form: "fMTUsersrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTUser.fields.CrewAgency.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtUserList.CrewAgency.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtUserList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtUserList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtUserList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtUserList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTUsersrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtUserList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTUsersrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtUserList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTUsersrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtUserList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTUsersrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtUserList.ShowPageHeader()
+@mtUserList.ShowMessages()
+<main class="list @(mtUserList.TotalRecords == 0 && !mtUserList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtUserList.TotalRecords > 0 || !Empty(mtUserList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtUserList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtUserList.TableGridClass)">
+<form name="@(mtUserList.FormName)" id="@(mtUserList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtUserList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtUserList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTUser" class="card-body ew-grid-middle-panel @(mtUserList.TableContainerClass)" style="@(mtUserList.TableContainerStyle)">
+@if (mtUserList.TotalRecords > 0 || mtUserList.IsGridEdit || mtUserList.IsMultiEdit) {
+<table id="tbl_MTUserlist" class="@(mtUserList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtUserList.RowType = RowType.Header;
+
+    // Render list options
+    await mtUserList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtUserList.ListOptions.RenderHeader("left")
+@if (mtUserList._Email.Visible) { // mtUserList._Email.Visible (begin)
+        <th data-name="_Email" class="@(mtUserList._Email.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTUser__Email" class="MTUser__Email">@Html.Raw(mtUserList.RenderFieldHeader(mtUserList._Email))</div></th>
+} @* mtUserList._Email.Visible (end) *@
+@if (mtUserList.FullName.Visible) { // mtUserList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(mtUserList.FullName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTUser_FullName" class="MTUser_FullName">@Html.Raw(mtUserList.RenderFieldHeader(mtUserList.FullName))</div></th>
+} @* mtUserList.FullName.Visible (end) *@
+@if (mtUserList.MTUserLevelID.Visible) { // mtUserList.MTUserLevelID.Visible (begin)
+        <th data-name="MTUserLevelID" class="@(mtUserList.MTUserLevelID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTUser_MTUserLevelID" class="MTUser_MTUserLevelID">@Html.Raw(mtUserList.RenderFieldHeader(mtUserList.MTUserLevelID))</div></th>
+} @* mtUserList.MTUserLevelID.Visible (end) *@
+@if (mtUserList.SeafarerID.Visible) { // mtUserList.SeafarerID.Visible (begin)
+        <th data-name="SeafarerID" class="@(mtUserList.SeafarerID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTUser_SeafarerID" class="MTUser_SeafarerID">@Html.Raw(mtUserList.RenderFieldHeader(mtUserList.SeafarerID))</div></th>
+} @* mtUserList.SeafarerID.Visible (end) *@
+@if (mtUserList.CrewAgency.Visible) { // mtUserList.CrewAgency.Visible (begin)
+        <th data-name="CrewAgency" class="@(mtUserList.CrewAgency.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTUser_CrewAgency" class="MTUser_CrewAgency">@Html.Raw(mtUserList.RenderFieldHeader(mtUserList.CrewAgency))</div></th>
+} @* mtUserList.CrewAgency.Visible (end) *@
+@* Render list options (header, right) *@
+@mtUserList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtUserList.PageNumber)">
+@{
+    await mtUserList.SetupGrid();
+    bool eof = mtUserList.Recordset == null; // DN
+}
+@while (mtUserList.RecordCount < mtUserList.StopRecord || SameString(mtUserList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtUserList.RowIndex, "$rowindex$") &&
+        (!mtUserList.IsGridAdd || mtUserList.CurrentMode == "copy") &&
+        (!((mtUserList.IsCopy || mtUserList.IsAdd) && mtUserList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtUserList.Recordset.ReadAsync();
+    mtUserList.RecordCount++;
+    if (mtUserList.RecordCount >= mtUserList.StartRecord) {
+        await mtUserList.SetupRow();
+    <tr @Html.Raw(mtUserList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtUserList.ListOptions.RenderBody("left", mtUserList.RowCount)
+    @if (mtUserList._Email.Visible) { // mtUserList._Email.Visible (begin)
+        <td data-name="_Email" @Html.Raw(mtUserList._Email.CellAttributes)>
+<span id="el@(mtUserList.RowCount)_MTUser__Email" class="el_MTUser__Email">
+<span @Html.Raw(mtUserList._Email.ViewAttributes)>
+@Html.Raw(mtUserList._Email.GetViewValue())</span>
+</span>
+</td>
+    } @* mtUserList._Email.Visible (end) *@
+    @if (mtUserList.FullName.Visible) { // mtUserList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(mtUserList.FullName.CellAttributes)>
+<span id="el@(mtUserList.RowCount)_MTUser_FullName" class="el_MTUser_FullName">
+<span @Html.Raw(mtUserList.FullName.ViewAttributes)>
+@Html.Raw(mtUserList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* mtUserList.FullName.Visible (end) *@
+    @if (mtUserList.MTUserLevelID.Visible) { // mtUserList.MTUserLevelID.Visible (begin)
+        <td data-name="MTUserLevelID" @Html.Raw(mtUserList.MTUserLevelID.CellAttributes)>
+<span id="el@(mtUserList.RowCount)_MTUser_MTUserLevelID" class="el_MTUser_MTUserLevelID">
+<span @Html.Raw(mtUserList.MTUserLevelID.ViewAttributes)>
+@Html.Raw(mtUserList.MTUserLevelID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtUserList.MTUserLevelID.Visible (end) *@
+    @if (mtUserList.SeafarerID.Visible) { // mtUserList.SeafarerID.Visible (begin)
+        <td data-name="SeafarerID" @Html.Raw(mtUserList.SeafarerID.CellAttributes)>
+<span id="el@(mtUserList.RowCount)_MTUser_SeafarerID" class="el_MTUser_SeafarerID">
+<span @Html.Raw(mtUserList.SeafarerID.ViewAttributes)>
+@Html.Raw(mtUserList.SeafarerID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtUserList.SeafarerID.Visible (end) *@
+    @if (mtUserList.CrewAgency.Visible) { // mtUserList.CrewAgency.Visible (begin)
+        <td data-name="CrewAgency" @Html.Raw(mtUserList.CrewAgency.CellAttributes)>
+<span id="el@(mtUserList.RowCount)_MTUser_CrewAgency" class="el_MTUser_CrewAgency">
+<span @Html.Raw(mtUserList.CrewAgency.ViewAttributes)>
+@Html.Raw(mtUserList.CrewAgency.GetViewValue())</span>
+</span>
+</td>
+    } @* mtUserList.CrewAgency.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtUserList.ListOptions.RenderBody("right", mtUserList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtUserList.RowIndex, "$rowindex$"))
+        mtUserList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtUserList.IsCopy || mtUserList.IsAdd) && mtUserList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtUserList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtUserList.CurrentAction) && !mtUserList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtUserList.CloseRecordset(); }
+@if (!mtUserList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtUserList.IsGridAdd && !(mtUserList.IsGridEdit && mtUserList.ModalGridEdit) && !mtUserList.IsMultiEdit) {
+@Html.Raw(mtUserList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtUserList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtUserList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtUserList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtUserList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTUser");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

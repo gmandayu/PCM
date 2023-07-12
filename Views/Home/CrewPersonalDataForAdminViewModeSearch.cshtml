@@ -1,0 +1,1619 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewPersonalDataForAdminViewModeSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewPersonalDataForAdminViewModeSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewPersonalDataForAdminViewModeSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewPersonalDataForAdminViewMode: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fCrewPersonalDataForAdminViewModesearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewPersonalDataForAdminViewModesearch")
+        .setPageId("search")
+@if (crewPersonalDataForAdminViewModeSearch.IsModal && crewPersonalDataForAdminViewModeSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["Nationality_CountryID", [], fields.Nationality_CountryID.isInvalid],
+            ["CountryOfOrigin_CountryID", [], fields.CountryOfOrigin_CountryID.isInvalid],
+            ["DateOfBirth", [ew.Validators.datetime(fields.DateOfBirth.clientFormatPattern)], fields.DateOfBirth.isInvalid],
+            ["CityOfBirth", [], fields.CityOfBirth.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["MaritalStatus", [], fields.MaritalStatus.isInvalid],
+            ["ReligionID", [], fields.ReligionID.isInvalid],
+            ["RankAppliedFor_RankID", [], fields.RankAppliedFor_RankID.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["PrimaryAddressDetail", [], fields.PrimaryAddressDetail.isInvalid],
+            ["PrimaryAddressCity", [], fields.PrimaryAddressCity.isInvalid],
+            ["PrimaryAddressNearestAirport", [], fields.PrimaryAddressNearestAirport.isInvalid],
+            ["PrimaryAddressState", [], fields.PrimaryAddressState.isInvalid],
+            ["PrimaryAddressPostCode", [], fields.PrimaryAddressPostCode.isInvalid],
+            ["PrimaryAddressCountryID", [], fields.PrimaryAddressCountryID.isInvalid],
+            ["PrimaryAddressHomeTel", [], fields.PrimaryAddressHomeTel.isInvalid],
+            ["AlternativeAddressDetail", [], fields.AlternativeAddressDetail.isInvalid],
+            ["AlternativeAddressState", [], fields.AlternativeAddressState.isInvalid],
+            ["AlternativeAddressCity", [], fields.AlternativeAddressCity.isInvalid],
+            ["AlternativeAddressHomeTel", [], fields.AlternativeAddressHomeTel.isInvalid],
+            ["AlternativeAddressPostCode", [], fields.AlternativeAddressPostCode.isInvalid],
+            ["AlternativeAddressCountryID", [], fields.AlternativeAddressCountryID.isInvalid],
+            ["MobileNumber", [], fields.MobileNumber.isInvalid],
+            ["_Email", [], fields._Email.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["FormSubmittedDateTime", [ew.Validators.datetime(fields.FormSubmittedDateTime.clientFormatPattern)], fields.FormSubmittedDateTime.isInvalid],
+            ["CreatedByUserID", [ew.Validators.integer], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [ew.Validators.integer], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid],
+            ["SocialSecurityNumber", [], fields.SocialSecurityNumber.isInvalid],
+            ["SocialSecurityIssuingCountryID", [], fields.SocialSecurityIssuingCountryID.isInvalid],
+            ["SocialSecurityImage", [], fields.SocialSecurityImage.isInvalid],
+            ["PersonalTaxNumber", [], fields.PersonalTaxNumber.isInvalid],
+            ["PersonalTaxIssuingCountryID", [], fields.PersonalTaxIssuingCountryID.isInvalid],
+            ["PersonalTaxImage", [], fields.PersonalTaxImage.isInvalid],
+            ["BloodType", [], fields.BloodType.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["NomineeRelationshipSelect", [], fields.NomineeRelationshipSelect.isInvalid],
+            ["NomineeRelationshipDetail", [], fields.NomineeRelationshipDetail.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Nationality_CountryID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "CountryOfOrigin_CountryID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "Gender": @Html.Raw(crewPersonalDataForAdminViewModeSearch.Gender.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "MaritalStatus": @Html.Raw(crewPersonalDataForAdminViewModeSearch.MaritalStatus.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "ReligionID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.ReligionID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "RankAppliedFor_RankID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "WillAcceptLowRank": @Html.Raw(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "PrimaryAddressCountryID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "AlternativeAddressCountryID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "SocialSecurityIssuingCountryID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "PersonalTaxIssuingCountryID": @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "BloodType": @Html.Raw(crewPersonalDataForAdminViewModeSearch.BloodType.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+            "NomineeRelationshipSelect": @Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.ToClientList(crewPersonalDataForAdminViewModeSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (crewPersonalDataForAdminViewModeSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@crewPersonalDataForAdminViewModeSearch.ShowPageHeader()
+@crewPersonalDataForAdminViewModeSearch.ShowMessages()
+<form name="fCrewPersonalDataForAdminViewModesearch" id="fCrewPersonalDataForAdminViewModesearch" class="@(crewPersonalDataForAdminViewModeSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (crewPersonalDataForAdminViewModeSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.Visible) { // crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_IndividualCodeNumber">@Html.Raw(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="CrewPersonalDataForAdminViewMode" data-field="x_IndividualCodeNumber" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.IndividualCodeNumber.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.FullName.Visible) { // crewPersonalDataForAdminViewModeSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_FullName">@Html.Raw(crewPersonalDataForAdminViewModeSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="CrewPersonalDataForAdminViewMode" data-field="x_FullName" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.FullName.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.FullName.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.FullName.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.Visible) { // crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.Visible (begin)
+    <div id="r_Nationality_CountryID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.RowAttributes)>
+        <label for="x_Nationality_CountryID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_Nationality_CountryID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Nationality_CountryID" id="z_Nationality_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_Nationality_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Nationality_CountryID"
+        name="x_Nationality_CountryID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_Nationality_CountryID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_Nationality_CountryID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.SelectOptionListHtml("x_Nationality_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_Nationality_CountryID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_Nationality_CountryID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_Nationality_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.Nationality_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_Nationality_CountryID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_Nationality_CountryID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.Nationality_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.Nationality_CountryID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.Visible) { // crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.Visible (begin)
+    <div id="r_CountryOfOrigin_CountryID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.RowAttributes)>
+        <label for="x_CountryOfOrigin_CountryID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_CountryOfOrigin_CountryID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CountryOfOrigin_CountryID" id="z_CountryOfOrigin_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_CountryOfOrigin_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CountryOfOrigin_CountryID"
+        name="x_CountryOfOrigin_CountryID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_CountryOfOrigin_CountryID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_CountryOfOrigin_CountryID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.SelectOptionListHtml("x_CountryOfOrigin_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_CountryOfOrigin_CountryID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_CountryOfOrigin_CountryID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_CountryOfOrigin_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.CountryOfOrigin_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_CountryOfOrigin_CountryID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_CountryOfOrigin_CountryID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.CountryOfOrigin_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.CountryOfOrigin_CountryID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.DateOfBirth.Visible) { // crewPersonalDataForAdminViewModeSearch.DateOfBirth.Visible (begin)
+    <div id="r_DateOfBirth" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.DateOfBirth.RowAttributes)>
+        <label for="x_DateOfBirth" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_DateOfBirth">@Html.Raw(crewPersonalDataForAdminViewModeSearch.DateOfBirth.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateOfBirth" id="z_DateOfBirth" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.DateOfBirth.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_DateOfBirth" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.DateOfBirth.InputTextType)" name="x_DateOfBirth" id="x_DateOfBirth" data-table="CrewPersonalDataForAdminViewMode" data-field="x_DateOfBirth" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.DateOfBirth.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.DateOfBirth.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.DateOfBirth.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.DateOfBirth.GetErrorMessage(false))</div>
+@if (!crewPersonalDataForAdminViewModeSearch.DateOfBirth.ReadOnly && !crewPersonalDataForAdminViewModeSearch.DateOfBirth.Disabled && !crewPersonalDataForAdminViewModeSearch.DateOfBirth.EditAttrs.Is("readonly") && !crewPersonalDataForAdminViewModeSearch.DateOfBirth.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewPersonalDataForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewPersonalDataForAdminViewModesearch", "x_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.DateOfBirth.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.CityOfBirth.Visible) { // crewPersonalDataForAdminViewModeSearch.CityOfBirth.Visible (begin)
+    <div id="r_CityOfBirth" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.CityOfBirth.RowAttributes)>
+        <label for="x_CityOfBirth" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_CityOfBirth">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CityOfBirth.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CityOfBirth" id="z_CityOfBirth" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.CityOfBirth.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_CityOfBirth" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.CityOfBirth.InputTextType)" name="x_CityOfBirth" id="x_CityOfBirth" data-table="CrewPersonalDataForAdminViewMode" data-field="x_CityOfBirth" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.CityOfBirth.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.CityOfBirth.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.CityOfBirth.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.CityOfBirth.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CityOfBirth.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.CityOfBirth.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.Gender.Visible) { // crewPersonalDataForAdminViewModeSearch.Gender.Visible (begin)
+    <div id="r_Gender" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.Gender.RowAttributes)>
+        <label for="x_Gender" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_Gender">@Html.Raw(crewPersonalDataForAdminViewModeSearch.Gender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Gender" id="z_Gender" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.Gender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_Gender" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Gender"
+        name="x_Gender"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.Gender.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_Gender"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_Gender"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.Gender.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.Gender.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.Gender.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.Gender.SelectOptionListHtml("x_Gender"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.Gender.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_Gender", selectId: "fCrewPersonalDataForAdminViewModesearch_x_Gender" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.Gender?.lookupOptions.length) {
+        options.data = { id: "x_Gender", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_Gender", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.Gender.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.Gender.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.MaritalStatus.Visible) { // crewPersonalDataForAdminViewModeSearch.MaritalStatus.Visible (begin)
+    <div id="r_MaritalStatus" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.MaritalStatus.RowAttributes)>
+        <label for="x_MaritalStatus" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_MaritalStatus">@Html.Raw(crewPersonalDataForAdminViewModeSearch.MaritalStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MaritalStatus" id="z_MaritalStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.MaritalStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_MaritalStatus" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MaritalStatus"
+        name="x_MaritalStatus"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.MaritalStatus.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_MaritalStatus"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_MaritalStatus"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.MaritalStatus.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.MaritalStatus.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.MaritalStatus.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.MaritalStatus.SelectOptionListHtml("x_MaritalStatus"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.MaritalStatus.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_MaritalStatus", selectId: "fCrewPersonalDataForAdminViewModesearch_x_MaritalStatus" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.MaritalStatus?.lookupOptions.length) {
+        options.data = { id: "x_MaritalStatus", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_MaritalStatus", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.MaritalStatus.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.MaritalStatus.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.ReligionID.Visible) { // crewPersonalDataForAdminViewModeSearch.ReligionID.Visible (begin)
+    <div id="r_ReligionID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.ReligionID.RowAttributes)>
+        <label for="x_ReligionID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_ReligionID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.ReligionID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ReligionID" id="z_ReligionID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.ReligionID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_ReligionID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_ReligionID"
+        name="x_ReligionID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.ReligionID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_ReligionID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_ReligionID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.ReligionID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.ReligionID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.ReligionID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.ReligionID.SelectOptionListHtml("x_ReligionID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.ReligionID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.ReligionID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_ReligionID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_ReligionID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_ReligionID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.ReligionID?.lookupOptions.length) {
+        options.data = { id: "x_ReligionID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_ReligionID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.ReligionID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.ReligionID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.Visible) { // crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.Visible (begin)
+    <div id="r_RankAppliedFor_RankID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.RowAttributes)>
+        <label for="x_RankAppliedFor_RankID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_RankAppliedFor_RankID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_RankAppliedFor_RankID" id="z_RankAppliedFor_RankID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_RankAppliedFor_RankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_RankAppliedFor_RankID"
+        name="x_RankAppliedFor_RankID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_RankAppliedFor_RankID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_RankAppliedFor_RankID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.SelectOptionListHtml("x_RankAppliedFor_RankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_RankAppliedFor_RankID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_RankAppliedFor_RankID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_RankAppliedFor_RankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.RankAppliedFor_RankID?.lookupOptions.length) {
+        options.data = { id: "x_RankAppliedFor_RankID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_RankAppliedFor_RankID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.RankAppliedFor_RankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.RankAppliedFor_RankID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.Visible) { // crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.RowAttributes)>
+        <label class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_WillAcceptLowRank">@Html.Raw(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WillAcceptLowRank" id="z_WillAcceptLowRank" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_WillAcceptLowRank" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.IsInvalidClass)" data-table="CrewPersonalDataForAdminViewMode" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.AdvancedSearch.SearchValue)" @Html.Raw(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.WillAcceptLowRank.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AvailableFrom.Visible) { // crewPersonalDataForAdminViewModeSearch.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableFrom.RowAttributes)>
+        <label for="x_AvailableFrom" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AvailableFrom">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableFrom.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableFrom" id="z_AvailableFrom" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableFrom.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AvailableFrom" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="CrewPersonalDataForAdminViewMode" data-field="x_AvailableFrom" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AvailableFrom.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.AvailableFrom.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableFrom.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableFrom.GetErrorMessage(false))</div>
+@if (!crewPersonalDataForAdminViewModeSearch.AvailableFrom.ReadOnly && !crewPersonalDataForAdminViewModeSearch.AvailableFrom.Disabled && !crewPersonalDataForAdminViewModeSearch.AvailableFrom.EditAttrs.Is("readonly") && !crewPersonalDataForAdminViewModeSearch.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewPersonalDataForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewPersonalDataForAdminViewModesearch", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AvailableFrom.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AvailableUntil.Visible) { // crewPersonalDataForAdminViewModeSearch.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableUntil.RowAttributes)>
+        <label for="x_AvailableUntil" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AvailableUntil">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableUntil" id="z_AvailableUntil" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AvailableUntil" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="CrewPersonalDataForAdminViewMode" data-field="x_AvailableUntil" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AvailableUntil.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.AvailableUntil.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AvailableUntil.GetErrorMessage(false))</div>
+@if (!crewPersonalDataForAdminViewModeSearch.AvailableUntil.ReadOnly && !crewPersonalDataForAdminViewModeSearch.AvailableUntil.Disabled && !crewPersonalDataForAdminViewModeSearch.AvailableUntil.EditAttrs.Is("readonly") && !crewPersonalDataForAdminViewModeSearch.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewPersonalDataForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewPersonalDataForAdminViewModesearch", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AvailableUntil.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.Visible) { // crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.Visible (begin)
+    <div id="r_PrimaryAddressDetail" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.RowAttributes)>
+        <label for="x_PrimaryAddressDetail" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PrimaryAddressDetail">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressDetail" id="z_PrimaryAddressDetail" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PrimaryAddressDetail" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.InputTextType)" name="x_PrimaryAddressDetail" id="x_PrimaryAddressDetail" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PrimaryAddressDetail" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.EditValue)" size="50" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PrimaryAddressDetail.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.Visible) { // crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.Visible (begin)
+    <div id="r_PrimaryAddressCity" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.RowAttributes)>
+        <label for="x_PrimaryAddressCity" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PrimaryAddressCity">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressCity" id="z_PrimaryAddressCity" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PrimaryAddressCity" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.InputTextType)" name="x_PrimaryAddressCity" id="x_PrimaryAddressCity" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PrimaryAddressCity" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PrimaryAddressCity.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.Visible) { // crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.Visible (begin)
+    <div id="r_PrimaryAddressNearestAirport" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.RowAttributes)>
+        <label for="x_PrimaryAddressNearestAirport" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PrimaryAddressNearestAirport">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressNearestAirport" id="z_PrimaryAddressNearestAirport" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PrimaryAddressNearestAirport" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.InputTextType)" name="x_PrimaryAddressNearestAirport" id="x_PrimaryAddressNearestAirport" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PrimaryAddressNearestAirport" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PrimaryAddressNearestAirport.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.Visible) { // crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.Visible (begin)
+    <div id="r_PrimaryAddressState" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.RowAttributes)>
+        <label for="x_PrimaryAddressState" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PrimaryAddressState">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressState" id="z_PrimaryAddressState" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PrimaryAddressState" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.InputTextType)" name="x_PrimaryAddressState" id="x_PrimaryAddressState" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PrimaryAddressState" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PrimaryAddressState.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.Visible) { // crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.Visible (begin)
+    <div id="r_PrimaryAddressPostCode" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.RowAttributes)>
+        <label for="x_PrimaryAddressPostCode" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PrimaryAddressPostCode">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressPostCode" id="z_PrimaryAddressPostCode" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PrimaryAddressPostCode" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.InputTextType)" name="x_PrimaryAddressPostCode" id="x_PrimaryAddressPostCode" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PrimaryAddressPostCode" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PrimaryAddressPostCode.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.Visible) { // crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.Visible (begin)
+    <div id="r_PrimaryAddressCountryID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.RowAttributes)>
+        <label for="x_PrimaryAddressCountryID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PrimaryAddressCountryID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PrimaryAddressCountryID" id="z_PrimaryAddressCountryID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PrimaryAddressCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_PrimaryAddressCountryID"
+        name="x_PrimaryAddressCountryID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_PrimaryAddressCountryID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_PrimaryAddressCountryID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.SelectOptionListHtml("x_PrimaryAddressCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_PrimaryAddressCountryID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_PrimaryAddressCountryID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_PrimaryAddressCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.PrimaryAddressCountryID?.lookupOptions.length) {
+        options.data = { id: "x_PrimaryAddressCountryID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_PrimaryAddressCountryID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.PrimaryAddressCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PrimaryAddressCountryID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.Visible) { // crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.Visible (begin)
+    <div id="r_PrimaryAddressHomeTel" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.RowAttributes)>
+        <label for="x_PrimaryAddressHomeTel" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PrimaryAddressHomeTel">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressHomeTel" id="z_PrimaryAddressHomeTel" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PrimaryAddressHomeTel" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.InputTextType)" name="x_PrimaryAddressHomeTel" id="x_PrimaryAddressHomeTel" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PrimaryAddressHomeTel" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PrimaryAddressHomeTel.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.Visible) { // crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.Visible (begin)
+    <div id="r_AlternativeAddressDetail" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.RowAttributes)>
+        <label for="x_AlternativeAddressDetail" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AlternativeAddressDetail">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressDetail" id="z_AlternativeAddressDetail" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AlternativeAddressDetail" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.InputTextType)" name="x_AlternativeAddressDetail" id="x_AlternativeAddressDetail" data-table="CrewPersonalDataForAdminViewMode" data-field="x_AlternativeAddressDetail" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.EditValue)" size="50" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AlternativeAddressDetail.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.Visible) { // crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.Visible (begin)
+    <div id="r_AlternativeAddressState" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.RowAttributes)>
+        <label for="x_AlternativeAddressState" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AlternativeAddressState">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressState" id="z_AlternativeAddressState" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AlternativeAddressState" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.InputTextType)" name="x_AlternativeAddressState" id="x_AlternativeAddressState" data-table="CrewPersonalDataForAdminViewMode" data-field="x_AlternativeAddressState" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AlternativeAddressState.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.Visible) { // crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.Visible (begin)
+    <div id="r_AlternativeAddressCity" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.RowAttributes)>
+        <label for="x_AlternativeAddressCity" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AlternativeAddressCity">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressCity" id="z_AlternativeAddressCity" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AlternativeAddressCity" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.InputTextType)" name="x_AlternativeAddressCity" id="x_AlternativeAddressCity" data-table="CrewPersonalDataForAdminViewMode" data-field="x_AlternativeAddressCity" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AlternativeAddressCity.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.Visible) { // crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.Visible (begin)
+    <div id="r_AlternativeAddressHomeTel" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.RowAttributes)>
+        <label for="x_AlternativeAddressHomeTel" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AlternativeAddressHomeTel">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressHomeTel" id="z_AlternativeAddressHomeTel" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AlternativeAddressHomeTel" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.InputTextType)" name="x_AlternativeAddressHomeTel" id="x_AlternativeAddressHomeTel" data-table="CrewPersonalDataForAdminViewMode" data-field="x_AlternativeAddressHomeTel" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AlternativeAddressHomeTel.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.Visible) { // crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.Visible (begin)
+    <div id="r_AlternativeAddressPostCode" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.RowAttributes)>
+        <label for="x_AlternativeAddressPostCode" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AlternativeAddressPostCode">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressPostCode" id="z_AlternativeAddressPostCode" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AlternativeAddressPostCode" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.InputTextType)" name="x_AlternativeAddressPostCode" id="x_AlternativeAddressPostCode" data-table="CrewPersonalDataForAdminViewMode" data-field="x_AlternativeAddressPostCode" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AlternativeAddressPostCode.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.Visible) { // crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.Visible (begin)
+    <div id="r_AlternativeAddressCountryID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.RowAttributes)>
+        <label for="x_AlternativeAddressCountryID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_AlternativeAddressCountryID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AlternativeAddressCountryID" id="z_AlternativeAddressCountryID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_AlternativeAddressCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_AlternativeAddressCountryID"
+        name="x_AlternativeAddressCountryID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_AlternativeAddressCountryID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_AlternativeAddressCountryID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.SelectOptionListHtml("x_AlternativeAddressCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_AlternativeAddressCountryID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_AlternativeAddressCountryID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_AlternativeAddressCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.AlternativeAddressCountryID?.lookupOptions.length) {
+        options.data = { id: "x_AlternativeAddressCountryID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_AlternativeAddressCountryID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.AlternativeAddressCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.AlternativeAddressCountryID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.MobileNumber.Visible) { // crewPersonalDataForAdminViewModeSearch.MobileNumber.Visible (begin)
+    <div id="r_MobileNumber" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.MobileNumber.RowAttributes)>
+        <label for="x_MobileNumber" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_MobileNumber">@Html.Raw(crewPersonalDataForAdminViewModeSearch.MobileNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MobileNumber" id="z_MobileNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.MobileNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_MobileNumber" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.MobileNumber.InputTextType)" name="x_MobileNumber" id="x_MobileNumber" data-table="CrewPersonalDataForAdminViewMode" data-field="x_MobileNumber" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.MobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.MobileNumber.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.MobileNumber.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.MobileNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.MobileNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.MobileNumber.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch._Email.Visible) { // crewPersonalDataForAdminViewModeSearch._Email.Visible (begin)
+    <div id="r__Email" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch._Email.RowAttributes)>
+        <label for="x__Email" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode__Email">@Html.Raw(crewPersonalDataForAdminViewModeSearch._Email.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Email" id="z__Email" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch._Email.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode__Email" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch._Email.InputTextType)" name="x__Email" id="x__Email" data-table="CrewPersonalDataForAdminViewMode" data-field="x__Email" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch._Email.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch._Email.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch._Email.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch._Email.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch._Email.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.EmployeeStatus.Visible) { // crewPersonalDataForAdminViewModeSearch.EmployeeStatus.Visible (begin)
+    <div id="r_EmployeeStatus" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.RowAttributes)>
+        <label for="x_EmployeeStatus" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_EmployeeStatus">@Html.Raw(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EmployeeStatus" id="z_EmployeeStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_EmployeeStatus" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.InputTextType)" name="x_EmployeeStatus" id="x_EmployeeStatus" data-table="CrewPersonalDataForAdminViewMode" data-field="x_EmployeeStatus" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.EmployeeStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.EmployeeStatus.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.Visible) { // crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.Visible (begin)
+    <div id="r_FormSubmittedDateTime" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.RowAttributes)>
+        <label for="x_FormSubmittedDateTime" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_FormSubmittedDateTime">@Html.Raw(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_FormSubmittedDateTime" id="z_FormSubmittedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_FormSubmittedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.InputTextType)" name="x_FormSubmittedDateTime" id="x_FormSubmittedDateTime" data-table="CrewPersonalDataForAdminViewMode" data-field="x_FormSubmittedDateTime" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.GetErrorMessage(false))</div>
+@if (!crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.ReadOnly && !crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.Disabled && !crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.EditAttrs.Is("readonly") && !crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewPersonalDataForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewPersonalDataForAdminViewModesearch", "x_FormSubmittedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.FormSubmittedDateTime.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.CreatedByUserID.Visible) { // crewPersonalDataForAdminViewModeSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_CreatedByUserID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_CreatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.InputTextType)" name="x_CreatedByUserID" id="x_CreatedByUserID" data-table="CrewPersonalDataForAdminViewMode" data-field="x_CreatedByUserID" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.CreatedByUserID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.CreatedDateTime.Visible) { // crewPersonalDataForAdminViewModeSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_CreatedDateTime">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="CrewPersonalDataForAdminViewMode" data-field="x_CreatedDateTime" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!crewPersonalDataForAdminViewModeSearch.CreatedDateTime.ReadOnly && !crewPersonalDataForAdminViewModeSearch.CreatedDateTime.Disabled && !crewPersonalDataForAdminViewModeSearch.CreatedDateTime.EditAttrs.Is("readonly") && !crewPersonalDataForAdminViewModeSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewPersonalDataForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewPersonalDataForAdminViewModesearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.CreatedDateTime.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.Visible) { // crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_LastUpdatedByUserID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.InputTextType)" name="x_LastUpdatedByUserID" id="x_LastUpdatedByUserID" data-table="CrewPersonalDataForAdminViewMode" data-field="x_LastUpdatedByUserID" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.LastUpdatedByUserID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.Visible) { // crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_LastUpdatedDateTime">@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="CrewPersonalDataForAdminViewMode" data-field="x_LastUpdatedDateTime" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.ReadOnly && !crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.Disabled && !crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewPersonalDataForAdminViewModesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewPersonalDataForAdminViewModesearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.LastUpdatedDateTime.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.Visible) { // crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.Visible (begin)
+    <div id="r_SocialSecurityNumber" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.RowAttributes)>
+        <label for="x_SocialSecurityNumber" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_SocialSecurityNumber">@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SocialSecurityNumber" id="z_SocialSecurityNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_SocialSecurityNumber" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.InputTextType)" name="x_SocialSecurityNumber" id="x_SocialSecurityNumber" data-table="CrewPersonalDataForAdminViewMode" data-field="x_SocialSecurityNumber" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.SocialSecurityNumber.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.Visible) { // crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.Visible (begin)
+    <div id="r_SocialSecurityIssuingCountryID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.RowAttributes)>
+        <label for="x_SocialSecurityIssuingCountryID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_SocialSecurityIssuingCountryID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_SocialSecurityIssuingCountryID" id="z_SocialSecurityIssuingCountryID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_SocialSecurityIssuingCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_SocialSecurityIssuingCountryID"
+        name="x_SocialSecurityIssuingCountryID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_SocialSecurityIssuingCountryID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_SocialSecurityIssuingCountryID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.SelectOptionListHtml("x_SocialSecurityIssuingCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_SocialSecurityIssuingCountryID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_SocialSecurityIssuingCountryID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_SocialSecurityIssuingCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.SocialSecurityIssuingCountryID?.lookupOptions.length) {
+        options.data = { id: "x_SocialSecurityIssuingCountryID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_SocialSecurityIssuingCountryID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.SocialSecurityIssuingCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.SocialSecurityIssuingCountryID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.Visible) { // crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.Visible (begin)
+    <div id="r_SocialSecurityImage" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.RowAttributes)>
+        <label class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_SocialSecurityImage">@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SocialSecurityImage" id="z_SocialSecurityImage" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_SocialSecurityImage" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.InputTextType)" name="x_SocialSecurityImage" id="x_SocialSecurityImage" data-table="CrewPersonalDataForAdminViewMode" data-field="x_SocialSecurityImage" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.SocialSecurityImage.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.Visible) { // crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.Visible (begin)
+    <div id="r_PersonalTaxNumber" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.RowAttributes)>
+        <label for="x_PersonalTaxNumber" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PersonalTaxNumber">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PersonalTaxNumber" id="z_PersonalTaxNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PersonalTaxNumber" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.InputTextType)" name="x_PersonalTaxNumber" id="x_PersonalTaxNumber" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PersonalTaxNumber" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PersonalTaxNumber.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.Visible) { // crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.Visible (begin)
+    <div id="r_PersonalTaxIssuingCountryID" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.RowAttributes)>
+        <label for="x_PersonalTaxIssuingCountryID" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PersonalTaxIssuingCountryID">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PersonalTaxIssuingCountryID" id="z_PersonalTaxIssuingCountryID" value="=">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PersonalTaxIssuingCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_PersonalTaxIssuingCountryID"
+        name="x_PersonalTaxIssuingCountryID"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_PersonalTaxIssuingCountryID"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_PersonalTaxIssuingCountryID"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.SelectOptionListHtml("x_PersonalTaxIssuingCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.GetErrorMessage(false))</div>
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.Lookup.GetParamTag(crewPersonalDataForAdminViewModeSearch, "p_x_PersonalTaxIssuingCountryID"))
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_PersonalTaxIssuingCountryID", selectId: "fCrewPersonalDataForAdminViewModesearch_x_PersonalTaxIssuingCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.PersonalTaxIssuingCountryID?.lookupOptions.length) {
+        options.data = { id: "x_PersonalTaxIssuingCountryID", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_PersonalTaxIssuingCountryID", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.PersonalTaxIssuingCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PersonalTaxIssuingCountryID.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.Visible) { // crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.Visible (begin)
+    <div id="r_PersonalTaxImage" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.RowAttributes)>
+        <label class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_PersonalTaxImage">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PersonalTaxImage" id="z_PersonalTaxImage" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_PersonalTaxImage" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.InputTextType)" name="x_PersonalTaxImage" id="x_PersonalTaxImage" data-table="CrewPersonalDataForAdminViewMode" data-field="x_PersonalTaxImage" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.PersonalTaxImage.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.BloodType.Visible) { // crewPersonalDataForAdminViewModeSearch.BloodType.Visible (begin)
+    <div id="r_BloodType" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.BloodType.RowAttributes)>
+        <label for="x_BloodType" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_BloodType">@Html.Raw(crewPersonalDataForAdminViewModeSearch.BloodType.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BloodType" id="z_BloodType" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.BloodType.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_BloodType" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_BloodType"
+        name="x_BloodType"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.BloodType.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_BloodType"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_BloodType"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.BloodType.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.BloodType.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.BloodType.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.BloodType.SelectOptionListHtml("x_BloodType"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.BloodType.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_BloodType", selectId: "fCrewPersonalDataForAdminViewModesearch_x_BloodType" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.BloodType?.lookupOptions.length) {
+        options.data = { id: "x_BloodType", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_BloodType", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.BloodType.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.BloodType.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.RequiredPhoto.Visible) { // crewPersonalDataForAdminViewModeSearch.RequiredPhoto.Visible (begin)
+    <div id="r_RequiredPhoto" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.RowAttributes)>
+        <label class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_RequiredPhoto">@Html.Raw(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RequiredPhoto" id="z_RequiredPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_RequiredPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.InputTextType)" name="x_RequiredPhoto" id="x_RequiredPhoto" data-table="CrewPersonalDataForAdminViewMode" data-field="x_RequiredPhoto" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.RequiredPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.RequiredPhoto.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.VisaPhoto.Visible) { // crewPersonalDataForAdminViewModeSearch.VisaPhoto.Visible (begin)
+    <div id="r_VisaPhoto" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.VisaPhoto.RowAttributes)>
+        <label class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_VisaPhoto">@Html.Raw(crewPersonalDataForAdminViewModeSearch.VisaPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VisaPhoto" id="z_VisaPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.VisaPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_VisaPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.VisaPhoto.InputTextType)" name="x_VisaPhoto" id="x_VisaPhoto" data-table="CrewPersonalDataForAdminViewMode" data-field="x_VisaPhoto" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.VisaPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.VisaPhoto.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.VisaPhoto.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.VisaPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.VisaPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.VisaPhoto.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.Visible) { // crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.Visible (begin)
+    <div id="r_NomineeRelationshipSelect" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.RowAttributes)>
+        <label for="x_NomineeRelationshipSelect" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_NomineeRelationshipSelect">@Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeRelationshipSelect" id="z_NomineeRelationshipSelect" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_NomineeRelationshipSelect" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_NomineeRelationshipSelect"
+        name="x_NomineeRelationshipSelect"
+        class="form-select ew-select@(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.IsInvalidClass)"
+        data-select2-id="fCrewPersonalDataForAdminViewModesearch_x_NomineeRelationshipSelect"
+        data-table="CrewPersonalDataForAdminViewMode"
+        data-field="x_NomineeRelationshipSelect"
+        data-value-separator="@(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.PlaceHolder))"
+        @Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.EditAttributes)>
+        @(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.SelectOptionListHtml("x_NomineeRelationshipSelect"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fCrewPersonalDataForAdminViewModesearch", function() {
+    var options = { name: "x_NomineeRelationshipSelect", selectId: "fCrewPersonalDataForAdminViewModesearch_x_NomineeRelationshipSelect" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewPersonalDataForAdminViewModesearch.lists.NomineeRelationshipSelect?.lookupOptions.length) {
+        options.data = { id: "x_NomineeRelationshipSelect", form: "fCrewPersonalDataForAdminViewModesearch" };
+    } else {
+        options.ajax = { id: "x_NomineeRelationshipSelect", form: "fCrewPersonalDataForAdminViewModesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewPersonalDataForAdminViewMode.fields.NomineeRelationshipSelect.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.NomineeRelationshipSelect.Visible (end) *@
+@if (crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.Visible) { // crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.Visible (begin)
+    <div id="r_NomineeRelationshipDetail" class="row" @Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.RowAttributes)>
+        <label for="x_NomineeRelationshipDetail" class="@(crewPersonalDataForAdminViewModeSearch.LeftColumnClass)"><span id="elh_CrewPersonalDataForAdminViewMode_NomineeRelationshipDetail">@Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeRelationshipDetail" id="z_NomineeRelationshipDetail" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewPersonalDataForAdminViewModeSearch.RightColumnClass)">
+            <div @Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewPersonalDataForAdminViewMode_NomineeRelationshipDetail" class="ew-search-field ew-search-field-single">
+<input type="@(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.InputTextType)" name="x_NomineeRelationshipDetail" id="x_NomineeRelationshipDetail" data-table="CrewPersonalDataForAdminViewMode" data-field="x_NomineeRelationshipDetail" value="@Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.PlaceHolder))" data-format-pattern="@(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.FormatPattern)"@Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewPersonalDataForAdminViewModeSearch.NomineeRelationshipDetail.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(crewPersonalDataForAdminViewModeSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCrewPersonalDataForAdminViewModesearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (crewPersonalDataForAdminViewModeSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCrewPersonalDataForAdminViewModesearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fCrewPersonalDataForAdminViewModesearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(crewPersonalDataForAdminViewModeSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@crewPersonalDataForAdminViewModeSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewPersonalDataForAdminViewMode");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

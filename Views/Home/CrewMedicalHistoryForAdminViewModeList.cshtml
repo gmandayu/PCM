@@ -1,0 +1,1786 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewMedicalHistoryForAdminViewModeList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewMedicalHistoryForAdminViewModeList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewMedicalHistoryForAdminViewModeList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalHistoryForAdminViewModeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalHistoryForAdminViewMode: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewMedicalHistoryForAdminViewModeList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewMedicalHistoryForAdminViewModeList.FormName)")
+        .setPageId("list")
+        .setFormKeyCountName("@(crewMedicalHistoryForAdminViewModeList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewMedicalHistoryForAdminViewModeList.MTCrewID.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "_Type": @Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "VesselName": @Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "DateOccurence": @Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "PlaceOccurence": @Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "PeriodOfDisability": @Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "PresentCondition": @Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "Treatment": @Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "Details": @Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewMedicalHistoryForAdminViewModeList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewMedicalHistoryForAdminViewModeList.TotalRecords > 0 && crewMedicalHistoryForAdminViewModeList.ExportOptions.Visible) {
+    crewMedicalHistoryForAdminViewModeList.ExportOptions.Render("body");
+}
+@if (crewMedicalHistoryForAdminViewModeList.ImportOptions.Visible) {
+    crewMedicalHistoryForAdminViewModeList.ImportOptions.Render("body");
+}
+@if (crewMedicalHistoryForAdminViewModeList.SearchOptions.Visible) {
+    crewMedicalHistoryForAdminViewModeList.SearchOptions.Render("body");
+}
+@if (crewMedicalHistoryForAdminViewModeList.FilterOptions.Visible) {
+    crewMedicalHistoryForAdminViewModeList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewMedicalHistoryForAdminViewModeList.ShowCurrentFilter) {
+    crewMedicalHistoryForAdminViewModeList.ShowFilterList();
+}
+@if (!crewMedicalHistoryForAdminViewModeList.IsModal) {
+<form name="fCrewMedicalHistoryForAdminViewModesrch" id="fCrewMedicalHistoryForAdminViewModesrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewMedicalHistoryForAdminViewModesrch_search_panel" class="mb-2 mb-sm-0 @(crewMedicalHistoryForAdminViewModeList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalHistoryForAdminViewModeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalHistoryForAdminViewMode: currentTable } });
+var currentForm;
+var fCrewMedicalHistoryForAdminViewModesrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewMedicalHistoryForAdminViewModesrch")
+        .setPageId("list")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["_Type", [], fields._Type.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["DateOccurence", [], fields.DateOccurence.isInvalid],
+            ["PlaceOccurence", [], fields.PlaceOccurence.isInvalid],
+            ["PeriodOfDisability", [], fields.PeriodOfDisability.isInvalid],
+            ["PresentCondition", [], fields.PresentCondition.isInvalid],
+            ["Treatment", [], fields.Treatment.isInvalid],
+            ["Details", [], fields.Details.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewMedicalHistoryForAdminViewModeList.MTCrewID.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "_Type": @Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "VesselName": @Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "DateOccurence": @Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "PlaceOccurence": @Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "PeriodOfDisability": @Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "PresentCondition": @Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "Treatment": @Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "Details": @Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.ToClientList(crewMedicalHistoryForAdminViewModeList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewMedicalHistoryForAdminViewModeList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewMedicalHistoryForAdminViewModeList.IsExport() && Empty(crewMedicalHistoryForAdminViewModeList.CurrentAction) && crewMedicalHistoryForAdminViewModeList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0 d-none@(crewMedicalHistoryForAdminViewModeList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewMedicalHistoryForAdminViewModeList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewMedicalHistoryForAdminViewModeList.RowType = RowType.Search;
+    crewMedicalHistoryForAdminViewModeList.ResetAttributes();
+    await crewMedicalHistoryForAdminViewModeList.RenderRow();
+}
+@if (crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible) { // crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.MTCrewID.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_MTCrewID"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.MTCrewID.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList._Type.Visible) { // crewMedicalHistoryForAdminViewModeList._Type.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList._Type.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs__Type" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList._Type.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Type"
+            name="x__Type[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList._Type.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x__Type"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x__Type"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList._Type.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList._Type.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList._Type.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList._Type.SelectOptionListHtml("x__Type", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x__Type",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x__Type",
+                ajax: { id: "x__Type", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields._Type.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList._Type.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.VesselName.Visible) { // crewMedicalHistoryForAdminViewModeList.VesselName.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.VesselName.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_VesselName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.VesselName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VesselName"
+            name="x_VesselName[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.VesselName.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_VesselName"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_VesselName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.VesselName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.VesselName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.VesselName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.VesselName.SelectOptionListHtml("x_VesselName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_VesselName",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_VesselName",
+                ajax: { id: "x_VesselName", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.VesselName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.VesselName.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible) { // crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.DateOccurence.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_DateOccurence" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.DateOccurence.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOccurence"
+            name="x_DateOccurence[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.DateOccurence.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_DateOccurence"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_DateOccurence"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.DateOccurence.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.DateOccurence.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.DateOccurence.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.DateOccurence.SelectOptionListHtml("x_DateOccurence", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_DateOccurence",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_DateOccurence",
+                ajax: { id: "x_DateOccurence", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.DateOccurence.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible) { // crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.PlaceOccurence.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOccurence" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOccurence"
+            name="x_PlaceOccurence[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_PlaceOccurence"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_PlaceOccurence"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.SelectOptionListHtml("x_PlaceOccurence", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_PlaceOccurence",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_PlaceOccurence",
+                ajax: { id: "x_PlaceOccurence", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.PlaceOccurence.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible) { // crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_PeriodOfDisability" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PeriodOfDisability"
+            name="x_PeriodOfDisability[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_PeriodOfDisability"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_PeriodOfDisability"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.SelectOptionListHtml("x_PeriodOfDisability", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_PeriodOfDisability",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_PeriodOfDisability",
+                ajax: { id: "x_PeriodOfDisability", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.PeriodOfDisability.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible) { // crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.PresentCondition.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_PresentCondition" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.PresentCondition.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PresentCondition"
+            name="x_PresentCondition[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.PresentCondition.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_PresentCondition"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_PresentCondition"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.PresentCondition.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.PresentCondition.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.PresentCondition.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.PresentCondition.SelectOptionListHtml("x_PresentCondition", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_PresentCondition",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_PresentCondition",
+                ajax: { id: "x_PresentCondition", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.PresentCondition.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.Treatment.Visible) { // crewMedicalHistoryForAdminViewModeList.Treatment.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.Treatment.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_Treatment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.Treatment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Treatment"
+            name="x_Treatment[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.Treatment.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_Treatment"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_Treatment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.Treatment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.Treatment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.Treatment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.Treatment.SelectOptionListHtml("x_Treatment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_Treatment",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_Treatment",
+                ajax: { id: "x_Treatment", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.Treatment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.Treatment.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.Details.Visible) { // crewMedicalHistoryForAdminViewModeList.Details.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.Details.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_Details" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.Details.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Details"
+            name="x_Details[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.Details.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_Details"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_Details"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.Details.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.Details.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.Details.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.Details.SelectOptionListHtml("x_Details", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_Details",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_Details",
+                ajax: { id: "x_Details", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.Details.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.Details.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible) { // crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.CreatedByUserID.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_CreatedByUserID"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible) { // crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.CreatedDateTime.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_CreatedDateTime"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_LastUpdatedByUserID"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+    if (!crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.UseFilter) {
+        crewMedicalHistoryForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminViewModesrch_x_LastUpdatedDateTime"
+            data-table="CrewMedicalHistoryForAdminViewMode"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.EditAttributes)>
+            @(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminViewModesrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewMedicalHistoryForAdminViewModesrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewMedicalHistoryForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdminViewMode.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div id="tpsd_CrewMedicalHistoryForAdminViewModelist" class="ew-custom-template-search"></div>
+<template id="tpsm_CrewMedicalHistoryForAdminViewModelist">
+<div id="CrewMedicalHistoryForAdminViewModelist"><div id="schedule-modal-dialog" aria-hidden="true" aria-modal="true" class="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="schedule-modal-dialog-title" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="schedule-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-schedule" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_DocumentCheckDateTime" class="row">
+                        <label for="x_DocumentCheckDateTime" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Document Check Date Time" : "Tanggal Dan Jam Cek Dokumen")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckDateTime">
+                                    <div class="input-group" id="datetimepicker_DocumentCheckDateTime" data-target-input="nearest" data-td-target-toggle="nearest">
+                                        <input
+                                            type="text"
+                                            name="x_DocumentCheckDateTime"
+                                            id="x_DocumentCheckDateTime"
+                                            value=""
+                                            placeholder="Document Check Date Time"
+                                            data-format-pattern="yyyy-MM-dd HH:mm:sszzz"
+                                            class="form-control tempus-dominus-input"
+                                            data-target="#datetimepicker_DocumentCheckDateTime"
+                                        />
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="r_DocumentCheckNotes" class="row">
+                        <label for="x_DocumentCheckNotes" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckNotes">
+                                    <textarea
+                                        name="x_DocumentCheckNotes"
+                                        id="x_DocumentCheckNotes"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder=@(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary ew-btn" id="btn-add-schedule" type="button">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel-schedule" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- REVISE MODAL DIALOG. FIXME! -->
+<div id="revise-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Revise Crew Candidate" : "Tinjau Ulang Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="revise-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RevisedReason" class="row">
+                        <label for="x_RevisedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Revised Reason" : "Alasan Tinjau Ulang")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RevisedReason">
+                                    <textarea
+                                        name="x_RevisedReason"
+                                        id="x_RevisedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Revised Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-revise" type="button">
+                    @(CurrentLanguage == "en-US" ? "Revise" : "Tinjau Ulang")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="reject-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reject-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RejectedReason" class="row">
+                        <label for="x_RejectedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Rejected Reason" : "Alasan Ditolak")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RejectedReason">
+                                    <textarea
+                                        name="x_RejectedReason"
+                                        id="x_RejectedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Rejected Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-reject" type="button">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewPersonalDataForAdminViewModeView")">
+                @(CurrentLanguage == "en-US" ? "PERSONAL DATA" : "DATA PERSONAL")
+            </a>     
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewDocumentForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "DOCUMENTS" : "DOKUMEN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewBankAccountForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "BANK ACCOUNT" : "REKENING BANK")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFamilyForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "FAMILY" : "KELUARGA")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFormalEducationForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "FORMAL EDUCATION" : "PENDIDIKAN FORMAL")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalCertificateForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL CERTIFICATE / TEST" : "SERTIFIKAT / TES MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewCertificateForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "CERTIFICATES AND QUALIFICATIONS" : "SERTIFIKAT DAN KUALIFIKASI")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewExperienceForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "SEA EXPERIENCE" : "PENGALAMAN BERLAYAR")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewAppraisalForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "APPRAISALS" : "PENILAIAN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalHistoryForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL HISTORY" : "RIWAYAT MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewGeneralDataForAdminViewModeView")">
+                @(CurrentLanguage == "en-US" ? "GENERAL" : "UMUM")
+            </a>
+        </li>
+    </ul>  
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm ew-table table-head-fixed" id="ForAdminTable" data-isset="true">
+            <thead>
+                <tr class="ew-table-header">
+                    <th class="ew-list-option-header w-1" data-name="button"></th>
+                    <th class="ew-list-option-header text-nowrap" data-name="sequence"><span></span></th>
+                    <th data-name="_Type" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.Caption)
+                    </th>
+                    <th data-name="VesselName" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.Caption)
+                    </th>
+                    <th data-name="DateOccurence" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.Caption)
+                    </th>              
+                    <th data-name="PlaceOccurence" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Caption)
+                    </th>
+                    <th data-name="PeriodOfDisability" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Caption)
+                    </th>
+                    <th data-name="PresentCondition" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.Caption)
+                    </th>
+                    <th data-name="Treatment" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.Caption)
+                    </th>              
+                    <th data-name="Details" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.Caption)
+                    </th>
+                    <th data-name="CreatedByUserID" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Caption)
+                    </th>
+                    <th data-name="CreatedDateTime" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Caption)
+                    </th>
+                    <th data-name="LastUpdatedByUserID" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Caption)
+                    </th>
+                    <th data-name="LastUpdatedDateTime" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Caption)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div></div>
+</template>
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewMedicalHistoryForAdminViewModeList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewMedicalHistoryForAdminViewModeList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewMedicalHistoryForAdminViewModeList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminViewModeList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewMedicalHistoryForAdminViewModesrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminViewModeList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewMedicalHistoryForAdminViewModesrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminViewModeList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewMedicalHistoryForAdminViewModesrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminViewModeList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewMedicalHistoryForAdminViewModesrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+<script>
+loadjs.ready(ew.applyTemplateId, () => ew.applyTemplate("tpsd_CrewMedicalHistoryForAdminViewModelist", "tpsm_CrewMedicalHistoryForAdminViewModelist"));
+</script>
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewMedicalHistoryForAdminViewModeList.ShowPageHeader()
+@crewMedicalHistoryForAdminViewModeList.ShowMessages()
+<main class="list @(crewMedicalHistoryForAdminViewModeList.TotalRecords == 0 && !crewMedicalHistoryForAdminViewModeList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewMedicalHistoryForAdminViewModeList.TotalRecords > 0 || !Empty(crewMedicalHistoryForAdminViewModeList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewMedicalHistoryForAdminViewModeList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewMedicalHistoryForAdminViewModeList.TableGridClass)">
+<form name="@(crewMedicalHistoryForAdminViewModeList.FormName)" id="@(crewMedicalHistoryForAdminViewModeList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewMedicalHistoryForAdminViewModeList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewMedicalHistoryForAdminViewModeList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewMedicalHistoryForAdminViewMode" class="card-body ew-grid-middle-panel @(crewMedicalHistoryForAdminViewModeList.TableContainerClass)" style="@(crewMedicalHistoryForAdminViewModeList.TableContainerStyle)">
+@if (crewMedicalHistoryForAdminViewModeList.TotalRecords > 0 || crewMedicalHistoryForAdminViewModeList.IsGridEdit || crewMedicalHistoryForAdminViewModeList.IsMultiEdit) {
+<table id="tbl_CrewMedicalHistoryForAdminViewModelist" class="@(crewMedicalHistoryForAdminViewModeList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewMedicalHistoryForAdminViewModeList.RowType = RowType.Header;
+
+    // Render list options
+    await crewMedicalHistoryForAdminViewModeList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewMedicalHistoryForAdminViewModeList.ListOptions.RenderHeader("left", "", "block", crewMedicalHistoryForAdminViewModeList.TableVar, "CrewMedicalHistoryForAdminViewModelist")
+@if (crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible) { // crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewMedicalHistoryForAdminViewModeList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_MTCrewID" class="CrewMedicalHistoryForAdminViewMode_MTCrewID">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.MTCrewID))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList._Type.Visible) { // crewMedicalHistoryForAdminViewModeList._Type.Visible (begin)
+        <th data-name="_Type" class="@(crewMedicalHistoryForAdminViewModeList._Type.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode__Type" class="CrewMedicalHistoryForAdminViewMode__Type">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList._Type))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList._Type.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.VesselName.Visible) { // crewMedicalHistoryForAdminViewModeList.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(crewMedicalHistoryForAdminViewModeList.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_VesselName" class="CrewMedicalHistoryForAdminViewMode_VesselName">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.VesselName))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.VesselName.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible) { // crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible (begin)
+        <th data-name="DateOccurence" class="@(crewMedicalHistoryForAdminViewModeList.DateOccurence.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_DateOccurence" class="CrewMedicalHistoryForAdminViewMode_DateOccurence">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.DateOccurence))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible) { // crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible (begin)
+        <th data-name="PlaceOccurence" class="@(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_PlaceOccurence" class="CrewMedicalHistoryForAdminViewMode_PlaceOccurence">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.PlaceOccurence))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible) { // crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible (begin)
+        <th data-name="PeriodOfDisability" class="@(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_PeriodOfDisability" class="CrewMedicalHistoryForAdminViewMode_PeriodOfDisability">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible) { // crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible (begin)
+        <th data-name="PresentCondition" class="@(crewMedicalHistoryForAdminViewModeList.PresentCondition.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_PresentCondition" class="CrewMedicalHistoryForAdminViewMode_PresentCondition">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.PresentCondition))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.Treatment.Visible) { // crewMedicalHistoryForAdminViewModeList.Treatment.Visible (begin)
+        <th data-name="Treatment" class="@(crewMedicalHistoryForAdminViewModeList.Treatment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_Treatment" class="CrewMedicalHistoryForAdminViewMode_Treatment">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.Treatment))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.Treatment.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.Details.Visible) { // crewMedicalHistoryForAdminViewModeList.Details.Visible (begin)
+        <th data-name="Details" class="@(crewMedicalHistoryForAdminViewModeList.Details.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_Details" class="CrewMedicalHistoryForAdminViewMode_Details">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.Details))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.Details.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible) { // crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_CreatedByUserID" class="CrewMedicalHistoryForAdminViewMode_CreatedByUserID">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.CreatedByUserID))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible) { // crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_CreatedDateTime" class="CrewMedicalHistoryForAdminViewMode_CreatedDateTime">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.CreatedDateTime))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_LastUpdatedByUserID" class="CrewMedicalHistoryForAdminViewMode_LastUpdatedByUserID">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdminViewMode_LastUpdatedDateTime" class="CrewMedicalHistoryForAdminViewMode_LastUpdatedDateTime">@Html.Raw(crewMedicalHistoryForAdminViewModeList.RenderFieldHeader(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime))</div></th>
+} @* crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewMedicalHistoryForAdminViewModeList.ListOptions.RenderHeader("right", "", "block", crewMedicalHistoryForAdminViewModeList.TableVar, "CrewMedicalHistoryForAdminViewModelist")
+    </tr>
+</thead>
+<tbody data-page="@(crewMedicalHistoryForAdminViewModeList.PageNumber)">
+@{
+    await crewMedicalHistoryForAdminViewModeList.SetupGrid();
+    bool eof = crewMedicalHistoryForAdminViewModeList.Recordset == null; // DN
+}
+@while (crewMedicalHistoryForAdminViewModeList.RecordCount < crewMedicalHistoryForAdminViewModeList.StopRecord || SameString(crewMedicalHistoryForAdminViewModeList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewMedicalHistoryForAdminViewModeList.RowIndex, "$rowindex$") &&
+        (!crewMedicalHistoryForAdminViewModeList.IsGridAdd || crewMedicalHistoryForAdminViewModeList.CurrentMode == "copy") &&
+        (!((crewMedicalHistoryForAdminViewModeList.IsCopy || crewMedicalHistoryForAdminViewModeList.IsAdd) && crewMedicalHistoryForAdminViewModeList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewMedicalHistoryForAdminViewModeList.Recordset.ReadAsync();
+    crewMedicalHistoryForAdminViewModeList.RecordCount++;
+    if (crewMedicalHistoryForAdminViewModeList.RecordCount >= crewMedicalHistoryForAdminViewModeList.StartRecord) {
+        await crewMedicalHistoryForAdminViewModeList.SetupRow();
+    <tr @Html.Raw(crewMedicalHistoryForAdminViewModeList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewMedicalHistoryForAdminViewModeList.ListOptions.RenderBody("left", crewMedicalHistoryForAdminViewModeList.RowCount, "block", crewMedicalHistoryForAdminViewModeList.TableVar, "CrewMedicalHistoryForAdminViewModelist")
+    @if (crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible) { // crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewMedicalHistoryForAdminViewModeList.MTCrewID.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_MTCrewID"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_MTCrewID" class="el_CrewMedicalHistoryForAdminViewMode_MTCrewID">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.MTCrewID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.MTCrewID.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList._Type.Visible) { // crewMedicalHistoryForAdminViewModeList._Type.Visible (begin)
+        <td data-name="_Type" @Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode__Type"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode__Type" class="el_CrewMedicalHistoryForAdminViewMode__Type">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList._Type.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList._Type.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.VesselName.Visible) { // crewMedicalHistoryForAdminViewModeList.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_VesselName"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_VesselName" class="el_CrewMedicalHistoryForAdminViewMode_VesselName">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.VesselName.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.VesselName.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible) { // crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible (begin)
+        <td data-name="DateOccurence" @Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_DateOccurence"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_DateOccurence" class="el_CrewMedicalHistoryForAdminViewMode_DateOccurence">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.DateOccurence.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.DateOccurence.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible) { // crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible (begin)
+        <td data-name="PlaceOccurence" @Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_PlaceOccurence"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_PlaceOccurence" class="el_CrewMedicalHistoryForAdminViewMode_PlaceOccurence">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.PlaceOccurence.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.PlaceOccurence.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible) { // crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible (begin)
+        <td data-name="PeriodOfDisability" @Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_PeriodOfDisability"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_PeriodOfDisability" class="el_CrewMedicalHistoryForAdminViewMode_PeriodOfDisability">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.PeriodOfDisability.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible) { // crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible (begin)
+        <td data-name="PresentCondition" @Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_PresentCondition"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_PresentCondition" class="el_CrewMedicalHistoryForAdminViewMode_PresentCondition">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.PresentCondition.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.PresentCondition.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.Treatment.Visible) { // crewMedicalHistoryForAdminViewModeList.Treatment.Visible (begin)
+        <td data-name="Treatment" @Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_Treatment"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_Treatment" class="el_CrewMedicalHistoryForAdminViewMode_Treatment">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.Treatment.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.Treatment.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.Details.Visible) { // crewMedicalHistoryForAdminViewModeList.Details.Visible (begin)
+        <td data-name="Details" @Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_Details"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_Details" class="el_CrewMedicalHistoryForAdminViewMode_Details">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.Details.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.Details.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible) { // crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_CreatedByUserID"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_CreatedByUserID" class="el_CrewMedicalHistoryForAdminViewMode_CreatedByUserID">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedByUserID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.CreatedByUserID.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible) { // crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_CreatedDateTime"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_CreatedDateTime" class="el_CrewMedicalHistoryForAdminViewMode_CreatedDateTime">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.CreatedDateTime.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.CreatedDateTime.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_LastUpdatedByUserID"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_LastUpdatedByUserID" class="el_CrewMedicalHistoryForAdminViewMode_LastUpdatedByUserID">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.CellAttributes)>
+<template id="tpx@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_LastUpdatedDateTime"><span id="el@(crewMedicalHistoryForAdminViewModeList.RowCount)_CrewMedicalHistoryForAdminViewMode_LastUpdatedDateTime" class="el_CrewMedicalHistoryForAdminViewMode_LastUpdatedDateTime">
+<span @Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalHistoryForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewMedicalHistoryForAdminViewModeList.ListOptions.RenderBody("right", crewMedicalHistoryForAdminViewModeList.RowCount, "block", crewMedicalHistoryForAdminViewModeList.TableVar, "CrewMedicalHistoryForAdminViewModelist")
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewMedicalHistoryForAdminViewModeList.RowIndex, "$rowindex$"))
+        crewMedicalHistoryForAdminViewModeList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewMedicalHistoryForAdminViewModeList.IsCopy || crewMedicalHistoryForAdminViewModeList.IsAdd) && crewMedicalHistoryForAdminViewModeList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewMedicalHistoryForAdminViewModeList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+<div id="tpd_CrewMedicalHistoryForAdminViewModelist" class="ew-custom-template"></div>
+<template id="tpm_CrewMedicalHistoryForAdminViewModelist">
+<div id="ct_crewMedicalHistoryForAdminViewModeList">@if (crewMedicalHistoryForAdminViewModeList.RowCount > 0) {
+<table class="table table-bordered table-sm ew-table d-none">
+    <thead>
+    </thead>
+    <tbody>@for (int i = crewMedicalHistoryForAdminViewModeList.StartRowCount; i <= crewMedicalHistoryForAdminViewModeList.RowCount; i++) {
+<tr>
+</tr>
+}
+</tbody></table>
+}
+</div>
+</template>
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewMedicalHistoryForAdminViewModeList.CurrentAction) && !crewMedicalHistoryForAdminViewModeList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewMedicalHistoryForAdminViewModeList.CloseRecordset(); }
+@if (!crewMedicalHistoryForAdminViewModeList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewMedicalHistoryForAdminViewModeList.IsGridAdd && !(crewMedicalHistoryForAdminViewModeList.IsGridEdit && crewMedicalHistoryForAdminViewModeList.ModalGridEdit) && !crewMedicalHistoryForAdminViewModeList.IsMultiEdit) {
+@Html.Raw(crewMedicalHistoryForAdminViewModeList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewMedicalHistoryForAdminViewModeList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+<script class="ew-apply-template">
+loadjs.ready(ew.applyTemplateId, function() {
+    var $ = jQuery;
+    ew.templateData = { rows: @Html.Raw(ConvertToJson(crewMedicalHistoryForAdminViewModeList.Rows)) };
+    ew.applyTemplate("tpd_CrewMedicalHistoryForAdminViewModelist", "tpm_CrewMedicalHistoryForAdminViewModelist", "CrewMedicalHistoryForAdminViewModelist", "@(crewMedicalHistoryForAdminViewModeList.Export)", "CrewMedicalHistoryForAdminViewMode", ew.templateData, @(crewMedicalHistoryForAdminViewModeList.IsModal ? "true" : "false"));
+    loadjs.done("customtemplate");
+});
+</script>
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewMedicalHistoryForAdminViewModeList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewMedicalHistoryForAdminViewModeList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewMedicalHistoryForAdminViewModeList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewMedicalHistoryForAdminViewMode");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // get the current URL without Add or Edit for assigning active class in tabs
+    const currentUrlWithoutAddEditListView = currentUrlObject.href.replace(/Add|Edit|List|View/g, "");
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    // Extract the value of the crewID query parameter
+    const currentlyEditedCrewID = urlQueryParams.get('crewID');
+
+    // Iterate over each anchor element inside the nav-tabs
+    $(".nav-tabs .nav-item a").each(function() {
+        const href = $(this).attr("href");
+        const hrefWithoutAddEditListView = href.replace(/Add|Edit|List|View/g, "");
+        // Check if the href contains current page's url
+        if (currentUrlWithoutAddEditListView.includes(hrefWithoutAddEditListView)) {
+            // add class and attribute
+            $(this).addClass("active");
+            $(this).attr("aria-current", "page");
+        }
+        // Check if the href contains "Edit" or "Add"
+        if (href.includes("ViewModeView")) {
+            // Add "/" and the currently edited crew ID to the href
+            const newHref = href + "/" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        } else if (href.includes("ViewModeList")) {
+            // Add "?crewID=" and the currently edited crew ID to the href
+            const newHref = href + "?crewID=" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        }
+    });
+
+    // Target the ol element that has breadcrumb class
+    const $breadCrumbOl = $('.breadcrumb').first();
+
+    // Delete the ol element that has breadcrumb class
+    $breadCrumbOl.remove();
+    $('div.btn-toolbar.ew-toolbar').remove();
+    $('div.ew-extended-search div.mb-0').remove();
+    $('div#ew-list div.crew-medical-history-for-admin-view-mode').removeClass('card ew-card ew-grid');
+    $('div.card-footer').remove();
+    $('main.list.ew-no-record div#ew-list').remove();
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+    const parentUrl = ew.PATH_BASE;
+    const adminAndEmployeeStatusApi = 'get-admin-and-employee-status';
+    $.ajax({
+        url: `${parentUrl}api/Registration/${adminAndEmployeeStatusApi}`,
+        method: 'GET',
+        data: {
+            crewID: currentlyEditedCrewID
+        },
+        success: function(response) {
+            if (response.success) {
+                // Parse the data in the response
+                const isAdmin = response.data.IsAdmin;
+                const employeeStatus = response.data.EmployeeStatus;
+                if (currentlyEditedCrewID === null) {
+                    if (isAdmin) {
+                        // redirect to list page with error message: record not found
+                        if (employeeStatus === 'Candidate - Draft') {
+                            window.location.replace(`${ew.PATH_BASE}RegistrationEdit/-1`);
+                        } else if (employeeStatus === 'Candidate - Submitted') {
+                            window.location.replace(`${ew.PATH_BASE}VWaitingForPdeReviewView/-1`);
+                        }
+                    } else {
+                        window.location.replace(`${ew.PATH_BASE}index`);
+                    }
+                }
+                if (employeeStatus === 'Candidate - Draft') {
+                    const addButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Add" : "Tambah",
+                        class: "btn btn-default ew-btn me-auto primary-black-clr gray-bg",
+                        id: "btn-add",
+                        name: "btn-add",
+                        href: `${parentUrl}CrewMedicalHistoryForAdminViewModeAdd?crewID=${currentlyEditedCrewID}`,
+                    });
+                    const backButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
+                        class: "btn btn-default ew-btn ms-auto primary-red-bg primary-white-clr",
+                        id: "btn-back",
+                        name: "btn-back",
+                        href: `${parentUrl}RegistrationList`,
+                    });
+                    const flexDiv = $("<div class='d-flex mb-3'></div>");
+                    flexDiv.append(addButton);
+                    if (isAdmin) {
+                        flexDiv.append(backButton);
+                    }
+                    const buttonsDiv = $("<div class='row mt-3 ew-buttons'></div>");
+                    buttonsDiv.append(flexDiv);
+                    $('div#CrewMedicalHistoryForAdminViewModelist').append(buttonsDiv);
+                    const errorMessage = urlQueryParams.get('errorMessage');
+                    if (errorMessage !== null) {
+                        const decodedErrorMessage = decodeURIComponent(errorMessage);
+                        ew.showToast(decodedErrorMessage);
+                        urlQueryParams.delete('errorMessage');
+                        currentUrlObject.search = urlQueryParams.toString();
+                        history.pushState(null, '', currentUrlObject);
+                    }
+                } else if (employeeStatus === 'Candidate - Submitted') {
+                    const invokeScheduleModalButton = $('<button/>', {
+                        'class': 'btn btn-default ew-btn primary-green-bg primary-white-clr',
+                        'name': 'btn-invoke-schedule-modal',
+                        'id': 'btn-invoke-schedule-modal',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Accept' : 'Terima'
+                    });
+                    const invokeReviseModalButton = $('<button/>', {
+                        'class': 'btn btn-primary ew-btn ms-3 primary-white-clr',
+                        'name': 'btn-invoke-revise-modal',
+                        'id': 'btn-invoke-revise-modal',
+                        'type': 'button', 
+                        'text': (selectedLanguage.id === 'en-US') ? 'Revise' : 'Tinjau'
+                    });
+                    const invokeRejectModalButton = $('<button/>', {
+                        'class': 'btn btn-danger ew-btn ms-3 me-auto primary-white-clr',
+                        'name': 'btn-invoke-reject-modal',
+                        'id': 'btn-invoke-reject-modal',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Reject' : 'Tolak'
+                    });
+                    const backButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
+                        class: "btn btn-default ew-btn primary-black-clr gray-bg",
+                        id: "btn-back",
+                        name: "btn-back",
+                        href: `${parentUrl}VWaitingForPdeReviewList`,
+                    });
+                    const flexDiv = $("<div class='d-flex mb-3'></div>");
+                    if (isAdmin) {
+                        flexDiv.append(invokeScheduleModalButton);
+                        flexDiv.append(invokeReviseModalButton);
+                        flexDiv.append(invokeRejectModalButton);
+                        flexDiv.append(backButton);
+                    }
+                    const buttonsDiv = $("<div class='row mt-3 ew-buttons'></div>");
+                    buttonsDiv.append(flexDiv);
+                    $('div#CrewMedicalHistoryForAdminViewModelist').append(buttonsDiv);
+                    if (isAdmin) {
+                        $('#btn-invoke-schedule-modal').click(function() {
+                            $('#schedule-modal-dialog').modal('show');
+                        });
+                        $('#btn-invoke-revise-modal').click(function() {
+                            $('#revise-modal-dialog').modal('show');
+                        });
+                        $('#btn-invoke-reject-modal').click(function() {
+                            $('#reject-modal-dialog').modal('show');
+                        });
+                        $('#schedule-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_DocumentCheckDateTime').val(null);
+                        });
+                        $('#revise-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RevisedReason').val(null);
+                        });
+                        $('#reject-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RejectedReason').val(null);
+                        });
+
+                        // initialize date time picker
+                        const format = "dd MMM yyyy HH:mm:00zzz";
+                        const options = {
+                            localization: {
+                                locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                                hourCycle: format.match(/H/) ? "h24" : "h12",
+                                format,
+                                ...ew.language.phrase("datetimepicker")
+                            },
+                            display: {
+                                icons: {
+                                    previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                                    next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                                },
+                                components: {
+                                    hours: !!format.match(/h/i),
+                                    minutes: !!format.match(/m/),
+                                    seconds: !!format.match(/s/i)
+                                },
+                                theme: ew.isDark() ? "dark" : "auto"
+                            },
+                            defaultDate: new Date(new Date().setHours(8, 0, 0)).toISOString(),
+                        };
+                        ew.createDateTimePicker("add-schedule", "x_DocumentCheckDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+                        $('#x_DocumentCheckDateTime').val(replaceTimezoneOffset($('#x_DocumentCheckDateTime').val(), formatTimezoneOffset(new Date().getTimezoneOffset())));
+
+                        // Listen for input changes
+                        $('#x_DocumentCheckDateTime').on('change.td', function() {
+                            const timezoneOffset = new Date().getTimezoneOffset();
+                            const formattedTimezoneOffset = formatTimezoneOffset(timezoneOffset);
+                            const currentValue = $(this).val();
+                            const newValue = replaceTimezoneOffset(currentValue, formattedTimezoneOffset);
+                            $(this).val(newValue);
+                        });
+
+                        // Format timezone offset as needed
+                        function formatTimezoneOffset(offset) {
+                            const hours = Math.floor(Math.abs(offset) / 60);
+                            const sign = offset < 0 ? '+' : '-';
+                            return ' GMT ' + sign + hours;
+                        }
+
+                        // Helper function to add leading zero to single-digit numbers
+                        function addLeadingZero(num) {
+                            return num < 10 ? '0' + num : num;
+                        }
+
+                        // Replace "zzz" with the formatted timezone offset
+                        function replaceTimezoneOffset(str, offset) {
+                            return str.replace('zzz', offset);
+                        }
+                        const addDocumentCheckDateTimeApiUrl = "add-document-check-date-time";
+                        $("#btn-add-schedule").click(function() {
+                            const documentCheckDateTimeValue = $('#x_DocumentCheckDateTime').val();
+                            const documentCheckDateTimeCaption = $(`label[for="x_DocumentCheckDateTime"]`).text();
+                            if (documentCheckDateTimeValue == '') {
+                                if (selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${documentCheckDateTimeCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${documentCheckDateTimeCaption}`);
+                                }
+                            } else {
+                                const currentDate = new Date();
+                                const documentCheckDateObject = new Date(documentCheckDateTimeValue);
+                                if (isNaN(documentCheckDateObject)) {
+                                    if (selectedLanguage.id === 'en-US') {
+                                        ew.showToast(`Invalid date time - ${documentCheckDateTimeCaption}`);
+                                    } else {
+                                        ew.showToast(`Tanggal dan jam tidak valid - ${documentCheckDateTimeCaption}`);
+                                    }
+                                } else if (documentCheckDateObject < currentDate) {
+                                    if (selectedLanguage.id === 'en-US') {
+                                        ew.showToast(`${documentCheckDateTimeCaption} must be later or equal than today`);
+                                    } else {
+                                        ew.showToast(`${documentCheckDateTimeCaption} harus setelah atau sama dengan hari ini`);
+                                    }
+                                } else {
+                                    const arrDataKey = [currentlyEditedCrewID];
+                                    const notesValue = $('#x_DocumentCheckNotes').val();
+                                    const notes = (notesValue !== '') ? notesValue : '';
+                                    const documentCheckDateTimeRequest = {
+                                        scheduleDateTime: documentCheckDateTimeValue,
+                                        notes: notes,
+                                        crewIDArray: JSON.stringify(arrDataKey),
+                                    };
+                                    $.ajax({
+                                        method: "POST",
+                                        url: `${parentUrl}api/Registration/${addDocumentCheckDateTimeApiUrl}`,
+                                        data: JSON.stringify(documentCheckDateTimeRequest),
+                                        contentType: "application/json",
+                                        success: function(response) {
+                                            if (response.success) {
+                                                $('#schedule-modal-dialog').modal('hide');
+                                                let successMessage = '';
+                                                if (selectedLanguage.id === 'en-US') {
+                                                    successMessage = `Add ${documentCheckDateTimeCaption} Successful`;
+                                                } else {
+                                                    successMessage = `Menambahkan ${documentCheckDateTimeCaption} Berhasil`;
+                                                }
+                                                const baseUrl = new URL(window.location.href).origin;
+                                                const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                                const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                                const params = new URLSearchParams(targetUrl.search);
+                                                params.set('successMessage', encodedSuccessMessage);
+                                                targetUrl.search = params.toString();
+                                                window.location.href = targetUrl.href;
+                                            } else {
+                                                $('#schedule-modal-dialog').modal('hide');
+                                                const errorMessage = response.errorMessage;
+                                                ew.showToast(errorMessage);
+                                            }
+                                        },
+                                        error: function(xhr, textStatus, errorThrown) {
+                                            $('#schedule-modal-dialog').modal('hide');
+                                            ew.showToast(errorThrown);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        const rejectMultipleCrewApiUrl = "reject-multiple-crew";
+                        $("#btn-reject").click(function() {
+                            const rejectedReasonValue = $('#x_RejectedReason').val();
+                            const rejectedReasonCaption = $(`label[for="x_RejectedReason"]`).text();
+                            if (rejectedReasonValue == '') {
+                                if (selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${rejectedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
+                                }
+                            } else {
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const rejectMultipleRequest = {
+                                    rejectReason: rejectedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey),
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${rejectMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(rejectMultipleRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if (response.success) {
+                                            $('#reject-modal-dialog').modal('hide');
+                                            let successMessage = '';
+                                            if (selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${rejectedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${rejectedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#reject-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#reject-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                        const reviseMultipleCrewApiUrl = "revise-multiple-crew";
+                        $("#btn-revise").click(function() {
+                            const revisedReasonValue = $('#x_RevisedReason').val();
+                            const revisedReasonCaption = $(`label[for="x_RevisedReason"]`).text();
+                            if(revisedReasonValue.trim() === '') {
+                                if(selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${revisedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${revisedReasonCaption}`);
+                                }
+                            } else {
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const revisedMultipleCrewRequest = {
+                                    revisedReason: revisedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey)
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${reviseMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(revisedMultipleCrewRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if(response.success) {
+                                            $('#revise-modal-dialog').modal('hide');
+                                            let successMessage = '';
+                                            if(selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${revisedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${revisedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#revise-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }  
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#revise-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+
+                // get list of crew experiences via API
+                const uploadFolderName = "uploads";
+                const baseUrl = currentUrlObject.origin;
+                const apiEndpoint = 'crew-medical-history-for-admin';
+                $.ajax({
+                    url: `${parentUrl}api/Registration/${apiEndpoint}`,
+                    method: 'GET',
+                    data: {
+                        crewID: currentlyEditedCrewID
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Parse the data in the response
+                            const dataArray = response.data;
+                            const tbody = $('#ForAdminTable tbody'); // select the tbody element
+                            if (dataArray.length > 0) {
+                                const tableName = 'CrewMedicalHistoryForAdminViewMode';
+                                for (let rowIndex = 0; rowIndex < dataArray.length; rowIndex++) {
+                                    const row = dataArray[rowIndex];
+                                    const rowID = row['ID'];
+                                    delete row['ID']; // delete ID for easier looping for table columns
+                                    const tr = $('<tr>'); // create a new tr element 
+
+                                    // first td for dropdown
+                                    const buttonsTd = $('<td>').addClass('ew-list-option-body w-1');
+                                    const buttonDropdownDiv = $('<div>').addClass('btn-group btn-group-sm ew-btn-dropdown');
+                                    const dropdownButton = $('<button>')
+                                        .addClass('btn-default btn dropdown-toggle')
+                                        .attr('type', 'button')
+                                        .attr('data-title', 'Options')
+                                        .attr('data-bs-toggle', 'dropdown')
+                                        .attr('data-bs-auto-close', 'true');
+                                    const dropdownButtonIcon = $('<i>').addClass('fa-solid fa-bars ew-icon').attr('data-phrase', 'ButtonListOptions');
+                                    const dropdownButtonIconSpan = $('<span>').addClass('visually-hidden').text('Options');
+                                    const dropdownUl = $('<ul>').addClass('dropdown-menu ew-dropdown-menu ew-list-options');
+                                    const firstDropdownLi = $('<li>');
+                                    const viewAnchor = $('<a>')
+                                        .addClass('ew-row-link ew-view dropdown-item')
+                                        .attr('data-caption', 'View')
+                                        .attr('href', `${parentUrl}${tableName}View/${rowID}?crewID=${currentlyEditedCrewID}`);
+                                    const viewAnchorIcon = $('<i>').addClass('icon-view ew-icon me-2').attr('data-phrase', 'ViewLink');
+                                    const viewAnchorSpan = $('<span>').addClass('visually-hidden').text('View');
+                                    const viewAnchorText = 'View';
+                                    viewAnchorIcon.append(viewAnchorSpan);
+                                    viewAnchor.append(viewAnchorIcon);
+                                    viewAnchor.append(viewAnchorText);
+                                    firstDropdownLi.append(viewAnchor);
+                                    dropdownUl.append(firstDropdownLi);
+                                    if (employeeStatus === 'Candidate - Draft') {
+                                        const secondDropdownLi = $('<li>');
+                                        const editAnchor = $('<a>')
+                                            .addClass('ew-row-link ew-edit dropdown-item')
+                                            .attr('data-caption', 'Edit')
+                                            .attr('href', `${parentUrl}${tableName}Edit/${rowID}?crewID=${currentlyEditedCrewID}`);
+                                        const editAnchorIcon = $('<i>').addClass('fa-solid fa-pen ew-icon me-2').attr('data-phrase', 'EditLink');
+                                        const editAnchorSpan = $('<span>').addClass('visually-hidden').text('Edit');
+                                        const editAnchorText = 'Edit';
+                                        const thirdDropdownLi = $('<li>');
+                                        const deleteAnchor = $('<a>')
+                                            .addClass('ew-row-link ew-delete dropdown-item')
+                                            .attr('data-ew-action', 'inline-delete')
+                                            .attr('data-caption', 'Delete')
+                                            .attr('href', `${parentUrl}${tableName}Delete/${rowID}`);
+                                        const deleteAnchorIcon = $('<i>').addClass('fa-solid fa-trash ew-icon me-2').attr('data-phrase', 'DeleteLink');
+                                        const deleteAnchorSpan = $('<span>').addClass('visually-hidden').text('Delete');
+                                        const deleteAnchorText = 'Delete';
+                                        deleteAnchorIcon.append(deleteAnchorSpan);
+                                        deleteAnchor.append(deleteAnchorIcon);
+                                        deleteAnchor.append(deleteAnchorText);
+                                        thirdDropdownLi.append(deleteAnchor);
+                                        editAnchorIcon.append(editAnchorSpan);
+                                        editAnchor.append(editAnchorIcon);
+                                        editAnchor.append(editAnchorText);
+                                        secondDropdownLi.append(editAnchor);
+                                        dropdownUl.append(secondDropdownLi);
+                                        dropdownUl.append(thirdDropdownLi);
+                                    }
+                                    dropdownButtonIcon.append(dropdownButtonIconSpan);
+                                    dropdownButton.append(dropdownButtonIcon);
+                                    buttonDropdownDiv.append(dropdownButton);
+                                    buttonDropdownDiv.append(dropdownUl);
+                                    buttonsTd.append(buttonDropdownDiv);
+                                    tr.append(buttonsTd);
+
+                                    // second td for sequence
+                                    const sequenceTd = $('<td>').addClass('ew-list-option-body text-nowrap').attr('data-name', 'sequence');
+                                    const sequenceNumberString = (rowIndex + 1).toString() + '.';
+                                    const sequenceSpan = $('<span>').text(sequenceNumberString);
+                                    sequenceTd.append(sequenceSpan);
+                                    tr.append(sequenceTd);
+
+                                    // remaining td for each column
+                                    for (const columnName of Object.keys(row)) {
+                                        const dataTd = $('<td>');
+                                        const columnValue = row[columnName];
+                                        if (columnName === 'DateOccurence') {
+                                            const dataSpan = $('<span class="text-nowrap">').text(columnValue);
+                                            dataTd.append(dataSpan);
+                                        } else {
+                                            const dataSpan = $('<span>').text(columnValue);
+                                            dataTd.append(dataSpan);
+                                        }
+                                        tr.append(dataTd);
+                                    }
+                                    tbody.append(tr);
+                                }
+                            } else {
+                                const columnsCount = $('#ForAdminTable th.ew-table-header-cell').length;
+                                for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+                                    const tr = $('<tr>'); // create a new tr element 
+
+                                    // 1 is for buttons dropdown(for edit) column and 1 for sequence number column
+                                    const emptyTdWithColspan = $('<td>').html('&nbsp;').attr('colspan', 2);
+                                    tr.append(emptyTdWithColspan);
+                                    for (let columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
+                                        const emptyTd = $('<td>').html('&nbsp;');
+                                        tr.append(emptyTd);
+                                    }
+                                    tbody.append(tr);
+                                }
+                            }
+                        } else {
+                            // Handle the error
+                            ew.showToast(response.errorMessage);
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        // Handle the error
+                        ew.showToast(errorThrown);
+                    }
+                });
+            } else {
+                // Handle the error
+                ew.showToast(response.errorMessage);
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            // Handle the error
+            ew.showToast(errorThrown);
+        }
+    });
+
+    // gmandayu: notification need to read.
+    const getUnreadNotificationUrl = `${parentUrl}api/Notification/unread-notification`;
+    function loadPage() {
+        $.ajax({
+            url: getUnreadNotificationUrl,
+            method: 'GET',
+            success: function(response) {
+                const notificationIcon = document.querySelector('.nav-icon.fa-bell');
+                if(response.success)
+                {
+                    notificationIcon.classList.add('animate');
+                }
+                else 
+                {
+                    notificationIcon.classList.remove('animate');
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Kesalahan saat memuat notifikasi:', errorThrown);
+            }
+        });
+    }
+    $(document).ready(function() {
+        loadPage();
+    });
+});
+</script>
+}

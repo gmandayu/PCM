@@ -1,0 +1,268 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trEmployeeStatusSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!trEmployeeStatusSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trEmployeeStatusSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TREmployeeStatus: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fTREmployeeStatussearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fTREmployeeStatussearch")
+        .setPageId("search")
+@if (trEmployeeStatusSearch.IsModal && trEmployeeStatusSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [ew.Validators.integer], fields.MTCrewID.isInvalid],
+            ["MTUserID", [ew.Validators.integer], fields.MTUserID.isInvalid],
+            ["PreviousStatus", [], fields.PreviousStatus.isInvalid],
+            ["CurrentStatus", [], fields.CurrentStatus.isInvalid],
+            ["ChangedDateTime", [ew.Validators.datetime(fields.ChangedDateTime.clientFormatPattern)], fields.ChangedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+@if (trEmployeeStatusSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@trEmployeeStatusSearch.ShowPageHeader()
+@trEmployeeStatusSearch.ShowMessages()
+<form name="fTREmployeeStatussearch" id="fTREmployeeStatussearch" class="@(trEmployeeStatusSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (trEmployeeStatusSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (trEmployeeStatusSearch.MTCrewID.Visible) { // trEmployeeStatusSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(trEmployeeStatusSearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(trEmployeeStatusSearch.LeftColumnClass)"><span id="elh_TREmployeeStatus_MTCrewID">@Html.Raw(trEmployeeStatusSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(trEmployeeStatusSearch.RightColumnClass)">
+            <div @Html.Raw(trEmployeeStatusSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TREmployeeStatus_MTCrewID" class="ew-search-field ew-search-field-single">
+<input type="@(trEmployeeStatusSearch.MTCrewID.InputTextType)" name="x_MTCrewID" id="x_MTCrewID" data-table="TREmployeeStatus" data-field="x_MTCrewID" value="@Html.Raw(trEmployeeStatusSearch.MTCrewID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(trEmployeeStatusSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(trEmployeeStatusSearch.MTCrewID.FormatPattern)"@Html.Raw(trEmployeeStatusSearch.MTCrewID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trEmployeeStatusSearch.MTCrewID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trEmployeeStatusSearch.MTCrewID.Visible (end) *@
+@if (trEmployeeStatusSearch.MTUserID.Visible) { // trEmployeeStatusSearch.MTUserID.Visible (begin)
+    <div id="r_MTUserID" class="row" @Html.Raw(trEmployeeStatusSearch.MTUserID.RowAttributes)>
+        <label for="x_MTUserID" class="@(trEmployeeStatusSearch.LeftColumnClass)"><span id="elh_TREmployeeStatus_MTUserID">@Html.Raw(trEmployeeStatusSearch.MTUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTUserID" id="z_MTUserID" value="=">
+</span>
+        </label>
+        <div class="@(trEmployeeStatusSearch.RightColumnClass)">
+            <div @Html.Raw(trEmployeeStatusSearch.MTUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TREmployeeStatus_MTUserID" class="ew-search-field ew-search-field-single">
+<input type="@(trEmployeeStatusSearch.MTUserID.InputTextType)" name="x_MTUserID" id="x_MTUserID" data-table="TREmployeeStatus" data-field="x_MTUserID" value="@Html.Raw(trEmployeeStatusSearch.MTUserID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(trEmployeeStatusSearch.MTUserID.PlaceHolder))" data-format-pattern="@(trEmployeeStatusSearch.MTUserID.FormatPattern)"@Html.Raw(trEmployeeStatusSearch.MTUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trEmployeeStatusSearch.MTUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trEmployeeStatusSearch.MTUserID.Visible (end) *@
+@if (trEmployeeStatusSearch.PreviousStatus.Visible) { // trEmployeeStatusSearch.PreviousStatus.Visible (begin)
+    <div id="r_PreviousStatus" class="row" @Html.Raw(trEmployeeStatusSearch.PreviousStatus.RowAttributes)>
+        <label for="x_PreviousStatus" class="@(trEmployeeStatusSearch.LeftColumnClass)"><span id="elh_TREmployeeStatus_PreviousStatus">@Html.Raw(trEmployeeStatusSearch.PreviousStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PreviousStatus" id="z_PreviousStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(trEmployeeStatusSearch.RightColumnClass)">
+            <div @Html.Raw(trEmployeeStatusSearch.PreviousStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TREmployeeStatus_PreviousStatus" class="ew-search-field ew-search-field-single">
+<input type="@(trEmployeeStatusSearch.PreviousStatus.InputTextType)" name="x_PreviousStatus" id="x_PreviousStatus" data-table="TREmployeeStatus" data-field="x_PreviousStatus" value="@Html.Raw(trEmployeeStatusSearch.PreviousStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trEmployeeStatusSearch.PreviousStatus.PlaceHolder))" data-format-pattern="@(trEmployeeStatusSearch.PreviousStatus.FormatPattern)"@Html.Raw(trEmployeeStatusSearch.PreviousStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trEmployeeStatusSearch.PreviousStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trEmployeeStatusSearch.PreviousStatus.Visible (end) *@
+@if (trEmployeeStatusSearch.CurrentStatus.Visible) { // trEmployeeStatusSearch.CurrentStatus.Visible (begin)
+    <div id="r_CurrentStatus" class="row" @Html.Raw(trEmployeeStatusSearch.CurrentStatus.RowAttributes)>
+        <label for="x_CurrentStatus" class="@(trEmployeeStatusSearch.LeftColumnClass)"><span id="elh_TREmployeeStatus_CurrentStatus">@Html.Raw(trEmployeeStatusSearch.CurrentStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CurrentStatus" id="z_CurrentStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(trEmployeeStatusSearch.RightColumnClass)">
+            <div @Html.Raw(trEmployeeStatusSearch.CurrentStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TREmployeeStatus_CurrentStatus" class="ew-search-field ew-search-field-single">
+<input type="@(trEmployeeStatusSearch.CurrentStatus.InputTextType)" name="x_CurrentStatus" id="x_CurrentStatus" data-table="TREmployeeStatus" data-field="x_CurrentStatus" value="@Html.Raw(trEmployeeStatusSearch.CurrentStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trEmployeeStatusSearch.CurrentStatus.PlaceHolder))" data-format-pattern="@(trEmployeeStatusSearch.CurrentStatus.FormatPattern)"@Html.Raw(trEmployeeStatusSearch.CurrentStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trEmployeeStatusSearch.CurrentStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trEmployeeStatusSearch.CurrentStatus.Visible (end) *@
+@if (trEmployeeStatusSearch.ChangedDateTime.Visible) { // trEmployeeStatusSearch.ChangedDateTime.Visible (begin)
+    <div id="r_ChangedDateTime" class="row" @Html.Raw(trEmployeeStatusSearch.ChangedDateTime.RowAttributes)>
+        <label for="x_ChangedDateTime" class="@(trEmployeeStatusSearch.LeftColumnClass)"><span id="elh_TREmployeeStatus_ChangedDateTime">@Html.Raw(trEmployeeStatusSearch.ChangedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ChangedDateTime" id="z_ChangedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(trEmployeeStatusSearch.RightColumnClass)">
+            <div @Html.Raw(trEmployeeStatusSearch.ChangedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TREmployeeStatus_ChangedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(trEmployeeStatusSearch.ChangedDateTime.InputTextType)" name="x_ChangedDateTime" id="x_ChangedDateTime" data-table="TREmployeeStatus" data-field="x_ChangedDateTime" value="@Html.Raw(trEmployeeStatusSearch.ChangedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(trEmployeeStatusSearch.ChangedDateTime.PlaceHolder))" data-format-pattern="@(trEmployeeStatusSearch.ChangedDateTime.FormatPattern)"@Html.Raw(trEmployeeStatusSearch.ChangedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trEmployeeStatusSearch.ChangedDateTime.GetErrorMessage(false))</div>
+@if (!trEmployeeStatusSearch.ChangedDateTime.ReadOnly && !trEmployeeStatusSearch.ChangedDateTime.Disabled && !trEmployeeStatusSearch.ChangedDateTime.EditAttrs.Is("readonly") && !trEmployeeStatusSearch.ChangedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fTREmployeeStatussearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fTREmployeeStatussearch", "x_ChangedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trEmployeeStatusSearch.ChangedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(trEmployeeStatusSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(trEmployeeStatusSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fTREmployeeStatussearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (trEmployeeStatusSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fTREmployeeStatussearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fTREmployeeStatussearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(trEmployeeStatusSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@trEmployeeStatusSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TREmployeeStatus");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

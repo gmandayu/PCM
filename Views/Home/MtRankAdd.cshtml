@@ -1,0 +1,125 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtRankAdd.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtRankAdd.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtRankAdd.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTRank: currentTable } });
+var currentPageID = ew.PAGE_ID = "add";
+var currentForm;
+var fMTRankadd;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTRankadd")
+        .setPageId("add")
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [fields._Name.visible && fields._Name.required ? ew.Validators.required(fields._Name.caption) : null], fields._Name.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtRankAdd.ShowPageHeader()
+@mtRankAdd.ShowMessages()
+<form name="fMTRankadd" id="fMTRankadd" class="@(mtRankAdd.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="insert">
+<input type="hidden" name="modal" value="@ConvertToInt(mtRankAdd.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mtRankAdd.OldKeyName)" value="@Html.Raw(mtRankAdd.OldKey)">
+<div class="ew-add-div"><!-- page* -->
+@if (mtRankAdd._Name.Visible) { // mtRankAdd._Name.Visible (begin)
+    <div id="r__Name" @Html.Raw(mtRankAdd._Name.RowAttributes)>
+        <label id="elh_MTRank__Name" for="x__Name" class="@(mtRankAdd.LeftColumnClass)">@Html.Raw(mtRankAdd._Name.Caption)@Html.Raw(mtRankAdd._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtRankAdd.RightColumnClass)"><div @Html.Raw(mtRankAdd._Name.CellAttributes)>
+<span id="el_MTRank__Name">
+<input type="@(mtRankAdd._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTRank" data-field="x__Name" value="@Html.Raw(mtRankAdd._Name.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtRankAdd._Name.PlaceHolder))" data-format-pattern="@(mtRankAdd._Name.FormatPattern)"@Html.Raw(mtRankAdd._Name.EditAttributes) aria-describedby="x__Name_help">
+@Html.Raw(mtRankAdd._Name.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtRankAdd._Name.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtRankAdd._Name.Visible (end) *@
+</div><!-- /page* -->
+@{ mtRankAdd.CloseRecordset(); }
+@Html.Raw(mtRankAdd.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mtRankAdd.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTRankadd">@Html.Raw(Language.Phrase("AddBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTRankadd" data-href="@AppPath(mtRankAdd.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtRankAdd.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@mtRankAdd.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTRank");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

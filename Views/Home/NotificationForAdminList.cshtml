@@ -1,0 +1,461 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (notificationForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!notificationForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!notificationForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(notificationForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { NotificationForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(notificationForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(notificationForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(notificationForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(notificationForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "CrewSeafarerIDWithName": @Html.Raw(notificationForAdminList.CrewSeafarerIDWithName.ToClientList(notificationForAdminList)),
+            "Subject": @Html.Raw(notificationForAdminList.Subject.ToClientList(notificationForAdminList)),
+            "CreatedDateTime": @Html.Raw(notificationForAdminList.CreatedDateTime.ToClientList(notificationForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!notificationForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (notificationForAdminList.TotalRecords > 0 && notificationForAdminList.ExportOptions.Visible) {
+    notificationForAdminList.ExportOptions.Render("body");
+}
+@if (notificationForAdminList.ImportOptions.Visible) {
+    notificationForAdminList.ImportOptions.Render("body");
+}
+@if (notificationForAdminList.SearchOptions.Visible) {
+    notificationForAdminList.SearchOptions.Render("body");
+}
+@if (notificationForAdminList.FilterOptions.Visible) {
+    notificationForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (notificationForAdminList.ShowCurrentFilter) {
+    notificationForAdminList.ShowFilterList();
+}
+@if (!notificationForAdminList.IsModal) {
+<form name="fNotificationForAdminsrch" id="fNotificationForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fNotificationForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(notificationForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(notificationForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { NotificationForAdmin: currentTable } });
+var currentForm;
+var fNotificationForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fNotificationForAdminsrch")
+        .setPageId("list")
+@if (notificationForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["CrewSeafarerIDWithName", [], fields.CrewSeafarerIDWithName.isInvalid],
+            ["Subject", [], fields.Subject.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CrewSeafarerIDWithName": @Html.Raw(notificationForAdminList.CrewSeafarerIDWithName.ToClientList(notificationForAdminList)),
+            "Subject": @Html.Raw(notificationForAdminList.Subject.ToClientList(notificationForAdminList)),
+            "CreatedDateTime": @Html.Raw(notificationForAdminList.CreatedDateTime.ToClientList(notificationForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await notificationForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!notificationForAdminList.IsExport() && Empty(notificationForAdminList.CurrentAction) && notificationForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(notificationForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + notificationForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    notificationForAdminList.RowType = RowType.Search;
+    notificationForAdminList.ResetAttributes();
+    await notificationForAdminList.RenderRow();
+}
+@if (notificationForAdminList.CrewSeafarerIDWithName.Visible) { // notificationForAdminList.CrewSeafarerIDWithName.Visible (begin)
+    if (!notificationForAdminList.CrewSeafarerIDWithName.UseFilter) {
+        notificationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CrewSeafarerIDWithName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(notificationForAdminList.CrewSeafarerIDWithName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CrewSeafarerIDWithName"
+            name="x_CrewSeafarerIDWithName[]"
+            class="form-control ew-select@(notificationForAdminList.CrewSeafarerIDWithName.IsInvalidClass)"
+            data-select2-id="fNotificationForAdminsrch_x_CrewSeafarerIDWithName"
+            data-table="NotificationForAdmin"
+            data-field="x_CrewSeafarerIDWithName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(notificationForAdminList.CrewSeafarerIDWithName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(notificationForAdminList.CrewSeafarerIDWithName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(notificationForAdminList.CrewSeafarerIDWithName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(notificationForAdminList.CrewSeafarerIDWithName.EditAttributes)>
+            @(notificationForAdminList.CrewSeafarerIDWithName.SelectOptionListHtml("x_CrewSeafarerIDWithName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(notificationForAdminList.CrewSeafarerIDWithName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fNotificationForAdminsrch", function() {
+            var options = {
+                name: "x_CrewSeafarerIDWithName",
+                selectId: "fNotificationForAdminsrch_x_CrewSeafarerIDWithName",
+                ajax: { id: "x_CrewSeafarerIDWithName", form: "fNotificationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.NotificationForAdmin.fields.CrewSeafarerIDWithName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* notificationForAdminList.CrewSeafarerIDWithName.Visible (end) *@
+@if (notificationForAdminList.Subject.Visible) { // notificationForAdminList.Subject.Visible (begin)
+    if (!notificationForAdminList.Subject.UseFilter) {
+        notificationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Subject" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(notificationForAdminList.Subject.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Subject"
+            name="x_Subject[]"
+            class="form-control ew-select@(notificationForAdminList.Subject.IsInvalidClass)"
+            data-select2-id="fNotificationForAdminsrch_x_Subject"
+            data-table="NotificationForAdmin"
+            data-field="x_Subject"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(notificationForAdminList.Subject.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(notificationForAdminList.Subject.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(notificationForAdminList.Subject.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(notificationForAdminList.Subject.EditAttributes)>
+            @(notificationForAdminList.Subject.SelectOptionListHtml("x_Subject", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(notificationForAdminList.Subject.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fNotificationForAdminsrch", function() {
+            var options = {
+                name: "x_Subject",
+                selectId: "fNotificationForAdminsrch_x_Subject",
+                ajax: { id: "x_Subject", form: "fNotificationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.NotificationForAdmin.fields.Subject.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* notificationForAdminList.Subject.Visible (end) *@
+@if (notificationForAdminList.CreatedDateTime.Visible) { // notificationForAdminList.CreatedDateTime.Visible (begin)
+    if (!notificationForAdminList.CreatedDateTime.UseFilter) {
+        notificationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(notificationForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(notificationForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fNotificationForAdminsrch_x_CreatedDateTime"
+            data-table="NotificationForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(notificationForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(notificationForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(notificationForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(notificationForAdminList.CreatedDateTime.EditAttributes)>
+            @(notificationForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(notificationForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fNotificationForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fNotificationForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fNotificationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.NotificationForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* notificationForAdminList.CreatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(notificationForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(notificationForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(notificationForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(notificationForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fNotificationForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(notificationForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fNotificationForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(notificationForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fNotificationForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(notificationForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fNotificationForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@notificationForAdminList.ShowPageHeader()
+@notificationForAdminList.ShowMessages()
+<main class="list @(notificationForAdminList.TotalRecords == 0 && !notificationForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (notificationForAdminList.TotalRecords > 0 || !Empty(notificationForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(notificationForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(notificationForAdminList.TableGridClass)">
+<form name="@(notificationForAdminList.FormName)" id="@(notificationForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(notificationForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (notificationForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_NotificationForAdmin" class="card-body ew-grid-middle-panel @(notificationForAdminList.TableContainerClass)" style="@(notificationForAdminList.TableContainerStyle)">
+@if (notificationForAdminList.TotalRecords > 0 || notificationForAdminList.IsGridEdit || notificationForAdminList.IsMultiEdit) {
+<table id="tbl_NotificationForAdminlist" class="@(notificationForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    notificationForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await notificationForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@notificationForAdminList.ListOptions.RenderHeader("left")
+@if (notificationForAdminList.CrewSeafarerIDWithName.Visible) { // notificationForAdminList.CrewSeafarerIDWithName.Visible (begin)
+        <th data-name="CrewSeafarerIDWithName" class="@(notificationForAdminList.CrewSeafarerIDWithName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_NotificationForAdmin_CrewSeafarerIDWithName" class="NotificationForAdmin_CrewSeafarerIDWithName">@Html.Raw(notificationForAdminList.RenderFieldHeader(notificationForAdminList.CrewSeafarerIDWithName))</div></th>
+} @* notificationForAdminList.CrewSeafarerIDWithName.Visible (end) *@
+@if (notificationForAdminList.Subject.Visible) { // notificationForAdminList.Subject.Visible (begin)
+        <th data-name="Subject" class="@(notificationForAdminList.Subject.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_NotificationForAdmin_Subject" class="NotificationForAdmin_Subject">@Html.Raw(notificationForAdminList.RenderFieldHeader(notificationForAdminList.Subject))</div></th>
+} @* notificationForAdminList.Subject.Visible (end) *@
+@if (notificationForAdminList.CreatedDateTime.Visible) { // notificationForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(notificationForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_NotificationForAdmin_CreatedDateTime" class="NotificationForAdmin_CreatedDateTime">@Html.Raw(notificationForAdminList.RenderFieldHeader(notificationForAdminList.CreatedDateTime))</div></th>
+} @* notificationForAdminList.CreatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@notificationForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(notificationForAdminList.PageNumber)">
+@{
+    await notificationForAdminList.SetupGrid();
+    bool eof = notificationForAdminList.Recordset == null; // DN
+}
+@while (notificationForAdminList.RecordCount < notificationForAdminList.StopRecord || SameString(notificationForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(notificationForAdminList.RowIndex, "$rowindex$") &&
+        (!notificationForAdminList.IsGridAdd || notificationForAdminList.CurrentMode == "copy") &&
+        (!((notificationForAdminList.IsCopy || notificationForAdminList.IsAdd) && notificationForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await notificationForAdminList.Recordset.ReadAsync();
+    notificationForAdminList.RecordCount++;
+    if (notificationForAdminList.RecordCount >= notificationForAdminList.StartRecord) {
+        await notificationForAdminList.SetupRow();
+    <tr @Html.Raw(notificationForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @notificationForAdminList.ListOptions.RenderBody("left", notificationForAdminList.RowCount)
+    @if (notificationForAdminList.CrewSeafarerIDWithName.Visible) { // notificationForAdminList.CrewSeafarerIDWithName.Visible (begin)
+        <td data-name="CrewSeafarerIDWithName" @Html.Raw(notificationForAdminList.CrewSeafarerIDWithName.CellAttributes)>
+<span id="el@(notificationForAdminList.RowCount)_NotificationForAdmin_CrewSeafarerIDWithName" class="el_NotificationForAdmin_CrewSeafarerIDWithName">
+<span @Html.Raw(notificationForAdminList.CrewSeafarerIDWithName.ViewAttributes)>
+@Html.Raw(notificationForAdminList.CrewSeafarerIDWithName.GetViewValue())</span>
+</span>
+</td>
+    } @* notificationForAdminList.CrewSeafarerIDWithName.Visible (end) *@
+    @if (notificationForAdminList.Subject.Visible) { // notificationForAdminList.Subject.Visible (begin)
+        <td data-name="Subject" @Html.Raw(notificationForAdminList.Subject.CellAttributes)>
+<span id="el@(notificationForAdminList.RowCount)_NotificationForAdmin_Subject" class="el_NotificationForAdmin_Subject">
+<span @Html.Raw(notificationForAdminList.Subject.ViewAttributes)>
+@Html.Raw(notificationForAdminList.Subject.GetViewValue())</span>
+</span>
+</td>
+    } @* notificationForAdminList.Subject.Visible (end) *@
+    @if (notificationForAdminList.CreatedDateTime.Visible) { // notificationForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(notificationForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(notificationForAdminList.RowCount)_NotificationForAdmin_CreatedDateTime" class="el_NotificationForAdmin_CreatedDateTime">
+<span @Html.Raw(notificationForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(notificationForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* notificationForAdminList.CreatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @notificationForAdminList.ListOptions.RenderBody("right", notificationForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(notificationForAdminList.RowIndex, "$rowindex$"))
+        notificationForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((notificationForAdminList.IsCopy || notificationForAdminList.IsAdd) && notificationForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        notificationForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(notificationForAdminList.CurrentAction) && !notificationForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ notificationForAdminList.CloseRecordset(); }
+@if (!notificationForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!notificationForAdminList.IsGridAdd && !(notificationForAdminList.IsGridEdit && notificationForAdminList.ModalGridEdit) && !notificationForAdminList.IsMultiEdit) {
+@Html.Raw(notificationForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@notificationForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@notificationForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@notificationForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!notificationForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("NotificationForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    $('main.list div#ew-list div.card div.card-footer div.ew-list-other-options div.ew-add-edit-option div.btn-group a.ew-add').attr('href', `${ew.PATH_BASE}CrewNotificationForAdminAdd`);
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

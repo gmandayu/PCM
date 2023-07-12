@@ -1,0 +1,1316 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (vCrewTrackingStatusList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!vCrewTrackingStatusList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!vCrewTrackingStatusList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vCrewTrackingStatusList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_CrewTrackingStatus: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(vCrewTrackingStatusList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(vCrewTrackingStatusList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(vCrewTrackingStatusList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(vCrewTrackingStatusList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(vCrewTrackingStatusList.IndividualCodeNumber.ToClientList(vCrewTrackingStatusList)),
+            "FullName": @Html.Raw(vCrewTrackingStatusList.FullName.ToClientList(vCrewTrackingStatusList)),
+            "RequiredPhoto": @Html.Raw(vCrewTrackingStatusList.RequiredPhoto.ToClientList(vCrewTrackingStatusList)),
+            "VisaPhoto": @Html.Raw(vCrewTrackingStatusList.VisaPhoto.ToClientList(vCrewTrackingStatusList)),
+            "Gender": @Html.Raw(vCrewTrackingStatusList.Gender.ToClientList(vCrewTrackingStatusList)),
+            "RankAppliedFor": @Html.Raw(vCrewTrackingStatusList.RankAppliedFor.ToClientList(vCrewTrackingStatusList)),
+            "WillAcceptLowRank": @Html.Raw(vCrewTrackingStatusList.WillAcceptLowRank.ToClientList(vCrewTrackingStatusList)),
+            "EmployeeStatus": @Html.Raw(vCrewTrackingStatusList.EmployeeStatus.ToClientList(vCrewTrackingStatusList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!vCrewTrackingStatusList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (vCrewTrackingStatusList.TotalRecords > 0 && vCrewTrackingStatusList.ExportOptions.Visible) {
+    vCrewTrackingStatusList.ExportOptions.Render("body");
+}
+@if (vCrewTrackingStatusList.ImportOptions.Visible) {
+    vCrewTrackingStatusList.ImportOptions.Render("body");
+}
+@if (vCrewTrackingStatusList.SearchOptions.Visible) {
+    vCrewTrackingStatusList.SearchOptions.Render("body");
+}
+@if (vCrewTrackingStatusList.FilterOptions.Visible) {
+    vCrewTrackingStatusList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (vCrewTrackingStatusList.ShowCurrentFilter) {
+    vCrewTrackingStatusList.ShowFilterList();
+}
+@if (!vCrewTrackingStatusList.IsModal) {
+<form name="fv_CrewTrackingStatussrch" id="fv_CrewTrackingStatussrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fv_CrewTrackingStatussrch_search_panel" class="mb-2 mb-sm-0 @(vCrewTrackingStatusList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vCrewTrackingStatusList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_CrewTrackingStatus: currentTable } });
+var currentForm;
+var fv_CrewTrackingStatussrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fv_CrewTrackingStatussrch")
+        .setPageId("list")
+@if (vCrewTrackingStatusList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["Draft", [], fields.Draft.isInvalid],
+            ["Submitted", [], fields.Submitted.isInvalid],
+            ["Reviewed", [], fields.Reviewed.isInvalid],
+            ["RegistrationForm", [], fields.RegistrationForm.isInvalid],
+            ["PreScreeningInterview", [], fields.PreScreeningInterview.isInvalid],
+            ["MinimumRecruitmentCheck", [], fields.MinimumRecruitmentCheck.isInvalid],
+            ["EngagementChecklist", [], fields.EngagementChecklist.isInvalid],
+            ["COCAuthenticity", [], fields.COCAuthenticity.isInvalid],
+            ["CESTest", [], fields.CESTest.isInvalid],
+            ["PyschometricTest", [], fields.PyschometricTest.isInvalid],
+            ["CrewWatchlist", [], fields.CrewWatchlist.isInvalid],
+            ["PreviousAppraisalReport", [], fields.PreviousAppraisalReport.isInvalid],
+            ["ContractBackgroundCheck", [], fields.ContractBackgroundCheck.isInvalid],
+            ["EnglishProficiencyTestOrMarline", [], fields.EnglishProficiencyTestOrMarline.isInvalid],
+            ["Interviewed", [], fields.Interviewed.isInvalid],
+            ["Approved", [], fields.Approved.isInvalid],
+            ["MedicalCheckup", [], fields.MedicalCheckup.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["LastUpdatedBy", [], fields.LastUpdatedBy.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(vCrewTrackingStatusList.IndividualCodeNumber.ToClientList(vCrewTrackingStatusList)),
+            "FullName": @Html.Raw(vCrewTrackingStatusList.FullName.ToClientList(vCrewTrackingStatusList)),
+            "RequiredPhoto": @Html.Raw(vCrewTrackingStatusList.RequiredPhoto.ToClientList(vCrewTrackingStatusList)),
+            "VisaPhoto": @Html.Raw(vCrewTrackingStatusList.VisaPhoto.ToClientList(vCrewTrackingStatusList)),
+            "Gender": @Html.Raw(vCrewTrackingStatusList.Gender.ToClientList(vCrewTrackingStatusList)),
+            "RankAppliedFor": @Html.Raw(vCrewTrackingStatusList.RankAppliedFor.ToClientList(vCrewTrackingStatusList)),
+            "WillAcceptLowRank": @Html.Raw(vCrewTrackingStatusList.WillAcceptLowRank.ToClientList(vCrewTrackingStatusList)),
+            "EmployeeStatus": @Html.Raw(vCrewTrackingStatusList.EmployeeStatus.ToClientList(vCrewTrackingStatusList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await vCrewTrackingStatusList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!vCrewTrackingStatusList.IsExport() && Empty(vCrewTrackingStatusList.CurrentAction) && vCrewTrackingStatusList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(vCrewTrackingStatusList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + vCrewTrackingStatusList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    vCrewTrackingStatusList.RowType = RowType.Search;
+    vCrewTrackingStatusList.ResetAttributes();
+    await vCrewTrackingStatusList.RenderRow();
+}
+@if (vCrewTrackingStatusList.IndividualCodeNumber.Visible) { // vCrewTrackingStatusList.IndividualCodeNumber.Visible (begin)
+    if (!vCrewTrackingStatusList.IndividualCodeNumber.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_IndividualCodeNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.IndividualCodeNumber.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IndividualCodeNumber"
+            name="x_IndividualCodeNumber[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.IndividualCodeNumber.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_IndividualCodeNumber"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_IndividualCodeNumber"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.IndividualCodeNumber.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.IndividualCodeNumber.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.IndividualCodeNumber.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.IndividualCodeNumber.EditAttributes)>
+            @(vCrewTrackingStatusList.IndividualCodeNumber.SelectOptionListHtml("x_IndividualCodeNumber", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.IndividualCodeNumber.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_IndividualCodeNumber",
+                selectId: "fv_CrewTrackingStatussrch_x_IndividualCodeNumber",
+                ajax: { id: "x_IndividualCodeNumber", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.IndividualCodeNumber.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.IndividualCodeNumber.Visible (end) *@
+@if (vCrewTrackingStatusList.FullName.Visible) { // vCrewTrackingStatusList.FullName.Visible (begin)
+    if (!vCrewTrackingStatusList.FullName.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FullName"
+            name="x_FullName[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.FullName.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_FullName"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_FullName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.FullName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.FullName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.FullName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.FullName.EditAttributes)>
+            @(vCrewTrackingStatusList.FullName.SelectOptionListHtml("x_FullName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.FullName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_FullName",
+                selectId: "fv_CrewTrackingStatussrch_x_FullName",
+                ajax: { id: "x_FullName", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.FullName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.FullName.Visible (end) *@
+@if (vCrewTrackingStatusList.RequiredPhoto.Visible) { // vCrewTrackingStatusList.RequiredPhoto.Visible (begin)
+    if (!vCrewTrackingStatusList.RequiredPhoto.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_RequiredPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.RequiredPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RequiredPhoto"
+            name="x_RequiredPhoto[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.RequiredPhoto.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_RequiredPhoto"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_RequiredPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.RequiredPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.RequiredPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.RequiredPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.RequiredPhoto.EditAttributes)>
+            @(vCrewTrackingStatusList.RequiredPhoto.SelectOptionListHtml("x_RequiredPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.RequiredPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_RequiredPhoto",
+                selectId: "fv_CrewTrackingStatussrch_x_RequiredPhoto",
+                ajax: { id: "x_RequiredPhoto", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.RequiredPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.RequiredPhoto.Visible (end) *@
+@if (vCrewTrackingStatusList.VisaPhoto.Visible) { // vCrewTrackingStatusList.VisaPhoto.Visible (begin)
+    if (!vCrewTrackingStatusList.VisaPhoto.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_VisaPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.VisaPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VisaPhoto"
+            name="x_VisaPhoto[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.VisaPhoto.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_VisaPhoto"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_VisaPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.VisaPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.VisaPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.VisaPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.VisaPhoto.EditAttributes)>
+            @(vCrewTrackingStatusList.VisaPhoto.SelectOptionListHtml("x_VisaPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.VisaPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_VisaPhoto",
+                selectId: "fv_CrewTrackingStatussrch_x_VisaPhoto",
+                ajax: { id: "x_VisaPhoto", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.VisaPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.VisaPhoto.Visible (end) *@
+@if (vCrewTrackingStatusList.Gender.Visible) { // vCrewTrackingStatusList.Gender.Visible (begin)
+    if (!vCrewTrackingStatusList.Gender.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_Gender" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.Gender.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Gender"
+            name="x_Gender[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.Gender.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_Gender"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_Gender"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.Gender.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.Gender.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.Gender.EditAttributes)>
+            @(vCrewTrackingStatusList.Gender.SelectOptionListHtml("x_Gender", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.Gender.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_Gender",
+                selectId: "fv_CrewTrackingStatussrch_x_Gender",
+                ajax: { id: "x_Gender", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.Gender.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.Gender.Visible (end) *@
+@if (vCrewTrackingStatusList.RankAppliedFor.Visible) { // vCrewTrackingStatusList.RankAppliedFor.Visible (begin)
+    if (!vCrewTrackingStatusList.RankAppliedFor.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_RankAppliedFor" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.RankAppliedFor.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RankAppliedFor"
+            name="x_RankAppliedFor[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.RankAppliedFor.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_RankAppliedFor"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_RankAppliedFor"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.RankAppliedFor.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.RankAppliedFor.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.RankAppliedFor.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.RankAppliedFor.EditAttributes)>
+            @(vCrewTrackingStatusList.RankAppliedFor.SelectOptionListHtml("x_RankAppliedFor", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.RankAppliedFor.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_RankAppliedFor",
+                selectId: "fv_CrewTrackingStatussrch_x_RankAppliedFor",
+                ajax: { id: "x_RankAppliedFor", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.RankAppliedFor.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.RankAppliedFor.Visible (end) *@
+@if (vCrewTrackingStatusList.WillAcceptLowRank.Visible) { // vCrewTrackingStatusList.WillAcceptLowRank.Visible (begin)
+    if (!vCrewTrackingStatusList.WillAcceptLowRank.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_WillAcceptLowRank" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.WillAcceptLowRank.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_WillAcceptLowRank"
+            name="x_WillAcceptLowRank[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.WillAcceptLowRank.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_WillAcceptLowRank"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_WillAcceptLowRank"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.WillAcceptLowRank.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.WillAcceptLowRank.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.WillAcceptLowRank.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.WillAcceptLowRank.EditAttributes)>
+            @(vCrewTrackingStatusList.WillAcceptLowRank.SelectOptionListHtml("x_WillAcceptLowRank", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.WillAcceptLowRank.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_WillAcceptLowRank",
+                selectId: "fv_CrewTrackingStatussrch_x_WillAcceptLowRank",
+                ajax: { id: "x_WillAcceptLowRank", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.WillAcceptLowRank.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.WillAcceptLowRank.Visible (end) *@
+@if (vCrewTrackingStatusList.EmployeeStatus.Visible) { // vCrewTrackingStatusList.EmployeeStatus.Visible (begin)
+    if (!vCrewTrackingStatusList.EmployeeStatus.UseFilter) {
+        vCrewTrackingStatusList.SearchColumnCount++;
+    }
+    <div id="xs_EmployeeStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewTrackingStatusList.EmployeeStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EmployeeStatus"
+            name="x_EmployeeStatus[]"
+            class="form-control ew-select@(vCrewTrackingStatusList.EmployeeStatus.IsInvalidClass)"
+            data-select2-id="fv_CrewTrackingStatussrch_x_EmployeeStatus"
+            data-table="v_CrewTrackingStatus"
+            data-field="x_EmployeeStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewTrackingStatusList.EmployeeStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewTrackingStatusList.EmployeeStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewTrackingStatusList.EmployeeStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewTrackingStatusList.EmployeeStatus.EditAttributes)>
+            @(vCrewTrackingStatusList.EmployeeStatus.SelectOptionListHtml("x_EmployeeStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusList.EmployeeStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewTrackingStatussrch", function() {
+            var options = {
+                name: "x_EmployeeStatus",
+                selectId: "fv_CrewTrackingStatussrch_x_EmployeeStatus",
+                ajax: { id: "x_EmployeeStatus", form: "fv_CrewTrackingStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewTrackingStatus.fields.EmployeeStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewTrackingStatusList.EmployeeStatus.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(vCrewTrackingStatusList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(vCrewTrackingStatusList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(vCrewTrackingStatusList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(vCrewTrackingStatusList.BasicSearch.SessionType == "" ? " active" : "")" form="fv_CrewTrackingStatussrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(vCrewTrackingStatusList.BasicSearch.SessionType == "=" ? " active" : "")" form="fv_CrewTrackingStatussrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(vCrewTrackingStatusList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fv_CrewTrackingStatussrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(vCrewTrackingStatusList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fv_CrewTrackingStatussrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@vCrewTrackingStatusList.ShowPageHeader()
+@vCrewTrackingStatusList.ShowMessages()
+<main class="list @(vCrewTrackingStatusList.TotalRecords == 0 && !vCrewTrackingStatusList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (vCrewTrackingStatusList.TotalRecords > 0 || !Empty(vCrewTrackingStatusList.CurrentAction)) {
+<div class="card ew-card ew-grid@(vCrewTrackingStatusList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(vCrewTrackingStatusList.TableGridClass)">
+<form name="@(vCrewTrackingStatusList.FormName)" id="@(vCrewTrackingStatusList.FormName)" class="ew-form ew-list-form" action="@AppPath(vCrewTrackingStatusList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (vCrewTrackingStatusList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_v_CrewTrackingStatus" class="card-body ew-grid-middle-panel @(vCrewTrackingStatusList.TableContainerClass)" style="@(vCrewTrackingStatusList.TableContainerStyle)">
+@if (vCrewTrackingStatusList.TotalRecords > 0 || vCrewTrackingStatusList.IsGridEdit || vCrewTrackingStatusList.IsMultiEdit) {
+<table id="tbl_v_CrewTrackingStatuslist" class="@(vCrewTrackingStatusList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    vCrewTrackingStatusList.RowType = RowType.Header;
+
+    // Render list options
+    await vCrewTrackingStatusList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@vCrewTrackingStatusList.ListOptions.RenderHeader("left")
+@if (vCrewTrackingStatusList.IndividualCodeNumber.Visible) { // vCrewTrackingStatusList.IndividualCodeNumber.Visible (begin)
+        <th data-name="IndividualCodeNumber" class="@(vCrewTrackingStatusList.IndividualCodeNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_IndividualCodeNumber" class="v_CrewTrackingStatus_IndividualCodeNumber">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.IndividualCodeNumber))</div></th>
+} @* vCrewTrackingStatusList.IndividualCodeNumber.Visible (end) *@
+@if (vCrewTrackingStatusList.FullName.Visible) { // vCrewTrackingStatusList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(vCrewTrackingStatusList.FullName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_FullName" class="v_CrewTrackingStatus_FullName">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.FullName))</div></th>
+} @* vCrewTrackingStatusList.FullName.Visible (end) *@
+@if (vCrewTrackingStatusList.RequiredPhoto.Visible) { // vCrewTrackingStatusList.RequiredPhoto.Visible (begin)
+        <th data-name="RequiredPhoto" class="@(vCrewTrackingStatusList.RequiredPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_RequiredPhoto" class="v_CrewTrackingStatus_RequiredPhoto">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.RequiredPhoto))</div></th>
+} @* vCrewTrackingStatusList.RequiredPhoto.Visible (end) *@
+@if (vCrewTrackingStatusList.VisaPhoto.Visible) { // vCrewTrackingStatusList.VisaPhoto.Visible (begin)
+        <th data-name="VisaPhoto" class="@(vCrewTrackingStatusList.VisaPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_VisaPhoto" class="v_CrewTrackingStatus_VisaPhoto">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.VisaPhoto))</div></th>
+} @* vCrewTrackingStatusList.VisaPhoto.Visible (end) *@
+@if (vCrewTrackingStatusList.Gender.Visible) { // vCrewTrackingStatusList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(vCrewTrackingStatusList.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_Gender" class="v_CrewTrackingStatus_Gender">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.Gender))</div></th>
+} @* vCrewTrackingStatusList.Gender.Visible (end) *@
+@if (vCrewTrackingStatusList.RankAppliedFor.Visible) { // vCrewTrackingStatusList.RankAppliedFor.Visible (begin)
+        <th data-name="RankAppliedFor" class="@(vCrewTrackingStatusList.RankAppliedFor.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_RankAppliedFor" class="v_CrewTrackingStatus_RankAppliedFor">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.RankAppliedFor))</div></th>
+} @* vCrewTrackingStatusList.RankAppliedFor.Visible (end) *@
+@if (vCrewTrackingStatusList.WillAcceptLowRank.Visible) { // vCrewTrackingStatusList.WillAcceptLowRank.Visible (begin)
+        <th data-name="WillAcceptLowRank" class="@(vCrewTrackingStatusList.WillAcceptLowRank.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_WillAcceptLowRank" class="v_CrewTrackingStatus_WillAcceptLowRank">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.WillAcceptLowRank))</div></th>
+} @* vCrewTrackingStatusList.WillAcceptLowRank.Visible (end) *@
+@if (vCrewTrackingStatusList.EmployeeStatus.Visible) { // vCrewTrackingStatusList.EmployeeStatus.Visible (begin)
+        <th data-name="EmployeeStatus" class="@(vCrewTrackingStatusList.EmployeeStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_EmployeeStatus" class="v_CrewTrackingStatus_EmployeeStatus">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.EmployeeStatus))</div></th>
+} @* vCrewTrackingStatusList.EmployeeStatus.Visible (end) *@
+@if (vCrewTrackingStatusList.Draft.Visible) { // vCrewTrackingStatusList.Draft.Visible (begin)
+        <th data-name="Draft" class="@(vCrewTrackingStatusList.Draft.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_Draft" class="v_CrewTrackingStatus_Draft">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.Draft))</div></th>
+} @* vCrewTrackingStatusList.Draft.Visible (end) *@
+@if (vCrewTrackingStatusList.Submitted.Visible) { // vCrewTrackingStatusList.Submitted.Visible (begin)
+        <th data-name="Submitted" class="@(vCrewTrackingStatusList.Submitted.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_Submitted" class="v_CrewTrackingStatus_Submitted">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.Submitted))</div></th>
+} @* vCrewTrackingStatusList.Submitted.Visible (end) *@
+@if (vCrewTrackingStatusList.Reviewed.Visible) { // vCrewTrackingStatusList.Reviewed.Visible (begin)
+        <th data-name="Reviewed" class="@(vCrewTrackingStatusList.Reviewed.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_Reviewed" class="v_CrewTrackingStatus_Reviewed">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.Reviewed))</div></th>
+} @* vCrewTrackingStatusList.Reviewed.Visible (end) *@
+@if (vCrewTrackingStatusList.RegistrationForm.Visible) { // vCrewTrackingStatusList.RegistrationForm.Visible (begin)
+        <th data-name="RegistrationForm" class="@(vCrewTrackingStatusList.RegistrationForm.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_RegistrationForm" class="v_CrewTrackingStatus_RegistrationForm">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.RegistrationForm))</div></th>
+} @* vCrewTrackingStatusList.RegistrationForm.Visible (end) *@
+@if (vCrewTrackingStatusList.PreScreeningInterview.Visible) { // vCrewTrackingStatusList.PreScreeningInterview.Visible (begin)
+        <th data-name="PreScreeningInterview" class="@(vCrewTrackingStatusList.PreScreeningInterview.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_PreScreeningInterview" class="v_CrewTrackingStatus_PreScreeningInterview">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.PreScreeningInterview))</div></th>
+} @* vCrewTrackingStatusList.PreScreeningInterview.Visible (end) *@
+@if (vCrewTrackingStatusList.MinimumRecruitmentCheck.Visible) { // vCrewTrackingStatusList.MinimumRecruitmentCheck.Visible (begin)
+        <th data-name="MinimumRecruitmentCheck" class="@(vCrewTrackingStatusList.MinimumRecruitmentCheck.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_MinimumRecruitmentCheck" class="v_CrewTrackingStatus_MinimumRecruitmentCheck">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.MinimumRecruitmentCheck))</div></th>
+} @* vCrewTrackingStatusList.MinimumRecruitmentCheck.Visible (end) *@
+@if (vCrewTrackingStatusList.EngagementChecklist.Visible) { // vCrewTrackingStatusList.EngagementChecklist.Visible (begin)
+        <th data-name="EngagementChecklist" class="@(vCrewTrackingStatusList.EngagementChecklist.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_EngagementChecklist" class="v_CrewTrackingStatus_EngagementChecklist">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.EngagementChecklist))</div></th>
+} @* vCrewTrackingStatusList.EngagementChecklist.Visible (end) *@
+@if (vCrewTrackingStatusList.COCAuthenticity.Visible) { // vCrewTrackingStatusList.COCAuthenticity.Visible (begin)
+        <th data-name="COCAuthenticity" class="@(vCrewTrackingStatusList.COCAuthenticity.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_COCAuthenticity" class="v_CrewTrackingStatus_COCAuthenticity">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.COCAuthenticity))</div></th>
+} @* vCrewTrackingStatusList.COCAuthenticity.Visible (end) *@
+@if (vCrewTrackingStatusList.CESTest.Visible) { // vCrewTrackingStatusList.CESTest.Visible (begin)
+        <th data-name="CESTest" class="@(vCrewTrackingStatusList.CESTest.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_CESTest" class="v_CrewTrackingStatus_CESTest">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.CESTest))</div></th>
+} @* vCrewTrackingStatusList.CESTest.Visible (end) *@
+@if (vCrewTrackingStatusList.PyschometricTest.Visible) { // vCrewTrackingStatusList.PyschometricTest.Visible (begin)
+        <th data-name="PyschometricTest" class="@(vCrewTrackingStatusList.PyschometricTest.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_PyschometricTest" class="v_CrewTrackingStatus_PyschometricTest">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.PyschometricTest))</div></th>
+} @* vCrewTrackingStatusList.PyschometricTest.Visible (end) *@
+@if (vCrewTrackingStatusList.CrewWatchlist.Visible) { // vCrewTrackingStatusList.CrewWatchlist.Visible (begin)
+        <th data-name="CrewWatchlist" class="@(vCrewTrackingStatusList.CrewWatchlist.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_CrewWatchlist" class="v_CrewTrackingStatus_CrewWatchlist">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.CrewWatchlist))</div></th>
+} @* vCrewTrackingStatusList.CrewWatchlist.Visible (end) *@
+@if (vCrewTrackingStatusList.PreviousAppraisalReport.Visible) { // vCrewTrackingStatusList.PreviousAppraisalReport.Visible (begin)
+        <th data-name="PreviousAppraisalReport" class="@(vCrewTrackingStatusList.PreviousAppraisalReport.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_PreviousAppraisalReport" class="v_CrewTrackingStatus_PreviousAppraisalReport">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.PreviousAppraisalReport))</div></th>
+} @* vCrewTrackingStatusList.PreviousAppraisalReport.Visible (end) *@
+@if (vCrewTrackingStatusList.ContractBackgroundCheck.Visible) { // vCrewTrackingStatusList.ContractBackgroundCheck.Visible (begin)
+        <th data-name="ContractBackgroundCheck" class="@(vCrewTrackingStatusList.ContractBackgroundCheck.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_ContractBackgroundCheck" class="v_CrewTrackingStatus_ContractBackgroundCheck">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.ContractBackgroundCheck))</div></th>
+} @* vCrewTrackingStatusList.ContractBackgroundCheck.Visible (end) *@
+@if (vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.Visible) { // vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.Visible (begin)
+        <th data-name="EnglishProficiencyTestOrMarline" class="@(vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_EnglishProficiencyTestOrMarline" class="v_CrewTrackingStatus_EnglishProficiencyTestOrMarline">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.EnglishProficiencyTestOrMarline))</div></th>
+} @* vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.Visible (end) *@
+@if (vCrewTrackingStatusList.Interviewed.Visible) { // vCrewTrackingStatusList.Interviewed.Visible (begin)
+        <th data-name="Interviewed" class="@(vCrewTrackingStatusList.Interviewed.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_Interviewed" class="v_CrewTrackingStatus_Interviewed">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.Interviewed))</div></th>
+} @* vCrewTrackingStatusList.Interviewed.Visible (end) *@
+@if (vCrewTrackingStatusList.Approved.Visible) { // vCrewTrackingStatusList.Approved.Visible (begin)
+        <th data-name="Approved" class="@(vCrewTrackingStatusList.Approved.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_Approved" class="v_CrewTrackingStatus_Approved">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.Approved))</div></th>
+} @* vCrewTrackingStatusList.Approved.Visible (end) *@
+@if (vCrewTrackingStatusList.MedicalCheckup.Visible) { // vCrewTrackingStatusList.MedicalCheckup.Visible (begin)
+        <th data-name="MedicalCheckup" class="@(vCrewTrackingStatusList.MedicalCheckup.HeaderCellClass)" style="min-width: 242px; white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_MedicalCheckup" class="v_CrewTrackingStatus_MedicalCheckup">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.MedicalCheckup))</div></th>
+} @* vCrewTrackingStatusList.MedicalCheckup.Visible (end) *@
+@if (vCrewTrackingStatusList.CreatedBy.Visible) { // vCrewTrackingStatusList.CreatedBy.Visible (begin)
+        <th data-name="CreatedBy" class="@(vCrewTrackingStatusList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_CreatedBy" class="v_CrewTrackingStatus_CreatedBy">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.CreatedBy))</div></th>
+} @* vCrewTrackingStatusList.CreatedBy.Visible (end) *@
+@if (vCrewTrackingStatusList.LastUpdatedBy.Visible) { // vCrewTrackingStatusList.LastUpdatedBy.Visible (begin)
+        <th data-name="LastUpdatedBy" class="@(vCrewTrackingStatusList.LastUpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewTrackingStatus_LastUpdatedBy" class="v_CrewTrackingStatus_LastUpdatedBy">@Html.Raw(vCrewTrackingStatusList.RenderFieldHeader(vCrewTrackingStatusList.LastUpdatedBy))</div></th>
+} @* vCrewTrackingStatusList.LastUpdatedBy.Visible (end) *@
+@* Render list options (header, right) *@
+@vCrewTrackingStatusList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(vCrewTrackingStatusList.PageNumber)">
+@{
+    await vCrewTrackingStatusList.SetupGrid();
+    bool eof = vCrewTrackingStatusList.Recordset == null; // DN
+}
+@while (vCrewTrackingStatusList.RecordCount < vCrewTrackingStatusList.StopRecord || SameString(vCrewTrackingStatusList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(vCrewTrackingStatusList.RowIndex, "$rowindex$") &&
+        (!vCrewTrackingStatusList.IsGridAdd || vCrewTrackingStatusList.CurrentMode == "copy") &&
+        (!((vCrewTrackingStatusList.IsCopy || vCrewTrackingStatusList.IsAdd) && vCrewTrackingStatusList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await vCrewTrackingStatusList.Recordset.ReadAsync();
+    vCrewTrackingStatusList.RecordCount++;
+    if (vCrewTrackingStatusList.RecordCount >= vCrewTrackingStatusList.StartRecord) {
+        await vCrewTrackingStatusList.SetupRow();
+    <tr @Html.Raw(vCrewTrackingStatusList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @vCrewTrackingStatusList.ListOptions.RenderBody("left", vCrewTrackingStatusList.RowCount)
+    @if (vCrewTrackingStatusList.IndividualCodeNumber.Visible) { // vCrewTrackingStatusList.IndividualCodeNumber.Visible (begin)
+        <td data-name="IndividualCodeNumber" @Html.Raw(vCrewTrackingStatusList.IndividualCodeNumber.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_IndividualCodeNumber" class="el_v_CrewTrackingStatus_IndividualCodeNumber">
+<span @Html.Raw(vCrewTrackingStatusList.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(vCrewTrackingStatusList.IndividualCodeNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.IndividualCodeNumber.Visible (end) *@
+    @if (vCrewTrackingStatusList.FullName.Visible) { // vCrewTrackingStatusList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(vCrewTrackingStatusList.FullName.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_FullName" class="el_v_CrewTrackingStatus_FullName">
+<span @Html.Raw(vCrewTrackingStatusList.FullName.ViewAttributes)>
+@Html.Raw(vCrewTrackingStatusList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.FullName.Visible (end) *@
+    @if (vCrewTrackingStatusList.RequiredPhoto.Visible) { // vCrewTrackingStatusList.RequiredPhoto.Visible (begin)
+        <td data-name="RequiredPhoto" @Html.Raw(vCrewTrackingStatusList.RequiredPhoto.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_RequiredPhoto" class="el_v_CrewTrackingStatus_RequiredPhoto">
+<span @Html.Raw(vCrewTrackingStatusList.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(vCrewTrackingStatusList.IndividualCodeNumber.GetViewValue())/@ConvertToString(vCrewTrackingStatusList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.RequiredPhoto.Visible (end) *@
+    @if (vCrewTrackingStatusList.VisaPhoto.Visible) { // vCrewTrackingStatusList.VisaPhoto.Visible (begin)
+        <td data-name="VisaPhoto" @Html.Raw(vCrewTrackingStatusList.VisaPhoto.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_VisaPhoto" class="el_v_CrewTrackingStatus_VisaPhoto">
+<span @Html.Raw(vCrewTrackingStatusList.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(vCrewTrackingStatusList.IndividualCodeNumber.GetViewValue())/@ConvertToString(vCrewTrackingStatusList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.VisaPhoto.Visible (end) *@
+    @if (vCrewTrackingStatusList.Gender.Visible) { // vCrewTrackingStatusList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(vCrewTrackingStatusList.Gender.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_Gender" class="el_v_CrewTrackingStatus_Gender">
+<span @Html.Raw(vCrewTrackingStatusList.Gender.ViewAttributes)>
+@Html.Raw(vCrewTrackingStatusList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.Gender.Visible (end) *@
+    @if (vCrewTrackingStatusList.RankAppliedFor.Visible) { // vCrewTrackingStatusList.RankAppliedFor.Visible (begin)
+        <td data-name="RankAppliedFor" @Html.Raw(vCrewTrackingStatusList.RankAppliedFor.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_RankAppliedFor" class="el_v_CrewTrackingStatus_RankAppliedFor">
+<span @Html.Raw(vCrewTrackingStatusList.RankAppliedFor.ViewAttributes)>
+@Html.Raw(vCrewTrackingStatusList.RankAppliedFor.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.RankAppliedFor.Visible (end) *@
+    @if (vCrewTrackingStatusList.WillAcceptLowRank.Visible) { // vCrewTrackingStatusList.WillAcceptLowRank.Visible (begin)
+        <td data-name="WillAcceptLowRank" @Html.Raw(vCrewTrackingStatusList.WillAcceptLowRank.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_WillAcceptLowRank" class="el_v_CrewTrackingStatus_WillAcceptLowRank">
+<span @Html.Raw(vCrewTrackingStatusList.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(vCrewTrackingStatusList.RowCount)" class="form-check-input" value="@(vCrewTrackingStatusList.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(vCrewTrackingStatusList.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(vCrewTrackingStatusList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.WillAcceptLowRank.Visible (end) *@
+    @if (vCrewTrackingStatusList.EmployeeStatus.Visible) { // vCrewTrackingStatusList.EmployeeStatus.Visible (begin)
+        <td data-name="EmployeeStatus" @Html.Raw(vCrewTrackingStatusList.EmployeeStatus.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_EmployeeStatus" class="el_v_CrewTrackingStatus_EmployeeStatus">
+<span @Html.Raw(vCrewTrackingStatusList.EmployeeStatus.ViewAttributes)>
+@Html.Raw(vCrewTrackingStatusList.EmployeeStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.EmployeeStatus.Visible (end) *@
+    @if (vCrewTrackingStatusList.Draft.Visible) { // vCrewTrackingStatusList.Draft.Visible (begin)
+        <td data-name="Draft" @Html.Raw(vCrewTrackingStatusList.Draft.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_Draft" class="el_v_CrewTrackingStatus_Draft">
+<span @Html.Raw(vCrewTrackingStatusList.Draft.ViewAttributes)><span @(vCrewTrackingStatusList.Draft.ViewAttributes)>
+    @if (vCrewTrackingStatusList.Draft.GetViewValue() == "1" || vCrewTrackingStatusList.Draft.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.Draft.GetViewValue() == "2" || vCrewTrackingStatusList.Draft.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.Draft.GetViewValue() == "3" || vCrewTrackingStatusList.Draft.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.Draft.Visible (end) *@
+    @if (vCrewTrackingStatusList.Submitted.Visible) { // vCrewTrackingStatusList.Submitted.Visible (begin)
+        <td data-name="Submitted" @Html.Raw(vCrewTrackingStatusList.Submitted.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_Submitted" class="el_v_CrewTrackingStatus_Submitted">
+<span @Html.Raw(vCrewTrackingStatusList.Submitted.ViewAttributes)><span @(vCrewTrackingStatusList.Submitted.ViewAttributes)>
+    @if (vCrewTrackingStatusList.Submitted.GetViewValue() == "1" || vCrewTrackingStatusList.Submitted.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.Submitted.GetViewValue() == "2" || vCrewTrackingStatusList.Submitted.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.Submitted.GetViewValue() == "3" || vCrewTrackingStatusList.Submitted.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.Submitted.Visible (end) *@
+    @if (vCrewTrackingStatusList.Reviewed.Visible) { // vCrewTrackingStatusList.Reviewed.Visible (begin)
+        <td data-name="Reviewed" @Html.Raw(vCrewTrackingStatusList.Reviewed.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_Reviewed" class="el_v_CrewTrackingStatus_Reviewed">
+<span @Html.Raw(vCrewTrackingStatusList.Reviewed.ViewAttributes)><span @(vCrewTrackingStatusList.Reviewed.ViewAttributes)>
+    @if (vCrewTrackingStatusList.Reviewed.GetViewValue() == "1" || vCrewTrackingStatusList.Reviewed.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.Reviewed.GetViewValue() == "2" || vCrewTrackingStatusList.Reviewed.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.Reviewed.GetViewValue() == "3" || vCrewTrackingStatusList.Reviewed.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.Reviewed.Visible (end) *@
+    @if (vCrewTrackingStatusList.RegistrationForm.Visible) { // vCrewTrackingStatusList.RegistrationForm.Visible (begin)
+        <td data-name="RegistrationForm" @Html.Raw(vCrewTrackingStatusList.RegistrationForm.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_RegistrationForm" class="el_v_CrewTrackingStatus_RegistrationForm">
+<span @Html.Raw(vCrewTrackingStatusList.RegistrationForm.ViewAttributes)><span @(vCrewTrackingStatusList.RegistrationForm.ViewAttributes)>
+    @if (vCrewTrackingStatusList.RegistrationForm.GetViewValue() == "1" || vCrewTrackingStatusList.RegistrationForm.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.RegistrationForm.GetViewValue() == "2" || vCrewTrackingStatusList.RegistrationForm.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.RegistrationForm.GetViewValue() == "3" || vCrewTrackingStatusList.RegistrationForm.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.RegistrationForm.Visible (end) *@
+    @if (vCrewTrackingStatusList.PreScreeningInterview.Visible) { // vCrewTrackingStatusList.PreScreeningInterview.Visible (begin)
+        <td data-name="PreScreeningInterview" @Html.Raw(vCrewTrackingStatusList.PreScreeningInterview.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_PreScreeningInterview" class="el_v_CrewTrackingStatus_PreScreeningInterview">
+<span @Html.Raw(vCrewTrackingStatusList.PreScreeningInterview.ViewAttributes)><span @(vCrewTrackingStatusList.PreScreeningInterview.ViewAttributes)>
+    @if (vCrewTrackingStatusList.PreScreeningInterview.GetViewValue() == "1" || vCrewTrackingStatusList.PreScreeningInterview.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.PreScreeningInterview.GetViewValue() == "2" || vCrewTrackingStatusList.PreScreeningInterview.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.PreScreeningInterview.GetViewValue() == "3" || vCrewTrackingStatusList.PreScreeningInterview.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.PreScreeningInterview.Visible (end) *@
+    @if (vCrewTrackingStatusList.MinimumRecruitmentCheck.Visible) { // vCrewTrackingStatusList.MinimumRecruitmentCheck.Visible (begin)
+        <td data-name="MinimumRecruitmentCheck" @Html.Raw(vCrewTrackingStatusList.MinimumRecruitmentCheck.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_MinimumRecruitmentCheck" class="el_v_CrewTrackingStatus_MinimumRecruitmentCheck">
+<span @Html.Raw(vCrewTrackingStatusList.MinimumRecruitmentCheck.ViewAttributes)><span @(vCrewTrackingStatusList.MinimumRecruitmentCheck.ViewAttributes)>
+    @if (vCrewTrackingStatusList.MinimumRecruitmentCheck.GetViewValue() == "1" || vCrewTrackingStatusList.MinimumRecruitmentCheck.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.MinimumRecruitmentCheck.GetViewValue() == "2" || vCrewTrackingStatusList.MinimumRecruitmentCheck.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.MinimumRecruitmentCheck.GetViewValue() == "3" || vCrewTrackingStatusList.MinimumRecruitmentCheck.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.MinimumRecruitmentCheck.Visible (end) *@
+    @if (vCrewTrackingStatusList.EngagementChecklist.Visible) { // vCrewTrackingStatusList.EngagementChecklist.Visible (begin)
+        <td data-name="EngagementChecklist" @Html.Raw(vCrewTrackingStatusList.EngagementChecklist.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_EngagementChecklist" class="el_v_CrewTrackingStatus_EngagementChecklist">
+<span @Html.Raw(vCrewTrackingStatusList.EngagementChecklist.ViewAttributes)><span @(vCrewTrackingStatusList.EngagementChecklist.ViewAttributes)>
+    @if (vCrewTrackingStatusList.EngagementChecklist.GetViewValue() == "1" || vCrewTrackingStatusList.EngagementChecklist.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.EngagementChecklist.GetViewValue() == "2" || vCrewTrackingStatusList.EngagementChecklist.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.EngagementChecklist.GetViewValue() == "3" || vCrewTrackingStatusList.EngagementChecklist.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.EngagementChecklist.Visible (end) *@
+    @if (vCrewTrackingStatusList.COCAuthenticity.Visible) { // vCrewTrackingStatusList.COCAuthenticity.Visible (begin)
+        <td data-name="COCAuthenticity" @Html.Raw(vCrewTrackingStatusList.COCAuthenticity.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_COCAuthenticity" class="el_v_CrewTrackingStatus_COCAuthenticity">
+<span @Html.Raw(vCrewTrackingStatusList.COCAuthenticity.ViewAttributes)><span @(vCrewTrackingStatusList.COCAuthenticity.ViewAttributes)>
+    @if (vCrewTrackingStatusList.COCAuthenticity.GetViewValue() == "1" || vCrewTrackingStatusList.COCAuthenticity.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.COCAuthenticity.GetViewValue() == "2" || vCrewTrackingStatusList.COCAuthenticity.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.COCAuthenticity.GetViewValue() == "3" || vCrewTrackingStatusList.COCAuthenticity.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.COCAuthenticity.Visible (end) *@
+    @if (vCrewTrackingStatusList.CESTest.Visible) { // vCrewTrackingStatusList.CESTest.Visible (begin)
+        <td data-name="CESTest" @Html.Raw(vCrewTrackingStatusList.CESTest.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_CESTest" class="el_v_CrewTrackingStatus_CESTest">
+<span @Html.Raw(vCrewTrackingStatusList.CESTest.ViewAttributes)><span @(vCrewTrackingStatusList.CESTest.ViewAttributes)>
+    @if (vCrewTrackingStatusList.CESTest.GetViewValue() == "1" || vCrewTrackingStatusList.CESTest.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.CESTest.GetViewValue() == "2" || vCrewTrackingStatusList.CESTest.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.CESTest.GetViewValue() == "3" || vCrewTrackingStatusList.CESTest.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.CESTest.Visible (end) *@
+    @if (vCrewTrackingStatusList.PyschometricTest.Visible) { // vCrewTrackingStatusList.PyschometricTest.Visible (begin)
+        <td data-name="PyschometricTest" @Html.Raw(vCrewTrackingStatusList.PyschometricTest.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_PyschometricTest" class="el_v_CrewTrackingStatus_PyschometricTest">
+<span @Html.Raw(vCrewTrackingStatusList.PyschometricTest.ViewAttributes)><span @(vCrewTrackingStatusList.PyschometricTest.ViewAttributes)>
+    @if (vCrewTrackingStatusList.PyschometricTest.GetViewValue() == "1" || vCrewTrackingStatusList.PyschometricTest.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.PyschometricTest.GetViewValue() == "2" || vCrewTrackingStatusList.PyschometricTest.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.PyschometricTest.GetViewValue() == "3" || vCrewTrackingStatusList.PyschometricTest.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.PyschometricTest.Visible (end) *@
+    @if (vCrewTrackingStatusList.CrewWatchlist.Visible) { // vCrewTrackingStatusList.CrewWatchlist.Visible (begin)
+        <td data-name="CrewWatchlist" @Html.Raw(vCrewTrackingStatusList.CrewWatchlist.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_CrewWatchlist" class="el_v_CrewTrackingStatus_CrewWatchlist">
+<span @Html.Raw(vCrewTrackingStatusList.CrewWatchlist.ViewAttributes)><span @(vCrewTrackingStatusList.CrewWatchlist.ViewAttributes)>
+    @if (vCrewTrackingStatusList.CrewWatchlist.GetViewValue() == "1" || vCrewTrackingStatusList.CrewWatchlist.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.CrewWatchlist.GetViewValue() == "2" || vCrewTrackingStatusList.CrewWatchlist.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.CrewWatchlist.GetViewValue() == "3" || vCrewTrackingStatusList.CrewWatchlist.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.CrewWatchlist.Visible (end) *@
+    @if (vCrewTrackingStatusList.PreviousAppraisalReport.Visible) { // vCrewTrackingStatusList.PreviousAppraisalReport.Visible (begin)
+        <td data-name="PreviousAppraisalReport" @Html.Raw(vCrewTrackingStatusList.PreviousAppraisalReport.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_PreviousAppraisalReport" class="el_v_CrewTrackingStatus_PreviousAppraisalReport">
+<span @Html.Raw(vCrewTrackingStatusList.PreviousAppraisalReport.ViewAttributes)><span @(vCrewTrackingStatusList.PreviousAppraisalReport.ViewAttributes)>
+    @if (vCrewTrackingStatusList.PreviousAppraisalReport.GetViewValue() == "1" || vCrewTrackingStatusList.PreviousAppraisalReport.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.PreviousAppraisalReport.GetViewValue() == "2" || vCrewTrackingStatusList.PreviousAppraisalReport.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.PreviousAppraisalReport.GetViewValue() == "3" || vCrewTrackingStatusList.PreviousAppraisalReport.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.PreviousAppraisalReport.Visible (end) *@
+    @if (vCrewTrackingStatusList.ContractBackgroundCheck.Visible) { // vCrewTrackingStatusList.ContractBackgroundCheck.Visible (begin)
+        <td data-name="ContractBackgroundCheck" @Html.Raw(vCrewTrackingStatusList.ContractBackgroundCheck.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_ContractBackgroundCheck" class="el_v_CrewTrackingStatus_ContractBackgroundCheck">
+<span @Html.Raw(vCrewTrackingStatusList.ContractBackgroundCheck.ViewAttributes)><span @(vCrewTrackingStatusList.ContractBackgroundCheck.ViewAttributes)>
+    @if (vCrewTrackingStatusList.ContractBackgroundCheck.GetViewValue() == "1" || vCrewTrackingStatusList.ContractBackgroundCheck.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.ContractBackgroundCheck.GetViewValue() == "2" || vCrewTrackingStatusList.ContractBackgroundCheck.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.ContractBackgroundCheck.GetViewValue() == "3" || vCrewTrackingStatusList.ContractBackgroundCheck.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.ContractBackgroundCheck.Visible (end) *@
+    @if (vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.Visible) { // vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.Visible (begin)
+        <td data-name="EnglishProficiencyTestOrMarline" @Html.Raw(vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_EnglishProficiencyTestOrMarline" class="el_v_CrewTrackingStatus_EnglishProficiencyTestOrMarline">
+<span @Html.Raw(vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.ViewAttributes)><span @(vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.ViewAttributes)>
+    @if (vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.GetViewValue() == "1" || vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.GetViewValue() == "2" || vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.GetViewValue() == "3" || vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.EnglishProficiencyTestOrMarline.Visible (end) *@
+    @if (vCrewTrackingStatusList.Interviewed.Visible) { // vCrewTrackingStatusList.Interviewed.Visible (begin)
+        <td data-name="Interviewed" @Html.Raw(vCrewTrackingStatusList.Interviewed.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_Interviewed" class="el_v_CrewTrackingStatus_Interviewed">
+<span @Html.Raw(vCrewTrackingStatusList.Interviewed.ViewAttributes)><span @(vCrewTrackingStatusList.Interviewed.ViewAttributes)>
+    @if (vCrewTrackingStatusList.Interviewed.GetViewValue() == "1" || vCrewTrackingStatusList.Interviewed.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.Interviewed.GetViewValue() == "2" || vCrewTrackingStatusList.Interviewed.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.Interviewed.GetViewValue() == "3" || vCrewTrackingStatusList.Interviewed.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.Interviewed.Visible (end) *@
+    @if (vCrewTrackingStatusList.Approved.Visible) { // vCrewTrackingStatusList.Approved.Visible (begin)
+        <td data-name="Approved" @Html.Raw(vCrewTrackingStatusList.Approved.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_Approved" class="el_v_CrewTrackingStatus_Approved">
+<span @Html.Raw(vCrewTrackingStatusList.Approved.ViewAttributes)><span @(vCrewTrackingStatusList.Approved.ViewAttributes)>
+    @if (vCrewTrackingStatusList.Approved.GetViewValue() == "1" || vCrewTrackingStatusList.Approved.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.Approved.GetViewValue() == "2" || vCrewTrackingStatusList.Approved.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.Approved.GetViewValue() == "3" || vCrewTrackingStatusList.Approved.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.Approved.Visible (end) *@
+    @if (vCrewTrackingStatusList.MedicalCheckup.Visible) { // vCrewTrackingStatusList.MedicalCheckup.Visible (begin)
+        <td data-name="MedicalCheckup" @Html.Raw(vCrewTrackingStatusList.MedicalCheckup.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_MedicalCheckup" class="el_v_CrewTrackingStatus_MedicalCheckup">
+<span @Html.Raw(vCrewTrackingStatusList.MedicalCheckup.ViewAttributes)><span @(vCrewTrackingStatusList.MedicalCheckup.ViewAttributes)>
+    @if (vCrewTrackingStatusList.MedicalCheckup.GetViewValue() == "1" || vCrewTrackingStatusList.MedicalCheckup.GetViewValue() == "1.000")
+    {
+    	<i class="fas fa-check-circle text-success"></i> <!-- Icon checklist hijau -->
+    }
+    else if (vCrewTrackingStatusList.MedicalCheckup.GetViewValue() == "2" || vCrewTrackingStatusList.MedicalCheckup.GetViewValue() == "2.000")
+    {
+        <i class="fas fa-stopwatch text-warning"></i> <!-- Icon jam stopwatch kuning -->
+    }
+    else if (vCrewTrackingStatusList.MedicalCheckup.GetViewValue() == "3" || vCrewTrackingStatusList.MedicalCheckup.GetViewValue() == "3.000")
+    {
+        <i class="fas fa-times-circle text-danger"></i> <!-- Icon silang merah -->
+    }
+    else
+    {
+        <i class="fas fa-question-circle" style="color: grey"></i> <!-- Icon default untuk nilai null atau 0 -->
+    }
+</span>
+</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.MedicalCheckup.Visible (end) *@
+    @if (vCrewTrackingStatusList.CreatedBy.Visible) { // vCrewTrackingStatusList.CreatedBy.Visible (begin)
+        <td data-name="CreatedBy" @Html.Raw(vCrewTrackingStatusList.CreatedBy.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_CreatedBy" class="el_v_CrewTrackingStatus_CreatedBy">
+<span @Html.Raw(vCrewTrackingStatusList.CreatedBy.ViewAttributes)>
+@Html.Raw(vCrewTrackingStatusList.CreatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.CreatedBy.Visible (end) *@
+    @if (vCrewTrackingStatusList.LastUpdatedBy.Visible) { // vCrewTrackingStatusList.LastUpdatedBy.Visible (begin)
+        <td data-name="LastUpdatedBy" @Html.Raw(vCrewTrackingStatusList.LastUpdatedBy.CellAttributes)>
+<span id="el@(vCrewTrackingStatusList.RowCount)_v_CrewTrackingStatus_LastUpdatedBy" class="el_v_CrewTrackingStatus_LastUpdatedBy">
+<span @Html.Raw(vCrewTrackingStatusList.LastUpdatedBy.ViewAttributes)>
+@Html.Raw(vCrewTrackingStatusList.LastUpdatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewTrackingStatusList.LastUpdatedBy.Visible (end) *@
+    @* Render list options (body, right) *@
+    @vCrewTrackingStatusList.ListOptions.RenderBody("right", vCrewTrackingStatusList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(vCrewTrackingStatusList.RowIndex, "$rowindex$"))
+        vCrewTrackingStatusList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((vCrewTrackingStatusList.IsCopy || vCrewTrackingStatusList.IsAdd) && vCrewTrackingStatusList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        vCrewTrackingStatusList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(vCrewTrackingStatusList.CurrentAction) && !vCrewTrackingStatusList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ vCrewTrackingStatusList.CloseRecordset(); }
+@if (!vCrewTrackingStatusList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!vCrewTrackingStatusList.IsGridAdd && !(vCrewTrackingStatusList.IsGridEdit && vCrewTrackingStatusList.ModalGridEdit) && !vCrewTrackingStatusList.IsMultiEdit) {
+@Html.Raw(vCrewTrackingStatusList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@vCrewTrackingStatusList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@vCrewTrackingStatusList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@vCrewTrackingStatusList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!vCrewTrackingStatusList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("v_CrewTrackingStatus");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    $('table#tbl_v_CrewTrackingStatuslist tbody tr td.ew-list-option-body.w-1 div.btn-group ul.ew-list-options li a.ew-row-link').each(function() {
+        const dataCaptionAttrValue = $(this).attr('data-caption');
+        if (dataCaptionAttrValue === ew.language.phrase("ViewLink")) {
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+            const newHref = `${ew.PATH_BASE}CrewPersonalDataForAdminViewModeView/${id}`;
+            $(this).attr('href', newHref);
+            $(this).find('i').removeClass('icon-view ew-icon me-2').addClass('icon-view ew-icon me-2');
+            $(this).text('Registration Records');
+        } else if (dataCaptionAttrValue === ew.language.phrase("EditLink")) {
+            const anchorElement = $(this);
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+
+            // Tambahkan kode untuk menampilkan "Checklist Records" di sini
+            anchorElement.text('Checklist Records');
+            anchorElement.find('i').removeClass('fa-solid fa-pen ew-icon me-2').addClass('icon-view ew-icon me-2');
+
+            // Bikin ajax request untuk dapatkan TRChecklist ID
+            const parentUrl = ew.PATH_BASE;
+            $.ajax({
+                url: `${parentUrl}api/Registration/get-trchecklist-id`,
+                method: 'GET',
+                data: {
+                    crewId: id
+                },
+                success: function(response) {
+                    const trChecklist_ID = response.data;
+                    if(trChecklist_ID != null) {
+                        const newHref = `${parentUrl}CrewChecklistForAdminView/${trChecklist_ID}?showdetail=TRChecklistPerformance`;
+                        anchorElement.attr('href', newHref);
+                        // Sembunyikan elemen buttn di halaman tujuan
+                        $('.row.ew-buttons.mt-3').addClass('hidden');
+                    }
+                    else {
+                        anchorElement.click(function(event) {
+                            event.preventDefault();
+                            // const errorMessage = (CurrentLanguage === 'en-US') ? 'Checklist Record is empty.' : 'Data Daftar Periksa kosong.';
+                            alert("Checklist Record is empty.");
+                        });   
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Ajax request error: ', error);
+                    console.log('Response error message: ', xhr.responseText);
+                }
+            });
+        } else if (dataCaptionAttrValue === ew.language.phrase("DeleteLink")) {
+            const anchorElement = $(this);
+            const oldHref = anchorElement.attr('href');
+            const id = oldHref.split('/').pop();
+
+            // Tambahkan kode untuk menampilkan "Medical Checkup Records" di sini
+            anchorElement.text('Medical Checkup Records');
+            anchorElement.find('i').removeClass('fa-solid fa-trash ew-icon me-2').addClass('icon-view ew-icon me-2');
+
+            // Bikin ajax request untuk dapatkan TRMCUResult ID
+            const parentUrl = ew.PATH_BASE;
+            $.ajax({
+                url: `${parentUrl}api/Registration/get-trmcuresult-id`,
+                method: 'GET',
+                data: {
+                    crewId: id
+                },
+                success: function(response) {
+                    const mCUResult_ID = response.data;
+                    if(mCUResult_ID != null) {
+                        const newHref = `${parentUrl}CrewMcuResultForAdminView/${mCUResult_ID}?showdetail=TRMCUResult`;
+                        anchorElement.attr('href', newHref);
+                        $('.card.border.rounded').addClass('hidden');
+                    }
+                    else {
+                        anchorElement.click(function(event) {
+                            event.preventDefault();
+                            // const errorMessage = (CurrentLanguage === 'en-US') ? 'Medical Checkup Record is empty.' : 'Data Pemeriksaan Medis kosong.';
+                            alert("Medical Checkup Record is empty.");
+                        });
+                    }  
+                },
+                error: function(xhr, status, error) {
+                    console.log('Ajax request error: ', error);
+                    console.log('Response error message: ', xhr.responseText);
+                }
+            });
+        }
+    });
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

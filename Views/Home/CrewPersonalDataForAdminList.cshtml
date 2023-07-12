@@ -1,0 +1,1302 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewPersonalDataForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewPersonalDataForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewPersonalDataForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewPersonalDataForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewPersonalDataForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewPersonalDataForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewPersonalDataForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewPersonalDataForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewPersonalDataForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(crewPersonalDataForAdminList.IndividualCodeNumber.ToClientList(crewPersonalDataForAdminList)),
+            "FullName": @Html.Raw(crewPersonalDataForAdminList.FullName.ToClientList(crewPersonalDataForAdminList)),
+            "RequiredPhoto": @Html.Raw(crewPersonalDataForAdminList.RequiredPhoto.ToClientList(crewPersonalDataForAdminList)),
+            "VisaPhoto": @Html.Raw(crewPersonalDataForAdminList.VisaPhoto.ToClientList(crewPersonalDataForAdminList)),
+            "Nationality_CountryID": @Html.Raw(crewPersonalDataForAdminList.Nationality_CountryID.ToClientList(crewPersonalDataForAdminList)),
+            "CountryOfOrigin_CountryID": @Html.Raw(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.ToClientList(crewPersonalDataForAdminList)),
+            "DateOfBirth": @Html.Raw(crewPersonalDataForAdminList.DateOfBirth.ToClientList(crewPersonalDataForAdminList)),
+            "CityOfBirth": @Html.Raw(crewPersonalDataForAdminList.CityOfBirth.ToClientList(crewPersonalDataForAdminList)),
+            "Gender": @Html.Raw(crewPersonalDataForAdminList.Gender.ToClientList(crewPersonalDataForAdminList)),
+            "MaritalStatus": @Html.Raw(crewPersonalDataForAdminList.MaritalStatus.ToClientList(crewPersonalDataForAdminList)),
+            "ReligionID": @Html.Raw(crewPersonalDataForAdminList.ReligionID.ToClientList(crewPersonalDataForAdminList)),
+            "RankAppliedFor_RankID": @Html.Raw(crewPersonalDataForAdminList.RankAppliedFor_RankID.ToClientList(crewPersonalDataForAdminList)),
+            "MobileNumber": @Html.Raw(crewPersonalDataForAdminList.MobileNumber.ToClientList(crewPersonalDataForAdminList)),
+            "_Email": @Html.Raw(crewPersonalDataForAdminList._Email.ToClientList(crewPersonalDataForAdminList)),
+            "EmployeeStatus": @Html.Raw(crewPersonalDataForAdminList.EmployeeStatus.ToClientList(crewPersonalDataForAdminList)),
+            "FormSubmittedDateTime": @Html.Raw(crewPersonalDataForAdminList.FormSubmittedDateTime.ToClientList(crewPersonalDataForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewPersonalDataForAdminList.CreatedByUserID.ToClientList(crewPersonalDataForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewPersonalDataForAdminList.CreatedDateTime.ToClientList(crewPersonalDataForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewPersonalDataForAdminList.LastUpdatedByUserID.ToClientList(crewPersonalDataForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewPersonalDataForAdminList.LastUpdatedDateTime.ToClientList(crewPersonalDataForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewPersonalDataForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewPersonalDataForAdminList.TotalRecords > 0 && crewPersonalDataForAdminList.ExportOptions.Visible) {
+    crewPersonalDataForAdminList.ExportOptions.Render("body");
+}
+@if (crewPersonalDataForAdminList.ImportOptions.Visible) {
+    crewPersonalDataForAdminList.ImportOptions.Render("body");
+}
+@if (crewPersonalDataForAdminList.SearchOptions.Visible) {
+    crewPersonalDataForAdminList.SearchOptions.Render("body");
+}
+@if (crewPersonalDataForAdminList.FilterOptions.Visible) {
+    crewPersonalDataForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewPersonalDataForAdminList.ShowCurrentFilter) {
+    crewPersonalDataForAdminList.ShowFilterList();
+}
+@if (!crewPersonalDataForAdminList.IsModal) {
+<form name="fCrewPersonalDataForAdminsrch" id="fCrewPersonalDataForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewPersonalDataForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewPersonalDataForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewPersonalDataForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewPersonalDataForAdmin: currentTable } });
+var currentForm;
+var fCrewPersonalDataForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewPersonalDataForAdminsrch")
+        .setPageId("list")
+@if (crewPersonalDataForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["Nationality_CountryID", [], fields.Nationality_CountryID.isInvalid],
+            ["CountryOfOrigin_CountryID", [], fields.CountryOfOrigin_CountryID.isInvalid],
+            ["DateOfBirth", [], fields.DateOfBirth.isInvalid],
+            ["CityOfBirth", [], fields.CityOfBirth.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["MaritalStatus", [], fields.MaritalStatus.isInvalid],
+            ["ReligionID", [], fields.ReligionID.isInvalid],
+            ["RankAppliedFor_RankID", [], fields.RankAppliedFor_RankID.isInvalid],
+            ["MobileNumber", [], fields.MobileNumber.isInvalid],
+            ["_Email", [], fields._Email.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["FormSubmittedDateTime", [], fields.FormSubmittedDateTime.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(crewPersonalDataForAdminList.IndividualCodeNumber.ToClientList(crewPersonalDataForAdminList)),
+            "FullName": @Html.Raw(crewPersonalDataForAdminList.FullName.ToClientList(crewPersonalDataForAdminList)),
+            "RequiredPhoto": @Html.Raw(crewPersonalDataForAdminList.RequiredPhoto.ToClientList(crewPersonalDataForAdminList)),
+            "VisaPhoto": @Html.Raw(crewPersonalDataForAdminList.VisaPhoto.ToClientList(crewPersonalDataForAdminList)),
+            "Nationality_CountryID": @Html.Raw(crewPersonalDataForAdminList.Nationality_CountryID.ToClientList(crewPersonalDataForAdminList)),
+            "CountryOfOrigin_CountryID": @Html.Raw(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.ToClientList(crewPersonalDataForAdminList)),
+            "DateOfBirth": @Html.Raw(crewPersonalDataForAdminList.DateOfBirth.ToClientList(crewPersonalDataForAdminList)),
+            "CityOfBirth": @Html.Raw(crewPersonalDataForAdminList.CityOfBirth.ToClientList(crewPersonalDataForAdminList)),
+            "Gender": @Html.Raw(crewPersonalDataForAdminList.Gender.ToClientList(crewPersonalDataForAdminList)),
+            "MaritalStatus": @Html.Raw(crewPersonalDataForAdminList.MaritalStatus.ToClientList(crewPersonalDataForAdminList)),
+            "ReligionID": @Html.Raw(crewPersonalDataForAdminList.ReligionID.ToClientList(crewPersonalDataForAdminList)),
+            "RankAppliedFor_RankID": @Html.Raw(crewPersonalDataForAdminList.RankAppliedFor_RankID.ToClientList(crewPersonalDataForAdminList)),
+            "MobileNumber": @Html.Raw(crewPersonalDataForAdminList.MobileNumber.ToClientList(crewPersonalDataForAdminList)),
+            "_Email": @Html.Raw(crewPersonalDataForAdminList._Email.ToClientList(crewPersonalDataForAdminList)),
+            "EmployeeStatus": @Html.Raw(crewPersonalDataForAdminList.EmployeeStatus.ToClientList(crewPersonalDataForAdminList)),
+            "FormSubmittedDateTime": @Html.Raw(crewPersonalDataForAdminList.FormSubmittedDateTime.ToClientList(crewPersonalDataForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewPersonalDataForAdminList.CreatedByUserID.ToClientList(crewPersonalDataForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewPersonalDataForAdminList.CreatedDateTime.ToClientList(crewPersonalDataForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewPersonalDataForAdminList.LastUpdatedByUserID.ToClientList(crewPersonalDataForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewPersonalDataForAdminList.LastUpdatedDateTime.ToClientList(crewPersonalDataForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewPersonalDataForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewPersonalDataForAdminList.IsExport() && Empty(crewPersonalDataForAdminList.CurrentAction) && crewPersonalDataForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewPersonalDataForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewPersonalDataForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewPersonalDataForAdminList.RowType = RowType.Search;
+    crewPersonalDataForAdminList.ResetAttributes();
+    await crewPersonalDataForAdminList.RenderRow();
+}
+@if (crewPersonalDataForAdminList.IndividualCodeNumber.Visible) { // crewPersonalDataForAdminList.IndividualCodeNumber.Visible (begin)
+    if (!crewPersonalDataForAdminList.IndividualCodeNumber.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_IndividualCodeNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.IndividualCodeNumber.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IndividualCodeNumber"
+            name="x_IndividualCodeNumber[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.IndividualCodeNumber.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_IndividualCodeNumber"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_IndividualCodeNumber"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.IndividualCodeNumber.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.IndividualCodeNumber.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.IndividualCodeNumber.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.IndividualCodeNumber.EditAttributes)>
+            @(crewPersonalDataForAdminList.IndividualCodeNumber.SelectOptionListHtml("x_IndividualCodeNumber", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.IndividualCodeNumber.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_IndividualCodeNumber",
+                selectId: "fCrewPersonalDataForAdminsrch_x_IndividualCodeNumber",
+                ajax: { id: "x_IndividualCodeNumber", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.IndividualCodeNumber.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.IndividualCodeNumber.Visible (end) *@
+@if (crewPersonalDataForAdminList.FullName.Visible) { // crewPersonalDataForAdminList.FullName.Visible (begin)
+    if (!crewPersonalDataForAdminList.FullName.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FullName"
+            name="x_FullName[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.FullName.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_FullName"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_FullName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.FullName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.FullName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.FullName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.FullName.EditAttributes)>
+            @(crewPersonalDataForAdminList.FullName.SelectOptionListHtml("x_FullName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.FullName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_FullName",
+                selectId: "fCrewPersonalDataForAdminsrch_x_FullName",
+                ajax: { id: "x_FullName", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.FullName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.FullName.Visible (end) *@
+@if (crewPersonalDataForAdminList.RequiredPhoto.Visible) { // crewPersonalDataForAdminList.RequiredPhoto.Visible (begin)
+    if (!crewPersonalDataForAdminList.RequiredPhoto.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_RequiredPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.RequiredPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RequiredPhoto"
+            name="x_RequiredPhoto[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.RequiredPhoto.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_RequiredPhoto"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_RequiredPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.RequiredPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.RequiredPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.RequiredPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.RequiredPhoto.EditAttributes)>
+            @(crewPersonalDataForAdminList.RequiredPhoto.SelectOptionListHtml("x_RequiredPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.RequiredPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_RequiredPhoto",
+                selectId: "fCrewPersonalDataForAdminsrch_x_RequiredPhoto",
+                ajax: { id: "x_RequiredPhoto", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.RequiredPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.RequiredPhoto.Visible (end) *@
+@if (crewPersonalDataForAdminList.VisaPhoto.Visible) { // crewPersonalDataForAdminList.VisaPhoto.Visible (begin)
+    if (!crewPersonalDataForAdminList.VisaPhoto.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_VisaPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.VisaPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VisaPhoto"
+            name="x_VisaPhoto[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.VisaPhoto.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_VisaPhoto"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_VisaPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.VisaPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.VisaPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.VisaPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.VisaPhoto.EditAttributes)>
+            @(crewPersonalDataForAdminList.VisaPhoto.SelectOptionListHtml("x_VisaPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.VisaPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_VisaPhoto",
+                selectId: "fCrewPersonalDataForAdminsrch_x_VisaPhoto",
+                ajax: { id: "x_VisaPhoto", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.VisaPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.VisaPhoto.Visible (end) *@
+@if (crewPersonalDataForAdminList.Nationality_CountryID.Visible) { // crewPersonalDataForAdminList.Nationality_CountryID.Visible (begin)
+    if (!crewPersonalDataForAdminList.Nationality_CountryID.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Nationality_CountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.Nationality_CountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Nationality_CountryID"
+            name="x_Nationality_CountryID[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.Nationality_CountryID.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_Nationality_CountryID"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_Nationality_CountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.Nationality_CountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.Nationality_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.Nationality_CountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.Nationality_CountryID.EditAttributes)>
+            @(crewPersonalDataForAdminList.Nationality_CountryID.SelectOptionListHtml("x_Nationality_CountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.Nationality_CountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_Nationality_CountryID",
+                selectId: "fCrewPersonalDataForAdminsrch_x_Nationality_CountryID",
+                ajax: { id: "x_Nationality_CountryID", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.Nationality_CountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.Nationality_CountryID.Visible (end) *@
+@if (crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible) { // crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible (begin)
+    if (!crewPersonalDataForAdminList.CountryOfOrigin_CountryID.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CountryOfOrigin_CountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CountryOfOrigin_CountryID"
+            name="x_CountryOfOrigin_CountryID[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_CountryOfOrigin_CountryID"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_CountryOfOrigin_CountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.EditAttributes)>
+            @(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.SelectOptionListHtml("x_CountryOfOrigin_CountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_CountryOfOrigin_CountryID",
+                selectId: "fCrewPersonalDataForAdminsrch_x_CountryOfOrigin_CountryID",
+                ajax: { id: "x_CountryOfOrigin_CountryID", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.CountryOfOrigin_CountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible (end) *@
+@if (crewPersonalDataForAdminList.DateOfBirth.Visible) { // crewPersonalDataForAdminList.DateOfBirth.Visible (begin)
+    if (!crewPersonalDataForAdminList.DateOfBirth.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfBirth" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.DateOfBirth.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfBirth"
+            name="x_DateOfBirth[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.DateOfBirth.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_DateOfBirth"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_DateOfBirth"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.DateOfBirth.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.DateOfBirth.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.DateOfBirth.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.DateOfBirth.EditAttributes)>
+            @(crewPersonalDataForAdminList.DateOfBirth.SelectOptionListHtml("x_DateOfBirth", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.DateOfBirth.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_DateOfBirth",
+                selectId: "fCrewPersonalDataForAdminsrch_x_DateOfBirth",
+                ajax: { id: "x_DateOfBirth", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.DateOfBirth.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.DateOfBirth.Visible (end) *@
+@if (crewPersonalDataForAdminList.CityOfBirth.Visible) { // crewPersonalDataForAdminList.CityOfBirth.Visible (begin)
+    if (!crewPersonalDataForAdminList.CityOfBirth.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CityOfBirth" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.CityOfBirth.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CityOfBirth"
+            name="x_CityOfBirth[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.CityOfBirth.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_CityOfBirth"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_CityOfBirth"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.CityOfBirth.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.CityOfBirth.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.CityOfBirth.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.CityOfBirth.EditAttributes)>
+            @(crewPersonalDataForAdminList.CityOfBirth.SelectOptionListHtml("x_CityOfBirth", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.CityOfBirth.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_CityOfBirth",
+                selectId: "fCrewPersonalDataForAdminsrch_x_CityOfBirth",
+                ajax: { id: "x_CityOfBirth", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.CityOfBirth.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.CityOfBirth.Visible (end) *@
+@if (crewPersonalDataForAdminList.Gender.Visible) { // crewPersonalDataForAdminList.Gender.Visible (begin)
+    if (!crewPersonalDataForAdminList.Gender.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Gender" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.Gender.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Gender"
+            name="x_Gender[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.Gender.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_Gender"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_Gender"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.Gender.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.Gender.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.Gender.EditAttributes)>
+            @(crewPersonalDataForAdminList.Gender.SelectOptionListHtml("x_Gender", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.Gender.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_Gender",
+                selectId: "fCrewPersonalDataForAdminsrch_x_Gender",
+                ajax: { id: "x_Gender", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.Gender.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.Gender.Visible (end) *@
+@if (crewPersonalDataForAdminList.MaritalStatus.Visible) { // crewPersonalDataForAdminList.MaritalStatus.Visible (begin)
+    if (!crewPersonalDataForAdminList.MaritalStatus.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MaritalStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.MaritalStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MaritalStatus"
+            name="x_MaritalStatus[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.MaritalStatus.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_MaritalStatus"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_MaritalStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.MaritalStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.MaritalStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.MaritalStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.MaritalStatus.EditAttributes)>
+            @(crewPersonalDataForAdminList.MaritalStatus.SelectOptionListHtml("x_MaritalStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.MaritalStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_MaritalStatus",
+                selectId: "fCrewPersonalDataForAdminsrch_x_MaritalStatus",
+                ajax: { id: "x_MaritalStatus", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.MaritalStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.MaritalStatus.Visible (end) *@
+@if (crewPersonalDataForAdminList.ReligionID.Visible) { // crewPersonalDataForAdminList.ReligionID.Visible (begin)
+    if (!crewPersonalDataForAdminList.ReligionID.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_ReligionID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.ReligionID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ReligionID"
+            name="x_ReligionID[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.ReligionID.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_ReligionID"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_ReligionID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.ReligionID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.ReligionID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.ReligionID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.ReligionID.EditAttributes)>
+            @(crewPersonalDataForAdminList.ReligionID.SelectOptionListHtml("x_ReligionID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.ReligionID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_ReligionID",
+                selectId: "fCrewPersonalDataForAdminsrch_x_ReligionID",
+                ajax: { id: "x_ReligionID", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.ReligionID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.ReligionID.Visible (end) *@
+@if (crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible) { // crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible (begin)
+    if (!crewPersonalDataForAdminList.RankAppliedFor_RankID.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_RankAppliedFor_RankID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.RankAppliedFor_RankID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RankAppliedFor_RankID"
+            name="x_RankAppliedFor_RankID[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.RankAppliedFor_RankID.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_RankAppliedFor_RankID"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_RankAppliedFor_RankID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.RankAppliedFor_RankID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.RankAppliedFor_RankID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.RankAppliedFor_RankID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.RankAppliedFor_RankID.EditAttributes)>
+            @(crewPersonalDataForAdminList.RankAppliedFor_RankID.SelectOptionListHtml("x_RankAppliedFor_RankID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.RankAppliedFor_RankID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_RankAppliedFor_RankID",
+                selectId: "fCrewPersonalDataForAdminsrch_x_RankAppliedFor_RankID",
+                ajax: { id: "x_RankAppliedFor_RankID", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.RankAppliedFor_RankID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible (end) *@
+@if (crewPersonalDataForAdminList.MobileNumber.Visible) { // crewPersonalDataForAdminList.MobileNumber.Visible (begin)
+    if (!crewPersonalDataForAdminList.MobileNumber.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MobileNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.MobileNumber.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MobileNumber"
+            name="x_MobileNumber[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.MobileNumber.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_MobileNumber"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_MobileNumber"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.MobileNumber.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.MobileNumber.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.MobileNumber.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.MobileNumber.EditAttributes)>
+            @(crewPersonalDataForAdminList.MobileNumber.SelectOptionListHtml("x_MobileNumber", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.MobileNumber.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_MobileNumber",
+                selectId: "fCrewPersonalDataForAdminsrch_x_MobileNumber",
+                ajax: { id: "x_MobileNumber", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.MobileNumber.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.MobileNumber.Visible (end) *@
+@if (crewPersonalDataForAdminList._Email.Visible) { // crewPersonalDataForAdminList._Email.Visible (begin)
+    if (!crewPersonalDataForAdminList._Email.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs__Email" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList._Email.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Email"
+            name="x__Email[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList._Email.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x__Email"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x__Email"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList._Email.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList._Email.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList._Email.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList._Email.EditAttributes)>
+            @(crewPersonalDataForAdminList._Email.SelectOptionListHtml("x__Email", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList._Email.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x__Email",
+                selectId: "fCrewPersonalDataForAdminsrch_x__Email",
+                ajax: { id: "x__Email", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields._Email.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList._Email.Visible (end) *@
+@if (crewPersonalDataForAdminList.EmployeeStatus.Visible) { // crewPersonalDataForAdminList.EmployeeStatus.Visible (begin)
+    if (!crewPersonalDataForAdminList.EmployeeStatus.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_EmployeeStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.EmployeeStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EmployeeStatus"
+            name="x_EmployeeStatus[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.EmployeeStatus.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_EmployeeStatus"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_EmployeeStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.EmployeeStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.EmployeeStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.EmployeeStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.EmployeeStatus.EditAttributes)>
+            @(crewPersonalDataForAdminList.EmployeeStatus.SelectOptionListHtml("x_EmployeeStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.EmployeeStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_EmployeeStatus",
+                selectId: "fCrewPersonalDataForAdminsrch_x_EmployeeStatus",
+                ajax: { id: "x_EmployeeStatus", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.EmployeeStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.EmployeeStatus.Visible (end) *@
+@if (crewPersonalDataForAdminList.FormSubmittedDateTime.Visible) { // crewPersonalDataForAdminList.FormSubmittedDateTime.Visible (begin)
+    if (!crewPersonalDataForAdminList.FormSubmittedDateTime.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_FormSubmittedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.FormSubmittedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FormSubmittedDateTime"
+            name="x_FormSubmittedDateTime[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.FormSubmittedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_FormSubmittedDateTime"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_FormSubmittedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.FormSubmittedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.FormSubmittedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.FormSubmittedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.FormSubmittedDateTime.EditAttributes)>
+            @(crewPersonalDataForAdminList.FormSubmittedDateTime.SelectOptionListHtml("x_FormSubmittedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.FormSubmittedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_FormSubmittedDateTime",
+                selectId: "fCrewPersonalDataForAdminsrch_x_FormSubmittedDateTime",
+                ajax: { id: "x_FormSubmittedDateTime", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.FormSubmittedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.FormSubmittedDateTime.Visible (end) *@
+@if (crewPersonalDataForAdminList.CreatedByUserID.Visible) { // crewPersonalDataForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewPersonalDataForAdminList.CreatedByUserID.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_CreatedByUserID"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewPersonalDataForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewPersonalDataForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewPersonalDataForAdminList.CreatedDateTime.Visible) { // crewPersonalDataForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewPersonalDataForAdminList.CreatedDateTime.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_CreatedDateTime"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewPersonalDataForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewPersonalDataForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewPersonalDataForAdminList.LastUpdatedByUserID.Visible) { // crewPersonalDataForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewPersonalDataForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewPersonalDataForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewPersonalDataForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewPersonalDataForAdminList.LastUpdatedDateTime.Visible) { // crewPersonalDataForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewPersonalDataForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewPersonalDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewPersonalDataForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewPersonalDataForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewPersonalDataForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewPersonalDataForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewPersonalDataForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewPersonalDataForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewPersonalDataForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewPersonalDataForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewPersonalDataForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewPersonalDataForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewPersonalDataForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewPersonalDataForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewPersonalDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewPersonalDataForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewPersonalDataForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewPersonalDataForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewPersonalDataForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewPersonalDataForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewPersonalDataForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewPersonalDataForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewPersonalDataForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewPersonalDataForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewPersonalDataForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewPersonalDataForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewPersonalDataForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewPersonalDataForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewPersonalDataForAdminList.ShowPageHeader()
+@crewPersonalDataForAdminList.ShowMessages()
+<main class="list @(crewPersonalDataForAdminList.TotalRecords == 0 && !crewPersonalDataForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewPersonalDataForAdminList.TotalRecords > 0 || !Empty(crewPersonalDataForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewPersonalDataForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewPersonalDataForAdminList.TableGridClass)">
+<form name="@(crewPersonalDataForAdminList.FormName)" id="@(crewPersonalDataForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewPersonalDataForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewPersonalDataForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewPersonalDataForAdmin" class="card-body ew-grid-middle-panel @(crewPersonalDataForAdminList.TableContainerClass)" style="@(crewPersonalDataForAdminList.TableContainerStyle)">
+@if (crewPersonalDataForAdminList.TotalRecords > 0 || crewPersonalDataForAdminList.IsGridEdit || crewPersonalDataForAdminList.IsMultiEdit) {
+<table id="tbl_CrewPersonalDataForAdminlist" class="@(crewPersonalDataForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewPersonalDataForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewPersonalDataForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewPersonalDataForAdminList.ListOptions.RenderHeader("left")
+@if (crewPersonalDataForAdminList.IndividualCodeNumber.Visible) { // crewPersonalDataForAdminList.IndividualCodeNumber.Visible (begin)
+        <th data-name="IndividualCodeNumber" class="@(crewPersonalDataForAdminList.IndividualCodeNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_IndividualCodeNumber" class="CrewPersonalDataForAdmin_IndividualCodeNumber">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.IndividualCodeNumber))</div></th>
+} @* crewPersonalDataForAdminList.IndividualCodeNumber.Visible (end) *@
+@if (crewPersonalDataForAdminList.FullName.Visible) { // crewPersonalDataForAdminList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(crewPersonalDataForAdminList.FullName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_FullName" class="CrewPersonalDataForAdmin_FullName">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.FullName))</div></th>
+} @* crewPersonalDataForAdminList.FullName.Visible (end) *@
+@if (crewPersonalDataForAdminList.RequiredPhoto.Visible) { // crewPersonalDataForAdminList.RequiredPhoto.Visible (begin)
+        <th data-name="RequiredPhoto" class="@(crewPersonalDataForAdminList.RequiredPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_RequiredPhoto" class="CrewPersonalDataForAdmin_RequiredPhoto">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.RequiredPhoto))</div></th>
+} @* crewPersonalDataForAdminList.RequiredPhoto.Visible (end) *@
+@if (crewPersonalDataForAdminList.VisaPhoto.Visible) { // crewPersonalDataForAdminList.VisaPhoto.Visible (begin)
+        <th data-name="VisaPhoto" class="@(crewPersonalDataForAdminList.VisaPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_VisaPhoto" class="CrewPersonalDataForAdmin_VisaPhoto">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.VisaPhoto))</div></th>
+} @* crewPersonalDataForAdminList.VisaPhoto.Visible (end) *@
+@if (crewPersonalDataForAdminList.Nationality_CountryID.Visible) { // crewPersonalDataForAdminList.Nationality_CountryID.Visible (begin)
+        <th data-name="Nationality_CountryID" class="@(crewPersonalDataForAdminList.Nationality_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_Nationality_CountryID" class="CrewPersonalDataForAdmin_Nationality_CountryID">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.Nationality_CountryID))</div></th>
+} @* crewPersonalDataForAdminList.Nationality_CountryID.Visible (end) *@
+@if (crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible) { // crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible (begin)
+        <th data-name="CountryOfOrigin_CountryID" class="@(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_CountryOfOrigin_CountryID" class="CrewPersonalDataForAdmin_CountryOfOrigin_CountryID">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.CountryOfOrigin_CountryID))</div></th>
+} @* crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible (end) *@
+@if (crewPersonalDataForAdminList.DateOfBirth.Visible) { // crewPersonalDataForAdminList.DateOfBirth.Visible (begin)
+        <th data-name="DateOfBirth" class="@(crewPersonalDataForAdminList.DateOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_DateOfBirth" class="CrewPersonalDataForAdmin_DateOfBirth">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.DateOfBirth))</div></th>
+} @* crewPersonalDataForAdminList.DateOfBirth.Visible (end) *@
+@if (crewPersonalDataForAdminList.CityOfBirth.Visible) { // crewPersonalDataForAdminList.CityOfBirth.Visible (begin)
+        <th data-name="CityOfBirth" class="@(crewPersonalDataForAdminList.CityOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_CityOfBirth" class="CrewPersonalDataForAdmin_CityOfBirth">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.CityOfBirth))</div></th>
+} @* crewPersonalDataForAdminList.CityOfBirth.Visible (end) *@
+@if (crewPersonalDataForAdminList.Gender.Visible) { // crewPersonalDataForAdminList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(crewPersonalDataForAdminList.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_Gender" class="CrewPersonalDataForAdmin_Gender">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.Gender))</div></th>
+} @* crewPersonalDataForAdminList.Gender.Visible (end) *@
+@if (crewPersonalDataForAdminList.MaritalStatus.Visible) { // crewPersonalDataForAdminList.MaritalStatus.Visible (begin)
+        <th data-name="MaritalStatus" class="@(crewPersonalDataForAdminList.MaritalStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_MaritalStatus" class="CrewPersonalDataForAdmin_MaritalStatus">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.MaritalStatus))</div></th>
+} @* crewPersonalDataForAdminList.MaritalStatus.Visible (end) *@
+@if (crewPersonalDataForAdminList.ReligionID.Visible) { // crewPersonalDataForAdminList.ReligionID.Visible (begin)
+        <th data-name="ReligionID" class="@(crewPersonalDataForAdminList.ReligionID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_ReligionID" class="CrewPersonalDataForAdmin_ReligionID">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.ReligionID))</div></th>
+} @* crewPersonalDataForAdminList.ReligionID.Visible (end) *@
+@if (crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible) { // crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible (begin)
+        <th data-name="RankAppliedFor_RankID" class="@(crewPersonalDataForAdminList.RankAppliedFor_RankID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_RankAppliedFor_RankID" class="CrewPersonalDataForAdmin_RankAppliedFor_RankID">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.RankAppliedFor_RankID))</div></th>
+} @* crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible (end) *@
+@if (crewPersonalDataForAdminList.MobileNumber.Visible) { // crewPersonalDataForAdminList.MobileNumber.Visible (begin)
+        <th data-name="MobileNumber" class="@(crewPersonalDataForAdminList.MobileNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_MobileNumber" class="CrewPersonalDataForAdmin_MobileNumber">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.MobileNumber))</div></th>
+} @* crewPersonalDataForAdminList.MobileNumber.Visible (end) *@
+@if (crewPersonalDataForAdminList._Email.Visible) { // crewPersonalDataForAdminList._Email.Visible (begin)
+        <th data-name="_Email" class="@(crewPersonalDataForAdminList._Email.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin__Email" class="CrewPersonalDataForAdmin__Email">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList._Email))</div></th>
+} @* crewPersonalDataForAdminList._Email.Visible (end) *@
+@if (crewPersonalDataForAdminList.EmployeeStatus.Visible) { // crewPersonalDataForAdminList.EmployeeStatus.Visible (begin)
+        <th data-name="EmployeeStatus" class="@(crewPersonalDataForAdminList.EmployeeStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_EmployeeStatus" class="CrewPersonalDataForAdmin_EmployeeStatus">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.EmployeeStatus))</div></th>
+} @* crewPersonalDataForAdminList.EmployeeStatus.Visible (end) *@
+@if (crewPersonalDataForAdminList.FormSubmittedDateTime.Visible) { // crewPersonalDataForAdminList.FormSubmittedDateTime.Visible (begin)
+        <th data-name="FormSubmittedDateTime" class="@(crewPersonalDataForAdminList.FormSubmittedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_FormSubmittedDateTime" class="CrewPersonalDataForAdmin_FormSubmittedDateTime">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.FormSubmittedDateTime))</div></th>
+} @* crewPersonalDataForAdminList.FormSubmittedDateTime.Visible (end) *@
+@if (crewPersonalDataForAdminList.CreatedByUserID.Visible) { // crewPersonalDataForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewPersonalDataForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_CreatedByUserID" class="CrewPersonalDataForAdmin_CreatedByUserID">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.CreatedByUserID))</div></th>
+} @* crewPersonalDataForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewPersonalDataForAdminList.CreatedDateTime.Visible) { // crewPersonalDataForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewPersonalDataForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_CreatedDateTime" class="CrewPersonalDataForAdmin_CreatedDateTime">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.CreatedDateTime))</div></th>
+} @* crewPersonalDataForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewPersonalDataForAdminList.LastUpdatedByUserID.Visible) { // crewPersonalDataForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewPersonalDataForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_LastUpdatedByUserID" class="CrewPersonalDataForAdmin_LastUpdatedByUserID">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewPersonalDataForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewPersonalDataForAdminList.LastUpdatedDateTime.Visible) { // crewPersonalDataForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewPersonalDataForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewPersonalDataForAdmin_LastUpdatedDateTime" class="CrewPersonalDataForAdmin_LastUpdatedDateTime">@Html.Raw(crewPersonalDataForAdminList.RenderFieldHeader(crewPersonalDataForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewPersonalDataForAdminList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewPersonalDataForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewPersonalDataForAdminList.PageNumber)">
+@{
+    await crewPersonalDataForAdminList.SetupGrid();
+    bool eof = crewPersonalDataForAdminList.Recordset == null; // DN
+}
+@while (crewPersonalDataForAdminList.RecordCount < crewPersonalDataForAdminList.StopRecord || SameString(crewPersonalDataForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewPersonalDataForAdminList.RowIndex, "$rowindex$") &&
+        (!crewPersonalDataForAdminList.IsGridAdd || crewPersonalDataForAdminList.CurrentMode == "copy") &&
+        (!((crewPersonalDataForAdminList.IsCopy || crewPersonalDataForAdminList.IsAdd) && crewPersonalDataForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewPersonalDataForAdminList.Recordset.ReadAsync();
+    crewPersonalDataForAdminList.RecordCount++;
+    if (crewPersonalDataForAdminList.RecordCount >= crewPersonalDataForAdminList.StartRecord) {
+        await crewPersonalDataForAdminList.SetupRow();
+    <tr @Html.Raw(crewPersonalDataForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewPersonalDataForAdminList.ListOptions.RenderBody("left", crewPersonalDataForAdminList.RowCount)
+    @if (crewPersonalDataForAdminList.IndividualCodeNumber.Visible) { // crewPersonalDataForAdminList.IndividualCodeNumber.Visible (begin)
+        <td data-name="IndividualCodeNumber" @Html.Raw(crewPersonalDataForAdminList.IndividualCodeNumber.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_IndividualCodeNumber" class="el_CrewPersonalDataForAdmin_IndividualCodeNumber">
+<span @Html.Raw(crewPersonalDataForAdminList.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.IndividualCodeNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.IndividualCodeNumber.Visible (end) *@
+    @if (crewPersonalDataForAdminList.FullName.Visible) { // crewPersonalDataForAdminList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(crewPersonalDataForAdminList.FullName.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_FullName" class="el_CrewPersonalDataForAdmin_FullName">
+<span @Html.Raw(crewPersonalDataForAdminList.FullName.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.FullName.Visible (end) *@
+    @if (crewPersonalDataForAdminList.RequiredPhoto.Visible) { // crewPersonalDataForAdminList.RequiredPhoto.Visible (begin)
+        <td data-name="RequiredPhoto" @Html.Raw(crewPersonalDataForAdminList.RequiredPhoto.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_RequiredPhoto" class="el_CrewPersonalDataForAdmin_RequiredPhoto">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewPersonalDataForAdminList.RequiredPhoto, ConvertToString(crewPersonalDataForAdminList.RequiredPhoto.GetViewValue()), false))
+</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.RequiredPhoto.Visible (end) *@
+    @if (crewPersonalDataForAdminList.VisaPhoto.Visible) { // crewPersonalDataForAdminList.VisaPhoto.Visible (begin)
+        <td data-name="VisaPhoto" @Html.Raw(crewPersonalDataForAdminList.VisaPhoto.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_VisaPhoto" class="el_CrewPersonalDataForAdmin_VisaPhoto">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewPersonalDataForAdminList.VisaPhoto, ConvertToString(crewPersonalDataForAdminList.VisaPhoto.GetViewValue()), false))
+</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.VisaPhoto.Visible (end) *@
+    @if (crewPersonalDataForAdminList.Nationality_CountryID.Visible) { // crewPersonalDataForAdminList.Nationality_CountryID.Visible (begin)
+        <td data-name="Nationality_CountryID" @Html.Raw(crewPersonalDataForAdminList.Nationality_CountryID.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_Nationality_CountryID" class="el_CrewPersonalDataForAdmin_Nationality_CountryID">
+<span @Html.Raw(crewPersonalDataForAdminList.Nationality_CountryID.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.Nationality_CountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.Nationality_CountryID.Visible (end) *@
+    @if (crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible) { // crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible (begin)
+        <td data-name="CountryOfOrigin_CountryID" @Html.Raw(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_CountryOfOrigin_CountryID" class="el_CrewPersonalDataForAdmin_CountryOfOrigin_CountryID">
+<span @Html.Raw(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.CountryOfOrigin_CountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.CountryOfOrigin_CountryID.Visible (end) *@
+    @if (crewPersonalDataForAdminList.DateOfBirth.Visible) { // crewPersonalDataForAdminList.DateOfBirth.Visible (begin)
+        <td data-name="DateOfBirth" @Html.Raw(crewPersonalDataForAdminList.DateOfBirth.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_DateOfBirth" class="el_CrewPersonalDataForAdmin_DateOfBirth">
+<span @Html.Raw(crewPersonalDataForAdminList.DateOfBirth.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.DateOfBirth.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.DateOfBirth.Visible (end) *@
+    @if (crewPersonalDataForAdminList.CityOfBirth.Visible) { // crewPersonalDataForAdminList.CityOfBirth.Visible (begin)
+        <td data-name="CityOfBirth" @Html.Raw(crewPersonalDataForAdminList.CityOfBirth.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_CityOfBirth" class="el_CrewPersonalDataForAdmin_CityOfBirth">
+<span @Html.Raw(crewPersonalDataForAdminList.CityOfBirth.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.CityOfBirth.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.CityOfBirth.Visible (end) *@
+    @if (crewPersonalDataForAdminList.Gender.Visible) { // crewPersonalDataForAdminList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(crewPersonalDataForAdminList.Gender.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_Gender" class="el_CrewPersonalDataForAdmin_Gender">
+<span @Html.Raw(crewPersonalDataForAdminList.Gender.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.Gender.Visible (end) *@
+    @if (crewPersonalDataForAdminList.MaritalStatus.Visible) { // crewPersonalDataForAdminList.MaritalStatus.Visible (begin)
+        <td data-name="MaritalStatus" @Html.Raw(crewPersonalDataForAdminList.MaritalStatus.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_MaritalStatus" class="el_CrewPersonalDataForAdmin_MaritalStatus">
+<span @Html.Raw(crewPersonalDataForAdminList.MaritalStatus.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.MaritalStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.MaritalStatus.Visible (end) *@
+    @if (crewPersonalDataForAdminList.ReligionID.Visible) { // crewPersonalDataForAdminList.ReligionID.Visible (begin)
+        <td data-name="ReligionID" @Html.Raw(crewPersonalDataForAdminList.ReligionID.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_ReligionID" class="el_CrewPersonalDataForAdmin_ReligionID">
+<span @Html.Raw(crewPersonalDataForAdminList.ReligionID.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.ReligionID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.ReligionID.Visible (end) *@
+    @if (crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible) { // crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible (begin)
+        <td data-name="RankAppliedFor_RankID" @Html.Raw(crewPersonalDataForAdminList.RankAppliedFor_RankID.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_RankAppliedFor_RankID" class="el_CrewPersonalDataForAdmin_RankAppliedFor_RankID">
+<span @Html.Raw(crewPersonalDataForAdminList.RankAppliedFor_RankID.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.RankAppliedFor_RankID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.RankAppliedFor_RankID.Visible (end) *@
+    @if (crewPersonalDataForAdminList.MobileNumber.Visible) { // crewPersonalDataForAdminList.MobileNumber.Visible (begin)
+        <td data-name="MobileNumber" @Html.Raw(crewPersonalDataForAdminList.MobileNumber.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_MobileNumber" class="el_CrewPersonalDataForAdmin_MobileNumber">
+<span @Html.Raw(crewPersonalDataForAdminList.MobileNumber.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.MobileNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.MobileNumber.Visible (end) *@
+    @if (crewPersonalDataForAdminList._Email.Visible) { // crewPersonalDataForAdminList._Email.Visible (begin)
+        <td data-name="_Email" @Html.Raw(crewPersonalDataForAdminList._Email.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin__Email" class="el_CrewPersonalDataForAdmin__Email">
+<span @Html.Raw(crewPersonalDataForAdminList._Email.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList._Email.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList._Email.Visible (end) *@
+    @if (crewPersonalDataForAdminList.EmployeeStatus.Visible) { // crewPersonalDataForAdminList.EmployeeStatus.Visible (begin)
+        <td data-name="EmployeeStatus" @Html.Raw(crewPersonalDataForAdminList.EmployeeStatus.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_EmployeeStatus" class="el_CrewPersonalDataForAdmin_EmployeeStatus">
+<span @Html.Raw(crewPersonalDataForAdminList.EmployeeStatus.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.EmployeeStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.EmployeeStatus.Visible (end) *@
+    @if (crewPersonalDataForAdminList.FormSubmittedDateTime.Visible) { // crewPersonalDataForAdminList.FormSubmittedDateTime.Visible (begin)
+        <td data-name="FormSubmittedDateTime" @Html.Raw(crewPersonalDataForAdminList.FormSubmittedDateTime.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_FormSubmittedDateTime" class="el_CrewPersonalDataForAdmin_FormSubmittedDateTime">
+<span @Html.Raw(crewPersonalDataForAdminList.FormSubmittedDateTime.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.FormSubmittedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.FormSubmittedDateTime.Visible (end) *@
+    @if (crewPersonalDataForAdminList.CreatedByUserID.Visible) { // crewPersonalDataForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewPersonalDataForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_CreatedByUserID" class="el_CrewPersonalDataForAdmin_CreatedByUserID">
+<span @Html.Raw(crewPersonalDataForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewPersonalDataForAdminList.CreatedDateTime.Visible) { // crewPersonalDataForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewPersonalDataForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_CreatedDateTime" class="el_CrewPersonalDataForAdmin_CreatedDateTime">
+<span @Html.Raw(crewPersonalDataForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewPersonalDataForAdminList.LastUpdatedByUserID.Visible) { // crewPersonalDataForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewPersonalDataForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_LastUpdatedByUserID" class="el_CrewPersonalDataForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewPersonalDataForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewPersonalDataForAdminList.LastUpdatedDateTime.Visible) { // crewPersonalDataForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewPersonalDataForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewPersonalDataForAdminList.RowCount)_CrewPersonalDataForAdmin_LastUpdatedDateTime" class="el_CrewPersonalDataForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewPersonalDataForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewPersonalDataForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewPersonalDataForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewPersonalDataForAdminList.ListOptions.RenderBody("right", crewPersonalDataForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewPersonalDataForAdminList.RowIndex, "$rowindex$"))
+        crewPersonalDataForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewPersonalDataForAdminList.IsCopy || crewPersonalDataForAdminList.IsAdd) && crewPersonalDataForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewPersonalDataForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewPersonalDataForAdminList.CurrentAction) && !crewPersonalDataForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewPersonalDataForAdminList.CloseRecordset(); }
+@if (!crewPersonalDataForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewPersonalDataForAdminList.IsGridAdd && !(crewPersonalDataForAdminList.IsGridEdit && crewPersonalDataForAdminList.ModalGridEdit) && !crewPersonalDataForAdminList.IsMultiEdit) {
+@Html.Raw(crewPersonalDataForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewPersonalDataForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewPersonalDataForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewPersonalDataForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewPersonalDataForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewPersonalDataForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

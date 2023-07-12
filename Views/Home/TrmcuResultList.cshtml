@@ -1,0 +1,775 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trmcuResultList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!trmcuResultList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!trmcuResultList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trmcuResultList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRMCUResult: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(trmcuResultList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(trmcuResultList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(trmcuResultList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(trmcuResultList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "McuDate": @Html.Raw(trmcuResultList.McuDate.ToClientList(trmcuResultList)),
+            "McuExpirationDate": @Html.Raw(trmcuResultList.McuExpirationDate.ToClientList(trmcuResultList)),
+            "HealthStatus": @Html.Raw(trmcuResultList.HealthStatus.ToClientList(trmcuResultList)),
+            "McuLocation": @Html.Raw(trmcuResultList.McuLocation.ToClientList(trmcuResultList)),
+            "McuAttachment": @Html.Raw(trmcuResultList.McuAttachment.ToClientList(trmcuResultList)),
+            "CreatedByUserID": @Html.Raw(trmcuResultList.CreatedByUserID.ToClientList(trmcuResultList)),
+            "CreatedDateTime": @Html.Raw(trmcuResultList.CreatedDateTime.ToClientList(trmcuResultList)),
+            "LastUpdatedByUserID": @Html.Raw(trmcuResultList.LastUpdatedByUserID.ToClientList(trmcuResultList)),
+            "LastUpdatedDateTime": @Html.Raw(trmcuResultList.LastUpdatedDateTime.ToClientList(trmcuResultList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!trmcuResultList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (trmcuResultList.TotalRecords > 0 && trmcuResultList.ExportOptions.Visible) {
+    trmcuResultList.ExportOptions.Render("body");
+}
+@if (trmcuResultList.ImportOptions.Visible) {
+    trmcuResultList.ImportOptions.Render("body");
+}
+@if (trmcuResultList.SearchOptions.Visible) {
+    trmcuResultList.SearchOptions.Render("body");
+}
+@if (trmcuResultList.FilterOptions.Visible) {
+    trmcuResultList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (trmcuResultList.ShowCurrentFilter) {
+    trmcuResultList.ShowFilterList();
+}
+@if (!trmcuResultList.IsModal) {
+<form name="fTRMCUResultsrch" id="fTRMCUResultsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fTRMCUResultsrch_search_panel" class="mb-2 mb-sm-0 @(trmcuResultList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trmcuResultList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRMCUResult: currentTable } });
+var currentForm;
+var fTRMCUResultsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fTRMCUResultsrch")
+        .setPageId("list")
+@if (trmcuResultList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["McuDate", [], fields.McuDate.isInvalid],
+            ["McuExpirationDate", [], fields.McuExpirationDate.isInvalid],
+            ["HealthStatus", [], fields.HealthStatus.isInvalid],
+            ["McuLocation", [], fields.McuLocation.isInvalid],
+            ["McuAttachment", [], fields.McuAttachment.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid],
+            ["McuScheduleDate", [], fields.McuScheduleDate.isInvalid],
+            ["McuRemark", [], fields.McuRemark.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "McuDate": @Html.Raw(trmcuResultList.McuDate.ToClientList(trmcuResultList)),
+            "McuExpirationDate": @Html.Raw(trmcuResultList.McuExpirationDate.ToClientList(trmcuResultList)),
+            "HealthStatus": @Html.Raw(trmcuResultList.HealthStatus.ToClientList(trmcuResultList)),
+            "McuLocation": @Html.Raw(trmcuResultList.McuLocation.ToClientList(trmcuResultList)),
+            "McuAttachment": @Html.Raw(trmcuResultList.McuAttachment.ToClientList(trmcuResultList)),
+            "CreatedByUserID": @Html.Raw(trmcuResultList.CreatedByUserID.ToClientList(trmcuResultList)),
+            "CreatedDateTime": @Html.Raw(trmcuResultList.CreatedDateTime.ToClientList(trmcuResultList)),
+            "LastUpdatedByUserID": @Html.Raw(trmcuResultList.LastUpdatedByUserID.ToClientList(trmcuResultList)),
+            "LastUpdatedDateTime": @Html.Raw(trmcuResultList.LastUpdatedDateTime.ToClientList(trmcuResultList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await trmcuResultList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!trmcuResultList.IsExport() && Empty(trmcuResultList.CurrentAction) && trmcuResultList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(trmcuResultList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + trmcuResultList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    trmcuResultList.RowType = RowType.Search;
+    trmcuResultList.ResetAttributes();
+    await trmcuResultList.RenderRow();
+}
+@if (trmcuResultList.McuDate.Visible) { // trmcuResultList.McuDate.Visible (begin)
+    if (!trmcuResultList.McuDate.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.McuDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuDate"
+            name="x_McuDate[]"
+            class="form-control ew-select@(trmcuResultList.McuDate.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_McuDate"
+            data-table="TRMCUResult"
+            data-field="x_McuDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.McuDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.McuDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.McuDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.McuDate.EditAttributes)>
+            @(trmcuResultList.McuDate.SelectOptionListHtml("x_McuDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.McuDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_McuDate",
+                selectId: "fTRMCUResultsrch_x_McuDate",
+                ajax: { id: "x_McuDate", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.McuDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.McuDate.Visible (end) *@
+@if (trmcuResultList.McuExpirationDate.Visible) { // trmcuResultList.McuExpirationDate.Visible (begin)
+    if (!trmcuResultList.McuExpirationDate.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuExpirationDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.McuExpirationDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuExpirationDate"
+            name="x_McuExpirationDate[]"
+            class="form-control ew-select@(trmcuResultList.McuExpirationDate.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_McuExpirationDate"
+            data-table="TRMCUResult"
+            data-field="x_McuExpirationDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.McuExpirationDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.McuExpirationDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.McuExpirationDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.McuExpirationDate.EditAttributes)>
+            @(trmcuResultList.McuExpirationDate.SelectOptionListHtml("x_McuExpirationDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.McuExpirationDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_McuExpirationDate",
+                selectId: "fTRMCUResultsrch_x_McuExpirationDate",
+                ajax: { id: "x_McuExpirationDate", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.McuExpirationDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.McuExpirationDate.Visible (end) *@
+@if (trmcuResultList.HealthStatus.Visible) { // trmcuResultList.HealthStatus.Visible (begin)
+    if (!trmcuResultList.HealthStatus.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_HealthStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.HealthStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_HealthStatus"
+            name="x_HealthStatus[]"
+            class="form-control ew-select@(trmcuResultList.HealthStatus.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_HealthStatus"
+            data-table="TRMCUResult"
+            data-field="x_HealthStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.HealthStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.HealthStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.HealthStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.HealthStatus.EditAttributes)>
+            @(trmcuResultList.HealthStatus.SelectOptionListHtml("x_HealthStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.HealthStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_HealthStatus",
+                selectId: "fTRMCUResultsrch_x_HealthStatus",
+                ajax: { id: "x_HealthStatus", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.HealthStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.HealthStatus.Visible (end) *@
+@if (trmcuResultList.McuLocation.Visible) { // trmcuResultList.McuLocation.Visible (begin)
+    if (!trmcuResultList.McuLocation.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuLocation" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.McuLocation.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuLocation"
+            name="x_McuLocation[]"
+            class="form-control ew-select@(trmcuResultList.McuLocation.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_McuLocation"
+            data-table="TRMCUResult"
+            data-field="x_McuLocation"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.McuLocation.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.McuLocation.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.McuLocation.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.McuLocation.EditAttributes)>
+            @(trmcuResultList.McuLocation.SelectOptionListHtml("x_McuLocation", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.McuLocation.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_McuLocation",
+                selectId: "fTRMCUResultsrch_x_McuLocation",
+                ajax: { id: "x_McuLocation", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.McuLocation.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.McuLocation.Visible (end) *@
+@if (trmcuResultList.McuAttachment.Visible) { // trmcuResultList.McuAttachment.Visible (begin)
+    if (!trmcuResultList.McuAttachment.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuAttachment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.McuAttachment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuAttachment"
+            name="x_McuAttachment[]"
+            class="form-control ew-select@(trmcuResultList.McuAttachment.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_McuAttachment"
+            data-table="TRMCUResult"
+            data-field="x_McuAttachment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.McuAttachment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.McuAttachment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.McuAttachment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.McuAttachment.EditAttributes)>
+            @(trmcuResultList.McuAttachment.SelectOptionListHtml("x_McuAttachment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.McuAttachment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_McuAttachment",
+                selectId: "fTRMCUResultsrch_x_McuAttachment",
+                ajax: { id: "x_McuAttachment", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.McuAttachment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.McuAttachment.Visible (end) *@
+@if (trmcuResultList.CreatedByUserID.Visible) { // trmcuResultList.CreatedByUserID.Visible (begin)
+    if (!trmcuResultList.CreatedByUserID.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(trmcuResultList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_CreatedByUserID"
+            data-table="TRMCUResult"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.CreatedByUserID.EditAttributes)>
+            @(trmcuResultList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fTRMCUResultsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.CreatedByUserID.Visible (end) *@
+@if (trmcuResultList.CreatedDateTime.Visible) { // trmcuResultList.CreatedDateTime.Visible (begin)
+    if (!trmcuResultList.CreatedDateTime.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(trmcuResultList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_CreatedDateTime"
+            data-table="TRMCUResult"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.CreatedDateTime.EditAttributes)>
+            @(trmcuResultList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fTRMCUResultsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.CreatedDateTime.Visible (end) *@
+@if (trmcuResultList.LastUpdatedByUserID.Visible) { // trmcuResultList.LastUpdatedByUserID.Visible (begin)
+    if (!trmcuResultList.LastUpdatedByUserID.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(trmcuResultList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_LastUpdatedByUserID"
+            data-table="TRMCUResult"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.LastUpdatedByUserID.EditAttributes)>
+            @(trmcuResultList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fTRMCUResultsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.LastUpdatedByUserID.Visible (end) *@
+@if (trmcuResultList.LastUpdatedDateTime.Visible) { // trmcuResultList.LastUpdatedDateTime.Visible (begin)
+    if (!trmcuResultList.LastUpdatedDateTime.UseFilter) {
+        trmcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trmcuResultList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(trmcuResultList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fTRMCUResultsrch_x_LastUpdatedDateTime"
+            data-table="TRMCUResult"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trmcuResultList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trmcuResultList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trmcuResultList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trmcuResultList.LastUpdatedDateTime.EditAttributes)>
+            @(trmcuResultList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trmcuResultList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTRMCUResultsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fTRMCUResultsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fTRMCUResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TRMCUResult.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trmcuResultList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(trmcuResultList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(trmcuResultList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(trmcuResultList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(trmcuResultList.BasicSearch.SessionType == "" ? " active" : "")" form="fTRMCUResultsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(trmcuResultList.BasicSearch.SessionType == "=" ? " active" : "")" form="fTRMCUResultsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(trmcuResultList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fTRMCUResultsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(trmcuResultList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fTRMCUResultsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@trmcuResultList.ShowPageHeader()
+@trmcuResultList.ShowMessages()
+<main class="list @(trmcuResultList.TotalRecords == 0 && !trmcuResultList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (trmcuResultList.TotalRecords > 0 || !Empty(trmcuResultList.CurrentAction)) {
+<div class="card ew-card ew-grid@(trmcuResultList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(trmcuResultList.TableGridClass)">
+<form name="@(trmcuResultList.FormName)" id="@(trmcuResultList.FormName)" class="ew-form ew-list-form" action="@AppPath(trmcuResultList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (trmcuResultList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_TRMCUResult" class="card-body ew-grid-middle-panel @(trmcuResultList.TableContainerClass)" style="@(trmcuResultList.TableContainerStyle)">
+@if (trmcuResultList.TotalRecords > 0 || trmcuResultList.IsGridEdit || trmcuResultList.IsMultiEdit) {
+<table id="tbl_TRMCUResultlist" class="@(trmcuResultList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    trmcuResultList.RowType = RowType.Header;
+
+    // Render list options
+    await trmcuResultList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@trmcuResultList.ListOptions.RenderHeader("left")
+@if (trmcuResultList.McuDate.Visible) { // trmcuResultList.McuDate.Visible (begin)
+        <th data-name="McuDate" class="@(trmcuResultList.McuDate.HeaderCellClass)"><div id="elh_TRMCUResult_McuDate" class="TRMCUResult_McuDate">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.McuDate))</div></th>
+} @* trmcuResultList.McuDate.Visible (end) *@
+@if (trmcuResultList.McuExpirationDate.Visible) { // trmcuResultList.McuExpirationDate.Visible (begin)
+        <th data-name="McuExpirationDate" class="@(trmcuResultList.McuExpirationDate.HeaderCellClass)"><div id="elh_TRMCUResult_McuExpirationDate" class="TRMCUResult_McuExpirationDate">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.McuExpirationDate))</div></th>
+} @* trmcuResultList.McuExpirationDate.Visible (end) *@
+@if (trmcuResultList.HealthStatus.Visible) { // trmcuResultList.HealthStatus.Visible (begin)
+        <th data-name="HealthStatus" class="@(trmcuResultList.HealthStatus.HeaderCellClass)"><div id="elh_TRMCUResult_HealthStatus" class="TRMCUResult_HealthStatus">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.HealthStatus))</div></th>
+} @* trmcuResultList.HealthStatus.Visible (end) *@
+@if (trmcuResultList.McuLocation.Visible) { // trmcuResultList.McuLocation.Visible (begin)
+        <th data-name="McuLocation" class="@(trmcuResultList.McuLocation.HeaderCellClass)"><div id="elh_TRMCUResult_McuLocation" class="TRMCUResult_McuLocation">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.McuLocation))</div></th>
+} @* trmcuResultList.McuLocation.Visible (end) *@
+@if (trmcuResultList.McuAttachment.Visible) { // trmcuResultList.McuAttachment.Visible (begin)
+        <th data-name="McuAttachment" class="@(trmcuResultList.McuAttachment.HeaderCellClass)"><div id="elh_TRMCUResult_McuAttachment" class="TRMCUResult_McuAttachment">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.McuAttachment))</div></th>
+} @* trmcuResultList.McuAttachment.Visible (end) *@
+@if (trmcuResultList.CreatedByUserID.Visible) { // trmcuResultList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(trmcuResultList.CreatedByUserID.HeaderCellClass)"><div id="elh_TRMCUResult_CreatedByUserID" class="TRMCUResult_CreatedByUserID">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.CreatedByUserID))</div></th>
+} @* trmcuResultList.CreatedByUserID.Visible (end) *@
+@if (trmcuResultList.CreatedDateTime.Visible) { // trmcuResultList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(trmcuResultList.CreatedDateTime.HeaderCellClass)"><div id="elh_TRMCUResult_CreatedDateTime" class="TRMCUResult_CreatedDateTime">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.CreatedDateTime))</div></th>
+} @* trmcuResultList.CreatedDateTime.Visible (end) *@
+@if (trmcuResultList.LastUpdatedByUserID.Visible) { // trmcuResultList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(trmcuResultList.LastUpdatedByUserID.HeaderCellClass)"><div id="elh_TRMCUResult_LastUpdatedByUserID" class="TRMCUResult_LastUpdatedByUserID">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.LastUpdatedByUserID))</div></th>
+} @* trmcuResultList.LastUpdatedByUserID.Visible (end) *@
+@if (trmcuResultList.LastUpdatedDateTime.Visible) { // trmcuResultList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(trmcuResultList.LastUpdatedDateTime.HeaderCellClass)"><div id="elh_TRMCUResult_LastUpdatedDateTime" class="TRMCUResult_LastUpdatedDateTime">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.LastUpdatedDateTime))</div></th>
+} @* trmcuResultList.LastUpdatedDateTime.Visible (end) *@
+@if (trmcuResultList.McuScheduleDate.Visible) { // trmcuResultList.McuScheduleDate.Visible (begin)
+        <th data-name="McuScheduleDate" class="@(trmcuResultList.McuScheduleDate.HeaderCellClass)"><div id="elh_TRMCUResult_McuScheduleDate" class="TRMCUResult_McuScheduleDate">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.McuScheduleDate))</div></th>
+} @* trmcuResultList.McuScheduleDate.Visible (end) *@
+@if (trmcuResultList.McuRemark.Visible) { // trmcuResultList.McuRemark.Visible (begin)
+        <th data-name="McuRemark" class="@(trmcuResultList.McuRemark.HeaderCellClass)"><div id="elh_TRMCUResult_McuRemark" class="TRMCUResult_McuRemark">@Html.Raw(trmcuResultList.RenderFieldHeader(trmcuResultList.McuRemark))</div></th>
+} @* trmcuResultList.McuRemark.Visible (end) *@
+@* Render list options (header, right) *@
+@trmcuResultList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(trmcuResultList.PageNumber)">
+@{
+    await trmcuResultList.SetupGrid();
+    bool eof = trmcuResultList.Recordset == null; // DN
+}
+@while (trmcuResultList.RecordCount < trmcuResultList.StopRecord || SameString(trmcuResultList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(trmcuResultList.RowIndex, "$rowindex$") &&
+        (!trmcuResultList.IsGridAdd || trmcuResultList.CurrentMode == "copy") &&
+        (!((trmcuResultList.IsCopy || trmcuResultList.IsAdd) && trmcuResultList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await trmcuResultList.Recordset.ReadAsync();
+    trmcuResultList.RecordCount++;
+    if (trmcuResultList.RecordCount >= trmcuResultList.StartRecord) {
+        await trmcuResultList.SetupRow();
+    <tr @Html.Raw(trmcuResultList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @trmcuResultList.ListOptions.RenderBody("left", trmcuResultList.RowCount)
+    @if (trmcuResultList.McuDate.Visible) { // trmcuResultList.McuDate.Visible (begin)
+        <td data-name="McuDate" @Html.Raw(trmcuResultList.McuDate.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_McuDate" class="el_TRMCUResult_McuDate">
+<span @Html.Raw(trmcuResultList.McuDate.ViewAttributes)>
+@Html.Raw(trmcuResultList.McuDate.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.McuDate.Visible (end) *@
+    @if (trmcuResultList.McuExpirationDate.Visible) { // trmcuResultList.McuExpirationDate.Visible (begin)
+        <td data-name="McuExpirationDate" @Html.Raw(trmcuResultList.McuExpirationDate.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_McuExpirationDate" class="el_TRMCUResult_McuExpirationDate">
+<span @Html.Raw(trmcuResultList.McuExpirationDate.ViewAttributes)>
+@Html.Raw(trmcuResultList.McuExpirationDate.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.McuExpirationDate.Visible (end) *@
+    @if (trmcuResultList.HealthStatus.Visible) { // trmcuResultList.HealthStatus.Visible (begin)
+        <td data-name="HealthStatus" @Html.Raw(trmcuResultList.HealthStatus.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_HealthStatus" class="el_TRMCUResult_HealthStatus">
+<span @Html.Raw(trmcuResultList.HealthStatus.ViewAttributes)>
+@Html.Raw(trmcuResultList.HealthStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.HealthStatus.Visible (end) *@
+    @if (trmcuResultList.McuLocation.Visible) { // trmcuResultList.McuLocation.Visible (begin)
+        <td data-name="McuLocation" @Html.Raw(trmcuResultList.McuLocation.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_McuLocation" class="el_TRMCUResult_McuLocation">
+<span @Html.Raw(trmcuResultList.McuLocation.ViewAttributes)>
+@Html.Raw(trmcuResultList.McuLocation.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.McuLocation.Visible (end) *@
+    @if (trmcuResultList.McuAttachment.Visible) { // trmcuResultList.McuAttachment.Visible (begin)
+        <td data-name="McuAttachment" @Html.Raw(trmcuResultList.McuAttachment.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_McuAttachment" class="el_TRMCUResult_McuAttachment">
+<span @Html.Raw(trmcuResultList.McuAttachment.ViewAttributes)>
+@Html.Raw(await GetFileViewTag((DbField)trmcuResultList.McuAttachment, ConvertToString(trmcuResultList.McuAttachment.GetViewValue()), false))
+</span>
+</span>
+</td>
+    } @* trmcuResultList.McuAttachment.Visible (end) *@
+    @if (trmcuResultList.CreatedByUserID.Visible) { // trmcuResultList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(trmcuResultList.CreatedByUserID.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_CreatedByUserID" class="el_TRMCUResult_CreatedByUserID">
+<span @Html.Raw(trmcuResultList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(trmcuResultList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.CreatedByUserID.Visible (end) *@
+    @if (trmcuResultList.CreatedDateTime.Visible) { // trmcuResultList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(trmcuResultList.CreatedDateTime.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_CreatedDateTime" class="el_TRMCUResult_CreatedDateTime">
+<span @Html.Raw(trmcuResultList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(trmcuResultList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.CreatedDateTime.Visible (end) *@
+    @if (trmcuResultList.LastUpdatedByUserID.Visible) { // trmcuResultList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(trmcuResultList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_LastUpdatedByUserID" class="el_TRMCUResult_LastUpdatedByUserID">
+<span @Html.Raw(trmcuResultList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(trmcuResultList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.LastUpdatedByUserID.Visible (end) *@
+    @if (trmcuResultList.LastUpdatedDateTime.Visible) { // trmcuResultList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(trmcuResultList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_LastUpdatedDateTime" class="el_TRMCUResult_LastUpdatedDateTime">
+<span @Html.Raw(trmcuResultList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(trmcuResultList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.LastUpdatedDateTime.Visible (end) *@
+    @if (trmcuResultList.McuScheduleDate.Visible) { // trmcuResultList.McuScheduleDate.Visible (begin)
+        <td data-name="McuScheduleDate" @Html.Raw(trmcuResultList.McuScheduleDate.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_McuScheduleDate" class="el_TRMCUResult_McuScheduleDate">
+<span @Html.Raw(trmcuResultList.McuScheduleDate.ViewAttributes)>
+@Html.Raw(trmcuResultList.McuScheduleDate.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.McuScheduleDate.Visible (end) *@
+    @if (trmcuResultList.McuRemark.Visible) { // trmcuResultList.McuRemark.Visible (begin)
+        <td data-name="McuRemark" @Html.Raw(trmcuResultList.McuRemark.CellAttributes)>
+<span id="el@(trmcuResultList.RowCount)_TRMCUResult_McuRemark" class="el_TRMCUResult_McuRemark">
+<span @Html.Raw(trmcuResultList.McuRemark.ViewAttributes)>
+@Html.Raw(trmcuResultList.McuRemark.GetViewValue())</span>
+</span>
+</td>
+    } @* trmcuResultList.McuRemark.Visible (end) *@
+    @* Render list options (body, right) *@
+    @trmcuResultList.ListOptions.RenderBody("right", trmcuResultList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(trmcuResultList.RowIndex, "$rowindex$"))
+        trmcuResultList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((trmcuResultList.IsCopy || trmcuResultList.IsAdd) && trmcuResultList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        trmcuResultList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(trmcuResultList.CurrentAction) && !trmcuResultList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ trmcuResultList.CloseRecordset(); }
+@if (!trmcuResultList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!trmcuResultList.IsGridAdd && !(trmcuResultList.IsGridEdit && trmcuResultList.ModalGridEdit) && !trmcuResultList.IsMultiEdit) {
+@Html.Raw(trmcuResultList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@trmcuResultList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@trmcuResultList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@trmcuResultList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!trmcuResultList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TRMCUResult");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

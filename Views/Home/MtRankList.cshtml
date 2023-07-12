@@ -1,0 +1,560 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtRankList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtRankList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtRankList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtRankList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTRank: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtRankList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtRankList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtRankList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtRankList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtRankList._Name.ToClientList(mtRankList)),
+            "CreatedByUserID": @Html.Raw(mtRankList.CreatedByUserID.ToClientList(mtRankList)),
+            "CreatedDateTime": @Html.Raw(mtRankList.CreatedDateTime.ToClientList(mtRankList)),
+            "LastUpdatedByUserID": @Html.Raw(mtRankList.LastUpdatedByUserID.ToClientList(mtRankList)),
+            "LastUpdatedDateTime": @Html.Raw(mtRankList.LastUpdatedDateTime.ToClientList(mtRankList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtRankList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtRankList.TotalRecords > 0 && mtRankList.ExportOptions.Visible) {
+    mtRankList.ExportOptions.Render("body");
+}
+@if (mtRankList.ImportOptions.Visible) {
+    mtRankList.ImportOptions.Render("body");
+}
+@if (mtRankList.SearchOptions.Visible) {
+    mtRankList.SearchOptions.Render("body");
+}
+@if (mtRankList.FilterOptions.Visible) {
+    mtRankList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtRankList.ShowCurrentFilter) {
+    mtRankList.ShowFilterList();
+}
+@if (!mtRankList.IsModal) {
+<form name="fMTRanksrch" id="fMTRanksrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTRanksrch_search_panel" class="mb-2 mb-sm-0 @(mtRankList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtRankList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTRank: currentTable } });
+var currentForm;
+var fMTRanksrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTRanksrch")
+        .setPageId("list")
+@if (mtRankList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtRankList._Name.ToClientList(mtRankList)),
+            "CreatedByUserID": @Html.Raw(mtRankList.CreatedByUserID.ToClientList(mtRankList)),
+            "CreatedDateTime": @Html.Raw(mtRankList.CreatedDateTime.ToClientList(mtRankList)),
+            "LastUpdatedByUserID": @Html.Raw(mtRankList.LastUpdatedByUserID.ToClientList(mtRankList)),
+            "LastUpdatedDateTime": @Html.Raw(mtRankList.LastUpdatedDateTime.ToClientList(mtRankList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtRankList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtRankList.IsExport() && Empty(mtRankList.CurrentAction) && mtRankList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtRankList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtRankList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtRankList.RowType = RowType.Search;
+    mtRankList.ResetAttributes();
+    await mtRankList.RenderRow();
+}
+@if (mtRankList._Name.Visible) { // mtRankList._Name.Visible (begin)
+    if (!mtRankList._Name.UseFilter) {
+        mtRankList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtRankList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtRankList._Name.IsInvalidClass)"
+            data-select2-id="fMTRanksrch_x__Name"
+            data-table="MTRank"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtRankList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtRankList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtRankList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtRankList._Name.EditAttributes)>
+            @(mtRankList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtRankList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTRanksrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTRanksrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTRanksrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTRank.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtRankList._Name.Visible (end) *@
+@if (mtRankList.CreatedByUserID.Visible) { // mtRankList.CreatedByUserID.Visible (begin)
+    if (!mtRankList.CreatedByUserID.UseFilter) {
+        mtRankList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtRankList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtRankList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTRanksrch_x_CreatedByUserID"
+            data-table="MTRank"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtRankList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtRankList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtRankList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtRankList.CreatedByUserID.EditAttributes)>
+            @(mtRankList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtRankList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTRanksrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTRanksrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTRanksrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTRank.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtRankList.CreatedByUserID.Visible (end) *@
+@if (mtRankList.CreatedDateTime.Visible) { // mtRankList.CreatedDateTime.Visible (begin)
+    if (!mtRankList.CreatedDateTime.UseFilter) {
+        mtRankList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtRankList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtRankList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTRanksrch_x_CreatedDateTime"
+            data-table="MTRank"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtRankList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtRankList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtRankList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtRankList.CreatedDateTime.EditAttributes)>
+            @(mtRankList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtRankList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTRanksrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTRanksrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTRanksrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTRank.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtRankList.CreatedDateTime.Visible (end) *@
+@if (mtRankList.LastUpdatedByUserID.Visible) { // mtRankList.LastUpdatedByUserID.Visible (begin)
+    if (!mtRankList.LastUpdatedByUserID.UseFilter) {
+        mtRankList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtRankList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtRankList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTRanksrch_x_LastUpdatedByUserID"
+            data-table="MTRank"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtRankList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtRankList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtRankList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtRankList.LastUpdatedByUserID.EditAttributes)>
+            @(mtRankList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtRankList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTRanksrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTRanksrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTRanksrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTRank.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtRankList.LastUpdatedByUserID.Visible (end) *@
+@if (mtRankList.LastUpdatedDateTime.Visible) { // mtRankList.LastUpdatedDateTime.Visible (begin)
+    if (!mtRankList.LastUpdatedDateTime.UseFilter) {
+        mtRankList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtRankList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtRankList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTRanksrch_x_LastUpdatedDateTime"
+            data-table="MTRank"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtRankList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtRankList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtRankList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtRankList.LastUpdatedDateTime.EditAttributes)>
+            @(mtRankList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtRankList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTRanksrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTRanksrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTRanksrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTRank.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtRankList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtRankList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtRankList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtRankList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtRankList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTRanksrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtRankList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTRanksrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtRankList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTRanksrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtRankList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTRanksrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtRankList.ShowPageHeader()
+@mtRankList.ShowMessages()
+<main class="list @(mtRankList.TotalRecords == 0 && !mtRankList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtRankList.TotalRecords > 0 || !Empty(mtRankList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtRankList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtRankList.TableGridClass)">
+<form name="@(mtRankList.FormName)" id="@(mtRankList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtRankList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtRankList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTRank" class="card-body ew-grid-middle-panel @(mtRankList.TableContainerClass)" style="@(mtRankList.TableContainerStyle)">
+@if (mtRankList.TotalRecords > 0 || mtRankList.IsGridEdit || mtRankList.IsMultiEdit) {
+<table id="tbl_MTRanklist" class="@(mtRankList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtRankList.RowType = RowType.Header;
+
+    // Render list options
+    await mtRankList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtRankList.ListOptions.RenderHeader("left")
+@if (mtRankList._Name.Visible) { // mtRankList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtRankList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTRank__Name" class="MTRank__Name">@Html.Raw(mtRankList.RenderFieldHeader(mtRankList._Name))</div></th>
+} @* mtRankList._Name.Visible (end) *@
+@if (mtRankList.CreatedByUserID.Visible) { // mtRankList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtRankList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTRank_CreatedByUserID" class="MTRank_CreatedByUserID">@Html.Raw(mtRankList.RenderFieldHeader(mtRankList.CreatedByUserID))</div></th>
+} @* mtRankList.CreatedByUserID.Visible (end) *@
+@if (mtRankList.CreatedDateTime.Visible) { // mtRankList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtRankList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTRank_CreatedDateTime" class="MTRank_CreatedDateTime">@Html.Raw(mtRankList.RenderFieldHeader(mtRankList.CreatedDateTime))</div></th>
+} @* mtRankList.CreatedDateTime.Visible (end) *@
+@if (mtRankList.LastUpdatedByUserID.Visible) { // mtRankList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtRankList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTRank_LastUpdatedByUserID" class="MTRank_LastUpdatedByUserID">@Html.Raw(mtRankList.RenderFieldHeader(mtRankList.LastUpdatedByUserID))</div></th>
+} @* mtRankList.LastUpdatedByUserID.Visible (end) *@
+@if (mtRankList.LastUpdatedDateTime.Visible) { // mtRankList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtRankList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTRank_LastUpdatedDateTime" class="MTRank_LastUpdatedDateTime">@Html.Raw(mtRankList.RenderFieldHeader(mtRankList.LastUpdatedDateTime))</div></th>
+} @* mtRankList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtRankList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtRankList.PageNumber)">
+@{
+    await mtRankList.SetupGrid();
+    bool eof = mtRankList.Recordset == null; // DN
+}
+@while (mtRankList.RecordCount < mtRankList.StopRecord || SameString(mtRankList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtRankList.RowIndex, "$rowindex$") &&
+        (!mtRankList.IsGridAdd || mtRankList.CurrentMode == "copy") &&
+        (!((mtRankList.IsCopy || mtRankList.IsAdd) && mtRankList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtRankList.Recordset.ReadAsync();
+    mtRankList.RecordCount++;
+    if (mtRankList.RecordCount >= mtRankList.StartRecord) {
+        await mtRankList.SetupRow();
+    <tr @Html.Raw(mtRankList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtRankList.ListOptions.RenderBody("left", mtRankList.RowCount)
+    @if (mtRankList._Name.Visible) { // mtRankList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtRankList._Name.CellAttributes)>
+<span id="el@(mtRankList.RowCount)_MTRank__Name" class="el_MTRank__Name">
+<span @Html.Raw(mtRankList._Name.ViewAttributes)>
+@Html.Raw(mtRankList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRankList._Name.Visible (end) *@
+    @if (mtRankList.CreatedByUserID.Visible) { // mtRankList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtRankList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtRankList.RowCount)_MTRank_CreatedByUserID" class="el_MTRank_CreatedByUserID">
+<span @Html.Raw(mtRankList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtRankList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRankList.CreatedByUserID.Visible (end) *@
+    @if (mtRankList.CreatedDateTime.Visible) { // mtRankList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtRankList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtRankList.RowCount)_MTRank_CreatedDateTime" class="el_MTRank_CreatedDateTime">
+<span @Html.Raw(mtRankList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtRankList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRankList.CreatedDateTime.Visible (end) *@
+    @if (mtRankList.LastUpdatedByUserID.Visible) { // mtRankList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtRankList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtRankList.RowCount)_MTRank_LastUpdatedByUserID" class="el_MTRank_LastUpdatedByUserID">
+<span @Html.Raw(mtRankList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtRankList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRankList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtRankList.LastUpdatedDateTime.Visible) { // mtRankList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtRankList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtRankList.RowCount)_MTRank_LastUpdatedDateTime" class="el_MTRank_LastUpdatedDateTime">
+<span @Html.Raw(mtRankList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtRankList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRankList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtRankList.ListOptions.RenderBody("right", mtRankList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtRankList.RowIndex, "$rowindex$"))
+        mtRankList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtRankList.IsCopy || mtRankList.IsAdd) && mtRankList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtRankList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtRankList.CurrentAction) && !mtRankList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtRankList.CloseRecordset(); }
+@if (!mtRankList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtRankList.IsGridAdd && !(mtRankList.IsGridEdit && mtRankList.ModalGridEdit) && !mtRankList.IsMultiEdit) {
+@Html.Raw(mtRankList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtRankList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtRankList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtRankList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtRankList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTRank");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

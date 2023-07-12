@@ -1,0 +1,393 @@
+@{
+    // View
+    View = this;
+
+    // Set up CurrentGrid
+    CurrentGrid = trChecklistPerformanceGrid;
+
+    // Run
+    await trChecklistPerformanceGrid.Run();
+
+    // Check action result
+    if (trChecklistPerformanceGrid.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!trChecklistPerformanceGrid.IsExport()) {
+<script>
+var fTRChecklistPerformancegrid;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let currentTable = @Html.Raw(ConvertToJson(trChecklistPerformanceGrid.ToClientVar()));
+    ew.deepAssign(ew.vars, { tables: { TRChecklistPerformance: currentTable } });
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fTRChecklistPerformancegrid")
+        .setPageId("grid")
+        .setFormKeyCountName("@(trChecklistPerformanceGrid.FormKeyCountName)")
+
+        // Add fields
+        .setFields([
+
+            ["ManningAgent", [fields.ManningAgent.visible && fields.ManningAgent.required ? ew.Validators.required(fields.ManningAgent.caption) : null], fields.ManningAgent.isInvalid],
+            ["VesselName", [fields.VesselName.visible && fields.VesselName.required ? ew.Validators.required(fields.VesselName.caption) : null], fields.VesselName.isInvalid],
+            ["Performance", [fields.Performance.visible && fields.Performance.required ? ew.Validators.required(fields.Performance.caption) : null], fields.Performance.isInvalid],
+            ["DateChecked", [fields.DateChecked.visible && fields.DateChecked.required ? ew.Validators.required(fields.DateChecked.caption) : null, ew.Validators.datetime(fields.DateChecked.clientFormatPattern)], fields.DateChecked.isInvalid]
+        ])
+
+        // Check empty row
+        .setEmptyRow(
+            function (rowIndex) {
+                let fobj = this.getForm(),
+                    fields = [["ManningAgent",false],["VesselName",false],["Performance",false],["DateChecked",false]];
+                if (fields.some(field => ew.valueChanged(fobj, rowIndex, ...field)))
+                    return false;
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+<main class="list">
+<div id="ew-list">
+@if (trChecklistPerformanceGrid.TotalRecords > 0 || !Empty(trChecklistPerformanceGrid.CurrentAction)) {
+<div class="card ew-card ew-grid@(trChecklistPerformanceGrid.IsAddOrEdit ? " ew-grid-add-edit" : "") @(trChecklistPerformanceGrid.TableGridClass)">
+<div id="fTRChecklistPerformancegrid" class="ew-form ew-list-form">
+<div id="gmp_TRChecklistPerformance" class="card-body ew-grid-middle-panel @(trChecklistPerformanceGrid.TableContainerClass)" style="@(trChecklistPerformanceGrid.TableContainerStyle)">
+<table id="tbl_TRChecklistPerformancegrid" class="@(trChecklistPerformanceGrid.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    trChecklistPerformanceGrid.RowType = RowType.Header;
+
+    // Render list options
+    await trChecklistPerformanceGrid.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@trChecklistPerformanceGrid.ListOptions.RenderHeader("left")
+@if (trChecklistPerformanceGrid.ManningAgent.Visible) { // trChecklistPerformanceGrid.ManningAgent.Visible (begin)
+        <th data-name="ManningAgent" class="@(trChecklistPerformanceGrid.ManningAgent.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_ManningAgent" class="TRChecklistPerformance_ManningAgent">@Html.Raw(trChecklistPerformanceGrid.RenderFieldHeader(trChecklistPerformanceGrid.ManningAgent))</div></th>
+} @* trChecklistPerformanceGrid.ManningAgent.Visible (end) *@
+@if (trChecklistPerformanceGrid.VesselName.Visible) { // trChecklistPerformanceGrid.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(trChecklistPerformanceGrid.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_VesselName" class="TRChecklistPerformance_VesselName">@Html.Raw(trChecklistPerformanceGrid.RenderFieldHeader(trChecklistPerformanceGrid.VesselName))</div></th>
+} @* trChecklistPerformanceGrid.VesselName.Visible (end) *@
+@if (trChecklistPerformanceGrid.Performance.Visible) { // trChecklistPerformanceGrid.Performance.Visible (begin)
+        <th data-name="Performance" class="@(trChecklistPerformanceGrid.Performance.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_Performance" class="TRChecklistPerformance_Performance">@Html.Raw(trChecklistPerformanceGrid.RenderFieldHeader(trChecklistPerformanceGrid.Performance))</div></th>
+} @* trChecklistPerformanceGrid.Performance.Visible (end) *@
+@if (trChecklistPerformanceGrid.DateChecked.Visible) { // trChecklistPerformanceGrid.DateChecked.Visible (begin)
+        <th data-name="DateChecked" class="@(trChecklistPerformanceGrid.DateChecked.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_DateChecked" class="TRChecklistPerformance_DateChecked">@Html.Raw(trChecklistPerformanceGrid.RenderFieldHeader(trChecklistPerformanceGrid.DateChecked))</div></th>
+} @* trChecklistPerformanceGrid.DateChecked.Visible (end) *@
+@* Render list options (header, right) *@
+@trChecklistPerformanceGrid.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(trChecklistPerformanceGrid.PageNumber)">
+@{
+    await trChecklistPerformanceGrid.SetupGrid();
+    bool eof = trChecklistPerformanceGrid.Recordset == null; // DN
+}
+@while (trChecklistPerformanceGrid.RecordCount < trChecklistPerformanceGrid.StopRecord || SameString(trChecklistPerformanceGrid.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(trChecklistPerformanceGrid.RowIndex, "$rowindex$") &&
+        (!trChecklistPerformanceGrid.IsGridAdd || trChecklistPerformanceGrid.CurrentMode == "copy") &&
+        (!((trChecklistPerformanceGrid.IsCopy || trChecklistPerformanceGrid.IsAdd) && trChecklistPerformanceGrid.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await trChecklistPerformanceGrid.Recordset.ReadAsync();
+    trChecklistPerformanceGrid.RecordCount++;
+    if (trChecklistPerformanceGrid.RecordCount >= trChecklistPerformanceGrid.StartRecord) {
+        await trChecklistPerformanceGrid.SetupRow();
+
+        // Skip 1) delete row / empty row for confirm page, 2) hidden row
+        if (trChecklistPerformanceGrid.RowAction != "delete" &&
+            trChecklistPerformanceGrid.RowAction != "insertdelete" &&
+            !(trChecklistPerformanceGrid.RowAction == "insert" && trChecklistPerformanceGrid.IsConfirm && trChecklistPerformanceGrid.EmptyRow()) &&
+            trChecklistPerformanceGrid.RowAction != "hide") {
+    <tr @Html.Raw(trChecklistPerformanceGrid.RowAttributes)>
+    @* Render list options (body, left) *@
+    @trChecklistPerformanceGrid.ListOptions.RenderBody("left", trChecklistPerformanceGrid.RowCount)
+    @if (trChecklistPerformanceGrid.ManningAgent.Visible) { // trChecklistPerformanceGrid.ManningAgent.Visible (begin)
+        <td data-name="ManningAgent" @Html.Raw(trChecklistPerformanceGrid.ManningAgent.CellAttributes)>
+@if (trChecklistPerformanceGrid.RowType == RowType.Add) { // Add (begin)
+    @* ManningAgent (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_ManningAgent" class="el_TRChecklistPerformance_ManningAgent">
+    <input type="@(trChecklistPerformanceGrid.ManningAgent.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" id="x@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" data-table="TRChecklistPerformance" data-field="x_ManningAgent" value="@Html.Raw(trChecklistPerformanceGrid.ManningAgent.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.ManningAgent.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.ManningAgent.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.ManningAgent.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.ManningAgent.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_ManningAgent" data-hidden="1" data-old name="o@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" id="o@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.ManningAgent.OldValue))">
+    @* ManningAgent (end) *@
+} @* Add (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* ManningAgent (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_ManningAgent" class="el_TRChecklistPerformance_ManningAgent">
+    <input type="@(trChecklistPerformanceGrid.ManningAgent.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" id="x@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" data-table="TRChecklistPerformance" data-field="x_ManningAgent" value="@Html.Raw(trChecklistPerformanceGrid.ManningAgent.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.ManningAgent.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.ManningAgent.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.ManningAgent.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.ManningAgent.GetErrorMessage())</div>
+    </span>
+    @* ManningAgent (end) *@
+} @* Edit (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.View) { // View (begin)
+    @* ManningAgent (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_ManningAgent" class="el_TRChecklistPerformance_ManningAgent">
+    <span @Html.Raw(trChecklistPerformanceGrid.ManningAgent.ViewAttributes)>
+    @Html.Raw(trChecklistPerformanceGrid.ManningAgent.GetViewValue())</span>
+    </span>
+    if (trChecklistPerformanceGrid.IsConfirm) {
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_ManningAgent" data-hidden="1" name="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" id="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.ManningAgent.FormValue))">
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_ManningAgent" data-hidden="1" data-old name="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" id="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_ManningAgent" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.ManningAgent.OldValue))">
+    }
+    @* ManningAgent (end) *@
+} @* View (end) *@
+</td>
+    } @* trChecklistPerformanceGrid.ManningAgent.Visible (end) *@
+    @if (trChecklistPerformanceGrid.VesselName.Visible) { // trChecklistPerformanceGrid.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(trChecklistPerformanceGrid.VesselName.CellAttributes)>
+@if (trChecklistPerformanceGrid.RowType == RowType.Add) { // Add (begin)
+    @* VesselName (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_VesselName" class="el_TRChecklistPerformance_VesselName">
+    <input type="@(trChecklistPerformanceGrid.VesselName.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_VesselName" id="x@(trChecklistPerformanceGrid.RowIndex)_VesselName" data-table="TRChecklistPerformance" data-field="x_VesselName" value="@Html.Raw(trChecklistPerformanceGrid.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.VesselName.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.VesselName.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.VesselName.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.VesselName.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_VesselName" data-hidden="1" data-old name="o@(trChecklistPerformanceGrid.RowIndex)_VesselName" id="o@(trChecklistPerformanceGrid.RowIndex)_VesselName" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.VesselName.OldValue))">
+    @* VesselName (end) *@
+} @* Add (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* VesselName (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_VesselName" class="el_TRChecklistPerformance_VesselName">
+    <input type="@(trChecklistPerformanceGrid.VesselName.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_VesselName" id="x@(trChecklistPerformanceGrid.RowIndex)_VesselName" data-table="TRChecklistPerformance" data-field="x_VesselName" value="@Html.Raw(trChecklistPerformanceGrid.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.VesselName.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.VesselName.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.VesselName.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.VesselName.GetErrorMessage())</div>
+    </span>
+    @* VesselName (end) *@
+} @* Edit (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.View) { // View (begin)
+    @* VesselName (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_VesselName" class="el_TRChecklistPerformance_VesselName">
+    <span @Html.Raw(trChecklistPerformanceGrid.VesselName.ViewAttributes)>
+    @Html.Raw(trChecklistPerformanceGrid.VesselName.GetViewValue())</span>
+    </span>
+    if (trChecklistPerformanceGrid.IsConfirm) {
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_VesselName" data-hidden="1" name="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_VesselName" id="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_VesselName" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.VesselName.FormValue))">
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_VesselName" data-hidden="1" data-old name="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_VesselName" id="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_VesselName" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.VesselName.OldValue))">
+    }
+    @* VesselName (end) *@
+} @* View (end) *@
+</td>
+    } @* trChecklistPerformanceGrid.VesselName.Visible (end) *@
+    @if (trChecklistPerformanceGrid.Performance.Visible) { // trChecklistPerformanceGrid.Performance.Visible (begin)
+        <td data-name="Performance" @Html.Raw(trChecklistPerformanceGrid.Performance.CellAttributes)>
+@if (trChecklistPerformanceGrid.RowType == RowType.Add) { // Add (begin)
+    @* Performance (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_Performance" class="el_TRChecklistPerformance_Performance">
+    <input type="@(trChecklistPerformanceGrid.Performance.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_Performance" id="x@(trChecklistPerformanceGrid.RowIndex)_Performance" data-table="TRChecklistPerformance" data-field="x_Performance" value="@Html.Raw(trChecklistPerformanceGrid.Performance.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.Performance.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.Performance.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.Performance.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.Performance.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_Performance" data-hidden="1" data-old name="o@(trChecklistPerformanceGrid.RowIndex)_Performance" id="o@(trChecklistPerformanceGrid.RowIndex)_Performance" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.Performance.OldValue))">
+    @* Performance (end) *@
+} @* Add (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Performance (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_Performance" class="el_TRChecklistPerformance_Performance">
+    <input type="@(trChecklistPerformanceGrid.Performance.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_Performance" id="x@(trChecklistPerformanceGrid.RowIndex)_Performance" data-table="TRChecklistPerformance" data-field="x_Performance" value="@Html.Raw(trChecklistPerformanceGrid.Performance.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.Performance.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.Performance.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.Performance.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.Performance.GetErrorMessage())</div>
+    </span>
+    @* Performance (end) *@
+} @* Edit (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.View) { // View (begin)
+    @* Performance (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_Performance" class="el_TRChecklistPerformance_Performance">
+    <span @Html.Raw(trChecklistPerformanceGrid.Performance.ViewAttributes)>
+    @Html.Raw(trChecklistPerformanceGrid.Performance.GetViewValue())</span>
+    </span>
+    if (trChecklistPerformanceGrid.IsConfirm) {
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_Performance" data-hidden="1" name="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_Performance" id="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_Performance" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.Performance.FormValue))">
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_Performance" data-hidden="1" data-old name="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_Performance" id="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_Performance" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.Performance.OldValue))">
+    }
+    @* Performance (end) *@
+} @* View (end) *@
+</td>
+    } @* trChecklistPerformanceGrid.Performance.Visible (end) *@
+    @if (trChecklistPerformanceGrid.DateChecked.Visible) { // trChecklistPerformanceGrid.DateChecked.Visible (begin)
+        <td data-name="DateChecked" @Html.Raw(trChecklistPerformanceGrid.DateChecked.CellAttributes)>
+@if (trChecklistPerformanceGrid.RowType == RowType.Add) { // Add (begin)
+    @* DateChecked (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_DateChecked" class="el_TRChecklistPerformance_DateChecked">
+    <input type="@(trChecklistPerformanceGrid.DateChecked.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_DateChecked" id="x@(trChecklistPerformanceGrid.RowIndex)_DateChecked" data-table="TRChecklistPerformance" data-field="x_DateChecked" value="@Html.Raw(trChecklistPerformanceGrid.DateChecked.EditValue)" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.DateChecked.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.DateChecked.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.DateChecked.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.DateChecked.GetErrorMessage())</div>
+    @if (!trChecklistPerformanceGrid.DateChecked.ReadOnly && !trChecklistPerformanceGrid.DateChecked.Disabled && !trChecklistPerformanceGrid.DateChecked.EditAttrs.Is("readonly") && !trChecklistPerformanceGrid.DateChecked.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fTRChecklistPerformancegrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fTRChecklistPerformancegrid", "x@(trChecklistPerformanceGrid.RowIndex)_DateChecked", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_DateChecked" data-hidden="1" data-old name="o@(trChecklistPerformanceGrid.RowIndex)_DateChecked" id="o@(trChecklistPerformanceGrid.RowIndex)_DateChecked" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.DateChecked.OldValue))">
+    @* DateChecked (end) *@
+} @* Add (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* DateChecked (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_DateChecked" class="el_TRChecklistPerformance_DateChecked">
+    <input type="@(trChecklistPerformanceGrid.DateChecked.InputTextType)" name="x@(trChecklistPerformanceGrid.RowIndex)_DateChecked" id="x@(trChecklistPerformanceGrid.RowIndex)_DateChecked" data-table="TRChecklistPerformance" data-field="x_DateChecked" value="@Html.Raw(trChecklistPerformanceGrid.DateChecked.EditValue)" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.DateChecked.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceGrid.DateChecked.FormatPattern)"@Html.Raw(trChecklistPerformanceGrid.DateChecked.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(trChecklistPerformanceGrid.DateChecked.GetErrorMessage())</div>
+    @if (!trChecklistPerformanceGrid.DateChecked.ReadOnly && !trChecklistPerformanceGrid.DateChecked.Disabled && !trChecklistPerformanceGrid.DateChecked.EditAttrs.Is("readonly") && !trChecklistPerformanceGrid.DateChecked.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fTRChecklistPerformancegrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fTRChecklistPerformancegrid", "x@(trChecklistPerformanceGrid.RowIndex)_DateChecked", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* DateChecked (end) *@
+} @* Edit (end) *@
+@if (trChecklistPerformanceGrid.RowType == RowType.View) { // View (begin)
+    @* DateChecked (begin) *@
+    <span id="el@(trChecklistPerformanceGrid.RowCount)_TRChecklistPerformance_DateChecked" class="el_TRChecklistPerformance_DateChecked">
+    <span @Html.Raw(trChecklistPerformanceGrid.DateChecked.ViewAttributes)>
+    @Html.Raw(trChecklistPerformanceGrid.DateChecked.GetViewValue())</span>
+    </span>
+    if (trChecklistPerformanceGrid.IsConfirm) {
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_DateChecked" data-hidden="1" name="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_DateChecked" id="fTRChecklistPerformancegrid$x@(trChecklistPerformanceGrid.RowIndex)_DateChecked" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.DateChecked.FormValue))">
+    <input type="hidden" data-table="TRChecklistPerformance" data-field="x_DateChecked" data-hidden="1" data-old name="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_DateChecked" id="fTRChecklistPerformancegrid$o@(trChecklistPerformanceGrid.RowIndex)_DateChecked" value="@Html.Raw(HtmlEncode(trChecklistPerformanceGrid.DateChecked.OldValue))">
+    }
+    @* DateChecked (end) *@
+} @* View (end) *@
+</td>
+    } @* trChecklistPerformanceGrid.DateChecked.Visible (end) *@
+    @* Render list options (body, right) *@
+    @trChecklistPerformanceGrid.ListOptions.RenderBody("right", trChecklistPerformanceGrid.RowCount)
+    </tr>
+if (trChecklistPerformanceGrid.RowType == RowType.Add || trChecklistPerformanceGrid.RowType == RowType.Edit) {
+<script>
+loadjs.ready(["fTRChecklistPerformancegrid","load"], () => fTRChecklistPerformancegrid.updateLists(@(trChecklistPerformanceGrid.RowIndex)@(trChecklistPerformanceGrid.IsAdd || trChecklistPerformanceGrid.IsEdit || trChecklistPerformanceGrid.IsCopy || SameString(trChecklistPerformanceGrid.RowIndex, "$rowindex$") ? ", true" : "")));
+</script>
+}
+    } @* End delete row checking *@
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(trChecklistPerformanceGrid.RowIndex, "$rowindex$"))
+        trChecklistPerformanceGrid.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((trChecklistPerformanceGrid.IsCopy || trChecklistPerformanceGrid.IsAdd) && trChecklistPerformanceGrid.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        trChecklistPerformanceGrid.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+@if (trChecklistPerformanceGrid.CurrentMode == "add" || trChecklistPerformanceGrid.CurrentMode == "copy") {
+<input type="hidden" name="@(trChecklistPerformanceGrid.FormKeyCountName)" id="@(trChecklistPerformanceGrid.FormKeyCountName)" value="@(trChecklistPerformanceGrid.KeyCount)">
+@Html.Raw(trChecklistPerformanceGrid.MultiSelectKey)
+}
+@if (trChecklistPerformanceGrid.CurrentMode == "edit") {
+<input type="hidden" name="@(trChecklistPerformanceGrid.FormKeyCountName)" id="@(trChecklistPerformanceGrid.FormKeyCountName)" value="@(trChecklistPerformanceGrid.KeyCount)">
+@Html.Raw(trChecklistPerformanceGrid.MultiSelectKey)
+}
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(trChecklistPerformanceGrid.CurrentMode)) {
+<input type="hidden" name="action" id="action" value="">
+}
+<input type="hidden" name="detailpage" value="fTRChecklistPerformancegrid">
+</div><!-- /.ew-list-form -->
+@{ trChecklistPerformanceGrid.CloseRecordset(); }
+@if (trChecklistPerformanceGrid.ShowOtherOptions) {
+<div class="card-footer ew-grid-lower-panel">
+    @trChecklistPerformanceGrid.OtherOptions.RenderBody("bottom")
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@trChecklistPerformanceGrid.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@if (!trChecklistPerformanceGrid.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TRChecklistPerformance");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}
+@{
+    // Close Recordset
+    trChecklistPerformanceGrid.CloseRecordset(); // DN
+    // Clear CurrentGrid
+    CurrentGrid = null;
+}

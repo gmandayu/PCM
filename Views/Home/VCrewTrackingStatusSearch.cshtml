@@ -1,0 +1,719 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (vCrewTrackingStatusSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!vCrewTrackingStatusSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vCrewTrackingStatusSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_CrewTrackingStatus: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fv_CrewTrackingStatussearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fv_CrewTrackingStatussearch")
+        .setPageId("search")
+@if (vCrewTrackingStatusSearch.IsModal && vCrewTrackingStatusSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["Draft", [ew.Validators.integer], fields.Draft.isInvalid],
+            ["Submitted", [ew.Validators.integer], fields.Submitted.isInvalid],
+            ["Reviewed", [ew.Validators.integer], fields.Reviewed.isInvalid],
+            ["RegistrationForm", [ew.Validators.integer], fields.RegistrationForm.isInvalid],
+            ["PreScreeningInterview", [ew.Validators.integer], fields.PreScreeningInterview.isInvalid],
+            ["MinimumRecruitmentCheck", [ew.Validators.integer], fields.MinimumRecruitmentCheck.isInvalid],
+            ["EngagementChecklist", [ew.Validators.integer], fields.EngagementChecklist.isInvalid],
+            ["COCAuthenticity", [ew.Validators.integer], fields.COCAuthenticity.isInvalid],
+            ["CESTest", [ew.Validators.integer], fields.CESTest.isInvalid],
+            ["PyschometricTest", [ew.Validators.integer], fields.PyschometricTest.isInvalid],
+            ["CrewWatchlist", [ew.Validators.integer], fields.CrewWatchlist.isInvalid],
+            ["PreviousAppraisalReport", [ew.Validators.integer], fields.PreviousAppraisalReport.isInvalid],
+            ["ContractBackgroundCheck", [ew.Validators.integer], fields.ContractBackgroundCheck.isInvalid],
+            ["EnglishProficiencyTestOrMarline", [ew.Validators.integer], fields.EnglishProficiencyTestOrMarline.isInvalid],
+            ["Interviewed", [ew.Validators.integer], fields.Interviewed.isInvalid],
+            ["Approved", [ew.Validators.integer], fields.Approved.isInvalid],
+            ["MedicalCheckup", [ew.Validators.integer], fields.MedicalCheckup.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["LastUpdatedBy", [], fields.LastUpdatedBy.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Gender": @Html.Raw(vCrewTrackingStatusSearch.Gender.ToClientList(vCrewTrackingStatusSearch)),
+            "WillAcceptLowRank": @Html.Raw(vCrewTrackingStatusSearch.WillAcceptLowRank.ToClientList(vCrewTrackingStatusSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (vCrewTrackingStatusSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@vCrewTrackingStatusSearch.ShowPageHeader()
+@vCrewTrackingStatusSearch.ShowMessages()
+<form name="fv_CrewTrackingStatussearch" id="fv_CrewTrackingStatussearch" class="@(vCrewTrackingStatusSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (vCrewTrackingStatusSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (vCrewTrackingStatusSearch.IndividualCodeNumber.Visible) { // vCrewTrackingStatusSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(vCrewTrackingStatusSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_IndividualCodeNumber">@Html.Raw(vCrewTrackingStatusSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="v_CrewTrackingStatus" data-field="x_IndividualCodeNumber" value="@Html.Raw(vCrewTrackingStatusSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.IndividualCodeNumber.Visible (end) *@
+@if (vCrewTrackingStatusSearch.FullName.Visible) { // vCrewTrackingStatusSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(vCrewTrackingStatusSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_FullName">@Html.Raw(vCrewTrackingStatusSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="v_CrewTrackingStatus" data-field="x_FullName" value="@Html.Raw(vCrewTrackingStatusSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.FullName.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.FullName.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.FullName.Visible (end) *@
+@if (vCrewTrackingStatusSearch.RequiredPhoto.Visible) { // vCrewTrackingStatusSearch.RequiredPhoto.Visible (begin)
+    <div id="r_RequiredPhoto" class="row" @Html.Raw(vCrewTrackingStatusSearch.RequiredPhoto.RowAttributes)>
+        <label for="x_RequiredPhoto" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_RequiredPhoto">@Html.Raw(vCrewTrackingStatusSearch.RequiredPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RequiredPhoto" id="z_RequiredPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.RequiredPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_RequiredPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.RequiredPhoto.InputTextType)" name="x_RequiredPhoto" id="x_RequiredPhoto" data-table="v_CrewTrackingStatus" data-field="x_RequiredPhoto" value="@Html.Raw(vCrewTrackingStatusSearch.RequiredPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.RequiredPhoto.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.RequiredPhoto.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.RequiredPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.RequiredPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.RequiredPhoto.Visible (end) *@
+@if (vCrewTrackingStatusSearch.VisaPhoto.Visible) { // vCrewTrackingStatusSearch.VisaPhoto.Visible (begin)
+    <div id="r_VisaPhoto" class="row" @Html.Raw(vCrewTrackingStatusSearch.VisaPhoto.RowAttributes)>
+        <label for="x_VisaPhoto" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_VisaPhoto">@Html.Raw(vCrewTrackingStatusSearch.VisaPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VisaPhoto" id="z_VisaPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.VisaPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_VisaPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.VisaPhoto.InputTextType)" name="x_VisaPhoto" id="x_VisaPhoto" data-table="v_CrewTrackingStatus" data-field="x_VisaPhoto" value="@Html.Raw(vCrewTrackingStatusSearch.VisaPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.VisaPhoto.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.VisaPhoto.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.VisaPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.VisaPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.VisaPhoto.Visible (end) *@
+@if (vCrewTrackingStatusSearch.Gender.Visible) { // vCrewTrackingStatusSearch.Gender.Visible (begin)
+    <div id="r_Gender" class="row" @Html.Raw(vCrewTrackingStatusSearch.Gender.RowAttributes)>
+        <label class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_Gender">@Html.Raw(vCrewTrackingStatusSearch.Gender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Gender" id="z_Gender" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.Gender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_Gender" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        vCrewTrackingStatusSearch.Gender.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_Gender" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_Gender" id="sv_x_Gender" value="@(RemoveHtml(ConvertToString(vCrewTrackingStatusSearch.Gender.EditValue)))" autocomplete="off" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.Gender.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.Gender.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.Gender.FormatPattern)" @Html.Raw(vCrewTrackingStatusSearch.Gender.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="v_CrewTrackingStatus" data-field="x_Gender" data-input="sv_x_Gender" data-value-separator="@(vCrewTrackingStatusSearch.Gender.DisplayValueSeparatorAttribute)" name="x_Gender" id="x_Gender" value="@(HtmlEncode(vCrewTrackingStatusSearch.Gender.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.Gender.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fv_CrewTrackingStatussearch"], function() {
+    fv_CrewTrackingStatussearch.createAutoSuggest(Object.assign({"id":"x_Gender","forceSelect":false}, { lookupAllDisplayFields: @(vCrewTrackingStatusSearch.Gender.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.v_CrewTrackingStatus.fields.Gender.autoSuggestOptions));
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.Gender.Visible (end) *@
+@if (vCrewTrackingStatusSearch.RankAppliedFor.Visible) { // vCrewTrackingStatusSearch.RankAppliedFor.Visible (begin)
+    <div id="r_RankAppliedFor" class="row" @Html.Raw(vCrewTrackingStatusSearch.RankAppliedFor.RowAttributes)>
+        <label for="x_RankAppliedFor" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_RankAppliedFor">@Html.Raw(vCrewTrackingStatusSearch.RankAppliedFor.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RankAppliedFor" id="z_RankAppliedFor" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.RankAppliedFor.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_RankAppliedFor" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.RankAppliedFor.InputTextType)" name="x_RankAppliedFor" id="x_RankAppliedFor" data-table="v_CrewTrackingStatus" data-field="x_RankAppliedFor" value="@Html.Raw(vCrewTrackingStatusSearch.RankAppliedFor.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.RankAppliedFor.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.RankAppliedFor.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.RankAppliedFor.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.RankAppliedFor.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.RankAppliedFor.Visible (end) *@
+@if (vCrewTrackingStatusSearch.WillAcceptLowRank.Visible) { // vCrewTrackingStatusSearch.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" class="row" @Html.Raw(vCrewTrackingStatusSearch.WillAcceptLowRank.RowAttributes)>
+        <label class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_WillAcceptLowRank">@Html.Raw(vCrewTrackingStatusSearch.WillAcceptLowRank.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WillAcceptLowRank" id="z_WillAcceptLowRank" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.WillAcceptLowRank.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_WillAcceptLowRank" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(vCrewTrackingStatusSearch.WillAcceptLowRank.IsInvalidClass)" data-table="v_CrewTrackingStatus" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(vCrewTrackingStatusSearch.WillAcceptLowRank.AdvancedSearch.SearchValue)" @Html.Raw(vCrewTrackingStatusSearch.WillAcceptLowRank.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.WillAcceptLowRank.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.WillAcceptLowRank.Visible (end) *@
+@if (vCrewTrackingStatusSearch.EmployeeStatus.Visible) { // vCrewTrackingStatusSearch.EmployeeStatus.Visible (begin)
+    <div id="r_EmployeeStatus" class="row" @Html.Raw(vCrewTrackingStatusSearch.EmployeeStatus.RowAttributes)>
+        <label for="x_EmployeeStatus" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_EmployeeStatus">@Html.Raw(vCrewTrackingStatusSearch.EmployeeStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EmployeeStatus" id="z_EmployeeStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.EmployeeStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_EmployeeStatus" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.EmployeeStatus.InputTextType)" name="x_EmployeeStatus" id="x_EmployeeStatus" data-table="v_CrewTrackingStatus" data-field="x_EmployeeStatus" value="@Html.Raw(vCrewTrackingStatusSearch.EmployeeStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.EmployeeStatus.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.EmployeeStatus.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.EmployeeStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.EmployeeStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.EmployeeStatus.Visible (end) *@
+@if (vCrewTrackingStatusSearch.Draft.Visible) { // vCrewTrackingStatusSearch.Draft.Visible (begin)
+    <div id="r_Draft" class="row" @Html.Raw(vCrewTrackingStatusSearch.Draft.RowAttributes)>
+        <label for="x_Draft" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_Draft">@Html.Raw(vCrewTrackingStatusSearch.Draft.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Draft" id="z_Draft" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.Draft.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_Draft" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.Draft.InputTextType)" name="x_Draft" id="x_Draft" data-table="v_CrewTrackingStatus" data-field="x_Draft" value="@Html.Raw(vCrewTrackingStatusSearch.Draft.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.Draft.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.Draft.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.Draft.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.Draft.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.Draft.Visible (end) *@
+@if (vCrewTrackingStatusSearch.Submitted.Visible) { // vCrewTrackingStatusSearch.Submitted.Visible (begin)
+    <div id="r_Submitted" class="row" @Html.Raw(vCrewTrackingStatusSearch.Submitted.RowAttributes)>
+        <label for="x_Submitted" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_Submitted">@Html.Raw(vCrewTrackingStatusSearch.Submitted.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Submitted" id="z_Submitted" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.Submitted.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_Submitted" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.Submitted.InputTextType)" name="x_Submitted" id="x_Submitted" data-table="v_CrewTrackingStatus" data-field="x_Submitted" value="@Html.Raw(vCrewTrackingStatusSearch.Submitted.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.Submitted.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.Submitted.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.Submitted.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.Submitted.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.Submitted.Visible (end) *@
+@if (vCrewTrackingStatusSearch.Reviewed.Visible) { // vCrewTrackingStatusSearch.Reviewed.Visible (begin)
+    <div id="r_Reviewed" class="row" @Html.Raw(vCrewTrackingStatusSearch.Reviewed.RowAttributes)>
+        <label for="x_Reviewed" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_Reviewed">@Html.Raw(vCrewTrackingStatusSearch.Reviewed.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Reviewed" id="z_Reviewed" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.Reviewed.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_Reviewed" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.Reviewed.InputTextType)" name="x_Reviewed" id="x_Reviewed" data-table="v_CrewTrackingStatus" data-field="x_Reviewed" value="@Html.Raw(vCrewTrackingStatusSearch.Reviewed.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.Reviewed.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.Reviewed.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.Reviewed.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.Reviewed.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.Reviewed.Visible (end) *@
+@if (vCrewTrackingStatusSearch.RegistrationForm.Visible) { // vCrewTrackingStatusSearch.RegistrationForm.Visible (begin)
+    <div id="r_RegistrationForm" class="row" @Html.Raw(vCrewTrackingStatusSearch.RegistrationForm.RowAttributes)>
+        <label for="x_RegistrationForm" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_RegistrationForm">@Html.Raw(vCrewTrackingStatusSearch.RegistrationForm.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_RegistrationForm" id="z_RegistrationForm" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.RegistrationForm.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_RegistrationForm" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.RegistrationForm.InputTextType)" name="x_RegistrationForm" id="x_RegistrationForm" data-table="v_CrewTrackingStatus" data-field="x_RegistrationForm" value="@Html.Raw(vCrewTrackingStatusSearch.RegistrationForm.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.RegistrationForm.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.RegistrationForm.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.RegistrationForm.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.RegistrationForm.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.RegistrationForm.Visible (end) *@
+@if (vCrewTrackingStatusSearch.PreScreeningInterview.Visible) { // vCrewTrackingStatusSearch.PreScreeningInterview.Visible (begin)
+    <div id="r_PreScreeningInterview" class="row" @Html.Raw(vCrewTrackingStatusSearch.PreScreeningInterview.RowAttributes)>
+        <label for="x_PreScreeningInterview" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_PreScreeningInterview">@Html.Raw(vCrewTrackingStatusSearch.PreScreeningInterview.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PreScreeningInterview" id="z_PreScreeningInterview" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.PreScreeningInterview.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_PreScreeningInterview" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.PreScreeningInterview.InputTextType)" name="x_PreScreeningInterview" id="x_PreScreeningInterview" data-table="v_CrewTrackingStatus" data-field="x_PreScreeningInterview" value="@Html.Raw(vCrewTrackingStatusSearch.PreScreeningInterview.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.PreScreeningInterview.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.PreScreeningInterview.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.PreScreeningInterview.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.PreScreeningInterview.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.PreScreeningInterview.Visible (end) *@
+@if (vCrewTrackingStatusSearch.MinimumRecruitmentCheck.Visible) { // vCrewTrackingStatusSearch.MinimumRecruitmentCheck.Visible (begin)
+    <div id="r_MinimumRecruitmentCheck" class="row" @Html.Raw(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.RowAttributes)>
+        <label for="x_MinimumRecruitmentCheck" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_MinimumRecruitmentCheck">@Html.Raw(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MinimumRecruitmentCheck" id="z_MinimumRecruitmentCheck" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_MinimumRecruitmentCheck" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.InputTextType)" name="x_MinimumRecruitmentCheck" id="x_MinimumRecruitmentCheck" data-table="v_CrewTrackingStatus" data-field="x_MinimumRecruitmentCheck" value="@Html.Raw(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.MinimumRecruitmentCheck.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.MinimumRecruitmentCheck.Visible (end) *@
+@if (vCrewTrackingStatusSearch.EngagementChecklist.Visible) { // vCrewTrackingStatusSearch.EngagementChecklist.Visible (begin)
+    <div id="r_EngagementChecklist" class="row" @Html.Raw(vCrewTrackingStatusSearch.EngagementChecklist.RowAttributes)>
+        <label for="x_EngagementChecklist" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_EngagementChecklist">@Html.Raw(vCrewTrackingStatusSearch.EngagementChecklist.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_EngagementChecklist" id="z_EngagementChecklist" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.EngagementChecklist.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_EngagementChecklist" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.EngagementChecklist.InputTextType)" name="x_EngagementChecklist" id="x_EngagementChecklist" data-table="v_CrewTrackingStatus" data-field="x_EngagementChecklist" value="@Html.Raw(vCrewTrackingStatusSearch.EngagementChecklist.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.EngagementChecklist.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.EngagementChecklist.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.EngagementChecklist.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.EngagementChecklist.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.EngagementChecklist.Visible (end) *@
+@if (vCrewTrackingStatusSearch.COCAuthenticity.Visible) { // vCrewTrackingStatusSearch.COCAuthenticity.Visible (begin)
+    <div id="r_COCAuthenticity" class="row" @Html.Raw(vCrewTrackingStatusSearch.COCAuthenticity.RowAttributes)>
+        <label for="x_COCAuthenticity" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_COCAuthenticity">@Html.Raw(vCrewTrackingStatusSearch.COCAuthenticity.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_COCAuthenticity" id="z_COCAuthenticity" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.COCAuthenticity.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_COCAuthenticity" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.COCAuthenticity.InputTextType)" name="x_COCAuthenticity" id="x_COCAuthenticity" data-table="v_CrewTrackingStatus" data-field="x_COCAuthenticity" value="@Html.Raw(vCrewTrackingStatusSearch.COCAuthenticity.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.COCAuthenticity.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.COCAuthenticity.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.COCAuthenticity.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.COCAuthenticity.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.COCAuthenticity.Visible (end) *@
+@if (vCrewTrackingStatusSearch.CESTest.Visible) { // vCrewTrackingStatusSearch.CESTest.Visible (begin)
+    <div id="r_CESTest" class="row" @Html.Raw(vCrewTrackingStatusSearch.CESTest.RowAttributes)>
+        <label for="x_CESTest" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_CESTest">@Html.Raw(vCrewTrackingStatusSearch.CESTest.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CESTest" id="z_CESTest" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.CESTest.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_CESTest" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.CESTest.InputTextType)" name="x_CESTest" id="x_CESTest" data-table="v_CrewTrackingStatus" data-field="x_CESTest" value="@Html.Raw(vCrewTrackingStatusSearch.CESTest.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.CESTest.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.CESTest.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.CESTest.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.CESTest.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.CESTest.Visible (end) *@
+@if (vCrewTrackingStatusSearch.PyschometricTest.Visible) { // vCrewTrackingStatusSearch.PyschometricTest.Visible (begin)
+    <div id="r_PyschometricTest" class="row" @Html.Raw(vCrewTrackingStatusSearch.PyschometricTest.RowAttributes)>
+        <label for="x_PyschometricTest" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_PyschometricTest">@Html.Raw(vCrewTrackingStatusSearch.PyschometricTest.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PyschometricTest" id="z_PyschometricTest" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.PyschometricTest.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_PyschometricTest" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.PyschometricTest.InputTextType)" name="x_PyschometricTest" id="x_PyschometricTest" data-table="v_CrewTrackingStatus" data-field="x_PyschometricTest" value="@Html.Raw(vCrewTrackingStatusSearch.PyschometricTest.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.PyschometricTest.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.PyschometricTest.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.PyschometricTest.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.PyschometricTest.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.PyschometricTest.Visible (end) *@
+@if (vCrewTrackingStatusSearch.CrewWatchlist.Visible) { // vCrewTrackingStatusSearch.CrewWatchlist.Visible (begin)
+    <div id="r_CrewWatchlist" class="row" @Html.Raw(vCrewTrackingStatusSearch.CrewWatchlist.RowAttributes)>
+        <label for="x_CrewWatchlist" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_CrewWatchlist">@Html.Raw(vCrewTrackingStatusSearch.CrewWatchlist.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CrewWatchlist" id="z_CrewWatchlist" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.CrewWatchlist.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_CrewWatchlist" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.CrewWatchlist.InputTextType)" name="x_CrewWatchlist" id="x_CrewWatchlist" data-table="v_CrewTrackingStatus" data-field="x_CrewWatchlist" value="@Html.Raw(vCrewTrackingStatusSearch.CrewWatchlist.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.CrewWatchlist.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.CrewWatchlist.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.CrewWatchlist.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.CrewWatchlist.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.CrewWatchlist.Visible (end) *@
+@if (vCrewTrackingStatusSearch.PreviousAppraisalReport.Visible) { // vCrewTrackingStatusSearch.PreviousAppraisalReport.Visible (begin)
+    <div id="r_PreviousAppraisalReport" class="row" @Html.Raw(vCrewTrackingStatusSearch.PreviousAppraisalReport.RowAttributes)>
+        <label for="x_PreviousAppraisalReport" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_PreviousAppraisalReport">@Html.Raw(vCrewTrackingStatusSearch.PreviousAppraisalReport.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PreviousAppraisalReport" id="z_PreviousAppraisalReport" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.PreviousAppraisalReport.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_PreviousAppraisalReport" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.PreviousAppraisalReport.InputTextType)" name="x_PreviousAppraisalReport" id="x_PreviousAppraisalReport" data-table="v_CrewTrackingStatus" data-field="x_PreviousAppraisalReport" value="@Html.Raw(vCrewTrackingStatusSearch.PreviousAppraisalReport.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.PreviousAppraisalReport.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.PreviousAppraisalReport.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.PreviousAppraisalReport.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.PreviousAppraisalReport.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.PreviousAppraisalReport.Visible (end) *@
+@if (vCrewTrackingStatusSearch.ContractBackgroundCheck.Visible) { // vCrewTrackingStatusSearch.ContractBackgroundCheck.Visible (begin)
+    <div id="r_ContractBackgroundCheck" class="row" @Html.Raw(vCrewTrackingStatusSearch.ContractBackgroundCheck.RowAttributes)>
+        <label for="x_ContractBackgroundCheck" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_ContractBackgroundCheck">@Html.Raw(vCrewTrackingStatusSearch.ContractBackgroundCheck.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ContractBackgroundCheck" id="z_ContractBackgroundCheck" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.ContractBackgroundCheck.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_ContractBackgroundCheck" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.ContractBackgroundCheck.InputTextType)" name="x_ContractBackgroundCheck" id="x_ContractBackgroundCheck" data-table="v_CrewTrackingStatus" data-field="x_ContractBackgroundCheck" value="@Html.Raw(vCrewTrackingStatusSearch.ContractBackgroundCheck.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.ContractBackgroundCheck.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.ContractBackgroundCheck.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.ContractBackgroundCheck.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.ContractBackgroundCheck.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.ContractBackgroundCheck.Visible (end) *@
+@if (vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.Visible) { // vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.Visible (begin)
+    <div id="r_EnglishProficiencyTestOrMarline" class="row" @Html.Raw(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.RowAttributes)>
+        <label for="x_EnglishProficiencyTestOrMarline" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_EnglishProficiencyTestOrMarline">@Html.Raw(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_EnglishProficiencyTestOrMarline" id="z_EnglishProficiencyTestOrMarline" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_EnglishProficiencyTestOrMarline" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.InputTextType)" name="x_EnglishProficiencyTestOrMarline" id="x_EnglishProficiencyTestOrMarline" data-table="v_CrewTrackingStatus" data-field="x_EnglishProficiencyTestOrMarline" value="@Html.Raw(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.EnglishProficiencyTestOrMarline.Visible (end) *@
+@if (vCrewTrackingStatusSearch.Interviewed.Visible) { // vCrewTrackingStatusSearch.Interviewed.Visible (begin)
+    <div id="r_Interviewed" class="row" @Html.Raw(vCrewTrackingStatusSearch.Interviewed.RowAttributes)>
+        <label for="x_Interviewed" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_Interviewed">@Html.Raw(vCrewTrackingStatusSearch.Interviewed.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Interviewed" id="z_Interviewed" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.Interviewed.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_Interviewed" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.Interviewed.InputTextType)" name="x_Interviewed" id="x_Interviewed" data-table="v_CrewTrackingStatus" data-field="x_Interviewed" value="@Html.Raw(vCrewTrackingStatusSearch.Interviewed.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.Interviewed.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.Interviewed.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.Interviewed.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.Interviewed.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.Interviewed.Visible (end) *@
+@if (vCrewTrackingStatusSearch.Approved.Visible) { // vCrewTrackingStatusSearch.Approved.Visible (begin)
+    <div id="r_Approved" class="row" @Html.Raw(vCrewTrackingStatusSearch.Approved.RowAttributes)>
+        <label for="x_Approved" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_Approved">@Html.Raw(vCrewTrackingStatusSearch.Approved.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Approved" id="z_Approved" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.Approved.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_Approved" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.Approved.InputTextType)" name="x_Approved" id="x_Approved" data-table="v_CrewTrackingStatus" data-field="x_Approved" value="@Html.Raw(vCrewTrackingStatusSearch.Approved.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.Approved.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.Approved.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.Approved.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.Approved.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.Approved.Visible (end) *@
+@if (vCrewTrackingStatusSearch.MedicalCheckup.Visible) { // vCrewTrackingStatusSearch.MedicalCheckup.Visible (begin)
+    <div id="r_MedicalCheckup" class="row" @Html.Raw(vCrewTrackingStatusSearch.MedicalCheckup.RowAttributes)>
+        <label for="x_MedicalCheckup" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_MedicalCheckup">@Html.Raw(vCrewTrackingStatusSearch.MedicalCheckup.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MedicalCheckup" id="z_MedicalCheckup" value="=">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.MedicalCheckup.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_MedicalCheckup" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.MedicalCheckup.InputTextType)" name="x_MedicalCheckup" id="x_MedicalCheckup" data-table="v_CrewTrackingStatus" data-field="x_MedicalCheckup" value="@Html.Raw(vCrewTrackingStatusSearch.MedicalCheckup.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.MedicalCheckup.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.MedicalCheckup.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.MedicalCheckup.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.MedicalCheckup.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.MedicalCheckup.Visible (end) *@
+@if (vCrewTrackingStatusSearch.CreatedBy.Visible) { // vCrewTrackingStatusSearch.CreatedBy.Visible (begin)
+    <div id="r_CreatedBy" class="row" @Html.Raw(vCrewTrackingStatusSearch.CreatedBy.RowAttributes)>
+        <label for="x_CreatedBy" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_CreatedBy">@Html.Raw(vCrewTrackingStatusSearch.CreatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CreatedBy" id="z_CreatedBy" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.CreatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_CreatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="v_CrewTrackingStatus" data-field="x_CreatedBy" value="@Html.Raw(vCrewTrackingStatusSearch.CreatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.CreatedBy.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.CreatedBy.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.CreatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.CreatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.CreatedBy.Visible (end) *@
+@if (vCrewTrackingStatusSearch.LastUpdatedBy.Visible) { // vCrewTrackingStatusSearch.LastUpdatedBy.Visible (begin)
+    <div id="r_LastUpdatedBy" class="row" @Html.Raw(vCrewTrackingStatusSearch.LastUpdatedBy.RowAttributes)>
+        <label for="x_LastUpdatedBy" class="@(vCrewTrackingStatusSearch.LeftColumnClass)"><span id="elh_v_CrewTrackingStatus_LastUpdatedBy">@Html.Raw(vCrewTrackingStatusSearch.LastUpdatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_LastUpdatedBy" id="z_LastUpdatedBy" value="LIKE">
+</span>
+        </label>
+        <div class="@(vCrewTrackingStatusSearch.RightColumnClass)">
+            <div @Html.Raw(vCrewTrackingStatusSearch.LastUpdatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_CrewTrackingStatus_LastUpdatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(vCrewTrackingStatusSearch.LastUpdatedBy.InputTextType)" name="x_LastUpdatedBy" id="x_LastUpdatedBy" data-table="v_CrewTrackingStatus" data-field="x_LastUpdatedBy" value="@Html.Raw(vCrewTrackingStatusSearch.LastUpdatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vCrewTrackingStatusSearch.LastUpdatedBy.PlaceHolder))" data-format-pattern="@(vCrewTrackingStatusSearch.LastUpdatedBy.FormatPattern)"@Html.Raw(vCrewTrackingStatusSearch.LastUpdatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vCrewTrackingStatusSearch.LastUpdatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vCrewTrackingStatusSearch.LastUpdatedBy.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(vCrewTrackingStatusSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(vCrewTrackingStatusSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fv_CrewTrackingStatussearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (vCrewTrackingStatusSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fv_CrewTrackingStatussearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fv_CrewTrackingStatussearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(vCrewTrackingStatusSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@vCrewTrackingStatusSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("v_CrewTrackingStatus");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

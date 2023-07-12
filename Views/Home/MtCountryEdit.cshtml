@@ -1,0 +1,175 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCountryEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCountryEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCountryEdit.ShowPageHeader()
+@mtCountryEdit.ShowMessages()
+<main class="edit">
+<form name="fMTCountryedit" id="fMTCountryedit" class="@(mtCountryEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCountryEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCountry: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fMTCountryedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCountryedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [fields._Name.visible && fields._Name.required ? ew.Validators.required(fields._Name.caption) : null], fields._Name.isInvalid],
+            ["Nationality", [fields.Nationality.visible && fields.Nationality.required ? ew.Validators.required(fields.Nationality.caption) : null], fields.Nationality.isInvalid],
+            ["CallingCode", [fields.CallingCode.visible && fields.CallingCode.required ? ew.Validators.required(fields.CallingCode.caption) : null], fields.CallingCode.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    function validateFieldWithRegex (thisInstance, fieldName, errorMessage, regex) {
+                        const fieldValue = $(thisInstance).fields(fieldName)[0].value;
+                        if (!regex.test(fieldValue)) {
+                            thisInstance.fields[fieldName].addError({ custom: errorMessage });
+                            thisInstance.fields[fieldName].updateFeedback();
+                            thisInstance.addError(fieldName, { custom: errorMessage });   
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                    const regex = /^\+\d{1,3}$/;
+                    const regexErrorMessageEnglish = "Must start with + sign and contain 1-3 digits";
+                    const regexErrorMessageIndonesian = "Harus diawali dengan tanda + dan terdiri dari 1-3 angka";
+                    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+                    let formErrorCount = 0;
+                    if (selectedLanguage.id === 'en-US') {
+                        formErrorCount += validateFieldWithRegex(this, "CallingCode",  regexErrorMessageEnglish, regex) ? 0 : 1;
+                    } else {
+                        formErrorCount += validateFieldWithRegex(this, "CallingCode",  regexErrorMessageIndonesian, regex) ? 0 : 1;
+                    }
+                    return formErrorCount === 0;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(mtCountryEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mtCountryEdit.OldKeyName)" value="@Html.Raw(mtCountryEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (mtCountryEdit._Name.Visible) { // mtCountryEdit._Name.Visible (begin)
+    <div id="r__Name" @Html.Raw(mtCountryEdit._Name.RowAttributes)>
+        <label id="elh_MTCountry__Name" for="x__Name" class="@(mtCountryEdit.LeftColumnClass)">@Html.Raw(mtCountryEdit._Name.Caption)@Html.Raw(mtCountryEdit._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtCountryEdit.RightColumnClass)"><div @Html.Raw(mtCountryEdit._Name.CellAttributes)>
+<span id="el_MTCountry__Name">
+<input type="@(mtCountryEdit._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTCountry" data-field="x__Name" value="@Html.Raw(mtCountryEdit._Name.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCountryEdit._Name.PlaceHolder))" data-format-pattern="@(mtCountryEdit._Name.FormatPattern)"@Html.Raw(mtCountryEdit._Name.EditAttributes) aria-describedby="x__Name_help">
+@Html.Raw(mtCountryEdit._Name.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtCountryEdit._Name.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtCountryEdit._Name.Visible (end) *@
+@if (mtCountryEdit.Nationality.Visible) { // mtCountryEdit.Nationality.Visible (begin)
+    <div id="r_Nationality" @Html.Raw(mtCountryEdit.Nationality.RowAttributes)>
+        <label id="elh_MTCountry_Nationality" for="x_Nationality" class="@(mtCountryEdit.LeftColumnClass)">@Html.Raw(mtCountryEdit.Nationality.Caption)@Html.Raw(mtCountryEdit.Nationality.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtCountryEdit.RightColumnClass)"><div @Html.Raw(mtCountryEdit.Nationality.CellAttributes)>
+<span id="el_MTCountry_Nationality">
+<input type="@(mtCountryEdit.Nationality.InputTextType)" name="x_Nationality" id="x_Nationality" data-table="MTCountry" data-field="x_Nationality" value="@Html.Raw(mtCountryEdit.Nationality.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCountryEdit.Nationality.PlaceHolder))" data-format-pattern="@(mtCountryEdit.Nationality.FormatPattern)"@Html.Raw(mtCountryEdit.Nationality.EditAttributes) aria-describedby="x_Nationality_help">
+@Html.Raw(mtCountryEdit.Nationality.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtCountryEdit.Nationality.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtCountryEdit.Nationality.Visible (end) *@
+@if (mtCountryEdit.CallingCode.Visible) { // mtCountryEdit.CallingCode.Visible (begin)
+    <div id="r_CallingCode" @Html.Raw(mtCountryEdit.CallingCode.RowAttributes)>
+        <label id="elh_MTCountry_CallingCode" for="x_CallingCode" class="@(mtCountryEdit.LeftColumnClass)">@Html.Raw(mtCountryEdit.CallingCode.Caption)@Html.Raw(mtCountryEdit.CallingCode.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtCountryEdit.RightColumnClass)"><div @Html.Raw(mtCountryEdit.CallingCode.CellAttributes)>
+<span id="el_MTCountry_CallingCode">
+<input type="@(mtCountryEdit.CallingCode.InputTextType)" name="x_CallingCode" id="x_CallingCode" data-table="MTCountry" data-field="x_CallingCode" value="@Html.Raw(mtCountryEdit.CallingCode.EditValue)" size="30" maxlength="4" placeholder="@Html.Raw(HtmlEncode(mtCountryEdit.CallingCode.PlaceHolder))" data-format-pattern="@(mtCountryEdit.CallingCode.FormatPattern)"@Html.Raw(mtCountryEdit.CallingCode.EditAttributes) aria-describedby="x_CallingCode_help">
+@Html.Raw(mtCountryEdit.CallingCode.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtCountryEdit.CallingCode.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtCountryEdit.CallingCode.Visible (end) *@
+</div><!-- /page* -->
+    <input type="hidden" data-table="MTCountry" data-field="x_ID" data-hidden="1" name="x_ID" id="x_ID" value="@Html.Raw(HtmlEncode(mtCountryEdit.ID.CurrentValue))">
+@{ mtCountryEdit.CloseRecordset(); }
+@Html.Raw(mtCountryEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mtCountryEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCountryedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCountryedit" data-href="@AppPath(mtCountryEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCountryEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+</main>
+@mtCountryEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCountry");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

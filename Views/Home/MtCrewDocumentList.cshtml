@@ -1,0 +1,974 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewDocumentList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewDocumentList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewDocumentList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewDocumentList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewDocument: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtCrewDocumentList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtCrewDocumentList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtCrewDocumentList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtCrewDocumentList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "IsDraft": @Html.Raw(mtCrewDocumentList.IsDraft.ToClientList(mtCrewDocumentList)),
+            "MTCrewID": @Html.Raw(mtCrewDocumentList.MTCrewID.ToClientList(mtCrewDocumentList)),
+            "MTDocumentID": @Html.Raw(mtCrewDocumentList.MTDocumentID.ToClientList(mtCrewDocumentList)),
+            "CountryOfIssue_CountryID": @Html.Raw(mtCrewDocumentList.CountryOfIssue_CountryID.ToClientList(mtCrewDocumentList)),
+            "Number": @Html.Raw(mtCrewDocumentList.Number.ToClientList(mtCrewDocumentList)),
+            "DateOfIssue": @Html.Raw(mtCrewDocumentList.DateOfIssue.ToClientList(mtCrewDocumentList)),
+            "PlaceOfIssue": @Html.Raw(mtCrewDocumentList.PlaceOfIssue.ToClientList(mtCrewDocumentList)),
+            "DateValidUntil": @Html.Raw(mtCrewDocumentList.DateValidUntil.ToClientList(mtCrewDocumentList)),
+            "Image": @Html.Raw(mtCrewDocumentList.Image.ToClientList(mtCrewDocumentList)),
+            "CreatedByUserID": @Html.Raw(mtCrewDocumentList.CreatedByUserID.ToClientList(mtCrewDocumentList)),
+            "CreatedDateTime": @Html.Raw(mtCrewDocumentList.CreatedDateTime.ToClientList(mtCrewDocumentList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewDocumentList.LastUpdatedByUserID.ToClientList(mtCrewDocumentList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCrewDocumentList.LastUpdatedDateTime.ToClientList(mtCrewDocumentList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtCrewDocumentList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtCrewDocumentList.TotalRecords > 0 && mtCrewDocumentList.ExportOptions.Visible) {
+    mtCrewDocumentList.ExportOptions.Render("body");
+}
+@if (mtCrewDocumentList.ImportOptions.Visible) {
+    mtCrewDocumentList.ImportOptions.Render("body");
+}
+@if (mtCrewDocumentList.SearchOptions.Visible) {
+    mtCrewDocumentList.SearchOptions.Render("body");
+}
+@if (mtCrewDocumentList.FilterOptions.Visible) {
+    mtCrewDocumentList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!mtCrewDocumentList.IsExport() || Config.ExportMasterRecord && mtCrewDocumentList.IsExport("print")) {
+if (!Empty(mtCrewDocumentList.DbMasterFilter) && mtCrewDocumentList.CurrentMasterTable == "MTCrew") {
+    if (mtCrewDocumentList.MasterRecordExists) {
+        @await Html.PartialAsync("MtCrewMaster.cshtml")
+    }
+}
+}
+@if (mtCrewDocumentList.ShowCurrentFilter) {
+    mtCrewDocumentList.ShowFilterList();
+}
+@if (!mtCrewDocumentList.IsModal) {
+<form name="fMTCrewDocumentsrch" id="fMTCrewDocumentsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTCrewDocumentsrch_search_panel" class="mb-2 mb-sm-0 @(mtCrewDocumentList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewDocumentList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewDocument: currentTable } });
+var currentForm;
+var fMTCrewDocumentsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewDocumentsrch")
+        .setPageId("list")
+@if (mtCrewDocumentList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IsDraft", [], fields.IsDraft.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["MTDocumentID", [], fields.MTDocumentID.isInvalid],
+            ["CountryOfIssue_CountryID", [], fields.CountryOfIssue_CountryID.isInvalid],
+            ["Number", [], fields.Number.isInvalid],
+            ["DateOfIssue", [], fields.DateOfIssue.isInvalid],
+            ["PlaceOfIssue", [], fields.PlaceOfIssue.isInvalid],
+            ["DateValidUntil", [], fields.DateValidUntil.isInvalid],
+            ["Image", [], fields.Image.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IsDraft": @Html.Raw(mtCrewDocumentList.IsDraft.ToClientList(mtCrewDocumentList)),
+            "MTCrewID": @Html.Raw(mtCrewDocumentList.MTCrewID.ToClientList(mtCrewDocumentList)),
+            "MTDocumentID": @Html.Raw(mtCrewDocumentList.MTDocumentID.ToClientList(mtCrewDocumentList)),
+            "CountryOfIssue_CountryID": @Html.Raw(mtCrewDocumentList.CountryOfIssue_CountryID.ToClientList(mtCrewDocumentList)),
+            "Number": @Html.Raw(mtCrewDocumentList.Number.ToClientList(mtCrewDocumentList)),
+            "DateOfIssue": @Html.Raw(mtCrewDocumentList.DateOfIssue.ToClientList(mtCrewDocumentList)),
+            "PlaceOfIssue": @Html.Raw(mtCrewDocumentList.PlaceOfIssue.ToClientList(mtCrewDocumentList)),
+            "DateValidUntil": @Html.Raw(mtCrewDocumentList.DateValidUntil.ToClientList(mtCrewDocumentList)),
+            "Image": @Html.Raw(mtCrewDocumentList.Image.ToClientList(mtCrewDocumentList)),
+            "CreatedByUserID": @Html.Raw(mtCrewDocumentList.CreatedByUserID.ToClientList(mtCrewDocumentList)),
+            "CreatedDateTime": @Html.Raw(mtCrewDocumentList.CreatedDateTime.ToClientList(mtCrewDocumentList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewDocumentList.LastUpdatedByUserID.ToClientList(mtCrewDocumentList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCrewDocumentList.LastUpdatedDateTime.ToClientList(mtCrewDocumentList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtCrewDocumentList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtCrewDocumentList.IsExport() && Empty(mtCrewDocumentList.CurrentAction) && mtCrewDocumentList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtCrewDocumentList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtCrewDocumentList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtCrewDocumentList.RowType = RowType.Search;
+    mtCrewDocumentList.ResetAttributes();
+    await mtCrewDocumentList.RenderRow();
+}
+@if (mtCrewDocumentList.IsDraft.Visible) { // mtCrewDocumentList.IsDraft.Visible (begin)
+    if (!mtCrewDocumentList.IsDraft.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_IsDraft" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.IsDraft.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IsDraft"
+            name="x_IsDraft[]"
+            class="form-control ew-select@(mtCrewDocumentList.IsDraft.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_IsDraft"
+            data-table="MTCrewDocument"
+            data-field="x_IsDraft"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.IsDraft.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.IsDraft.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.IsDraft.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.IsDraft.EditAttributes)>
+            @(mtCrewDocumentList.IsDraft.SelectOptionListHtml("x_IsDraft", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.IsDraft.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_IsDraft",
+                selectId: "fMTCrewDocumentsrch_x_IsDraft",
+                ajax: { id: "x_IsDraft", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.IsDraft.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.IsDraft.Visible (end) *@
+@if (mtCrewDocumentList.MTCrewID.Visible) { // mtCrewDocumentList.MTCrewID.Visible (begin)
+    if (!mtCrewDocumentList.MTCrewID.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(mtCrewDocumentList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_MTCrewID"
+            data-table="MTCrewDocument"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.MTCrewID.EditAttributes)>
+            @(mtCrewDocumentList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fMTCrewDocumentsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.MTCrewID.Visible (end) *@
+@if (mtCrewDocumentList.MTDocumentID.Visible) { // mtCrewDocumentList.MTDocumentID.Visible (begin)
+    if (!mtCrewDocumentList.MTDocumentID.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_MTDocumentID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.MTDocumentID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTDocumentID"
+            name="x_MTDocumentID[]"
+            class="form-control ew-select@(mtCrewDocumentList.MTDocumentID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_MTDocumentID"
+            data-table="MTCrewDocument"
+            data-field="x_MTDocumentID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.MTDocumentID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.MTDocumentID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.MTDocumentID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.MTDocumentID.EditAttributes)>
+            @(mtCrewDocumentList.MTDocumentID.SelectOptionListHtml("x_MTDocumentID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.MTDocumentID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_MTDocumentID",
+                selectId: "fMTCrewDocumentsrch_x_MTDocumentID",
+                ajax: { id: "x_MTDocumentID", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.MTDocumentID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.MTDocumentID.Visible (end) *@
+@if (mtCrewDocumentList.CountryOfIssue_CountryID.Visible) { // mtCrewDocumentList.CountryOfIssue_CountryID.Visible (begin)
+    if (!mtCrewDocumentList.CountryOfIssue_CountryID.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_CountryOfIssue_CountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.CountryOfIssue_CountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CountryOfIssue_CountryID"
+            name="x_CountryOfIssue_CountryID[]"
+            class="form-control ew-select@(mtCrewDocumentList.CountryOfIssue_CountryID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_CountryOfIssue_CountryID"
+            data-table="MTCrewDocument"
+            data-field="x_CountryOfIssue_CountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.CountryOfIssue_CountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.CountryOfIssue_CountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.CountryOfIssue_CountryID.EditAttributes)>
+            @(mtCrewDocumentList.CountryOfIssue_CountryID.SelectOptionListHtml("x_CountryOfIssue_CountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.CountryOfIssue_CountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_CountryOfIssue_CountryID",
+                selectId: "fMTCrewDocumentsrch_x_CountryOfIssue_CountryID",
+                ajax: { id: "x_CountryOfIssue_CountryID", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.CountryOfIssue_CountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.CountryOfIssue_CountryID.Visible (end) *@
+@if (mtCrewDocumentList.Number.Visible) { // mtCrewDocumentList.Number.Visible (begin)
+    if (!mtCrewDocumentList.Number.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_Number" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.Number.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Number"
+            name="x_Number[]"
+            class="form-control ew-select@(mtCrewDocumentList.Number.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_Number"
+            data-table="MTCrewDocument"
+            data-field="x_Number"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.Number.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.Number.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.Number.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.Number.EditAttributes)>
+            @(mtCrewDocumentList.Number.SelectOptionListHtml("x_Number", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.Number.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_Number",
+                selectId: "fMTCrewDocumentsrch_x_Number",
+                ajax: { id: "x_Number", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.Number.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.Number.Visible (end) *@
+@if (mtCrewDocumentList.DateOfIssue.Visible) { // mtCrewDocumentList.DateOfIssue.Visible (begin)
+    if (!mtCrewDocumentList.DateOfIssue.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.DateOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfIssue"
+            name="x_DateOfIssue[]"
+            class="form-control ew-select@(mtCrewDocumentList.DateOfIssue.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_DateOfIssue"
+            data-table="MTCrewDocument"
+            data-field="x_DateOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.DateOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.DateOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.DateOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.DateOfIssue.EditAttributes)>
+            @(mtCrewDocumentList.DateOfIssue.SelectOptionListHtml("x_DateOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.DateOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_DateOfIssue",
+                selectId: "fMTCrewDocumentsrch_x_DateOfIssue",
+                ajax: { id: "x_DateOfIssue", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.DateOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.DateOfIssue.Visible (end) *@
+@if (mtCrewDocumentList.PlaceOfIssue.Visible) { // mtCrewDocumentList.PlaceOfIssue.Visible (begin)
+    if (!mtCrewDocumentList.PlaceOfIssue.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.PlaceOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOfIssue"
+            name="x_PlaceOfIssue[]"
+            class="form-control ew-select@(mtCrewDocumentList.PlaceOfIssue.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_PlaceOfIssue"
+            data-table="MTCrewDocument"
+            data-field="x_PlaceOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.PlaceOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.PlaceOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.PlaceOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.PlaceOfIssue.EditAttributes)>
+            @(mtCrewDocumentList.PlaceOfIssue.SelectOptionListHtml("x_PlaceOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.PlaceOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_PlaceOfIssue",
+                selectId: "fMTCrewDocumentsrch_x_PlaceOfIssue",
+                ajax: { id: "x_PlaceOfIssue", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.PlaceOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.PlaceOfIssue.Visible (end) *@
+@if (mtCrewDocumentList.DateValidUntil.Visible) { // mtCrewDocumentList.DateValidUntil.Visible (begin)
+    if (!mtCrewDocumentList.DateValidUntil.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_DateValidUntil" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.DateValidUntil.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateValidUntil"
+            name="x_DateValidUntil[]"
+            class="form-control ew-select@(mtCrewDocumentList.DateValidUntil.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_DateValidUntil"
+            data-table="MTCrewDocument"
+            data-field="x_DateValidUntil"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.DateValidUntil.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.DateValidUntil.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.DateValidUntil.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.DateValidUntil.EditAttributes)>
+            @(mtCrewDocumentList.DateValidUntil.SelectOptionListHtml("x_DateValidUntil", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.DateValidUntil.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_DateValidUntil",
+                selectId: "fMTCrewDocumentsrch_x_DateValidUntil",
+                ajax: { id: "x_DateValidUntil", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.DateValidUntil.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.DateValidUntil.Visible (end) *@
+@if (mtCrewDocumentList.Image.Visible) { // mtCrewDocumentList.Image.Visible (begin)
+    if (!mtCrewDocumentList.Image.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_Image" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.Image.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Image"
+            name="x_Image[]"
+            class="form-control ew-select@(mtCrewDocumentList.Image.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_Image"
+            data-table="MTCrewDocument"
+            data-field="x_Image"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.Image.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.Image.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.Image.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.Image.EditAttributes)>
+            @(mtCrewDocumentList.Image.SelectOptionListHtml("x_Image", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.Image.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_Image",
+                selectId: "fMTCrewDocumentsrch_x_Image",
+                ajax: { id: "x_Image", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.Image.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.Image.Visible (end) *@
+@if (mtCrewDocumentList.CreatedByUserID.Visible) { // mtCrewDocumentList.CreatedByUserID.Visible (begin)
+    if (!mtCrewDocumentList.CreatedByUserID.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtCrewDocumentList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_CreatedByUserID"
+            data-table="MTCrewDocument"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.CreatedByUserID.EditAttributes)>
+            @(mtCrewDocumentList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTCrewDocumentsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.CreatedByUserID.Visible (end) *@
+@if (mtCrewDocumentList.CreatedDateTime.Visible) { // mtCrewDocumentList.CreatedDateTime.Visible (begin)
+    if (!mtCrewDocumentList.CreatedDateTime.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtCrewDocumentList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_CreatedDateTime"
+            data-table="MTCrewDocument"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.CreatedDateTime.EditAttributes)>
+            @(mtCrewDocumentList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTCrewDocumentsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.CreatedDateTime.Visible (end) *@
+@if (mtCrewDocumentList.LastUpdatedByUserID.Visible) { // mtCrewDocumentList.LastUpdatedByUserID.Visible (begin)
+    if (!mtCrewDocumentList.LastUpdatedByUserID.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtCrewDocumentList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_LastUpdatedByUserID"
+            data-table="MTCrewDocument"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewDocumentList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTCrewDocumentsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewDocumentList.LastUpdatedDateTime.Visible) { // mtCrewDocumentList.LastUpdatedDateTime.Visible (begin)
+    if (!mtCrewDocumentList.LastUpdatedDateTime.UseFilter) {
+        mtCrewDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewDocumentList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtCrewDocumentList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentsrch_x_LastUpdatedDateTime"
+            data-table="MTCrewDocument"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewDocumentList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewDocumentList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewDocumentList.LastUpdatedDateTime.EditAttributes)>
+            @(mtCrewDocumentList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewDocumentsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTCrewDocumentsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTCrewDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewDocument.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewDocumentList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtCrewDocumentList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtCrewDocumentList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtCrewDocumentList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtCrewDocumentList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTCrewDocumentsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtCrewDocumentList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTCrewDocumentsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtCrewDocumentList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTCrewDocumentsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtCrewDocumentList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTCrewDocumentsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtCrewDocumentList.ShowPageHeader()
+@mtCrewDocumentList.ShowMessages()
+<main class="list @(mtCrewDocumentList.TotalRecords == 0 && !mtCrewDocumentList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtCrewDocumentList.TotalRecords > 0 || !Empty(mtCrewDocumentList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCrewDocumentList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCrewDocumentList.TableGridClass)">
+<form name="@(mtCrewDocumentList.FormName)" id="@(mtCrewDocumentList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtCrewDocumentList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtCrewDocumentList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+@if (mtCrewDocumentList.CurrentMasterTable == "MTCrew" && !Empty(mtCrewDocumentList.CurrentAction)) {
+<input type="hidden" name="@(Config.TableShowMaster)" value="MTCrew">
+<input type="hidden" name="fk_ID" value="@(HtmlEncode(mtCrewDocumentList.MTCrewID.SessionValue))">
+}
+<div id="gmp_MTCrewDocument" class="card-body ew-grid-middle-panel @(mtCrewDocumentList.TableContainerClass)" style="@(mtCrewDocumentList.TableContainerStyle)">
+@if (mtCrewDocumentList.TotalRecords > 0 || mtCrewDocumentList.IsGridEdit || mtCrewDocumentList.IsMultiEdit) {
+<table id="tbl_MTCrewDocumentlist" class="@(mtCrewDocumentList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCrewDocumentList.RowType = RowType.Header;
+
+    // Render list options
+    await mtCrewDocumentList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCrewDocumentList.ListOptions.RenderHeader("left")
+@if (mtCrewDocumentList.IsDraft.Visible) { // mtCrewDocumentList.IsDraft.Visible (begin)
+        <th data-name="IsDraft" class="@(mtCrewDocumentList.IsDraft.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_IsDraft" class="MTCrewDocument_IsDraft">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.IsDraft))</div></th>
+} @* mtCrewDocumentList.IsDraft.Visible (end) *@
+@if (mtCrewDocumentList.MTCrewID.Visible) { // mtCrewDocumentList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtCrewDocumentList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_MTCrewID" class="MTCrewDocument_MTCrewID">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.MTCrewID))</div></th>
+} @* mtCrewDocumentList.MTCrewID.Visible (end) *@
+@if (mtCrewDocumentList.MTDocumentID.Visible) { // mtCrewDocumentList.MTDocumentID.Visible (begin)
+        <th data-name="MTDocumentID" class="@(mtCrewDocumentList.MTDocumentID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_MTDocumentID" class="MTCrewDocument_MTDocumentID">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.MTDocumentID))</div></th>
+} @* mtCrewDocumentList.MTDocumentID.Visible (end) *@
+@if (mtCrewDocumentList.CountryOfIssue_CountryID.Visible) { // mtCrewDocumentList.CountryOfIssue_CountryID.Visible (begin)
+        <th data-name="CountryOfIssue_CountryID" class="@(mtCrewDocumentList.CountryOfIssue_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_CountryOfIssue_CountryID" class="MTCrewDocument_CountryOfIssue_CountryID">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.CountryOfIssue_CountryID))</div></th>
+} @* mtCrewDocumentList.CountryOfIssue_CountryID.Visible (end) *@
+@if (mtCrewDocumentList.Number.Visible) { // mtCrewDocumentList.Number.Visible (begin)
+        <th data-name="Number" class="@(mtCrewDocumentList.Number.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_Number" class="MTCrewDocument_Number">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.Number))</div></th>
+} @* mtCrewDocumentList.Number.Visible (end) *@
+@if (mtCrewDocumentList.DateOfIssue.Visible) { // mtCrewDocumentList.DateOfIssue.Visible (begin)
+        <th data-name="DateOfIssue" class="@(mtCrewDocumentList.DateOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_DateOfIssue" class="MTCrewDocument_DateOfIssue">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.DateOfIssue))</div></th>
+} @* mtCrewDocumentList.DateOfIssue.Visible (end) *@
+@if (mtCrewDocumentList.PlaceOfIssue.Visible) { // mtCrewDocumentList.PlaceOfIssue.Visible (begin)
+        <th data-name="PlaceOfIssue" class="@(mtCrewDocumentList.PlaceOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_PlaceOfIssue" class="MTCrewDocument_PlaceOfIssue">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.PlaceOfIssue))</div></th>
+} @* mtCrewDocumentList.PlaceOfIssue.Visible (end) *@
+@if (mtCrewDocumentList.DateValidUntil.Visible) { // mtCrewDocumentList.DateValidUntil.Visible (begin)
+        <th data-name="DateValidUntil" class="@(mtCrewDocumentList.DateValidUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_DateValidUntil" class="MTCrewDocument_DateValidUntil">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.DateValidUntil))</div></th>
+} @* mtCrewDocumentList.DateValidUntil.Visible (end) *@
+@if (mtCrewDocumentList.Image.Visible) { // mtCrewDocumentList.Image.Visible (begin)
+        <th data-name="Image" class="@(mtCrewDocumentList.Image.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_Image" class="MTCrewDocument_Image">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.Image))</div></th>
+} @* mtCrewDocumentList.Image.Visible (end) *@
+@if (mtCrewDocumentList.CreatedByUserID.Visible) { // mtCrewDocumentList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCrewDocumentList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_CreatedByUserID" class="MTCrewDocument_CreatedByUserID">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.CreatedByUserID))</div></th>
+} @* mtCrewDocumentList.CreatedByUserID.Visible (end) *@
+@if (mtCrewDocumentList.CreatedDateTime.Visible) { // mtCrewDocumentList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCrewDocumentList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_CreatedDateTime" class="MTCrewDocument_CreatedDateTime">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.CreatedDateTime))</div></th>
+} @* mtCrewDocumentList.CreatedDateTime.Visible (end) *@
+@if (mtCrewDocumentList.LastUpdatedByUserID.Visible) { // mtCrewDocumentList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCrewDocumentList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_LastUpdatedByUserID" class="MTCrewDocument_LastUpdatedByUserID">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.LastUpdatedByUserID))</div></th>
+} @* mtCrewDocumentList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewDocumentList.LastUpdatedDateTime.Visible) { // mtCrewDocumentList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCrewDocumentList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_LastUpdatedDateTime" class="MTCrewDocument_LastUpdatedDateTime">@Html.Raw(mtCrewDocumentList.RenderFieldHeader(mtCrewDocumentList.LastUpdatedDateTime))</div></th>
+} @* mtCrewDocumentList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCrewDocumentList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCrewDocumentList.PageNumber)">
+@{
+    await mtCrewDocumentList.SetupGrid();
+    bool eof = mtCrewDocumentList.Recordset == null; // DN
+}
+@while (mtCrewDocumentList.RecordCount < mtCrewDocumentList.StopRecord || SameString(mtCrewDocumentList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCrewDocumentList.RowIndex, "$rowindex$") &&
+        (!mtCrewDocumentList.IsGridAdd || mtCrewDocumentList.CurrentMode == "copy") &&
+        (!((mtCrewDocumentList.IsCopy || mtCrewDocumentList.IsAdd) && mtCrewDocumentList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCrewDocumentList.Recordset.ReadAsync();
+    mtCrewDocumentList.RecordCount++;
+    if (mtCrewDocumentList.RecordCount >= mtCrewDocumentList.StartRecord) {
+        await mtCrewDocumentList.SetupRow();
+    <tr @Html.Raw(mtCrewDocumentList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCrewDocumentList.ListOptions.RenderBody("left", mtCrewDocumentList.RowCount)
+    @if (mtCrewDocumentList.IsDraft.Visible) { // mtCrewDocumentList.IsDraft.Visible (begin)
+        <td data-name="IsDraft" @Html.Raw(mtCrewDocumentList.IsDraft.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_IsDraft" class="el_MTCrewDocument_IsDraft">
+<span @Html.Raw(mtCrewDocumentList.IsDraft.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.IsDraft.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.IsDraft.Visible (end) *@
+    @if (mtCrewDocumentList.MTCrewID.Visible) { // mtCrewDocumentList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtCrewDocumentList.MTCrewID.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_MTCrewID" class="el_MTCrewDocument_MTCrewID">
+<span @Html.Raw(mtCrewDocumentList.MTCrewID.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.MTCrewID.Visible (end) *@
+    @if (mtCrewDocumentList.MTDocumentID.Visible) { // mtCrewDocumentList.MTDocumentID.Visible (begin)
+        <td data-name="MTDocumentID" @Html.Raw(mtCrewDocumentList.MTDocumentID.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_MTDocumentID" class="el_MTCrewDocument_MTDocumentID">
+<span @Html.Raw(mtCrewDocumentList.MTDocumentID.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.MTDocumentID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.MTDocumentID.Visible (end) *@
+    @if (mtCrewDocumentList.CountryOfIssue_CountryID.Visible) { // mtCrewDocumentList.CountryOfIssue_CountryID.Visible (begin)
+        <td data-name="CountryOfIssue_CountryID" @Html.Raw(mtCrewDocumentList.CountryOfIssue_CountryID.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_CountryOfIssue_CountryID" class="el_MTCrewDocument_CountryOfIssue_CountryID">
+<span @Html.Raw(mtCrewDocumentList.CountryOfIssue_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.CountryOfIssue_CountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.CountryOfIssue_CountryID.Visible (end) *@
+    @if (mtCrewDocumentList.Number.Visible) { // mtCrewDocumentList.Number.Visible (begin)
+        <td data-name="Number" @Html.Raw(mtCrewDocumentList.Number.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_Number" class="el_MTCrewDocument_Number">
+<span @Html.Raw(mtCrewDocumentList.Number.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.Number.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.Number.Visible (end) *@
+    @if (mtCrewDocumentList.DateOfIssue.Visible) { // mtCrewDocumentList.DateOfIssue.Visible (begin)
+        <td data-name="DateOfIssue" @Html.Raw(mtCrewDocumentList.DateOfIssue.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_DateOfIssue" class="el_MTCrewDocument_DateOfIssue">
+<span @Html.Raw(mtCrewDocumentList.DateOfIssue.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.DateOfIssue.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.DateOfIssue.Visible (end) *@
+    @if (mtCrewDocumentList.PlaceOfIssue.Visible) { // mtCrewDocumentList.PlaceOfIssue.Visible (begin)
+        <td data-name="PlaceOfIssue" @Html.Raw(mtCrewDocumentList.PlaceOfIssue.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_PlaceOfIssue" class="el_MTCrewDocument_PlaceOfIssue">
+<span @Html.Raw(mtCrewDocumentList.PlaceOfIssue.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.PlaceOfIssue.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.PlaceOfIssue.Visible (end) *@
+    @if (mtCrewDocumentList.DateValidUntil.Visible) { // mtCrewDocumentList.DateValidUntil.Visible (begin)
+        <td data-name="DateValidUntil" @Html.Raw(mtCrewDocumentList.DateValidUntil.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_DateValidUntil" class="el_MTCrewDocument_DateValidUntil">
+<span @Html.Raw(mtCrewDocumentList.DateValidUntil.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.DateValidUntil.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.DateValidUntil.Visible (end) *@
+    @if (mtCrewDocumentList.Image.Visible) { // mtCrewDocumentList.Image.Visible (begin)
+        <td data-name="Image" @Html.Raw(mtCrewDocumentList.Image.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_Image" class="el_MTCrewDocument_Image">
+<span @Html.Raw(mtCrewDocumentList.Image.ViewAttributes)>@{
+    var individualCodeNumber = ConvertToString(mtCrewDocumentList.Image.GetViewValue()).Split('-')[0];
+}
+<a href="uploads/@individualCodeNumber/@ConvertToString(mtCrewDocumentList.Image.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.Image.Visible (end) *@
+    @if (mtCrewDocumentList.CreatedByUserID.Visible) { // mtCrewDocumentList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewDocumentList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_CreatedByUserID" class="el_MTCrewDocument_CreatedByUserID">
+<span @Html.Raw(mtCrewDocumentList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.CreatedByUserID.Visible (end) *@
+    @if (mtCrewDocumentList.CreatedDateTime.Visible) { // mtCrewDocumentList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewDocumentList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_CreatedDateTime" class="el_MTCrewDocument_CreatedDateTime">
+<span @Html.Raw(mtCrewDocumentList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.CreatedDateTime.Visible (end) *@
+    @if (mtCrewDocumentList.LastUpdatedByUserID.Visible) { // mtCrewDocumentList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewDocumentList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_LastUpdatedByUserID" class="el_MTCrewDocument_LastUpdatedByUserID">
+<span @Html.Raw(mtCrewDocumentList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCrewDocumentList.LastUpdatedDateTime.Visible) { // mtCrewDocumentList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewDocumentList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtCrewDocumentList.RowCount)_MTCrewDocument_LastUpdatedDateTime" class="el_MTCrewDocument_LastUpdatedDateTime">
+<span @Html.Raw(mtCrewDocumentList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewDocumentList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewDocumentList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCrewDocumentList.ListOptions.RenderBody("right", mtCrewDocumentList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCrewDocumentList.RowIndex, "$rowindex$"))
+        mtCrewDocumentList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCrewDocumentList.IsCopy || mtCrewDocumentList.IsAdd) && mtCrewDocumentList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCrewDocumentList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCrewDocumentList.CurrentAction) && !mtCrewDocumentList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtCrewDocumentList.CloseRecordset(); }
+@if (!mtCrewDocumentList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtCrewDocumentList.IsGridAdd && !(mtCrewDocumentList.IsGridEdit && mtCrewDocumentList.ModalGridEdit) && !mtCrewDocumentList.IsMultiEdit) {
+@Html.Raw(mtCrewDocumentList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtCrewDocumentList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCrewDocumentList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtCrewDocumentList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtCrewDocumentList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewDocument");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

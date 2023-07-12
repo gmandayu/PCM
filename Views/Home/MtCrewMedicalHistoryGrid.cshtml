@@ -1,0 +1,1102 @@
+@{
+    // View
+    View = this;
+
+    // Set up CurrentGrid
+    CurrentGrid = mtCrewMedicalHistoryGrid;
+
+    // Run
+    await mtCrewMedicalHistoryGrid.Run();
+
+    // Check action result
+    if (mtCrewMedicalHistoryGrid.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewMedicalHistoryGrid.IsExport()) {
+<script>
+var fMTCrewMedicalHistorygrid;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let currentTable = @Html.Raw(ConvertToJson(mtCrewMedicalHistoryGrid.ToClientVar()));
+    ew.deepAssign(ew.vars, { tables: { MTCrewMedicalHistory: currentTable } });
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewMedicalHistorygrid")
+        .setPageId("grid")
+        .setFormKeyCountName("@(mtCrewMedicalHistoryGrid.FormKeyCountName)")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [fields.MTCrewID.visible && fields.MTCrewID.required ? ew.Validators.required(fields.MTCrewID.caption) : null], fields.MTCrewID.isInvalid],
+            ["_Type", [fields._Type.visible && fields._Type.required ? ew.Validators.required(fields._Type.caption) : null], fields._Type.isInvalid],
+            ["VesselName", [fields.VesselName.visible && fields.VesselName.required ? ew.Validators.required(fields.VesselName.caption) : null], fields.VesselName.isInvalid],
+            ["DateOccurence", [fields.DateOccurence.visible && fields.DateOccurence.required ? ew.Validators.required(fields.DateOccurence.caption) : null, ew.Validators.datetime(fields.DateOccurence.clientFormatPattern)], fields.DateOccurence.isInvalid],
+            ["PlaceOccurence", [fields.PlaceOccurence.visible && fields.PlaceOccurence.required ? ew.Validators.required(fields.PlaceOccurence.caption) : null], fields.PlaceOccurence.isInvalid],
+            ["PeriodOfDisability", [fields.PeriodOfDisability.visible && fields.PeriodOfDisability.required ? ew.Validators.required(fields.PeriodOfDisability.caption) : null], fields.PeriodOfDisability.isInvalid],
+            ["PresentCondition", [fields.PresentCondition.visible && fields.PresentCondition.required ? ew.Validators.required(fields.PresentCondition.caption) : null], fields.PresentCondition.isInvalid],
+            ["Treatment", [fields.Treatment.visible && fields.Treatment.required ? ew.Validators.required(fields.Treatment.caption) : null], fields.Treatment.isInvalid],
+            ["Details", [fields.Details.visible && fields.Details.required ? ew.Validators.required(fields.Details.caption) : null], fields.Details.isInvalid],
+            ["CreatedByUserID", [fields.CreatedByUserID.visible && fields.CreatedByUserID.required ? ew.Validators.required(fields.CreatedByUserID.caption) : null], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [fields.LastUpdatedByUserID.visible && fields.LastUpdatedByUserID.required ? ew.Validators.required(fields.LastUpdatedByUserID.caption) : null], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [fields.LastUpdatedDateTime.visible && fields.LastUpdatedDateTime.required ? ew.Validators.required(fields.LastUpdatedDateTime.caption) : null, ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+
+        // Check empty row
+        .setEmptyRow(
+            function (rowIndex) {
+                let fobj = this.getForm(),
+                    fields = [["MTCrewID",false],["_Type",false],["VesselName",false],["DateOccurence",false],["PlaceOccurence",false],["PeriodOfDisability",false],["PresentCondition",false],["Treatment",false],["Details",false],["CreatedByUserID",false],["CreatedDateTime",false],["LastUpdatedByUserID",false],["LastUpdatedDateTime",false]];
+                if (fields.some(field => ew.valueChanged(fobj, rowIndex, ...field)))
+                    return false;
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.ToClientList(mtCrewMedicalHistoryGrid)),
+            "_Type": @Html.Raw(mtCrewMedicalHistoryGrid._Type.ToClientList(mtCrewMedicalHistoryGrid)),
+            "CreatedByUserID": @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.ToClientList(mtCrewMedicalHistoryGrid)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.ToClientList(mtCrewMedicalHistoryGrid)),
+        })
+        .build();
+    window[form.id] = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+<main class="list">
+<div id="ew-list">
+@if (mtCrewMedicalHistoryGrid.TotalRecords > 0 || !Empty(mtCrewMedicalHistoryGrid.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCrewMedicalHistoryGrid.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCrewMedicalHistoryGrid.TableGridClass)">
+<div id="fMTCrewMedicalHistorygrid" class="ew-form ew-list-form">
+<div id="gmp_MTCrewMedicalHistory" class="card-body ew-grid-middle-panel @(mtCrewMedicalHistoryGrid.TableContainerClass)" style="@(mtCrewMedicalHistoryGrid.TableContainerStyle)">
+<table id="tbl_MTCrewMedicalHistorygrid" class="@(mtCrewMedicalHistoryGrid.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCrewMedicalHistoryGrid.RowType = RowType.Header;
+
+    // Render list options
+    await mtCrewMedicalHistoryGrid.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCrewMedicalHistoryGrid.ListOptions.RenderHeader("left")
+@if (mtCrewMedicalHistoryGrid.MTCrewID.Visible) { // mtCrewMedicalHistoryGrid.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtCrewMedicalHistoryGrid.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_MTCrewID" class="MTCrewMedicalHistory_MTCrewID">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.MTCrewID))</div></th>
+} @* mtCrewMedicalHistoryGrid.MTCrewID.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid._Type.Visible) { // mtCrewMedicalHistoryGrid._Type.Visible (begin)
+        <th data-name="_Type" class="@(mtCrewMedicalHistoryGrid._Type.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory__Type" class="MTCrewMedicalHistory__Type">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid._Type))</div></th>
+} @* mtCrewMedicalHistoryGrid._Type.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.VesselName.Visible) { // mtCrewMedicalHistoryGrid.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(mtCrewMedicalHistoryGrid.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_VesselName" class="MTCrewMedicalHistory_VesselName">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.VesselName))</div></th>
+} @* mtCrewMedicalHistoryGrid.VesselName.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.DateOccurence.Visible) { // mtCrewMedicalHistoryGrid.DateOccurence.Visible (begin)
+        <th data-name="DateOccurence" class="@(mtCrewMedicalHistoryGrid.DateOccurence.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_DateOccurence" class="MTCrewMedicalHistory_DateOccurence">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.DateOccurence))</div></th>
+} @* mtCrewMedicalHistoryGrid.DateOccurence.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.PlaceOccurence.Visible) { // mtCrewMedicalHistoryGrid.PlaceOccurence.Visible (begin)
+        <th data-name="PlaceOccurence" class="@(mtCrewMedicalHistoryGrid.PlaceOccurence.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_PlaceOccurence" class="MTCrewMedicalHistory_PlaceOccurence">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.PlaceOccurence))</div></th>
+} @* mtCrewMedicalHistoryGrid.PlaceOccurence.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.PeriodOfDisability.Visible) { // mtCrewMedicalHistoryGrid.PeriodOfDisability.Visible (begin)
+        <th data-name="PeriodOfDisability" class="@(mtCrewMedicalHistoryGrid.PeriodOfDisability.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_PeriodOfDisability" class="MTCrewMedicalHistory_PeriodOfDisability">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.PeriodOfDisability))</div></th>
+} @* mtCrewMedicalHistoryGrid.PeriodOfDisability.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.PresentCondition.Visible) { // mtCrewMedicalHistoryGrid.PresentCondition.Visible (begin)
+        <th data-name="PresentCondition" class="@(mtCrewMedicalHistoryGrid.PresentCondition.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_PresentCondition" class="MTCrewMedicalHistory_PresentCondition">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.PresentCondition))</div></th>
+} @* mtCrewMedicalHistoryGrid.PresentCondition.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.Treatment.Visible) { // mtCrewMedicalHistoryGrid.Treatment.Visible (begin)
+        <th data-name="Treatment" class="@(mtCrewMedicalHistoryGrid.Treatment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_Treatment" class="MTCrewMedicalHistory_Treatment">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.Treatment))</div></th>
+} @* mtCrewMedicalHistoryGrid.Treatment.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.Details.Visible) { // mtCrewMedicalHistoryGrid.Details.Visible (begin)
+        <th data-name="Details" class="@(mtCrewMedicalHistoryGrid.Details.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_Details" class="MTCrewMedicalHistory_Details">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.Details))</div></th>
+} @* mtCrewMedicalHistoryGrid.Details.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.CreatedByUserID.Visible) { // mtCrewMedicalHistoryGrid.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCrewMedicalHistoryGrid.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_CreatedByUserID" class="MTCrewMedicalHistory_CreatedByUserID">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.CreatedByUserID))</div></th>
+} @* mtCrewMedicalHistoryGrid.CreatedByUserID.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.CreatedDateTime.Visible) { // mtCrewMedicalHistoryGrid.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCrewMedicalHistoryGrid.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_CreatedDateTime" class="MTCrewMedicalHistory_CreatedDateTime">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.CreatedDateTime))</div></th>
+} @* mtCrewMedicalHistoryGrid.CreatedDateTime.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Visible) { // mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_LastUpdatedByUserID" class="MTCrewMedicalHistory_LastUpdatedByUserID">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.LastUpdatedByUserID))</div></th>
+} @* mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Visible) { // mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewMedicalHistory_LastUpdatedDateTime" class="MTCrewMedicalHistory_LastUpdatedDateTime">@Html.Raw(mtCrewMedicalHistoryGrid.RenderFieldHeader(mtCrewMedicalHistoryGrid.LastUpdatedDateTime))</div></th>
+} @* mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCrewMedicalHistoryGrid.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCrewMedicalHistoryGrid.PageNumber)">
+@{
+    await mtCrewMedicalHistoryGrid.SetupGrid();
+    bool eof = mtCrewMedicalHistoryGrid.Recordset == null; // DN
+}
+@while (mtCrewMedicalHistoryGrid.RecordCount < mtCrewMedicalHistoryGrid.StopRecord || SameString(mtCrewMedicalHistoryGrid.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCrewMedicalHistoryGrid.RowIndex, "$rowindex$") &&
+        (!mtCrewMedicalHistoryGrid.IsGridAdd || mtCrewMedicalHistoryGrid.CurrentMode == "copy") &&
+        (!((mtCrewMedicalHistoryGrid.IsCopy || mtCrewMedicalHistoryGrid.IsAdd) && mtCrewMedicalHistoryGrid.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCrewMedicalHistoryGrid.Recordset.ReadAsync();
+    mtCrewMedicalHistoryGrid.RecordCount++;
+    if (mtCrewMedicalHistoryGrid.RecordCount >= mtCrewMedicalHistoryGrid.StartRecord) {
+        await mtCrewMedicalHistoryGrid.SetupRow();
+
+        // Skip 1) delete row / empty row for confirm page, 2) hidden row
+        if (mtCrewMedicalHistoryGrid.RowAction != "delete" &&
+            mtCrewMedicalHistoryGrid.RowAction != "insertdelete" &&
+            !(mtCrewMedicalHistoryGrid.RowAction == "insert" && mtCrewMedicalHistoryGrid.IsConfirm && mtCrewMedicalHistoryGrid.EmptyRow()) &&
+            mtCrewMedicalHistoryGrid.RowAction != "hide") {
+    <tr @Html.Raw(mtCrewMedicalHistoryGrid.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCrewMedicalHistoryGrid.ListOptions.RenderBody("left", mtCrewMedicalHistoryGrid.RowCount)
+    @if (mtCrewMedicalHistoryGrid.MTCrewID.Visible) { // mtCrewMedicalHistoryGrid.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewMedicalHistoryGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.DisplayValue(mtCrewMedicalHistoryGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewMedicalHistoryGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_MTCrewID" class="el_MTCrewMedicalHistory_MTCrewID">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewMedicalHistory"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewMedicalHistoryGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.Lookup.GetParamTag(mtCrewMedicalHistoryGrid, "p_x" + mtCrewMedicalHistoryGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_MTCrewID" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.MTCrewID.OldValue))">
+    @* MTCrewID (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewMedicalHistoryGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.DisplayValue(mtCrewMedicalHistoryGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewMedicalHistoryGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_MTCrewID" class="el_MTCrewMedicalHistory_MTCrewID">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewMedicalHistory"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewMedicalHistoryGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.Lookup.GetParamTag(mtCrewMedicalHistoryGrid, "p_x" + mtCrewMedicalHistoryGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    @* MTCrewID (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* MTCrewID (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_MTCrewID" class="el_MTCrewMedicalHistory_MTCrewID">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.MTCrewID.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_MTCrewID" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.MTCrewID.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_MTCrewID" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.MTCrewID.OldValue))">
+    }
+    @* MTCrewID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.MTCrewID.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid._Type.Visible) { // mtCrewMedicalHistoryGrid._Type.Visible (begin)
+        <td data-name="_Type" @Html.Raw(mtCrewMedicalHistoryGrid._Type.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* _Type (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory__Type" class="el_MTCrewMedicalHistory__Type">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)__Type"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)__Type"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid._Type.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)__Type"
+            data-table="MTCrewMedicalHistory"
+            data-field="x__Type"
+            data-value-separator="@(mtCrewMedicalHistoryGrid._Type.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid._Type.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid._Type.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid._Type.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "__Type"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid._Type.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)__Type", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)__Type" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists._Type?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)__Type", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)__Type", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields._Type.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x__Type" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)__Type" id="o@(mtCrewMedicalHistoryGrid.RowIndex)__Type" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid._Type.OldValue))">
+    @* _Type (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* _Type (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory__Type" class="el_MTCrewMedicalHistory__Type">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)__Type"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)__Type"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid._Type.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)__Type"
+            data-table="MTCrewMedicalHistory"
+            data-field="x__Type"
+            data-value-separator="@(mtCrewMedicalHistoryGrid._Type.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid._Type.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid._Type.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid._Type.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "__Type"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid._Type.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)__Type", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)__Type" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists._Type?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)__Type", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)__Type", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields._Type.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* _Type (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* _Type (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory__Type" class="el_MTCrewMedicalHistory__Type">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid._Type.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid._Type.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x__Type" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)__Type" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)__Type" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid._Type.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x__Type" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)__Type" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)__Type" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid._Type.OldValue))">
+    }
+    @* _Type (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid._Type.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.VesselName.Visible) { // mtCrewMedicalHistoryGrid.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(mtCrewMedicalHistoryGrid.VesselName.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* VesselName (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_VesselName" class="el_MTCrewMedicalHistory_VesselName">
+    <input type="@(mtCrewMedicalHistoryGrid.VesselName.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" data-table="MTCrewMedicalHistory" data-field="x_VesselName" value="@Html.Raw(mtCrewMedicalHistoryGrid.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.VesselName.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.VesselName.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.VesselName.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.VesselName.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_VesselName" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.VesselName.OldValue))">
+    @* VesselName (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* VesselName (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_VesselName" class="el_MTCrewMedicalHistory_VesselName">
+    <input type="@(mtCrewMedicalHistoryGrid.VesselName.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" data-table="MTCrewMedicalHistory" data-field="x_VesselName" value="@Html.Raw(mtCrewMedicalHistoryGrid.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.VesselName.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.VesselName.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.VesselName.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.VesselName.GetErrorMessage())</div>
+    </span>
+    @* VesselName (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* VesselName (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_VesselName" class="el_MTCrewMedicalHistory_VesselName">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.VesselName.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.VesselName.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_VesselName" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.VesselName.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_VesselName" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_VesselName" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.VesselName.OldValue))">
+    }
+    @* VesselName (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.VesselName.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.DateOccurence.Visible) { // mtCrewMedicalHistoryGrid.DateOccurence.Visible (begin)
+        <td data-name="DateOccurence" @Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* DateOccurence (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_DateOccurence" class="el_MTCrewMedicalHistory_DateOccurence">
+    <input type="@(mtCrewMedicalHistoryGrid.DateOccurence.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" data-table="MTCrewMedicalHistory" data-field="x_DateOccurence" value="@Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.DateOccurence.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.DateOccurence.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.GetErrorMessage())</div>
+    @if (!mtCrewMedicalHistoryGrid.DateOccurence.ReadOnly && !mtCrewMedicalHistoryGrid.DateOccurence.Disabled && !mtCrewMedicalHistoryGrid.DateOccurence.EditAttrs.Is("readonly") && !mtCrewMedicalHistoryGrid.DateOccurence.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewMedicalHistorygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewMedicalHistorygrid", "x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_DateOccurence" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.DateOccurence.OldValue))">
+    @* DateOccurence (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* DateOccurence (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_DateOccurence" class="el_MTCrewMedicalHistory_DateOccurence">
+    <input type="@(mtCrewMedicalHistoryGrid.DateOccurence.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" data-table="MTCrewMedicalHistory" data-field="x_DateOccurence" value="@Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.DateOccurence.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.DateOccurence.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.GetErrorMessage())</div>
+    @if (!mtCrewMedicalHistoryGrid.DateOccurence.ReadOnly && !mtCrewMedicalHistoryGrid.DateOccurence.Disabled && !mtCrewMedicalHistoryGrid.DateOccurence.EditAttrs.Is("readonly") && !mtCrewMedicalHistoryGrid.DateOccurence.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewMedicalHistorygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewMedicalHistorygrid", "x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* DateOccurence (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* DateOccurence (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_DateOccurence" class="el_MTCrewMedicalHistory_DateOccurence">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.DateOccurence.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_DateOccurence" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.DateOccurence.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_DateOccurence" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_DateOccurence" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.DateOccurence.OldValue))">
+    }
+    @* DateOccurence (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.DateOccurence.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.PlaceOccurence.Visible) { // mtCrewMedicalHistoryGrid.PlaceOccurence.Visible (begin)
+        <td data-name="PlaceOccurence" @Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* PlaceOccurence (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PlaceOccurence" class="el_MTCrewMedicalHistory_PlaceOccurence">
+    <input type="@(mtCrewMedicalHistoryGrid.PlaceOccurence.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" data-table="MTCrewMedicalHistory" data-field="x_PlaceOccurence" value="@Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PlaceOccurence.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.PlaceOccurence.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PlaceOccurence" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PlaceOccurence.OldValue))">
+    @* PlaceOccurence (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* PlaceOccurence (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PlaceOccurence" class="el_MTCrewMedicalHistory_PlaceOccurence">
+    <input type="@(mtCrewMedicalHistoryGrid.PlaceOccurence.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" data-table="MTCrewMedicalHistory" data-field="x_PlaceOccurence" value="@Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PlaceOccurence.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.PlaceOccurence.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.GetErrorMessage())</div>
+    </span>
+    @* PlaceOccurence (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* PlaceOccurence (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PlaceOccurence" class="el_MTCrewMedicalHistory_PlaceOccurence">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.PlaceOccurence.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PlaceOccurence" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PlaceOccurence.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PlaceOccurence" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_PlaceOccurence" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PlaceOccurence.OldValue))">
+    }
+    @* PlaceOccurence (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.PlaceOccurence.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.PeriodOfDisability.Visible) { // mtCrewMedicalHistoryGrid.PeriodOfDisability.Visible (begin)
+        <td data-name="PeriodOfDisability" @Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* PeriodOfDisability (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PeriodOfDisability" class="el_MTCrewMedicalHistory_PeriodOfDisability">
+    <input type="@(mtCrewMedicalHistoryGrid.PeriodOfDisability.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" data-table="MTCrewMedicalHistory" data-field="x_PeriodOfDisability" value="@Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PeriodOfDisability.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.PeriodOfDisability.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PeriodOfDisability" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PeriodOfDisability.OldValue))">
+    @* PeriodOfDisability (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* PeriodOfDisability (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PeriodOfDisability" class="el_MTCrewMedicalHistory_PeriodOfDisability">
+    <input type="@(mtCrewMedicalHistoryGrid.PeriodOfDisability.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" data-table="MTCrewMedicalHistory" data-field="x_PeriodOfDisability" value="@Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PeriodOfDisability.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.PeriodOfDisability.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.GetErrorMessage())</div>
+    </span>
+    @* PeriodOfDisability (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* PeriodOfDisability (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PeriodOfDisability" class="el_MTCrewMedicalHistory_PeriodOfDisability">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.PeriodOfDisability.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PeriodOfDisability" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PeriodOfDisability.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PeriodOfDisability" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_PeriodOfDisability" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PeriodOfDisability.OldValue))">
+    }
+    @* PeriodOfDisability (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.PeriodOfDisability.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.PresentCondition.Visible) { // mtCrewMedicalHistoryGrid.PresentCondition.Visible (begin)
+        <td data-name="PresentCondition" @Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* PresentCondition (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PresentCondition" class="el_MTCrewMedicalHistory_PresentCondition">
+    <input type="@(mtCrewMedicalHistoryGrid.PresentCondition.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" data-table="MTCrewMedicalHistory" data-field="x_PresentCondition" value="@Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PresentCondition.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.PresentCondition.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PresentCondition" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PresentCondition.OldValue))">
+    @* PresentCondition (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* PresentCondition (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PresentCondition" class="el_MTCrewMedicalHistory_PresentCondition">
+    <input type="@(mtCrewMedicalHistoryGrid.PresentCondition.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" data-table="MTCrewMedicalHistory" data-field="x_PresentCondition" value="@Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PresentCondition.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.PresentCondition.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.GetErrorMessage())</div>
+    </span>
+    @* PresentCondition (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* PresentCondition (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_PresentCondition" class="el_MTCrewMedicalHistory_PresentCondition">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.PresentCondition.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PresentCondition" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PresentCondition.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_PresentCondition" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_PresentCondition" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.PresentCondition.OldValue))">
+    }
+    @* PresentCondition (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.PresentCondition.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.Treatment.Visible) { // mtCrewMedicalHistoryGrid.Treatment.Visible (begin)
+        <td data-name="Treatment" @Html.Raw(mtCrewMedicalHistoryGrid.Treatment.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* Treatment (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_Treatment" class="el_MTCrewMedicalHistory_Treatment">
+    <textarea data-table="MTCrewMedicalHistory" data-field="x_Treatment" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" cols="50" rows="4" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Treatment.PlaceHolder))"@Html.Raw(mtCrewMedicalHistoryGrid.Treatment.EditAttributes)>@(mtCrewMedicalHistoryGrid.Treatment.EditValue)</textarea>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.Treatment.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_Treatment" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Treatment.OldValue))">
+    @* Treatment (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Treatment (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_Treatment" class="el_MTCrewMedicalHistory_Treatment">
+    <textarea data-table="MTCrewMedicalHistory" data-field="x_Treatment" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" cols="50" rows="4" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Treatment.PlaceHolder))"@Html.Raw(mtCrewMedicalHistoryGrid.Treatment.EditAttributes)>@(mtCrewMedicalHistoryGrid.Treatment.EditValue)</textarea>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.Treatment.GetErrorMessage())</div>
+    </span>
+    @* Treatment (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* Treatment (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_Treatment" class="el_MTCrewMedicalHistory_Treatment">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.Treatment.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.Treatment.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_Treatment" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Treatment.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_Treatment" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_Treatment" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Treatment.OldValue))">
+    }
+    @* Treatment (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.Treatment.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.Details.Visible) { // mtCrewMedicalHistoryGrid.Details.Visible (begin)
+        <td data-name="Details" @Html.Raw(mtCrewMedicalHistoryGrid.Details.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* Details (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_Details" class="el_MTCrewMedicalHistory_Details">
+    <textarea data-table="MTCrewMedicalHistory" data-field="x_Details" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_Details" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_Details" cols="50" rows="6" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Details.PlaceHolder))"@Html.Raw(mtCrewMedicalHistoryGrid.Details.EditAttributes)>@(mtCrewMedicalHistoryGrid.Details.EditValue)</textarea>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.Details.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_Details" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_Details" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_Details" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Details.OldValue))">
+    @* Details (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Details (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_Details" class="el_MTCrewMedicalHistory_Details">
+    <textarea data-table="MTCrewMedicalHistory" data-field="x_Details" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_Details" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_Details" cols="50" rows="6" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Details.PlaceHolder))"@Html.Raw(mtCrewMedicalHistoryGrid.Details.EditAttributes)>@(mtCrewMedicalHistoryGrid.Details.EditValue)</textarea>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.Details.GetErrorMessage())</div>
+    </span>
+    @* Details (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* Details (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_Details" class="el_MTCrewMedicalHistory_Details">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.Details.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.Details.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_Details" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_Details" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_Details" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Details.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_Details" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_Details" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_Details" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.Details.OldValue))">
+    }
+    @* Details (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.Details.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.CreatedByUserID.Visible) { // mtCrewMedicalHistoryGrid.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_CreatedByUserID" class="el_MTCrewMedicalHistory_CreatedByUserID">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewMedicalHistory"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewMedicalHistoryGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewMedicalHistoryGrid, "p_x" + mtCrewMedicalHistoryGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_CreatedByUserID" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedByUserID.OldValue))">
+    @* CreatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_CreatedByUserID" class="el_MTCrewMedicalHistory_CreatedByUserID">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewMedicalHistory"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewMedicalHistoryGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewMedicalHistoryGrid, "p_x" + mtCrewMedicalHistoryGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* CreatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_CreatedByUserID" class="el_MTCrewMedicalHistory_CreatedByUserID">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.CreatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_CreatedByUserID" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_CreatedByUserID" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedByUserID.OldValue))">
+    }
+    @* CreatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.CreatedByUserID.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.CreatedDateTime.Visible) { // mtCrewMedicalHistoryGrid.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_CreatedDateTime" class="el_MTCrewMedicalHistory_CreatedDateTime">
+    <input type="@(mtCrewMedicalHistoryGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" data-table="MTCrewMedicalHistory" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewMedicalHistoryGrid.CreatedDateTime.ReadOnly && !mtCrewMedicalHistoryGrid.CreatedDateTime.Disabled && !mtCrewMedicalHistoryGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalHistoryGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewMedicalHistorygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewMedicalHistorygrid", "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_CreatedDateTime" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedDateTime.OldValue))">
+    @* CreatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_CreatedDateTime" class="el_MTCrewMedicalHistory_CreatedDateTime">
+    <input type="@(mtCrewMedicalHistoryGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" data-table="MTCrewMedicalHistory" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewMedicalHistoryGrid.CreatedDateTime.ReadOnly && !mtCrewMedicalHistoryGrid.CreatedDateTime.Disabled && !mtCrewMedicalHistoryGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalHistoryGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewMedicalHistorygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewMedicalHistorygrid", "x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* CreatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_CreatedDateTime" class="el_MTCrewMedicalHistory_CreatedDateTime">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.CreatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_CreatedDateTime" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_CreatedDateTime" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.CreatedDateTime.OldValue))">
+    }
+    @* CreatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.CreatedDateTime.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Visible) { // mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_LastUpdatedByUserID" class="el_MTCrewMedicalHistory_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewMedicalHistory"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewMedicalHistoryGrid, "p_x" + mtCrewMedicalHistoryGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.OldValue))">
+    @* LastUpdatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_LastUpdatedByUserID" class="el_MTCrewMedicalHistory_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewMedicalHistory"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewMedicalHistoryGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewMedicalHistoryGrid, "p_x" + mtCrewMedicalHistoryGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewMedicalHistorygrid", function() {
+        var options = { name: "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewMedicalHistorygrid_x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewMedicalHistorygrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewMedicalHistorygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewMedicalHistorygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* LastUpdatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_LastUpdatedByUserID" class="el_MTCrewMedicalHistory_LastUpdatedByUserID">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedByUserID" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedByUserID.OldValue))">
+    }
+    @* LastUpdatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Visible) { // mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.CellAttributes)>
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_LastUpdatedDateTime" class="el_MTCrewMedicalHistory_LastUpdatedDateTime">
+    <input type="@(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewMedicalHistoryGrid.LastUpdatedDateTime.ReadOnly && !mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Disabled && !mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewMedicalHistorygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewMedicalHistorygrid", "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" id="o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.OldValue))">
+    @* LastUpdatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_LastUpdatedDateTime" class="el_MTCrewMedicalHistory_LastUpdatedDateTime">
+    <input type="@(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewMedicalHistoryGrid.LastUpdatedDateTime.ReadOnly && !mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Disabled && !mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalHistoryGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewMedicalHistorygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewMedicalHistorygrid", "x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* LastUpdatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewMedicalHistoryGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewMedicalHistoryGrid.RowCount)_MTCrewMedicalHistory_LastUpdatedDateTime" class="el_MTCrewMedicalHistory_LastUpdatedDateTime">
+    <span @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewMedicalHistoryGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedDateTime" data-hidden="1" name="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewMedicalHistorygrid$x@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewMedicalHistorygrid$o@(mtCrewMedicalHistoryGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewMedicalHistoryGrid.LastUpdatedDateTime.OldValue))">
+    }
+    @* LastUpdatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewMedicalHistoryGrid.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCrewMedicalHistoryGrid.ListOptions.RenderBody("right", mtCrewMedicalHistoryGrid.RowCount)
+    </tr>
+if (mtCrewMedicalHistoryGrid.RowType == RowType.Add || mtCrewMedicalHistoryGrid.RowType == RowType.Edit) {
+<script>
+loadjs.ready(["fMTCrewMedicalHistorygrid","load"], () => fMTCrewMedicalHistorygrid.updateLists(@(mtCrewMedicalHistoryGrid.RowIndex)@(mtCrewMedicalHistoryGrid.IsAdd || mtCrewMedicalHistoryGrid.IsEdit || mtCrewMedicalHistoryGrid.IsCopy || SameString(mtCrewMedicalHistoryGrid.RowIndex, "$rowindex$") ? ", true" : "")));
+</script>
+}
+    } @* End delete row checking *@
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCrewMedicalHistoryGrid.RowIndex, "$rowindex$"))
+        mtCrewMedicalHistoryGrid.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCrewMedicalHistoryGrid.IsCopy || mtCrewMedicalHistoryGrid.IsAdd) && mtCrewMedicalHistoryGrid.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCrewMedicalHistoryGrid.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+@if (mtCrewMedicalHistoryGrid.CurrentMode == "add" || mtCrewMedicalHistoryGrid.CurrentMode == "copy") {
+<input type="hidden" name="@(mtCrewMedicalHistoryGrid.FormKeyCountName)" id="@(mtCrewMedicalHistoryGrid.FormKeyCountName)" value="@(mtCrewMedicalHistoryGrid.KeyCount)">
+@Html.Raw(mtCrewMedicalHistoryGrid.MultiSelectKey)
+}
+@if (mtCrewMedicalHistoryGrid.CurrentMode == "edit") {
+<input type="hidden" name="@(mtCrewMedicalHistoryGrid.FormKeyCountName)" id="@(mtCrewMedicalHistoryGrid.FormKeyCountName)" value="@(mtCrewMedicalHistoryGrid.KeyCount)">
+@Html.Raw(mtCrewMedicalHistoryGrid.MultiSelectKey)
+}
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCrewMedicalHistoryGrid.CurrentMode)) {
+<input type="hidden" name="action" id="action" value="">
+}
+<input type="hidden" name="detailpage" value="fMTCrewMedicalHistorygrid">
+</div><!-- /.ew-list-form -->
+@{ mtCrewMedicalHistoryGrid.CloseRecordset(); }
+@if (mtCrewMedicalHistoryGrid.ShowOtherOptions) {
+<div class="card-footer ew-grid-lower-panel">
+    @mtCrewMedicalHistoryGrid.OtherOptions.RenderBody("bottom")
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCrewMedicalHistoryGrid.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@if (!mtCrewMedicalHistoryGrid.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewMedicalHistory");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}
+@{
+    // Close Recordset
+    mtCrewMedicalHistoryGrid.CloseRecordset(); // DN
+    // Clear CurrentGrid
+    CurrentGrid = null;
+}

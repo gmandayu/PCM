@@ -1,0 +1,526 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewChecklistForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewChecklistForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewChecklistForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewChecklistForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewChecklistForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewChecklistForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewChecklistForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewChecklistForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewChecklistForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "CreatedByUserID": @Html.Raw(crewChecklistForAdminList.CreatedByUserID.ToClientList(crewChecklistForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewChecklistForAdminList.CreatedDateTime.ToClientList(crewChecklistForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewChecklistForAdminList.LastUpdatedByUserID.ToClientList(crewChecklistForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewChecklistForAdminList.LastUpdatedDateTime.ToClientList(crewChecklistForAdminList)),
+            "ApprovedByUserID1": @Html.Raw(crewChecklistForAdminList.ApprovedByUserID1.ToClientList(crewChecklistForAdminList)),
+            "ApprovedByUserID2": @Html.Raw(crewChecklistForAdminList.ApprovedByUserID2.ToClientList(crewChecklistForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewChecklistForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewChecklistForAdminList.TotalRecords > 0 && crewChecklistForAdminList.ExportOptions.Visible) {
+    crewChecklistForAdminList.ExportOptions.Render("body");
+}
+@if (crewChecklistForAdminList.ImportOptions.Visible) {
+    crewChecklistForAdminList.ImportOptions.Render("body");
+}
+@if (crewChecklistForAdminList.SearchOptions.Visible) {
+    crewChecklistForAdminList.SearchOptions.Render("body");
+}
+@if (crewChecklistForAdminList.FilterOptions.Visible) {
+    crewChecklistForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewChecklistForAdminList.ShowCurrentFilter) {
+    crewChecklistForAdminList.ShowFilterList();
+}
+@if (!crewChecklistForAdminList.IsModal) {
+<form name="fCrewChecklistForAdminsrch" id="fCrewChecklistForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewChecklistForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewChecklistForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewChecklistForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewChecklistForAdmin: currentTable } });
+var currentForm;
+var fCrewChecklistForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewChecklistForAdminsrch")
+        .setPageId("list")
+@if (crewChecklistForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid],
+            ["ApprovedByUserID1", [], fields.ApprovedByUserID1.isInvalid],
+            ["ApprovedByUserID2", [], fields.ApprovedByUserID2.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CreatedByUserID": @Html.Raw(crewChecklistForAdminList.CreatedByUserID.ToClientList(crewChecklistForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewChecklistForAdminList.CreatedDateTime.ToClientList(crewChecklistForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewChecklistForAdminList.LastUpdatedByUserID.ToClientList(crewChecklistForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewChecklistForAdminList.LastUpdatedDateTime.ToClientList(crewChecklistForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewChecklistForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewChecklistForAdminList.IsExport() && Empty(crewChecklistForAdminList.CurrentAction) && crewChecklistForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewChecklistForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewChecklistForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewChecklistForAdminList.RowType = RowType.Search;
+    crewChecklistForAdminList.ResetAttributes();
+    await crewChecklistForAdminList.RenderRow();
+}
+@if (crewChecklistForAdminList.CreatedByUserID.Visible) { // crewChecklistForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewChecklistForAdminList.CreatedByUserID.UseFilter) {
+        crewChecklistForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewChecklistForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewChecklistForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewChecklistForAdminsrch_x_CreatedByUserID"
+            data-table="CrewChecklistForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewChecklistForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewChecklistForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewChecklistForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewChecklistForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewChecklistForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewChecklistForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewChecklistForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewChecklistForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewChecklistForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewChecklistForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewChecklistForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewChecklistForAdminList.CreatedDateTime.Visible) { // crewChecklistForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewChecklistForAdminList.CreatedDateTime.UseFilter) {
+        crewChecklistForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewChecklistForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewChecklistForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewChecklistForAdminsrch_x_CreatedDateTime"
+            data-table="CrewChecklistForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewChecklistForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewChecklistForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewChecklistForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewChecklistForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewChecklistForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewChecklistForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewChecklistForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewChecklistForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewChecklistForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewChecklistForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewChecklistForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewChecklistForAdminList.LastUpdatedByUserID.Visible) { // crewChecklistForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewChecklistForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewChecklistForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewChecklistForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewChecklistForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewChecklistForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewChecklistForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewChecklistForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewChecklistForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewChecklistForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewChecklistForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewChecklistForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewChecklistForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewChecklistForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewChecklistForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewChecklistForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewChecklistForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewChecklistForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewChecklistForAdminList.LastUpdatedDateTime.Visible) { // crewChecklistForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewChecklistForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewChecklistForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewChecklistForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewChecklistForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewChecklistForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewChecklistForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewChecklistForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewChecklistForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewChecklistForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewChecklistForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewChecklistForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewChecklistForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewChecklistForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewChecklistForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewChecklistForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewChecklistForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewChecklistForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewChecklistForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewChecklistForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewChecklistForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewChecklistForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewChecklistForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewChecklistForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewChecklistForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewChecklistForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewChecklistForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewChecklistForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewChecklistForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewChecklistForAdminList.ShowPageHeader()
+@crewChecklistForAdminList.ShowMessages()
+<main class="list @(crewChecklistForAdminList.TotalRecords == 0 && !crewChecklistForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewChecklistForAdminList.TotalRecords > 0 || !Empty(crewChecklistForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewChecklistForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewChecklistForAdminList.TableGridClass)">
+<form name="@(crewChecklistForAdminList.FormName)" id="@(crewChecklistForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewChecklistForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewChecklistForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewChecklistForAdmin" class="card-body ew-grid-middle-panel @(crewChecklistForAdminList.TableContainerClass)" style="@(crewChecklistForAdminList.TableContainerStyle)">
+@if (crewChecklistForAdminList.TotalRecords > 0 || crewChecklistForAdminList.IsGridEdit || crewChecklistForAdminList.IsMultiEdit) {
+<table id="tbl_CrewChecklistForAdminlist" class="@(crewChecklistForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewChecklistForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewChecklistForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewChecklistForAdminList.ListOptions.RenderHeader("left")
+@if (crewChecklistForAdminList.CreatedByUserID.Visible) { // crewChecklistForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewChecklistForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewChecklistForAdmin_CreatedByUserID" class="CrewChecklistForAdmin_CreatedByUserID">@Html.Raw(crewChecklistForAdminList.RenderFieldHeader(crewChecklistForAdminList.CreatedByUserID))</div></th>
+} @* crewChecklistForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewChecklistForAdminList.CreatedDateTime.Visible) { // crewChecklistForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewChecklistForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewChecklistForAdmin_CreatedDateTime" class="CrewChecklistForAdmin_CreatedDateTime">@Html.Raw(crewChecklistForAdminList.RenderFieldHeader(crewChecklistForAdminList.CreatedDateTime))</div></th>
+} @* crewChecklistForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewChecklistForAdminList.LastUpdatedByUserID.Visible) { // crewChecklistForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewChecklistForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewChecklistForAdmin_LastUpdatedByUserID" class="CrewChecklistForAdmin_LastUpdatedByUserID">@Html.Raw(crewChecklistForAdminList.RenderFieldHeader(crewChecklistForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewChecklistForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewChecklistForAdminList.LastUpdatedDateTime.Visible) { // crewChecklistForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewChecklistForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewChecklistForAdmin_LastUpdatedDateTime" class="CrewChecklistForAdmin_LastUpdatedDateTime">@Html.Raw(crewChecklistForAdminList.RenderFieldHeader(crewChecklistForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewChecklistForAdminList.LastUpdatedDateTime.Visible (end) *@
+@if (crewChecklistForAdminList.ApprovedByUserID1.Visible) { // crewChecklistForAdminList.ApprovedByUserID1.Visible (begin)
+        <th data-name="ApprovedByUserID1" class="@(crewChecklistForAdminList.ApprovedByUserID1.HeaderCellClass)"><div id="elh_CrewChecklistForAdmin_ApprovedByUserID1" class="CrewChecklistForAdmin_ApprovedByUserID1">@Html.Raw(crewChecklistForAdminList.RenderFieldHeader(crewChecklistForAdminList.ApprovedByUserID1))</div></th>
+} @* crewChecklistForAdminList.ApprovedByUserID1.Visible (end) *@
+@if (crewChecklistForAdminList.ApprovedByUserID2.Visible) { // crewChecklistForAdminList.ApprovedByUserID2.Visible (begin)
+        <th data-name="ApprovedByUserID2" class="@(crewChecklistForAdminList.ApprovedByUserID2.HeaderCellClass)"><div id="elh_CrewChecklistForAdmin_ApprovedByUserID2" class="CrewChecklistForAdmin_ApprovedByUserID2">@Html.Raw(crewChecklistForAdminList.RenderFieldHeader(crewChecklistForAdminList.ApprovedByUserID2))</div></th>
+} @* crewChecklistForAdminList.ApprovedByUserID2.Visible (end) *@
+@* Render list options (header, right) *@
+@crewChecklistForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewChecklistForAdminList.PageNumber)">
+@{
+    await crewChecklistForAdminList.SetupGrid();
+    bool eof = crewChecklistForAdminList.Recordset == null; // DN
+}
+@while (crewChecklistForAdminList.RecordCount < crewChecklistForAdminList.StopRecord || SameString(crewChecklistForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewChecklistForAdminList.RowIndex, "$rowindex$") &&
+        (!crewChecklistForAdminList.IsGridAdd || crewChecklistForAdminList.CurrentMode == "copy") &&
+        (!((crewChecklistForAdminList.IsCopy || crewChecklistForAdminList.IsAdd) && crewChecklistForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewChecklistForAdminList.Recordset.ReadAsync();
+    crewChecklistForAdminList.RecordCount++;
+    if (crewChecklistForAdminList.RecordCount >= crewChecklistForAdminList.StartRecord) {
+        await crewChecklistForAdminList.SetupRow();
+    <tr @Html.Raw(crewChecklistForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewChecklistForAdminList.ListOptions.RenderBody("left", crewChecklistForAdminList.RowCount)
+    @if (crewChecklistForAdminList.CreatedByUserID.Visible) { // crewChecklistForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewChecklistForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewChecklistForAdminList.RowCount)_CrewChecklistForAdmin_CreatedByUserID" class="el_CrewChecklistForAdmin_CreatedByUserID">
+<span @Html.Raw(crewChecklistForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewChecklistForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewChecklistForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewChecklistForAdminList.CreatedDateTime.Visible) { // crewChecklistForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewChecklistForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewChecklistForAdminList.RowCount)_CrewChecklistForAdmin_CreatedDateTime" class="el_CrewChecklistForAdmin_CreatedDateTime">
+<span @Html.Raw(crewChecklistForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewChecklistForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewChecklistForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewChecklistForAdminList.LastUpdatedByUserID.Visible) { // crewChecklistForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewChecklistForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewChecklistForAdminList.RowCount)_CrewChecklistForAdmin_LastUpdatedByUserID" class="el_CrewChecklistForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewChecklistForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewChecklistForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewChecklistForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewChecklistForAdminList.LastUpdatedDateTime.Visible) { // crewChecklistForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewChecklistForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewChecklistForAdminList.RowCount)_CrewChecklistForAdmin_LastUpdatedDateTime" class="el_CrewChecklistForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewChecklistForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewChecklistForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewChecklistForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @if (crewChecklistForAdminList.ApprovedByUserID1.Visible) { // crewChecklistForAdminList.ApprovedByUserID1.Visible (begin)
+        <td data-name="ApprovedByUserID1" @Html.Raw(crewChecklistForAdminList.ApprovedByUserID1.CellAttributes)>
+<span id="el@(crewChecklistForAdminList.RowCount)_CrewChecklistForAdmin_ApprovedByUserID1" class="el_CrewChecklistForAdmin_ApprovedByUserID1">
+<span @Html.Raw(crewChecklistForAdminList.ApprovedByUserID1.ViewAttributes)>
+@Html.Raw(crewChecklistForAdminList.ApprovedByUserID1.GetViewValue())</span>
+</span>
+</td>
+    } @* crewChecklistForAdminList.ApprovedByUserID1.Visible (end) *@
+    @if (crewChecklistForAdminList.ApprovedByUserID2.Visible) { // crewChecklistForAdminList.ApprovedByUserID2.Visible (begin)
+        <td data-name="ApprovedByUserID2" @Html.Raw(crewChecklistForAdminList.ApprovedByUserID2.CellAttributes)>
+<span id="el@(crewChecklistForAdminList.RowCount)_CrewChecklistForAdmin_ApprovedByUserID2" class="el_CrewChecklistForAdmin_ApprovedByUserID2">
+<span @Html.Raw(crewChecklistForAdminList.ApprovedByUserID2.ViewAttributes)>
+@Html.Raw(crewChecklistForAdminList.ApprovedByUserID2.GetViewValue())</span>
+</span>
+</td>
+    } @* crewChecklistForAdminList.ApprovedByUserID2.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewChecklistForAdminList.ListOptions.RenderBody("right", crewChecklistForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewChecklistForAdminList.RowIndex, "$rowindex$"))
+        crewChecklistForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewChecklistForAdminList.IsCopy || crewChecklistForAdminList.IsAdd) && crewChecklistForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewChecklistForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewChecklistForAdminList.CurrentAction) && !crewChecklistForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewChecklistForAdminList.CloseRecordset(); }
+@if (!crewChecklistForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewChecklistForAdminList.IsGridAdd && !(crewChecklistForAdminList.IsGridEdit && crewChecklistForAdminList.ModalGridEdit) && !crewChecklistForAdminList.IsMultiEdit) {
+@Html.Raw(crewChecklistForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewChecklistForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewChecklistForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewChecklistForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewChecklistForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewChecklistForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

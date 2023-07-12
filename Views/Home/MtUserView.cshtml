@@ -1,0 +1,135 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtUserView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtUserView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtUserView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtUserView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @mtUserView.ExportOptions.RenderBody()
+    @mtUserView.OtherOptions.RenderBody()
+</div>
+}
+@mtUserView.ShowPageHeader()
+@mtUserView.ShowMessages()
+<main class="view">
+<form name="fMTUserview" id="fMTUserview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (!mtUserView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtUserView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTUser: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fMTUserview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTUserview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(mtUserView.IsModal)">
+<table class="@(mtUserView.TableClass)">
+@if (mtUserView._Email.Visible) { // mtUserView._Email.Visible (begin)
+    <tr id="r__Email" @Html.Raw(mtUserView._Email.RowAttributes)>
+        <td class="@(mtUserView.TableLeftColumnClass)"><span id="elh_MTUser__Email">@Html.Raw(mtUserView._Email.Caption)</span></td>
+        <td data-name="_Email" @Html.Raw(mtUserView._Email.CellAttributes)>
+<span id="el_MTUser__Email">
+<span @Html.Raw(mtUserView._Email.ViewAttributes)>
+@Html.Raw(mtUserView._Email.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtUserView._Email.Visible (end) *@
+@if (mtUserView.FullName.Visible) { // mtUserView.FullName.Visible (begin)
+    <tr id="r_FullName" @Html.Raw(mtUserView.FullName.RowAttributes)>
+        <td class="@(mtUserView.TableLeftColumnClass)"><span id="elh_MTUser_FullName">@Html.Raw(mtUserView.FullName.Caption)</span></td>
+        <td data-name="FullName" @Html.Raw(mtUserView.FullName.CellAttributes)>
+<span id="el_MTUser_FullName">
+<span @Html.Raw(mtUserView.FullName.ViewAttributes)>
+@Html.Raw(mtUserView.FullName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtUserView.FullName.Visible (end) *@
+@if (mtUserView.MTUserLevelID.Visible) { // mtUserView.MTUserLevelID.Visible (begin)
+    <tr id="r_MTUserLevelID" @Html.Raw(mtUserView.MTUserLevelID.RowAttributes)>
+        <td class="@(mtUserView.TableLeftColumnClass)"><span id="elh_MTUser_MTUserLevelID">@Html.Raw(mtUserView.MTUserLevelID.Caption)</span></td>
+        <td data-name="MTUserLevelID" @Html.Raw(mtUserView.MTUserLevelID.CellAttributes)>
+<span id="el_MTUser_MTUserLevelID">
+<span @Html.Raw(mtUserView.MTUserLevelID.ViewAttributes)>
+@Html.Raw(mtUserView.MTUserLevelID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtUserView.MTUserLevelID.Visible (end) *@
+@if (mtUserView.SeafarerID.Visible) { // mtUserView.SeafarerID.Visible (begin)
+    <tr id="r_SeafarerID" @Html.Raw(mtUserView.SeafarerID.RowAttributes)>
+        <td class="@(mtUserView.TableLeftColumnClass)"><span id="elh_MTUser_SeafarerID">@Html.Raw(mtUserView.SeafarerID.Caption)</span></td>
+        <td data-name="SeafarerID" @Html.Raw(mtUserView.SeafarerID.CellAttributes)>
+<span id="el_MTUser_SeafarerID">
+<span @Html.Raw(mtUserView.SeafarerID.ViewAttributes)>
+@Html.Raw(mtUserView.SeafarerID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtUserView.SeafarerID.Visible (end) *@
+@if (mtUserView.CrewAgency.Visible) { // mtUserView.CrewAgency.Visible (begin)
+    <tr id="r_CrewAgency" @Html.Raw(mtUserView.CrewAgency.RowAttributes)>
+        <td class="@(mtUserView.TableLeftColumnClass)"><span id="elh_MTUser_CrewAgency">@Html.Raw(mtUserView.CrewAgency.Caption)</span></td>
+        <td data-name="CrewAgency" @Html.Raw(mtUserView.CrewAgency.CellAttributes)>
+<span id="el_MTUser_CrewAgency">
+<span @Html.Raw(mtUserView.CrewAgency.ViewAttributes)>
+@Html.Raw(mtUserView.CrewAgency.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtUserView.CrewAgency.Visible (end) *@
+</table>
+@{ mtUserView.CloseRecordset(); }
+</form>
+</main>
+@mtUserView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtUserView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

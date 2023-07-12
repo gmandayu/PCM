@@ -1,0 +1,1692 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewMedicalCertificateForAdminViewModeList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewMedicalCertificateForAdminViewModeList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewMedicalCertificateForAdminViewModeList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalCertificateForAdminViewModeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalCertificateForAdminViewMode: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewMedicalCertificateForAdminViewModeList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewMedicalCertificateForAdminViewModeList.FormName)")
+        .setPageId("list")
+        .setFormKeyCountName("@(crewMedicalCertificateForAdminViewModeList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTMedicalCertificateID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "Number": @Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "PlaceOfIssue": @Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "DateOfIssue": @Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "ExpirationDate": @Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "Attachment": @Html.Raw(crewMedicalCertificateForAdminViewModeList.Attachment.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "MTCrewID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTCrewID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewMedicalCertificateForAdminViewModeList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewMedicalCertificateForAdminViewModeList.TotalRecords > 0 && crewMedicalCertificateForAdminViewModeList.ExportOptions.Visible) {
+    crewMedicalCertificateForAdminViewModeList.ExportOptions.Render("body");
+}
+@if (crewMedicalCertificateForAdminViewModeList.ImportOptions.Visible) {
+    crewMedicalCertificateForAdminViewModeList.ImportOptions.Render("body");
+}
+@if (crewMedicalCertificateForAdminViewModeList.SearchOptions.Visible) {
+    crewMedicalCertificateForAdminViewModeList.SearchOptions.Render("body");
+}
+@if (crewMedicalCertificateForAdminViewModeList.FilterOptions.Visible) {
+    crewMedicalCertificateForAdminViewModeList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewMedicalCertificateForAdminViewModeList.ShowCurrentFilter) {
+    crewMedicalCertificateForAdminViewModeList.ShowFilterList();
+}
+@if (!crewMedicalCertificateForAdminViewModeList.IsModal) {
+<form name="fCrewMedicalCertificateForAdminViewModesrch" id="fCrewMedicalCertificateForAdminViewModesrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewMedicalCertificateForAdminViewModesrch_search_panel" class="mb-2 mb-sm-0 @(crewMedicalCertificateForAdminViewModeList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalCertificateForAdminViewModeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalCertificateForAdminViewMode: currentTable } });
+var currentForm;
+var fCrewMedicalCertificateForAdminViewModesrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewMedicalCertificateForAdminViewModesrch")
+        .setPageId("list")
+
+        // Add fields
+        .setFields([
+
+            ["MTMedicalCertificateID", [], fields.MTMedicalCertificateID.isInvalid],
+            ["Number", [], fields.Number.isInvalid],
+            ["PlaceOfIssue", [], fields.PlaceOfIssue.isInvalid],
+            ["DateOfIssue", [], fields.DateOfIssue.isInvalid],
+            ["ExpirationDate", [], fields.ExpirationDate.isInvalid],
+            ["Attachment", [], fields.Attachment.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTMedicalCertificateID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "Number": @Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "PlaceOfIssue": @Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "DateOfIssue": @Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "ExpirationDate": @Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "Attachment": @Html.Raw(crewMedicalCertificateForAdminViewModeList.Attachment.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "MTCrewID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTCrewID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.ToClientList(crewMedicalCertificateForAdminViewModeList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewMedicalCertificateForAdminViewModeList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewMedicalCertificateForAdminViewModeList.IsExport() && Empty(crewMedicalCertificateForAdminViewModeList.CurrentAction) && crewMedicalCertificateForAdminViewModeList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0 d-none@(crewMedicalCertificateForAdminViewModeList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewMedicalCertificateForAdminViewModeList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewMedicalCertificateForAdminViewModeList.RowType = RowType.Search;
+    crewMedicalCertificateForAdminViewModeList.ResetAttributes();
+    await crewMedicalCertificateForAdminViewModeList.RenderRow();
+}
+@if (crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible) { // crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_MTMedicalCertificateID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTMedicalCertificateID"
+            name="x_MTMedicalCertificateID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_MTMedicalCertificateID"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_MTMedicalCertificateID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.SelectOptionListHtml("x_MTMedicalCertificateID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_MTMedicalCertificateID",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_MTMedicalCertificateID",
+                ajax: { id: "x_MTMedicalCertificateID", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.MTMedicalCertificateID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.Number.Visible) { // crewMedicalCertificateForAdminViewModeList.Number.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.Number.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_Number" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.Number.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Number"
+            name="x_Number[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.Number.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_Number"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_Number"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.Number.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.Number.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.Number.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.Number.SelectOptionListHtml("x_Number", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_Number",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_Number",
+                ajax: { id: "x_Number", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.Number.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.Number.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible) { // crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOfIssue"
+            name="x_PlaceOfIssue[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_PlaceOfIssue"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_PlaceOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.SelectOptionListHtml("x_PlaceOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_PlaceOfIssue",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_PlaceOfIssue",
+                ajax: { id: "x_PlaceOfIssue", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.PlaceOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible) { // crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.DateOfIssue.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.DateOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfIssue"
+            name="x_DateOfIssue[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.DateOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_DateOfIssue"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_DateOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.DateOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.DateOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.DateOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.DateOfIssue.SelectOptionListHtml("x_DateOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_DateOfIssue",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_DateOfIssue",
+                ajax: { id: "x_DateOfIssue", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.DateOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible) { // crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.ExpirationDate.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_ExpirationDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.ExpirationDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ExpirationDate"
+            name="x_ExpirationDate[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.ExpirationDate.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_ExpirationDate"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_ExpirationDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.ExpirationDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.ExpirationDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.ExpirationDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.ExpirationDate.SelectOptionListHtml("x_ExpirationDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_ExpirationDate",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_ExpirationDate",
+                ajax: { id: "x_ExpirationDate", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.ExpirationDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.Attachment.Visible) { // crewMedicalCertificateForAdminViewModeList.Attachment.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.Attachment.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_Attachment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.Attachment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Attachment"
+            name="x_Attachment[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.Attachment.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_Attachment"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_Attachment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.Attachment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.Attachment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.Attachment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.Attachment.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.Attachment.SelectOptionListHtml("x_Attachment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.Attachment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_Attachment",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_Attachment",
+                ajax: { id: "x_Attachment", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.Attachment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.Attachment.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible) { // crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.MTCrewID.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_MTCrewID"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTCrewID.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible) { // crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.CreatedByUserID.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_CreatedByUserID"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible) { // crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.CreatedDateTime.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_CreatedDateTime"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_LastUpdatedByUserID"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+    if (!crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.UseFilter) {
+        crewMedicalCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminViewModesrch_x_LastUpdatedDateTime"
+            data-table="CrewMedicalCertificateForAdminViewMode"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.EditAttributes)>
+            @(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewMedicalCertificateForAdminViewModesrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewMedicalCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdminViewMode.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div id="tpsd_CrewMedicalCertificateForAdminViewModelist" class="ew-custom-template-search"></div>
+<template id="tpsm_CrewMedicalCertificateForAdminViewModelist">
+<div id="CrewMedicalCertificateForAdminViewModelist"><div id="schedule-modal-dialog" aria-hidden="true" aria-modal="true" class="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="schedule-modal-dialog-title" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="schedule-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-schedule" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_DocumentCheckDateTime" class="row">
+                        <label for="x_DocumentCheckDateTime" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Document Check Date Time" : "Tanggal Dan Jam Cek Dokumen")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckDateTime">
+                                    <div class="input-group" id="datetimepicker_DocumentCheckDateTime" data-target-input="nearest" data-td-target-toggle="nearest">
+                                        <input
+                                            type="text"
+                                            name="x_DocumentCheckDateTime"
+                                            id="x_DocumentCheckDateTime"
+                                            value=""
+                                            placeholder="Document Check Date Time"
+                                            data-format-pattern="yyyy-MM-dd HH:mm:sszzz"
+                                            class="form-control tempus-dominus-input"
+                                            data-target="#datetimepicker_DocumentCheckDateTime"
+                                        />
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="r_DocumentCheckNotes" class="row">
+                        <label for="x_DocumentCheckNotes" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckNotes">
+                                    <textarea
+                                        name="x_DocumentCheckNotes"
+                                        id="x_DocumentCheckNotes"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder=@(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary ew-btn" id="btn-add-schedule" type="button">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel-schedule" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- REVISE MODAL DIALOG. FIXME! -->
+<div id="revise-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Revise Crew Candidate" : "Tinjau Ulang Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="revise-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RevisedReason" class="row">
+                        <label for="x_RevisedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Revised Reason" : "Alasan Tinjau Ulang")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RevisedReason">
+                                    <textarea
+                                        name="x_RevisedReason"
+                                        id="x_RevisedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Revised Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-revise" type="button">
+                    @(CurrentLanguage == "en-US" ? "Revise" : "Tinjau Ulang")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="reject-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reject-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RejectedReason" class="row">
+                        <label for="x_RejectedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Rejected Reason" : "Alasan Ditolak")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RejectedReason">
+                                    <textarea
+                                        name="x_RejectedReason"
+                                        id="x_RejectedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Rejected Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-reject" type="button">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewPersonalDataForAdminViewModeView")">
+                @(CurrentLanguage == "en-US" ? "PERSONAL DATA" : "DATA PERSONAL")
+            </a>     
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewDocumentForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "DOCUMENTS" : "DOKUMEN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewBankAccountForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "BANK ACCOUNT" : "REKENING BANK")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFamilyForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "FAMILY" : "KELUARGA")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFormalEducationForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "FORMAL EDUCATION" : "PENDIDIKAN FORMAL")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalCertificateForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL CERTIFICATE / TEST" : "SERTIFIKAT / TES MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewCertificateForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "CERTIFICATES AND QUALIFICATIONS" : "SERTIFIKAT DAN KUALIFIKASI")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewExperienceForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "SEA EXPERIENCE" : "PENGALAMAN BERLAYAR")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewAppraisalForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "APPRAISALS" : "PENILAIAN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalHistoryForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL HISTORY" : "RIWAYAT MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewGeneralDataForAdminViewModeView")">
+                @(CurrentLanguage == "en-US" ? "GENERAL" : "UMUM")
+            </a>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm ew-table table-head-fixed" id="ForAdminTable" data-isset="true">
+            <thead>
+                <tr class="ew-table-header">
+                    <th class="ew-list-option-header w-1" data-name="button"></th>
+                    <th class="ew-list-option-header text-nowrap" data-name="sequence"><span></span></th>
+                    <th data-name="MTMedicalCertificateID" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Caption)
+                    </th>
+                    <th data-name="Number" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.Caption)
+                    </th>
+                    <th data-name="PlaceOfIssue" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Caption)
+                    </th>              
+                    <th data-name="DateOfIssue" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.Caption)
+                    </th>
+                    <th data-name="ExpirationDate" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.Caption)
+                    </th>
+                    <th data-name="Attachment" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.Attachment.Caption)
+                    </th>         
+                    <th data-name="CreatedByUserID" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Caption)
+                    </th>
+                    <th data-name="CreatedDateTime" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Caption)
+                    </th>
+                    <th data-name="LastUpdatedByUserID" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Caption)
+                    </th>
+                    <th data-name="LastUpdatedDateTime" class="ew-table-header-cell">
+                        @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Caption)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+</template>
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewMedicalCertificateForAdminViewModeList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewMedicalCertificateForAdminViewModeList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewMedicalCertificateForAdminViewModeList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminViewModeList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewMedicalCertificateForAdminViewModesrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminViewModeList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewMedicalCertificateForAdminViewModesrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminViewModeList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewMedicalCertificateForAdminViewModesrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminViewModeList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewMedicalCertificateForAdminViewModesrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+<script>
+loadjs.ready(ew.applyTemplateId, () => ew.applyTemplate("tpsd_CrewMedicalCertificateForAdminViewModelist", "tpsm_CrewMedicalCertificateForAdminViewModelist"));
+</script>
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewMedicalCertificateForAdminViewModeList.ShowPageHeader()
+@crewMedicalCertificateForAdminViewModeList.ShowMessages()
+<main class="list @(crewMedicalCertificateForAdminViewModeList.TotalRecords == 0 && !crewMedicalCertificateForAdminViewModeList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewMedicalCertificateForAdminViewModeList.TotalRecords > 0 || !Empty(crewMedicalCertificateForAdminViewModeList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewMedicalCertificateForAdminViewModeList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewMedicalCertificateForAdminViewModeList.TableGridClass)">
+<form name="@(crewMedicalCertificateForAdminViewModeList.FormName)" id="@(crewMedicalCertificateForAdminViewModeList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewMedicalCertificateForAdminViewModeList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewMedicalCertificateForAdminViewModeList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewMedicalCertificateForAdminViewMode" class="card-body ew-grid-middle-panel @(crewMedicalCertificateForAdminViewModeList.TableContainerClass)" style="@(crewMedicalCertificateForAdminViewModeList.TableContainerStyle)">
+@if (crewMedicalCertificateForAdminViewModeList.TotalRecords > 0 || crewMedicalCertificateForAdminViewModeList.IsGridEdit || crewMedicalCertificateForAdminViewModeList.IsMultiEdit) {
+<table id="tbl_CrewMedicalCertificateForAdminViewModelist" class="@(crewMedicalCertificateForAdminViewModeList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewMedicalCertificateForAdminViewModeList.RowType = RowType.Header;
+
+    // Render list options
+    await crewMedicalCertificateForAdminViewModeList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewMedicalCertificateForAdminViewModeList.ListOptions.RenderHeader("left", "", "block", crewMedicalCertificateForAdminViewModeList.TableVar, "CrewMedicalCertificateForAdminViewModelist")
+@if (crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible) { // crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible (begin)
+        <th data-name="MTMedicalCertificateID" class="@(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_MTMedicalCertificateID" class="CrewMedicalCertificateForAdminViewMode_MTMedicalCertificateID">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.Number.Visible) { // crewMedicalCertificateForAdminViewModeList.Number.Visible (begin)
+        <th data-name="Number" class="@(crewMedicalCertificateForAdminViewModeList.Number.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_Number" class="CrewMedicalCertificateForAdminViewMode_Number">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.Number))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.Number.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible) { // crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible (begin)
+        <th data-name="PlaceOfIssue" class="@(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_PlaceOfIssue" class="CrewMedicalCertificateForAdminViewMode_PlaceOfIssue">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible) { // crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible (begin)
+        <th data-name="DateOfIssue" class="@(crewMedicalCertificateForAdminViewModeList.DateOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_DateOfIssue" class="CrewMedicalCertificateForAdminViewMode_DateOfIssue">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.DateOfIssue))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible) { // crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible (begin)
+        <th data-name="ExpirationDate" class="@(crewMedicalCertificateForAdminViewModeList.ExpirationDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_ExpirationDate" class="CrewMedicalCertificateForAdminViewMode_ExpirationDate">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.ExpirationDate))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.Attachment.Visible) { // crewMedicalCertificateForAdminViewModeList.Attachment.Visible (begin)
+        <th data-name="Attachment" class="@(crewMedicalCertificateForAdminViewModeList.Attachment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_Attachment" class="CrewMedicalCertificateForAdminViewMode_Attachment">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.Attachment))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.Attachment.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible) { // crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewMedicalCertificateForAdminViewModeList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_MTCrewID" class="CrewMedicalCertificateForAdminViewMode_MTCrewID">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.MTCrewID))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible) { // crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_CreatedByUserID" class="CrewMedicalCertificateForAdminViewMode_CreatedByUserID">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.CreatedByUserID))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible) { // crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_CreatedDateTime" class="CrewMedicalCertificateForAdminViewMode_CreatedDateTime">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.CreatedDateTime))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_LastUpdatedByUserID" class="CrewMedicalCertificateForAdminViewMode_LastUpdatedByUserID">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdminViewMode_LastUpdatedDateTime" class="CrewMedicalCertificateForAdminViewMode_LastUpdatedDateTime">@Html.Raw(crewMedicalCertificateForAdminViewModeList.RenderFieldHeader(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime))</div></th>
+} @* crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewMedicalCertificateForAdminViewModeList.ListOptions.RenderHeader("right", "", "block", crewMedicalCertificateForAdminViewModeList.TableVar, "CrewMedicalCertificateForAdminViewModelist")
+    </tr>
+</thead>
+<tbody data-page="@(crewMedicalCertificateForAdminViewModeList.PageNumber)">
+@{
+    await crewMedicalCertificateForAdminViewModeList.SetupGrid();
+    bool eof = crewMedicalCertificateForAdminViewModeList.Recordset == null; // DN
+}
+@while (crewMedicalCertificateForAdminViewModeList.RecordCount < crewMedicalCertificateForAdminViewModeList.StopRecord || SameString(crewMedicalCertificateForAdminViewModeList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewMedicalCertificateForAdminViewModeList.RowIndex, "$rowindex$") &&
+        (!crewMedicalCertificateForAdminViewModeList.IsGridAdd || crewMedicalCertificateForAdminViewModeList.CurrentMode == "copy") &&
+        (!((crewMedicalCertificateForAdminViewModeList.IsCopy || crewMedicalCertificateForAdminViewModeList.IsAdd) && crewMedicalCertificateForAdminViewModeList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewMedicalCertificateForAdminViewModeList.Recordset.ReadAsync();
+    crewMedicalCertificateForAdminViewModeList.RecordCount++;
+    if (crewMedicalCertificateForAdminViewModeList.RecordCount >= crewMedicalCertificateForAdminViewModeList.StartRecord) {
+        await crewMedicalCertificateForAdminViewModeList.SetupRow();
+    <tr @Html.Raw(crewMedicalCertificateForAdminViewModeList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewMedicalCertificateForAdminViewModeList.ListOptions.RenderBody("left", crewMedicalCertificateForAdminViewModeList.RowCount, "block", crewMedicalCertificateForAdminViewModeList.TableVar, "CrewMedicalCertificateForAdminViewModelist")
+    @if (crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible) { // crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible (begin)
+        <td data-name="MTMedicalCertificateID" @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_MTMedicalCertificateID"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_MTMedicalCertificateID" class="el_CrewMedicalCertificateForAdminViewMode_MTMedicalCertificateID">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.MTMedicalCertificateID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.Number.Visible) { // crewMedicalCertificateForAdminViewModeList.Number.Visible (begin)
+        <td data-name="Number" @Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_Number"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_Number" class="el_CrewMedicalCertificateForAdminViewMode_Number">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.Number.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.Number.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible) { // crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible (begin)
+        <td data-name="PlaceOfIssue" @Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_PlaceOfIssue"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_PlaceOfIssue" class="el_CrewMedicalCertificateForAdminViewMode_PlaceOfIssue">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.PlaceOfIssue.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible) { // crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible (begin)
+        <td data-name="DateOfIssue" @Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_DateOfIssue"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_DateOfIssue" class="el_CrewMedicalCertificateForAdminViewMode_DateOfIssue">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.DateOfIssue.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.DateOfIssue.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible) { // crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible (begin)
+        <td data-name="ExpirationDate" @Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_ExpirationDate"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_ExpirationDate" class="el_CrewMedicalCertificateForAdminViewMode_ExpirationDate">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.ExpirationDate.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.ExpirationDate.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.Attachment.Visible) { // crewMedicalCertificateForAdminViewModeList.Attachment.Visible (begin)
+        <td data-name="Attachment" @Html.Raw(crewMedicalCertificateForAdminViewModeList.Attachment.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_Attachment"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_Attachment" class="el_CrewMedicalCertificateForAdminViewMode_Attachment">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewMedicalCertificateForAdminViewModeList.Attachment, ConvertToString(crewMedicalCertificateForAdminViewModeList.Attachment.GetViewValue()), false))
+</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.Attachment.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible) { // crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTCrewID.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_MTCrewID"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_MTCrewID" class="el_CrewMedicalCertificateForAdminViewMode_MTCrewID">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.MTCrewID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.MTCrewID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible) { // crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_CreatedByUserID"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_CreatedByUserID" class="el_CrewMedicalCertificateForAdminViewMode_CreatedByUserID">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedByUserID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.CreatedByUserID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible) { // crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_CreatedDateTime"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_CreatedDateTime" class="el_CrewMedicalCertificateForAdminViewMode_CreatedDateTime">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.CreatedDateTime.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.CreatedDateTime.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_LastUpdatedByUserID"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_LastUpdatedByUserID" class="el_CrewMedicalCertificateForAdminViewMode_LastUpdatedByUserID">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.CellAttributes)>
+<template id="tpx@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_LastUpdatedDateTime"><span id="el@(crewMedicalCertificateForAdminViewModeList.RowCount)_CrewMedicalCertificateForAdminViewMode_LastUpdatedDateTime" class="el_CrewMedicalCertificateForAdminViewMode_LastUpdatedDateTime">
+<span @Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewMedicalCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewMedicalCertificateForAdminViewModeList.ListOptions.RenderBody("right", crewMedicalCertificateForAdminViewModeList.RowCount, "block", crewMedicalCertificateForAdminViewModeList.TableVar, "CrewMedicalCertificateForAdminViewModelist")
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewMedicalCertificateForAdminViewModeList.RowIndex, "$rowindex$"))
+        crewMedicalCertificateForAdminViewModeList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewMedicalCertificateForAdminViewModeList.IsCopy || crewMedicalCertificateForAdminViewModeList.IsAdd) && crewMedicalCertificateForAdminViewModeList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewMedicalCertificateForAdminViewModeList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+<div id="tpd_CrewMedicalCertificateForAdminViewModelist" class="ew-custom-template"></div>
+<template id="tpm_CrewMedicalCertificateForAdminViewModelist">
+<div id="ct_crewMedicalCertificateForAdminViewModeList">@if (crewMedicalCertificateForAdminViewModeList.RowCount > 0) {
+<table class="table table-bordered table-sm ew-table d-none">
+    <thead>
+    </thead>
+    <tbody>@for (int i = crewMedicalCertificateForAdminViewModeList.StartRowCount; i <= crewMedicalCertificateForAdminViewModeList.RowCount; i++) {
+<tr>
+</tr>
+}
+</tbody></table>
+}
+</div>
+</template>
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewMedicalCertificateForAdminViewModeList.CurrentAction) && !crewMedicalCertificateForAdminViewModeList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewMedicalCertificateForAdminViewModeList.CloseRecordset(); }
+@if (!crewMedicalCertificateForAdminViewModeList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewMedicalCertificateForAdminViewModeList.IsGridAdd && !(crewMedicalCertificateForAdminViewModeList.IsGridEdit && crewMedicalCertificateForAdminViewModeList.ModalGridEdit) && !crewMedicalCertificateForAdminViewModeList.IsMultiEdit) {
+@Html.Raw(crewMedicalCertificateForAdminViewModeList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewMedicalCertificateForAdminViewModeList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+<script class="ew-apply-template">
+loadjs.ready(ew.applyTemplateId, function() {
+    var $ = jQuery;
+    ew.templateData = { rows: @Html.Raw(ConvertToJson(crewMedicalCertificateForAdminViewModeList.Rows)) };
+    ew.applyTemplate("tpd_CrewMedicalCertificateForAdminViewModelist", "tpm_CrewMedicalCertificateForAdminViewModelist", "CrewMedicalCertificateForAdminViewModelist", "@(crewMedicalCertificateForAdminViewModeList.Export)", "CrewMedicalCertificateForAdminViewMode", ew.templateData, @(crewMedicalCertificateForAdminViewModeList.IsModal ? "true" : "false"));
+    loadjs.done("customtemplate");
+});
+</script>
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewMedicalCertificateForAdminViewModeList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewMedicalCertificateForAdminViewModeList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewMedicalCertificateForAdminViewModeList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewMedicalCertificateForAdminViewMode");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // get the current URL without Add or Edit for assigning active class in tabs
+    const currentUrlWithoutAddEditListView = currentUrlObject.href.replace(/Add|Edit|List|View/g, "");
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    // Extract the value of the crewID query parameter
+    const currentlyEditedCrewID = urlQueryParams.get('crewID');
+
+    // Iterate over each anchor element inside the nav-tabs
+    $(".nav-tabs .nav-item a").each(function() {
+        const href = $(this).attr("href");
+        const hrefWithoutAddEditListView = href.replace(/Add|Edit|List|View/g, "");
+        // Check if the href contains current page's url
+        if (currentUrlWithoutAddEditListView.includes(hrefWithoutAddEditListView)) {
+            // add class and attribute
+            $(this).addClass("active");
+            $(this).attr("aria-current", "page");
+        }
+        // Check if the href contains "Edit" or "Add"
+        if (href.includes("ViewModeView")) {
+            // Add "/" and the currently edited crew ID to the href
+            const newHref = href + "/" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        } else if (href.includes("ViewModeList")) {
+            // Add "?crewID=" and the currently edited crew ID to the href
+            const newHref = href + "?crewID=" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        }
+    });
+
+    // Target the ol element that has breadcrumb class
+    const $breadCrumbOl = $('.breadcrumb').first();
+
+    // Delete the ol element that has breadcrumb class
+    $breadCrumbOl.remove();
+    $('div.btn-toolbar.ew-toolbar').remove();
+    $('div.ew-extended-search div.mb-0').remove();
+    $('div#ew-list div.crew-medical-certificate-for-admin-view-mode').removeClass('card ew-card ew-grid');
+    $('div.card-footer').remove();
+    $('main.list.ew-no-record div#ew-list').remove();
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+    const parentUrl = ew.PATH_BASE;
+    const adminAndEmployeeStatusApi = 'get-admin-and-employee-status';
+    $.ajax({
+        url: `${parentUrl}api/Registration/${adminAndEmployeeStatusApi}`,
+        method: 'GET',
+        data: {
+            crewID: currentlyEditedCrewID
+        },
+        success: function(response) {
+            if (response.success) {
+                // Parse the data in the response
+                const isAdmin = response.data.IsAdmin;
+                const employeeStatus = response.data.EmployeeStatus;
+                if (currentlyEditedCrewID === null) {
+                    if (isAdmin) {
+                        // redirect to list page with error message: record not found
+                        if (employeeStatus === 'Candidate - Draft') {
+                            window.location.replace(`${ew.PATH_BASE}RegistrationEdit/-1`);
+                        } else if (employeeStatus === 'Candidate - Submitted') {
+                            window.location.replace(`${ew.PATH_BASE}VWaitingForPdeReviewView/-1`);
+                        }
+                    } else {
+                        window.location.replace(`${ew.PATH_BASE}index`);
+                    }
+                }
+                if (employeeStatus === 'Candidate - Draft') {
+                    const addButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Add" : "Tambah",
+                        class: "btn btn-default ew-btn me-auto primary-black-clr gray-bg",
+                        id: "btn-add",
+                        name: "btn-add",
+                        href: `${parentUrl}CrewMedicalCertificateForAdminViewModeAdd?crewID=${currentlyEditedCrewID}`,
+                    });
+                    const backButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
+                        class: "btn btn-default ew-btn ms-auto primary-red-bg primary-white-clr",
+                        id: "btn-back",
+                        name: "btn-back",
+                        href: `${parentUrl}RegistrationList`,
+                    });
+                    const flexDiv = $("<div class='d-flex mb-3'></div>");
+                    flexDiv.append(addButton);
+                    if (isAdmin) {
+                        flexDiv.append(backButton);
+                    }
+                    const buttonsDiv = $("<div class='row mt-3 ew-buttons'></div>");
+                    buttonsDiv.append(flexDiv);
+                    $('div#CrewMedicalCertificateForAdminViewModelist').append(buttonsDiv);
+                    const errorMessage = urlQueryParams.get('errorMessage');
+                    if (errorMessage !== null) {
+                        const decodedErrorMessage = decodeURIComponent(errorMessage);
+                        ew.showToast(decodedErrorMessage);
+                        urlQueryParams.delete('errorMessage');
+                        currentUrlObject.search = urlQueryParams.toString();
+                        history.pushState(null, '', currentUrlObject);
+                    }
+                } else if (employeeStatus === 'Candidate - Submitted') {
+                    const invokeScheduleModalButton = $('<button/>', {
+                        'class': 'btn btn-default ew-btn primary-green-bg primary-white-clr',
+                        'name': 'btn-invoke-schedule-modal',
+                        'id': 'btn-invoke-schedule-modal',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Accept' : 'Terima'
+                    });
+                    const invokeReviseModalButton = $('<button/>', {
+                        'class': 'btn btn-primary ew-btn ms-3 primary-white-clr',
+                        'name': 'btn-invoke-revise-modal',
+                        'id': 'btn-invoke-revise-modal',
+                        'type': 'button', 
+                        'text': (selectedLanguage.id === 'en-US') ? 'Revise' : 'Tinjau'
+                    });
+                    const invokeRejectModalButton = $('<button/>', {
+                        'class': 'btn btn-danger ew-btn ms-3 me-auto primary-white-clr',
+                        'name': 'btn-invoke-reject-modal',
+                        'id': 'btn-invoke-reject-modal',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Reject' : 'Tolak'
+                    });
+                    const backButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
+                        class: "btn btn-default ew-btn primary-black-clr gray-bg",
+                        id: "btn-back",
+                        name: "btn-back",
+                        href: `${ew.PATH_BASE}VWaitingForPdeReviewList`,
+                    });
+                    const flexDiv = $("<div class='d-flex mb-3'></div>");
+                    if (isAdmin) {
+                        flexDiv.append(invokeScheduleModalButton);
+                        flexDiv.append(invokeReviseModalButton);
+                        flexDiv.append(invokeRejectModalButton);
+                        flexDiv.append(backButton);
+                    }
+                    const buttonsDiv = $("<div class='row mt-3 ew-buttons'></div>");
+                    buttonsDiv.append(flexDiv);
+                    $('div#CrewMedicalCertificateForAdminViewModelist').append(buttonsDiv);
+                    if (isAdmin) {
+                        $('#btn-invoke-schedule-modal').click(function() {
+                            $('#schedule-modal-dialog').modal('show');
+                        });
+                        $('#btn-invoke-revise-modal').click(function() {
+                            $('#revise-modal-dialog').modal('show');
+                        });
+                        $('#btn-invoke-reject-modal').click(function() {
+                            $('#reject-modal-dialog').modal('show');
+                        });
+                        $('#schedule-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_DocumentCheckDateTime').val(null);
+                        });
+                        $('#revise-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RevisedReason').val(null);
+                        });
+                        $('#reject-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RejectedReason').val(null);
+                        });
+
+                        // initialize date time picker
+                        const format = "dd MMM yyyy HH:mm:00zzz";
+                        const options = {
+                            localization: {
+                                locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                                hourCycle: format.match(/H/) ? "h24" : "h12",
+                                format,
+                                ...ew.language.phrase("datetimepicker")
+                            },
+                            display: {
+                                icons: {
+                                    previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                                    next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                                },
+                                components: {
+                                    hours: !!format.match(/h/i),
+                                    minutes: !!format.match(/m/),
+                                    seconds: !!format.match(/s/i)
+                                },
+                                theme: ew.isDark() ? "dark" : "auto"
+                            },
+                            defaultDate: new Date(new Date().setHours(8, 0, 0)).toISOString(),
+                        };
+                        ew.createDateTimePicker("add-schedule", "x_DocumentCheckDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+                        $('#x_DocumentCheckDateTime').val(replaceTimezoneOffset($('#x_DocumentCheckDateTime').val(), formatTimezoneOffset(new Date().getTimezoneOffset())));
+
+                        // Listen for input changes
+                        $('#x_DocumentCheckDateTime').on('change.td', function() {
+                            const timezoneOffset = new Date().getTimezoneOffset();
+                            const formattedTimezoneOffset = formatTimezoneOffset(timezoneOffset);
+                            const currentValue = $(this).val();
+                            const newValue = replaceTimezoneOffset(currentValue, formattedTimezoneOffset);
+                            $(this).val(newValue);
+                        });
+
+                        // Format timezone offset as needed
+                        function formatTimezoneOffset(offset) {
+                            const hours = Math.floor(Math.abs(offset) / 60);
+                            const sign = offset < 0 ? '+' : '-';
+                            return ' GMT ' + sign + hours;
+                        }
+
+                        // Helper function to add leading zero to single-digit numbers
+                        function addLeadingZero(num) {
+                            return num < 10 ? '0' + num : num;
+                        }
+
+                        // Replace "zzz" with the formatted timezone offset
+                        function replaceTimezoneOffset(str, offset) {
+                            return str.replace('zzz', offset);
+                        }
+                        const addDocumentCheckDateTimeApiUrl = "add-document-check-date-time";
+                        $("#btn-add-schedule").click(function() {
+                            const documentCheckDateTimeValue = $('#x_DocumentCheckDateTime').val();
+                            const documentCheckDateTimeCaption = $(`label[for="x_DocumentCheckDateTime"]`).text();
+                            if (documentCheckDateTimeValue == '') {
+                                if (selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${documentCheckDateTimeCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${documentCheckDateTimeCaption}`);
+                                }
+                            } else {
+                                const currentDate = new Date();
+                                const documentCheckDateObject = new Date(documentCheckDateTimeValue);
+                                if (isNaN(documentCheckDateObject)) {
+                                    if (selectedLanguage.id === 'en-US') {
+                                        ew.showToast(`Invalid date time - ${documentCheckDateTimeCaption}`);
+                                    } else {
+                                        ew.showToast(`Tanggal dan jam tidak valid - ${documentCheckDateTimeCaption}`);
+                                    }
+                                } else if (documentCheckDateObject < currentDate) {
+                                    if (selectedLanguage.id === 'en-US') {
+                                        ew.showToast(`${documentCheckDateTimeCaption} must be later or equal than today`);
+                                    } else {
+                                        ew.showToast(`${documentCheckDateTimeCaption} harus setelah atau sama dengan hari ini`);
+                                    }
+                                } else {
+                                    const arrDataKey = [currentlyEditedCrewID];
+                                    const notesValue = $('#x_DocumentCheckNotes').val();
+                                    const notes = (notesValue !== '') ? notesValue : '';
+                                    const documentCheckDateTimeRequest = {
+                                        scheduleDateTime: documentCheckDateTimeValue,
+                                        notes: notes,
+                                        crewIDArray: JSON.stringify(arrDataKey),
+                                    };
+                                    $.ajax({
+                                        method: "POST",
+                                        url: `${parentUrl}api/Registration/${addDocumentCheckDateTimeApiUrl}`,
+                                        data: JSON.stringify(documentCheckDateTimeRequest),
+                                        contentType: "application/json",
+                                        success: function(response) {
+                                            if (response.success) {
+                                                $('#schedule-modal-dialog').modal('hide');
+                                                let successMessage = '';
+                                                if (selectedLanguage.id === 'en-US') {
+                                                    successMessage = `Add ${documentCheckDateTimeCaption} Successful`;
+                                                } else {
+                                                    successMessage = `Menambahkan ${documentCheckDateTimeCaption} Berhasil`;
+                                                }
+                                                const baseUrl = new URL(window.location.href).origin;
+                                                const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                                const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                                const params = new URLSearchParams(targetUrl.search);
+                                                params.set('successMessage', encodedSuccessMessage);
+                                                targetUrl.search = params.toString();
+                                                window.location.href = targetUrl.href;
+                                            } else {
+                                                $('#schedule-modal-dialog').modal('hide');
+                                                const errorMessage = response.errorMessage;
+                                                ew.showToast(errorMessage);
+                                            }
+                                        },
+                                        error: function(xhr, textStatus, errorThrown) {
+                                            $('#schedule-modal-dialog').modal('hide');
+                                            ew.showToast(errorThrown);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        const rejectMultipleCrewApiUrl = "reject-multiple-crew";
+                        $("#btn-reject").click(function() {
+                            const rejectedReasonValue = $('#x_RejectedReason').val();
+                            const rejectedReasonCaption = $(`label[for="x_RejectedReason"]`).text();
+                            if (rejectedReasonValue == '') {
+                                if (selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${rejectedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
+                                }
+                            } else {
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const rejectMultipleRequest = {
+                                    rejectReason: rejectedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey),
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${rejectMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(rejectMultipleRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if (response.success) {
+                                            $('#reject-modal-dialog').modal('hide');
+                                            let successMessage = '';
+                                            if (selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${rejectedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${rejectedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#reject-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#reject-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                        const reviseMultipleCrewApiUrl = "revise-multiple-crew";
+                        $("#btn-revise").click(function() {
+                            const revisedReasonValue = $('#x_RevisedReason').val();
+                            const revisedReasonCaption = $(`label[for="x_RevisedReason"]`).text();
+                            if(revisedReasonValue.trim() === '') {
+                                if(selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${revisedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${revisedReasonCaption}`);
+                                }
+                            } else {
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const revisedMultipleCrewRequest = {
+                                    revisedReason: revisedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey)
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${reviseMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(revisedMultipleCrewRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if(response.success) {
+                                            $('#revise-modal-dialog').modal('hide');
+                                            let successMessage = '';
+                                            if(selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${revisedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${revisedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#revise-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }  
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#revise-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+
+                // get crew medical certificate
+                const uploadFolderName = "uploads";
+                const baseUrl = currentUrlObject.origin + ew.PATH_BASE;
+                const apiEndpoint = 'crew-medical-certificate-for-admin';
+                $.ajax({
+                    url: `${parentUrl}api/Registration/${apiEndpoint}`,
+                    method: 'GET',
+                    data: {
+                        crewID: currentlyEditedCrewID
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Parse the data in the response
+                            const dataArray = response.data;
+                            const tbody = $('#ForAdminTable tbody'); // select the tbody element
+                            if (dataArray.length > 0) {
+                                const tableName = 'CrewMedicalCertificateForAdminViewMode';
+                                for (let rowIndex = 0; rowIndex < dataArray.length; rowIndex++) {
+                                    const row = dataArray[rowIndex];
+                                    const rowID = row['ID'];
+                                    delete row['ID']; // delete ID for easier looping for table columns
+                                    const tr = $('<tr>'); // create a new tr element 
+
+                                    // first td for dropdown
+                                    const buttonsTd = $('<td>').addClass('ew-list-option-body w-1');
+                                    const buttonDropdownDiv = $('<div>').addClass('btn-group btn-group-sm ew-btn-dropdown');
+                                    const dropdownButton = $('<button>')
+                                        .addClass('btn-default btn dropdown-toggle')
+                                        .attr('type', 'button')
+                                        .attr('data-title', 'Options')
+                                        .attr('data-bs-toggle', 'dropdown')
+                                        .attr('data-bs-auto-close', 'true');
+                                    const dropdownButtonIcon = $('<i>').addClass('fa-solid fa-bars ew-icon').attr('data-phrase', 'ButtonListOptions');
+                                    const dropdownButtonIconSpan = $('<span>').addClass('visually-hidden').text('Options');
+                                    const dropdownUl = $('<ul>').addClass('dropdown-menu ew-dropdown-menu ew-list-options');
+                                    const firstDropdownLi = $('<li>');
+                                    const viewAnchor = $('<a>')
+                                        .addClass('ew-row-link ew-view dropdown-item')
+                                        .attr('data-caption', 'View')
+                                        .attr('href', `${parentUrl}${tableName}View/${rowID}?crewID=${currentlyEditedCrewID}`);
+                                    const viewAnchorIcon = $('<i>').addClass('icon-view ew-icon me-2').attr('data-phrase', 'ViewLink');
+                                    const viewAnchorSpan = $('<span>').addClass('visually-hidden').text('View');
+                                    const viewAnchorText = 'View';
+                                    viewAnchorIcon.append(viewAnchorSpan);
+                                    viewAnchor.append(viewAnchorIcon);
+                                    viewAnchor.append(viewAnchorText);
+                                    firstDropdownLi.append(viewAnchor);
+                                    dropdownUl.append(firstDropdownLi);
+                                    if (employeeStatus === 'Candidate - Draft') {
+                                        const secondDropdownLi = $('<li>');
+                                        const editAnchor = $('<a>')
+                                            .addClass('ew-row-link ew-edit dropdown-item')
+                                            .attr('data-caption', 'Edit')
+                                            .attr('href', `${parentUrl}${tableName}Edit/${rowID}?crewID=${currentlyEditedCrewID}`);
+                                        const editAnchorIcon = $('<i>').addClass('fa-solid fa-pen ew-icon me-2').attr('data-phrase', 'EditLink');
+                                        const editAnchorSpan = $('<span>').addClass('visually-hidden').text('Edit');
+                                        const editAnchorText = 'Edit';
+                                        const thirdDropdownLi = $('<li>');
+                                        const deleteAnchor = $('<a>')
+                                            .addClass('ew-row-link ew-delete dropdown-item')
+                                            .attr('data-ew-action', 'inline-delete')
+                                            .attr('data-caption', 'Delete')
+                                            .attr('href', `${parentUrl}${tableName}Delete/${rowID}`);
+                                        const deleteAnchorIcon = $('<i>').addClass('fa-solid fa-trash ew-icon me-2').attr('data-phrase', 'DeleteLink');
+                                        const deleteAnchorSpan = $('<span>').addClass('visually-hidden').text('Delete');
+                                        const deleteAnchorText = 'Delete';
+                                        deleteAnchorIcon.append(deleteAnchorSpan);
+                                        deleteAnchor.append(deleteAnchorIcon);
+                                        deleteAnchor.append(deleteAnchorText);
+                                        thirdDropdownLi.append(deleteAnchor);
+                                        editAnchorIcon.append(editAnchorSpan);
+                                        editAnchor.append(editAnchorIcon);
+                                        editAnchor.append(editAnchorText);
+                                        secondDropdownLi.append(editAnchor);
+                                        dropdownUl.append(secondDropdownLi);
+                                        dropdownUl.append(thirdDropdownLi);
+                                    }
+                                    dropdownButtonIcon.append(dropdownButtonIconSpan);
+                                    dropdownButton.append(dropdownButtonIcon);
+                                    buttonDropdownDiv.append(dropdownButton);
+                                    buttonDropdownDiv.append(dropdownUl);
+                                    buttonsTd.append(buttonDropdownDiv);
+                                    tr.append(buttonsTd);
+
+                                    // second td for sequence
+                                    const sequenceTd = $('<td>').addClass('ew-list-option-body text-nowrap').attr('data-name', 'sequence');
+                                    const sequenceNumberString = (rowIndex + 1).toString() + '.';
+                                    const sequenceSpan = $('<span>').text(sequenceNumberString);
+                                    sequenceTd.append(sequenceSpan);
+                                    tr.append(sequenceTd);
+
+                                    // remaining td for each column
+                                    for (const columnName of Object.keys(row)) {
+                                        const dataTd = $('<td>');
+                                        const columnValue = row[columnName];
+                                        if (columnName === "Attachment") {
+                                            dataTd.addClass("text-center");
+                                            const individualCodeNumber = columnValue.split('-')[0];
+                                            const imageUrl = `${baseUrl}${uploadFolderName}/${individualCodeNumber}/${columnValue}`;
+                                            const anchorLink = $('<a>', {
+                                                href: imageUrl,
+                                                target: '_blank'
+                                            });
+                                            anchorLink.text("Attachment");
+                                            dataTd.append(anchorLink);
+                                        } else if (columnName === "DateOfIssue" || columnName === "ExpirationDate") {
+                                            const dataSpan = $('<span class="text-nowrap">').text(columnValue);
+                                            dataTd.append(dataSpan);
+                                        } else {
+                                            const dataSpan = $('<span>').text(columnValue);
+                                            dataTd.append(dataSpan);
+                                        }
+                                        tr.append(dataTd);
+                                    }
+                                    tbody.append(tr);
+                                }
+                            } else {
+                                const columnsCount = $('#ForAdminTable th.ew-table-header-cell').length;
+                                for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+                                    const tr = $('<tr>'); // create a new tr element 
+
+                                    // 1 is for buttons dropdown(for edit) column and 1 for sequence number column
+                                    const emptyTdWithColspan = $('<td>').html('&nbsp;').attr('colspan', 2);
+                                    tr.append(emptyTdWithColspan);
+                                    for (let columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
+                                        const emptyTd = $('<td>').html('&nbsp;');
+                                        tr.append(emptyTd);
+                                    }
+                                    tbody.append(tr);
+                                }
+                            }
+                        } else {
+                            // Handle the error
+                            ew.showToast(response.errorMessage);
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        // Handle the error
+                        ew.showToast(errorThrown);
+                    }
+                });
+            } else {
+                // Handle the error
+                ew.showToast(response.errorMessage);
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            // Handle the error
+            ew.showToast(errorThrown);
+        }
+    });
+
+    // gmandayu: notification need to read.
+    const getUnreadNotificationUrl = `${parentUrl}api/Notification/unread-notification`;
+    function loadPage() {
+        $.ajax({
+            url: getUnreadNotificationUrl,
+            method: 'GET',
+            success: function(response) {
+                const notificationIcon = document.querySelector('.nav-icon.fa-bell');
+                if(response.success)
+                {
+                    notificationIcon.classList.add('animate');
+                }
+                else 
+                {
+                    notificationIcon.classList.remove('animate');
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Kesalahan saat memuat notifikasi:', errorThrown);
+            }
+        });
+    }
+    $(document).ready(function() {
+        loadPage();
+    });
+});
+</script>
+}

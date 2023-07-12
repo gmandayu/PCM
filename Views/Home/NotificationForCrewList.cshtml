@@ -1,0 +1,165 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (notificationForCrewList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!notificationForCrewList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!notificationForCrewList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(notificationForCrewList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { NotificationForCrew: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(notificationForCrewList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(notificationForCrewList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(notificationForCrewList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(notificationForCrewList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!notificationForCrewList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (notificationForCrewList.TotalRecords > 0 && notificationForCrewList.ExportOptions.Visible) {
+    notificationForCrewList.ExportOptions.Render("body");
+}
+@if (notificationForCrewList.ImportOptions.Visible) {
+    notificationForCrewList.ImportOptions.Render("body");
+}
+</div>
+}
+@if (!notificationForCrewList.IsModal) {
+}
+@notificationForCrewList.ShowPageHeader()
+@notificationForCrewList.ShowMessages()
+<main class="list @(notificationForCrewList.TotalRecords == 0 && !notificationForCrewList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (notificationForCrewList.TotalRecords > 0 || !Empty(notificationForCrewList.CurrentAction)) {
+<div class="ew-multi-column-grid p-0 overlay-wrapper">
+@{ notificationForCrewList.LayoutOptions.Render("body"); }
+@await Html.PartialAsync("NotificationForCrew" + TitleCase(notificationForCrewList.MultiColumnLayout))
+</div><!-- /.ew-multi-column-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@notificationForCrewList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@notificationForCrewList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!notificationForCrewList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("NotificationForCrew");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    $('div.ew-layout-option').remove();
+
+    // gmandayu: notification need to read.
+    const markAsReadButtons = document.querySelectorAll('.mark-as-read-button');
+    const parentUrl = ew.PATH_BASE;
+    const getUnreadNotificationUrl = `${parentUrl}api/Notification/unread-notification`;
+    function loadPage() {
+        $.ajax({
+            url: getUnreadNotificationUrl,
+            method: 'GET',
+            success: function(response) {
+                const notificationIcon = document.querySelector('.nav-icon.fa-bell');
+                if(response.success)
+                {
+                    notificationIcon.classList.add('animate');
+                }
+                else 
+                {
+                    notificationIcon.classList.remove('animate');
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Kesalahan saat memuat notifikasi:', errorThrown);
+            }
+        });
+    }
+    const notificationMarkAsReadApi = 'notification-mark-as-read';
+    markAsReadButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (this.disabled) {
+                return;
+            }
+            const colElement = button.closest('.col');
+            const dataKey = colElement.dataset.key;
+            const url = `${parentUrl}api/Notification/${notificationMarkAsReadApi}?notificationId=${dataKey}`;
+            console.log(url);
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function(response) {
+                    button.disabled = true;
+                    location.reload();
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.error(`Terjadi kesalahan saat memperbarui nilai MarkAsRead untuk pesan dengan ID ${dataKey}.`, errorThrown);
+                }
+            });
+        });
+    });
+    $(document).ready(function() {
+        loadPage();
+    });
+});
+</script>
+}

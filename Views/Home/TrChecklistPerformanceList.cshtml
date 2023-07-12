@@ -1,0 +1,314 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trChecklistPerformanceList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!trChecklistPerformanceList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!trChecklistPerformanceList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trChecklistPerformanceList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRChecklistPerformance: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(trChecklistPerformanceList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(trChecklistPerformanceList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(trChecklistPerformanceList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(trChecklistPerformanceList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!trChecklistPerformanceList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (trChecklistPerformanceList.TotalRecords > 0 && trChecklistPerformanceList.ExportOptions.Visible) {
+    trChecklistPerformanceList.ExportOptions.Render("body");
+}
+@if (trChecklistPerformanceList.ImportOptions.Visible) {
+    trChecklistPerformanceList.ImportOptions.Render("body");
+}
+@if (trChecklistPerformanceList.SearchOptions.Visible) {
+    trChecklistPerformanceList.SearchOptions.Render("body");
+}
+@if (trChecklistPerformanceList.FilterOptions.Visible) {
+    trChecklistPerformanceList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!trChecklistPerformanceList.IsExport() || Config.ExportMasterRecord && trChecklistPerformanceList.IsExport("print")) {
+if (!Empty(trChecklistPerformanceList.DbMasterFilter) && trChecklistPerformanceList.CurrentMasterTable == "TRChecklist") {
+    if (trChecklistPerformanceList.MasterRecordExists) {
+        @await Html.PartialAsync("TrChecklistMaster.cshtml")
+    }
+}
+if (!Empty(trChecklistPerformanceList.DbMasterFilter) && trChecklistPerformanceList.CurrentMasterTable == "CrewChecklistForAdmin") {
+    if (trChecklistPerformanceList.MasterRecordExists) {
+        @await Html.PartialAsync("CrewChecklistForAdminMaster.cshtml")
+    }
+}
+}
+@if (!trChecklistPerformanceList.IsModal) {
+<form name="fTRChecklistPerformancesrch" id="fTRChecklistPerformancesrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fTRChecklistPerformancesrch_search_panel" class="mb-2 mb-sm-0 @(trChecklistPerformanceList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trChecklistPerformanceList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRChecklistPerformance: currentTable } });
+var currentForm;
+var fTRChecklistPerformancesrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fTRChecklistPerformancesrch")
+        .setPageId("list")
+@if (trChecklistPerformanceList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await trChecklistPerformanceList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!trChecklistPerformanceList.IsExport() && Empty(trChecklistPerformanceList.CurrentAction) && trChecklistPerformanceList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(trChecklistPerformanceList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(trChecklistPerformanceList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(trChecklistPerformanceList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(trChecklistPerformanceList.BasicSearch.SessionType == "" ? " active" : "")" form="fTRChecklistPerformancesrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(trChecklistPerformanceList.BasicSearch.SessionType == "=" ? " active" : "")" form="fTRChecklistPerformancesrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(trChecklistPerformanceList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fTRChecklistPerformancesrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(trChecklistPerformanceList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fTRChecklistPerformancesrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@trChecklistPerformanceList.ShowPageHeader()
+@trChecklistPerformanceList.ShowMessages()
+<main class="list @(trChecklistPerformanceList.TotalRecords == 0 && !trChecklistPerformanceList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (trChecklistPerformanceList.TotalRecords > 0 || !Empty(trChecklistPerformanceList.CurrentAction)) {
+<div class="card ew-card ew-grid@(trChecklistPerformanceList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(trChecklistPerformanceList.TableGridClass)">
+<form name="@(trChecklistPerformanceList.FormName)" id="@(trChecklistPerformanceList.FormName)" class="ew-form ew-list-form" action="@AppPath(trChecklistPerformanceList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (trChecklistPerformanceList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+@if (trChecklistPerformanceList.CurrentMasterTable == "TRChecklist" && !Empty(trChecklistPerformanceList.CurrentAction)) {
+<input type="hidden" name="@(Config.TableShowMaster)" value="TRChecklist">
+<input type="hidden" name="fk_ID" value="@(HtmlEncode(trChecklistPerformanceList.TRChecklistID.SessionValue))">
+}
+@if (trChecklistPerformanceList.CurrentMasterTable == "CrewChecklistForAdmin" && !Empty(trChecklistPerformanceList.CurrentAction)) {
+<input type="hidden" name="@(Config.TableShowMaster)" value="CrewChecklistForAdmin">
+<input type="hidden" name="fk_ID" value="@(HtmlEncode(trChecklistPerformanceList.TRChecklistID.SessionValue))">
+}
+<div id="gmp_TRChecklistPerformance" class="card-body ew-grid-middle-panel @(trChecklistPerformanceList.TableContainerClass)" style="@(trChecklistPerformanceList.TableContainerStyle)">
+@if (trChecklistPerformanceList.TotalRecords > 0 || trChecklistPerformanceList.IsGridEdit || trChecklistPerformanceList.IsMultiEdit) {
+<table id="tbl_TRChecklistPerformancelist" class="@(trChecklistPerformanceList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    trChecklistPerformanceList.RowType = RowType.Header;
+
+    // Render list options
+    await trChecklistPerformanceList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@trChecklistPerformanceList.ListOptions.RenderHeader("left")
+@if (trChecklistPerformanceList.ManningAgent.Visible) { // trChecklistPerformanceList.ManningAgent.Visible (begin)
+        <th data-name="ManningAgent" class="@(trChecklistPerformanceList.ManningAgent.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_ManningAgent" class="TRChecklistPerformance_ManningAgent">@Html.Raw(trChecklistPerformanceList.RenderFieldHeader(trChecklistPerformanceList.ManningAgent))</div></th>
+} @* trChecklistPerformanceList.ManningAgent.Visible (end) *@
+@if (trChecklistPerformanceList.VesselName.Visible) { // trChecklistPerformanceList.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(trChecklistPerformanceList.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_VesselName" class="TRChecklistPerformance_VesselName">@Html.Raw(trChecklistPerformanceList.RenderFieldHeader(trChecklistPerformanceList.VesselName))</div></th>
+} @* trChecklistPerformanceList.VesselName.Visible (end) *@
+@if (trChecklistPerformanceList.Performance.Visible) { // trChecklistPerformanceList.Performance.Visible (begin)
+        <th data-name="Performance" class="@(trChecklistPerformanceList.Performance.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_Performance" class="TRChecklistPerformance_Performance">@Html.Raw(trChecklistPerformanceList.RenderFieldHeader(trChecklistPerformanceList.Performance))</div></th>
+} @* trChecklistPerformanceList.Performance.Visible (end) *@
+@if (trChecklistPerformanceList.DateChecked.Visible) { // trChecklistPerformanceList.DateChecked.Visible (begin)
+        <th data-name="DateChecked" class="@(trChecklistPerformanceList.DateChecked.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TRChecklistPerformance_DateChecked" class="TRChecklistPerformance_DateChecked">@Html.Raw(trChecklistPerformanceList.RenderFieldHeader(trChecklistPerformanceList.DateChecked))</div></th>
+} @* trChecklistPerformanceList.DateChecked.Visible (end) *@
+@* Render list options (header, right) *@
+@trChecklistPerformanceList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(trChecklistPerformanceList.PageNumber)">
+@{
+    await trChecklistPerformanceList.SetupGrid();
+    bool eof = trChecklistPerformanceList.Recordset == null; // DN
+}
+@while (trChecklistPerformanceList.RecordCount < trChecklistPerformanceList.StopRecord || SameString(trChecklistPerformanceList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(trChecklistPerformanceList.RowIndex, "$rowindex$") &&
+        (!trChecklistPerformanceList.IsGridAdd || trChecklistPerformanceList.CurrentMode == "copy") &&
+        (!((trChecklistPerformanceList.IsCopy || trChecklistPerformanceList.IsAdd) && trChecklistPerformanceList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await trChecklistPerformanceList.Recordset.ReadAsync();
+    trChecklistPerformanceList.RecordCount++;
+    if (trChecklistPerformanceList.RecordCount >= trChecklistPerformanceList.StartRecord) {
+        await trChecklistPerformanceList.SetupRow();
+    <tr @Html.Raw(trChecklistPerformanceList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @trChecklistPerformanceList.ListOptions.RenderBody("left", trChecklistPerformanceList.RowCount)
+    @if (trChecklistPerformanceList.ManningAgent.Visible) { // trChecklistPerformanceList.ManningAgent.Visible (begin)
+        <td data-name="ManningAgent" @Html.Raw(trChecklistPerformanceList.ManningAgent.CellAttributes)>
+<span id="el@(trChecklistPerformanceList.RowCount)_TRChecklistPerformance_ManningAgent" class="el_TRChecklistPerformance_ManningAgent">
+<span @Html.Raw(trChecklistPerformanceList.ManningAgent.ViewAttributes)>
+@Html.Raw(trChecklistPerformanceList.ManningAgent.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistPerformanceList.ManningAgent.Visible (end) *@
+    @if (trChecklistPerformanceList.VesselName.Visible) { // trChecklistPerformanceList.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(trChecklistPerformanceList.VesselName.CellAttributes)>
+<span id="el@(trChecklistPerformanceList.RowCount)_TRChecklistPerformance_VesselName" class="el_TRChecklistPerformance_VesselName">
+<span @Html.Raw(trChecklistPerformanceList.VesselName.ViewAttributes)>
+@Html.Raw(trChecklistPerformanceList.VesselName.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistPerformanceList.VesselName.Visible (end) *@
+    @if (trChecklistPerformanceList.Performance.Visible) { // trChecklistPerformanceList.Performance.Visible (begin)
+        <td data-name="Performance" @Html.Raw(trChecklistPerformanceList.Performance.CellAttributes)>
+<span id="el@(trChecklistPerformanceList.RowCount)_TRChecklistPerformance_Performance" class="el_TRChecklistPerformance_Performance">
+<span @Html.Raw(trChecklistPerformanceList.Performance.ViewAttributes)>
+@Html.Raw(trChecklistPerformanceList.Performance.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistPerformanceList.Performance.Visible (end) *@
+    @if (trChecklistPerformanceList.DateChecked.Visible) { // trChecklistPerformanceList.DateChecked.Visible (begin)
+        <td data-name="DateChecked" @Html.Raw(trChecklistPerformanceList.DateChecked.CellAttributes)>
+<span id="el@(trChecklistPerformanceList.RowCount)_TRChecklistPerformance_DateChecked" class="el_TRChecklistPerformance_DateChecked">
+<span @Html.Raw(trChecklistPerformanceList.DateChecked.ViewAttributes)>
+@Html.Raw(trChecklistPerformanceList.DateChecked.GetViewValue())</span>
+</span>
+</td>
+    } @* trChecklistPerformanceList.DateChecked.Visible (end) *@
+    @* Render list options (body, right) *@
+    @trChecklistPerformanceList.ListOptions.RenderBody("right", trChecklistPerformanceList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(trChecklistPerformanceList.RowIndex, "$rowindex$"))
+        trChecklistPerformanceList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((trChecklistPerformanceList.IsCopy || trChecklistPerformanceList.IsAdd) && trChecklistPerformanceList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        trChecklistPerformanceList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(trChecklistPerformanceList.CurrentAction) && !trChecklistPerformanceList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ trChecklistPerformanceList.CloseRecordset(); }
+@if (!trChecklistPerformanceList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!trChecklistPerformanceList.IsGridAdd && !(trChecklistPerformanceList.IsGridEdit && trChecklistPerformanceList.ModalGridEdit) && !trChecklistPerformanceList.IsMultiEdit) {
+@Html.Raw(trChecklistPerformanceList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@trChecklistPerformanceList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@trChecklistPerformanceList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@trChecklistPerformanceList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!trChecklistPerformanceList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TRChecklistPerformance");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

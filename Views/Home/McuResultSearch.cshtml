@@ -1,0 +1,705 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mcuResultSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mcuResultSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mcuResultSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { McuResult: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMcuResultsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMcuResultsearch")
+        .setPageId("search")
+@if (mcuResultSearch.IsModal && mcuResultSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["McuScheduleDate", [ew.Validators.datetime(fields.McuScheduleDate.clientFormatPattern)], fields.McuScheduleDate.isInvalid],
+            ["McuDate", [ew.Validators.datetime(fields.McuDate.clientFormatPattern)], fields.McuDate.isInvalid],
+            ["McuExpirationDate", [ew.Validators.datetime(fields.McuExpirationDate.clientFormatPattern)], fields.McuExpirationDate.isInvalid],
+            ["HealthStatus", [], fields.HealthStatus.isInvalid],
+            ["McuLocation", [], fields.McuLocation.isInvalid],
+            ["McuRemark", [], fields.McuRemark.isInvalid],
+            ["CreatedBy", [ew.Validators.integer], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedBy", [ew.Validators.integer], fields.LastUpdatedBy.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Gender": @Html.Raw(mcuResultSearch.Gender.ToClientList(mcuResultSearch)),
+            "WillAcceptLowRank": @Html.Raw(mcuResultSearch.WillAcceptLowRank.ToClientList(mcuResultSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mcuResultSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mcuResultSearch.ShowPageHeader()
+@mcuResultSearch.ShowMessages()
+<form name="fMcuResultsearch" id="fMcuResultsearch" class="@(mcuResultSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mcuResultSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mcuResultSearch.IndividualCodeNumber.Visible) { // mcuResultSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(mcuResultSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_IndividualCodeNumber">@Html.Raw(mcuResultSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="McuResult" data-field="x_IndividualCodeNumber" value="@Html.Raw(mcuResultSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(mcuResultSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(mcuResultSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.IndividualCodeNumber.Visible (end) *@
+@if (mcuResultSearch.FullName.Visible) { // mcuResultSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(mcuResultSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_FullName">@Html.Raw(mcuResultSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="McuResult" data-field="x_FullName" value="@Html.Raw(mcuResultSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.FullName.PlaceHolder))" data-format-pattern="@(mcuResultSearch.FullName.FormatPattern)"@Html.Raw(mcuResultSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.FullName.Visible (end) *@
+@if (mcuResultSearch.Gender.Visible) { // mcuResultSearch.Gender.Visible (begin)
+    <div id="r_Gender" class="row" @Html.Raw(mcuResultSearch.Gender.RowAttributes)>
+        <label class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_Gender">@Html.Raw(mcuResultSearch.Gender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Gender" id="z_Gender" value="LIKE">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.Gender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_Gender" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mcuResultSearch.Gender.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_Gender" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_Gender" id="sv_x_Gender" value="@(RemoveHtml(ConvertToString(mcuResultSearch.Gender.EditValue)))" autocomplete="off" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.Gender.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.Gender.PlaceHolder))" data-format-pattern="@(mcuResultSearch.Gender.FormatPattern)" @Html.Raw(mcuResultSearch.Gender.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="McuResult" data-field="x_Gender" data-input="sv_x_Gender" data-value-separator="@(mcuResultSearch.Gender.DisplayValueSeparatorAttribute)" name="x_Gender" id="x_Gender" value="@(HtmlEncode(mcuResultSearch.Gender.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.Gender.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMcuResultsearch"], function() {
+    fMcuResultsearch.createAutoSuggest(Object.assign({"id":"x_Gender","forceSelect":false}, { lookupAllDisplayFields: @(mcuResultSearch.Gender.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.McuResult.fields.Gender.autoSuggestOptions));
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.Gender.Visible (end) *@
+@if (mcuResultSearch.RankAppliedFor.Visible) { // mcuResultSearch.RankAppliedFor.Visible (begin)
+    <div id="r_RankAppliedFor" class="row" @Html.Raw(mcuResultSearch.RankAppliedFor.RowAttributes)>
+        <label for="x_RankAppliedFor" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_RankAppliedFor">@Html.Raw(mcuResultSearch.RankAppliedFor.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RankAppliedFor" id="z_RankAppliedFor" value="LIKE">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.RankAppliedFor.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_RankAppliedFor" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.RankAppliedFor.InputTextType)" name="x_RankAppliedFor" id="x_RankAppliedFor" data-table="McuResult" data-field="x_RankAppliedFor" value="@Html.Raw(mcuResultSearch.RankAppliedFor.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.RankAppliedFor.PlaceHolder))" data-format-pattern="@(mcuResultSearch.RankAppliedFor.FormatPattern)"@Html.Raw(mcuResultSearch.RankAppliedFor.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.RankAppliedFor.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.RankAppliedFor.Visible (end) *@
+@if (mcuResultSearch.WillAcceptLowRank.Visible) { // mcuResultSearch.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" class="row" @Html.Raw(mcuResultSearch.WillAcceptLowRank.RowAttributes)>
+        <label class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_WillAcceptLowRank">@Html.Raw(mcuResultSearch.WillAcceptLowRank.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WillAcceptLowRank" id="z_WillAcceptLowRank" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.WillAcceptLowRank.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_WillAcceptLowRank" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mcuResultSearch.WillAcceptLowRank.IsInvalidClass)" data-table="McuResult" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(mcuResultSearch.WillAcceptLowRank.AdvancedSearch.SearchValue)" @Html.Raw(mcuResultSearch.WillAcceptLowRank.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mcuResultSearch.WillAcceptLowRank.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.WillAcceptLowRank.Visible (end) *@
+@if (mcuResultSearch.AvailableFrom.Visible) { // mcuResultSearch.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" class="row" @Html.Raw(mcuResultSearch.AvailableFrom.RowAttributes)>
+        <label for="x_AvailableFrom" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_AvailableFrom">@Html.Raw(mcuResultSearch.AvailableFrom.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableFrom" id="z_AvailableFrom" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.AvailableFrom.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_AvailableFrom" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="McuResult" data-field="x_AvailableFrom" value="@Html.Raw(mcuResultSearch.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.AvailableFrom.PlaceHolder))" data-format-pattern="@(mcuResultSearch.AvailableFrom.FormatPattern)"@Html.Raw(mcuResultSearch.AvailableFrom.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.AvailableFrom.GetErrorMessage(false))</div>
+@if (!mcuResultSearch.AvailableFrom.ReadOnly && !mcuResultSearch.AvailableFrom.Disabled && !mcuResultSearch.AvailableFrom.EditAttrs.Is("readonly") && !mcuResultSearch.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultsearch", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.AvailableFrom.Visible (end) *@
+@if (mcuResultSearch.AvailableUntil.Visible) { // mcuResultSearch.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" class="row" @Html.Raw(mcuResultSearch.AvailableUntil.RowAttributes)>
+        <label for="x_AvailableUntil" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_AvailableUntil">@Html.Raw(mcuResultSearch.AvailableUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableUntil" id="z_AvailableUntil" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.AvailableUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_AvailableUntil" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="McuResult" data-field="x_AvailableUntil" value="@Html.Raw(mcuResultSearch.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.AvailableUntil.PlaceHolder))" data-format-pattern="@(mcuResultSearch.AvailableUntil.FormatPattern)"@Html.Raw(mcuResultSearch.AvailableUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.AvailableUntil.GetErrorMessage(false))</div>
+@if (!mcuResultSearch.AvailableUntil.ReadOnly && !mcuResultSearch.AvailableUntil.Disabled && !mcuResultSearch.AvailableUntil.EditAttrs.Is("readonly") && !mcuResultSearch.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultsearch", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.AvailableUntil.Visible (end) *@
+@if (mcuResultSearch.McuScheduleDate.Visible) { // mcuResultSearch.McuScheduleDate.Visible (begin)
+    <div id="r_McuScheduleDate" class="row" @Html.Raw(mcuResultSearch.McuScheduleDate.RowAttributes)>
+        <label for="x_McuScheduleDate" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_McuScheduleDate">@Html.Raw(mcuResultSearch.McuScheduleDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_McuScheduleDate" id="z_McuScheduleDate" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.McuScheduleDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_McuScheduleDate" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.McuScheduleDate.InputTextType)" name="x_McuScheduleDate" id="x_McuScheduleDate" data-table="McuResult" data-field="x_McuScheduleDate" value="@Html.Raw(mcuResultSearch.McuScheduleDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.McuScheduleDate.PlaceHolder))" data-format-pattern="@(mcuResultSearch.McuScheduleDate.FormatPattern)"@Html.Raw(mcuResultSearch.McuScheduleDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.McuScheduleDate.GetErrorMessage(false))</div>
+@if (!mcuResultSearch.McuScheduleDate.ReadOnly && !mcuResultSearch.McuScheduleDate.Disabled && !mcuResultSearch.McuScheduleDate.EditAttrs.Is("readonly") && !mcuResultSearch.McuScheduleDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultsearch", "x_McuScheduleDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.McuScheduleDate.Visible (end) *@
+@if (mcuResultSearch.McuDate.Visible) { // mcuResultSearch.McuDate.Visible (begin)
+    <div id="r_McuDate" class="row" @Html.Raw(mcuResultSearch.McuDate.RowAttributes)>
+        <label for="x_McuDate" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_McuDate">@Html.Raw(mcuResultSearch.McuDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_McuDate" id="z_McuDate" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.McuDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_McuDate" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.McuDate.InputTextType)" name="x_McuDate" id="x_McuDate" data-table="McuResult" data-field="x_McuDate" value="@Html.Raw(mcuResultSearch.McuDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.McuDate.PlaceHolder))" data-format-pattern="@(mcuResultSearch.McuDate.FormatPattern)"@Html.Raw(mcuResultSearch.McuDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.McuDate.GetErrorMessage(false))</div>
+@if (!mcuResultSearch.McuDate.ReadOnly && !mcuResultSearch.McuDate.Disabled && !mcuResultSearch.McuDate.EditAttrs.Is("readonly") && !mcuResultSearch.McuDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultsearch", "x_McuDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.McuDate.Visible (end) *@
+@if (mcuResultSearch.McuExpirationDate.Visible) { // mcuResultSearch.McuExpirationDate.Visible (begin)
+    <div id="r_McuExpirationDate" class="row" @Html.Raw(mcuResultSearch.McuExpirationDate.RowAttributes)>
+        <label for="x_McuExpirationDate" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_McuExpirationDate">@Html.Raw(mcuResultSearch.McuExpirationDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_McuExpirationDate" id="z_McuExpirationDate" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.McuExpirationDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_McuExpirationDate" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.McuExpirationDate.InputTextType)" name="x_McuExpirationDate" id="x_McuExpirationDate" data-table="McuResult" data-field="x_McuExpirationDate" value="@Html.Raw(mcuResultSearch.McuExpirationDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.McuExpirationDate.PlaceHolder))" data-format-pattern="@(mcuResultSearch.McuExpirationDate.FormatPattern)"@Html.Raw(mcuResultSearch.McuExpirationDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.McuExpirationDate.GetErrorMessage(false))</div>
+@if (!mcuResultSearch.McuExpirationDate.ReadOnly && !mcuResultSearch.McuExpirationDate.Disabled && !mcuResultSearch.McuExpirationDate.EditAttrs.Is("readonly") && !mcuResultSearch.McuExpirationDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultsearch", "x_McuExpirationDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.McuExpirationDate.Visible (end) *@
+@if (mcuResultSearch.HealthStatus.Visible) { // mcuResultSearch.HealthStatus.Visible (begin)
+    <div id="r_HealthStatus" class="row" @Html.Raw(mcuResultSearch.HealthStatus.RowAttributes)>
+        <label for="x_HealthStatus" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_HealthStatus">@Html.Raw(mcuResultSearch.HealthStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_HealthStatus" id="z_HealthStatus" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.HealthStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_HealthStatus" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.HealthStatus.InputTextType)" name="x_HealthStatus" id="x_HealthStatus" data-table="McuResult" data-field="x_HealthStatus" value="@Html.Raw(mcuResultSearch.HealthStatus.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.HealthStatus.PlaceHolder))" data-format-pattern="@(mcuResultSearch.HealthStatus.FormatPattern)"@Html.Raw(mcuResultSearch.HealthStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.HealthStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.HealthStatus.Visible (end) *@
+@if (mcuResultSearch.McuLocation.Visible) { // mcuResultSearch.McuLocation.Visible (begin)
+    <div id="r_McuLocation" class="row" @Html.Raw(mcuResultSearch.McuLocation.RowAttributes)>
+        <label for="x_McuLocation" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_McuLocation">@Html.Raw(mcuResultSearch.McuLocation.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_McuLocation" id="z_McuLocation" value="LIKE">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.McuLocation.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_McuLocation" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.McuLocation.InputTextType)" name="x_McuLocation" id="x_McuLocation" data-table="McuResult" data-field="x_McuLocation" value="@Html.Raw(mcuResultSearch.McuLocation.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.McuLocation.PlaceHolder))" data-format-pattern="@(mcuResultSearch.McuLocation.FormatPattern)"@Html.Raw(mcuResultSearch.McuLocation.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.McuLocation.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.McuLocation.Visible (end) *@
+@if (mcuResultSearch.McuRemark.Visible) { // mcuResultSearch.McuRemark.Visible (begin)
+    <div id="r_McuRemark" class="row" @Html.Raw(mcuResultSearch.McuRemark.RowAttributes)>
+        <label for="x_McuRemark" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_McuRemark">@Html.Raw(mcuResultSearch.McuRemark.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_McuRemark" id="z_McuRemark" value="LIKE">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.McuRemark.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_McuRemark" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.McuRemark.InputTextType)" name="x_McuRemark" id="x_McuRemark" data-table="McuResult" data-field="x_McuRemark" value="@Html.Raw(mcuResultSearch.McuRemark.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.McuRemark.PlaceHolder))" data-format-pattern="@(mcuResultSearch.McuRemark.FormatPattern)"@Html.Raw(mcuResultSearch.McuRemark.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.McuRemark.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.McuRemark.Visible (end) *@
+@if (mcuResultSearch.CreatedBy.Visible) { // mcuResultSearch.CreatedBy.Visible (begin)
+    <div id="r_CreatedBy" class="row" @Html.Raw(mcuResultSearch.CreatedBy.RowAttributes)>
+        <label for="x_CreatedBy" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_CreatedBy">@Html.Raw(mcuResultSearch.CreatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedBy" id="z_CreatedBy" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.CreatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_CreatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="McuResult" data-field="x_CreatedBy" value="@Html.Raw(mcuResultSearch.CreatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.CreatedBy.PlaceHolder))" data-format-pattern="@(mcuResultSearch.CreatedBy.FormatPattern)"@Html.Raw(mcuResultSearch.CreatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.CreatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.CreatedBy.Visible (end) *@
+@if (mcuResultSearch.CreatedDateTime.Visible) { // mcuResultSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mcuResultSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_CreatedDateTime">@Html.Raw(mcuResultSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="McuResult" data-field="x_CreatedDateTime" value="@Html.Raw(mcuResultSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mcuResultSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mcuResultSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mcuResultSearch.CreatedDateTime.ReadOnly && !mcuResultSearch.CreatedDateTime.Disabled && !mcuResultSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mcuResultSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.CreatedDateTime.Visible (end) *@
+@if (mcuResultSearch.LastUpdatedBy.Visible) { // mcuResultSearch.LastUpdatedBy.Visible (begin)
+    <div id="r_LastUpdatedBy" class="row" @Html.Raw(mcuResultSearch.LastUpdatedBy.RowAttributes)>
+        <label for="x_LastUpdatedBy" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_LastUpdatedBy">@Html.Raw(mcuResultSearch.LastUpdatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedBy" id="z_LastUpdatedBy" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.LastUpdatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_LastUpdatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.LastUpdatedBy.InputTextType)" name="x_LastUpdatedBy" id="x_LastUpdatedBy" data-table="McuResult" data-field="x_LastUpdatedBy" value="@Html.Raw(mcuResultSearch.LastUpdatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.LastUpdatedBy.PlaceHolder))" data-format-pattern="@(mcuResultSearch.LastUpdatedBy.FormatPattern)"@Html.Raw(mcuResultSearch.LastUpdatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.LastUpdatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.LastUpdatedBy.Visible (end) *@
+@if (mcuResultSearch.LastUpdatedDateTime.Visible) { // mcuResultSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mcuResultSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mcuResultSearch.LeftColumnClass)"><span id="elh_McuResult_LastUpdatedDateTime">@Html.Raw(mcuResultSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mcuResultSearch.RightColumnClass)">
+            <div @Html.Raw(mcuResultSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_McuResult_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mcuResultSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="McuResult" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mcuResultSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mcuResultSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mcuResultSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mcuResultSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mcuResultSearch.LastUpdatedDateTime.ReadOnly && !mcuResultSearch.LastUpdatedDateTime.Disabled && !mcuResultSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mcuResultSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mcuResultSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mcuResultSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mcuResultSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMcuResultsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mcuResultSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMcuResultsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMcuResultsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mcuResultSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mcuResultSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("McuResult");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

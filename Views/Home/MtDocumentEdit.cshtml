@@ -1,0 +1,128 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtDocumentEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtDocumentEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtDocumentEdit.ShowPageHeader()
+@mtDocumentEdit.ShowMessages()
+<main class="edit">
+<form name="fMTDocumentedit" id="fMTDocumentedit" class="@(mtDocumentEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtDocumentEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTDocument: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fMTDocumentedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTDocumentedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["_Type", [fields._Type.visible && fields._Type.required ? ew.Validators.required(fields._Type.caption) : null], fields._Type.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(mtDocumentEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mtDocumentEdit.OldKeyName)" value="@Html.Raw(mtDocumentEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (mtDocumentEdit._Type.Visible) { // mtDocumentEdit._Type.Visible (begin)
+    <div id="r__Type" @Html.Raw(mtDocumentEdit._Type.RowAttributes)>
+        <label id="elh_MTDocument__Type" for="x__Type" class="@(mtDocumentEdit.LeftColumnClass)">@Html.Raw(mtDocumentEdit._Type.Caption)@Html.Raw(mtDocumentEdit._Type.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtDocumentEdit.RightColumnClass)"><div @Html.Raw(mtDocumentEdit._Type.CellAttributes)>
+<span id="el_MTDocument__Type">
+<input type="@(mtDocumentEdit._Type.InputTextType)" name="x__Type" id="x__Type" data-table="MTDocument" data-field="x__Type" value="@Html.Raw(mtDocumentEdit._Type.EditValue)" size="30" maxlength="30" placeholder="@Html.Raw(HtmlEncode(mtDocumentEdit._Type.PlaceHolder))" data-format-pattern="@(mtDocumentEdit._Type.FormatPattern)"@Html.Raw(mtDocumentEdit._Type.EditAttributes) aria-describedby="x__Type_help">
+@Html.Raw(mtDocumentEdit._Type.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtDocumentEdit._Type.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtDocumentEdit._Type.Visible (end) *@
+</div><!-- /page* -->
+    <input type="hidden" data-table="MTDocument" data-field="x_ID" data-hidden="1" name="x_ID" id="x_ID" value="@Html.Raw(HtmlEncode(mtDocumentEdit.ID.CurrentValue))">
+@{ mtDocumentEdit.CloseRecordset(); }
+@Html.Raw(mtDocumentEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mtDocumentEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTDocumentedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTDocumentedit" data-href="@AppPath(mtDocumentEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtDocumentEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+</main>
+@mtDocumentEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTDocument");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

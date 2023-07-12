@@ -1,0 +1,961 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (vCrewAcceptedForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!vCrewAcceptedForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!vCrewAcceptedForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vCrewAcceptedForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_CrewAcceptedForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(vCrewAcceptedForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(vCrewAcceptedForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(vCrewAcceptedForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(vCrewAcceptedForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "EmployeeStatus": @Html.Raw(vCrewAcceptedForAdminList.EmployeeStatus.ToClientList(vCrewAcceptedForAdminList)),
+            "FullName": @Html.Raw(vCrewAcceptedForAdminList.FullName.ToClientList(vCrewAcceptedForAdminList)),
+            "RequiredPhoto": @Html.Raw(vCrewAcceptedForAdminList.RequiredPhoto.ToClientList(vCrewAcceptedForAdminList)),
+            "VisaPhoto": @Html.Raw(vCrewAcceptedForAdminList.VisaPhoto.ToClientList(vCrewAcceptedForAdminList)),
+            "CityOfBirth": @Html.Raw(vCrewAcceptedForAdminList.CityOfBirth.ToClientList(vCrewAcceptedForAdminList)),
+            "DateOfBirth": @Html.Raw(vCrewAcceptedForAdminList.DateOfBirth.ToClientList(vCrewAcceptedForAdminList)),
+            "Gender": @Html.Raw(vCrewAcceptedForAdminList.Gender.ToClientList(vCrewAcceptedForAdminList)),
+            "RankAppliedFor_RankID": @Html.Raw(vCrewAcceptedForAdminList.RankAppliedFor_RankID.ToClientList(vCrewAcceptedForAdminList)),
+            "WillAcceptLowRank": @Html.Raw(vCrewAcceptedForAdminList.WillAcceptLowRank.ToClientList(vCrewAcceptedForAdminList)),
+            "AvailableFrom": @Html.Raw(vCrewAcceptedForAdminList.AvailableFrom.ToClientList(vCrewAcceptedForAdminList)),
+            "AvailableUntil": @Html.Raw(vCrewAcceptedForAdminList.AvailableUntil.ToClientList(vCrewAcceptedForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!vCrewAcceptedForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (vCrewAcceptedForAdminList.TotalRecords > 0 && vCrewAcceptedForAdminList.ExportOptions.Visible) {
+    vCrewAcceptedForAdminList.ExportOptions.Render("body");
+}
+@if (vCrewAcceptedForAdminList.ImportOptions.Visible) {
+    vCrewAcceptedForAdminList.ImportOptions.Render("body");
+}
+@if (vCrewAcceptedForAdminList.SearchOptions.Visible) {
+    vCrewAcceptedForAdminList.SearchOptions.Render("body");
+}
+@if (vCrewAcceptedForAdminList.FilterOptions.Visible) {
+    vCrewAcceptedForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (vCrewAcceptedForAdminList.ShowCurrentFilter) {
+    vCrewAcceptedForAdminList.ShowFilterList();
+}
+@if (!vCrewAcceptedForAdminList.IsModal) {
+<form name="fv_CrewAcceptedForAdminsrch" id="fv_CrewAcceptedForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fv_CrewAcceptedForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(vCrewAcceptedForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vCrewAcceptedForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_CrewAcceptedForAdmin: currentTable } });
+var currentForm;
+var fv_CrewAcceptedForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fv_CrewAcceptedForAdminsrch")
+        .setPageId("list")
+@if (vCrewAcceptedForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["CityOfBirth", [], fields.CityOfBirth.isInvalid],
+            ["DateOfBirth", [], fields.DateOfBirth.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor_RankID", [], fields.RankAppliedFor_RankID.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [], fields.AvailableUntil.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "EmployeeStatus": @Html.Raw(vCrewAcceptedForAdminList.EmployeeStatus.ToClientList(vCrewAcceptedForAdminList)),
+            "FullName": @Html.Raw(vCrewAcceptedForAdminList.FullName.ToClientList(vCrewAcceptedForAdminList)),
+            "RequiredPhoto": @Html.Raw(vCrewAcceptedForAdminList.RequiredPhoto.ToClientList(vCrewAcceptedForAdminList)),
+            "VisaPhoto": @Html.Raw(vCrewAcceptedForAdminList.VisaPhoto.ToClientList(vCrewAcceptedForAdminList)),
+            "CityOfBirth": @Html.Raw(vCrewAcceptedForAdminList.CityOfBirth.ToClientList(vCrewAcceptedForAdminList)),
+            "DateOfBirth": @Html.Raw(vCrewAcceptedForAdminList.DateOfBirth.ToClientList(vCrewAcceptedForAdminList)),
+            "Gender": @Html.Raw(vCrewAcceptedForAdminList.Gender.ToClientList(vCrewAcceptedForAdminList)),
+            "RankAppliedFor_RankID": @Html.Raw(vCrewAcceptedForAdminList.RankAppliedFor_RankID.ToClientList(vCrewAcceptedForAdminList)),
+            "WillAcceptLowRank": @Html.Raw(vCrewAcceptedForAdminList.WillAcceptLowRank.ToClientList(vCrewAcceptedForAdminList)),
+            "AvailableFrom": @Html.Raw(vCrewAcceptedForAdminList.AvailableFrom.ToClientList(vCrewAcceptedForAdminList)),
+            "AvailableUntil": @Html.Raw(vCrewAcceptedForAdminList.AvailableUntil.ToClientList(vCrewAcceptedForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await vCrewAcceptedForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!vCrewAcceptedForAdminList.IsExport() && Empty(vCrewAcceptedForAdminList.CurrentAction) && vCrewAcceptedForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(vCrewAcceptedForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + vCrewAcceptedForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    vCrewAcceptedForAdminList.RowType = RowType.Search;
+    vCrewAcceptedForAdminList.ResetAttributes();
+    await vCrewAcceptedForAdminList.RenderRow();
+}
+@if (vCrewAcceptedForAdminList.EmployeeStatus.Visible) { // vCrewAcceptedForAdminList.EmployeeStatus.Visible (begin)
+    if (!vCrewAcceptedForAdminList.EmployeeStatus.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_EmployeeStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.EmployeeStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EmployeeStatus"
+            name="x_EmployeeStatus[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.EmployeeStatus.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_EmployeeStatus"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_EmployeeStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.EmployeeStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.EmployeeStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.EmployeeStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.EmployeeStatus.EditAttributes)>
+            @(vCrewAcceptedForAdminList.EmployeeStatus.SelectOptionListHtml("x_EmployeeStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.EmployeeStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_EmployeeStatus",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_EmployeeStatus",
+                ajax: { id: "x_EmployeeStatus", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.EmployeeStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.EmployeeStatus.Visible (end) *@
+@if (vCrewAcceptedForAdminList.FullName.Visible) { // vCrewAcceptedForAdminList.FullName.Visible (begin)
+    if (!vCrewAcceptedForAdminList.FullName.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FullName"
+            name="x_FullName[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.FullName.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_FullName"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_FullName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.FullName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.FullName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.FullName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.FullName.EditAttributes)>
+            @(vCrewAcceptedForAdminList.FullName.SelectOptionListHtml("x_FullName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.FullName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_FullName",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_FullName",
+                ajax: { id: "x_FullName", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.FullName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.FullName.Visible (end) *@
+@if (vCrewAcceptedForAdminList.RequiredPhoto.Visible) { // vCrewAcceptedForAdminList.RequiredPhoto.Visible (begin)
+    if (!vCrewAcceptedForAdminList.RequiredPhoto.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_RequiredPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.RequiredPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RequiredPhoto"
+            name="x_RequiredPhoto[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.RequiredPhoto.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_RequiredPhoto"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_RequiredPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.RequiredPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.RequiredPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.RequiredPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.RequiredPhoto.EditAttributes)>
+            @(vCrewAcceptedForAdminList.RequiredPhoto.SelectOptionListHtml("x_RequiredPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.RequiredPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_RequiredPhoto",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_RequiredPhoto",
+                ajax: { id: "x_RequiredPhoto", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.RequiredPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.RequiredPhoto.Visible (end) *@
+@if (vCrewAcceptedForAdminList.VisaPhoto.Visible) { // vCrewAcceptedForAdminList.VisaPhoto.Visible (begin)
+    if (!vCrewAcceptedForAdminList.VisaPhoto.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_VisaPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.VisaPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VisaPhoto"
+            name="x_VisaPhoto[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.VisaPhoto.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_VisaPhoto"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_VisaPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.VisaPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.VisaPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.VisaPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.VisaPhoto.EditAttributes)>
+            @(vCrewAcceptedForAdminList.VisaPhoto.SelectOptionListHtml("x_VisaPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.VisaPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_VisaPhoto",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_VisaPhoto",
+                ajax: { id: "x_VisaPhoto", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.VisaPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.VisaPhoto.Visible (end) *@
+@if (vCrewAcceptedForAdminList.CityOfBirth.Visible) { // vCrewAcceptedForAdminList.CityOfBirth.Visible (begin)
+    if (!vCrewAcceptedForAdminList.CityOfBirth.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CityOfBirth" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.CityOfBirth.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CityOfBirth"
+            name="x_CityOfBirth[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.CityOfBirth.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_CityOfBirth"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_CityOfBirth"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.CityOfBirth.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.CityOfBirth.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.CityOfBirth.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.CityOfBirth.EditAttributes)>
+            @(vCrewAcceptedForAdminList.CityOfBirth.SelectOptionListHtml("x_CityOfBirth", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.CityOfBirth.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_CityOfBirth",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_CityOfBirth",
+                ajax: { id: "x_CityOfBirth", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.CityOfBirth.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.CityOfBirth.Visible (end) *@
+@if (vCrewAcceptedForAdminList.DateOfBirth.Visible) { // vCrewAcceptedForAdminList.DateOfBirth.Visible (begin)
+    if (!vCrewAcceptedForAdminList.DateOfBirth.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfBirth" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.DateOfBirth.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfBirth"
+            name="x_DateOfBirth[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.DateOfBirth.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_DateOfBirth"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_DateOfBirth"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.DateOfBirth.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.DateOfBirth.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.DateOfBirth.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.DateOfBirth.EditAttributes)>
+            @(vCrewAcceptedForAdminList.DateOfBirth.SelectOptionListHtml("x_DateOfBirth", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.DateOfBirth.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_DateOfBirth",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_DateOfBirth",
+                ajax: { id: "x_DateOfBirth", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.DateOfBirth.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.DateOfBirth.Visible (end) *@
+@if (vCrewAcceptedForAdminList.Gender.Visible) { // vCrewAcceptedForAdminList.Gender.Visible (begin)
+    if (!vCrewAcceptedForAdminList.Gender.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Gender" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.Gender.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Gender"
+            name="x_Gender[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.Gender.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_Gender"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_Gender"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.Gender.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.Gender.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.Gender.EditAttributes)>
+            @(vCrewAcceptedForAdminList.Gender.SelectOptionListHtml("x_Gender", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.Gender.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_Gender",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_Gender",
+                ajax: { id: "x_Gender", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.Gender.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.Gender.Visible (end) *@
+@if (vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible) { // vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible (begin)
+    if (!vCrewAcceptedForAdminList.RankAppliedFor_RankID.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_RankAppliedFor_RankID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.RankAppliedFor_RankID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RankAppliedFor_RankID"
+            name="x_RankAppliedFor_RankID[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.RankAppliedFor_RankID.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_RankAppliedFor_RankID"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_RankAppliedFor_RankID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.RankAppliedFor_RankID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.RankAppliedFor_RankID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.RankAppliedFor_RankID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.RankAppliedFor_RankID.EditAttributes)>
+            @(vCrewAcceptedForAdminList.RankAppliedFor_RankID.SelectOptionListHtml("x_RankAppliedFor_RankID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.RankAppliedFor_RankID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_RankAppliedFor_RankID",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_RankAppliedFor_RankID",
+                ajax: { id: "x_RankAppliedFor_RankID", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.RankAppliedFor_RankID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible (end) *@
+@if (vCrewAcceptedForAdminList.WillAcceptLowRank.Visible) { // vCrewAcceptedForAdminList.WillAcceptLowRank.Visible (begin)
+    if (!vCrewAcceptedForAdminList.WillAcceptLowRank.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_WillAcceptLowRank" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.WillAcceptLowRank.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_WillAcceptLowRank"
+            name="x_WillAcceptLowRank[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.WillAcceptLowRank.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_WillAcceptLowRank"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_WillAcceptLowRank"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.WillAcceptLowRank.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.WillAcceptLowRank.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.WillAcceptLowRank.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.WillAcceptLowRank.EditAttributes)>
+            @(vCrewAcceptedForAdminList.WillAcceptLowRank.SelectOptionListHtml("x_WillAcceptLowRank", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.WillAcceptLowRank.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_WillAcceptLowRank",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_WillAcceptLowRank",
+                ajax: { id: "x_WillAcceptLowRank", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.WillAcceptLowRank.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.WillAcceptLowRank.Visible (end) *@
+@if (vCrewAcceptedForAdminList.AvailableFrom.Visible) { // vCrewAcceptedForAdminList.AvailableFrom.Visible (begin)
+    if (!vCrewAcceptedForAdminList.AvailableFrom.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableFrom" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.AvailableFrom.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableFrom"
+            name="x_AvailableFrom[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.AvailableFrom.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_AvailableFrom"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_AvailableFrom"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.AvailableFrom.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.AvailableFrom.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.AvailableFrom.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.AvailableFrom.EditAttributes)>
+            @(vCrewAcceptedForAdminList.AvailableFrom.SelectOptionListHtml("x_AvailableFrom", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.AvailableFrom.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_AvailableFrom",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_AvailableFrom",
+                ajax: { id: "x_AvailableFrom", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.AvailableFrom.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.AvailableFrom.Visible (end) *@
+@if (vCrewAcceptedForAdminList.AvailableUntil.Visible) { // vCrewAcceptedForAdminList.AvailableUntil.Visible (begin)
+    if (!vCrewAcceptedForAdminList.AvailableUntil.UseFilter) {
+        vCrewAcceptedForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableUntil" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vCrewAcceptedForAdminList.AvailableUntil.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableUntil"
+            name="x_AvailableUntil[]"
+            class="form-control ew-select@(vCrewAcceptedForAdminList.AvailableUntil.IsInvalidClass)"
+            data-select2-id="fv_CrewAcceptedForAdminsrch_x_AvailableUntil"
+            data-table="v_CrewAcceptedForAdmin"
+            data-field="x_AvailableUntil"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vCrewAcceptedForAdminList.AvailableUntil.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vCrewAcceptedForAdminList.AvailableUntil.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vCrewAcceptedForAdminList.AvailableUntil.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vCrewAcceptedForAdminList.AvailableUntil.EditAttributes)>
+            @(vCrewAcceptedForAdminList.AvailableUntil.SelectOptionListHtml("x_AvailableUntil", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vCrewAcceptedForAdminList.AvailableUntil.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_CrewAcceptedForAdminsrch", function() {
+            var options = {
+                name: "x_AvailableUntil",
+                selectId: "fv_CrewAcceptedForAdminsrch_x_AvailableUntil",
+                ajax: { id: "x_AvailableUntil", form: "fv_CrewAcceptedForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_CrewAcceptedForAdmin.fields.AvailableUntil.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vCrewAcceptedForAdminList.AvailableUntil.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(vCrewAcceptedForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(vCrewAcceptedForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(vCrewAcceptedForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(vCrewAcceptedForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fv_CrewAcceptedForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(vCrewAcceptedForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fv_CrewAcceptedForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(vCrewAcceptedForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fv_CrewAcceptedForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(vCrewAcceptedForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fv_CrewAcceptedForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@vCrewAcceptedForAdminList.ShowPageHeader()
+@vCrewAcceptedForAdminList.ShowMessages()
+<main class="list @(vCrewAcceptedForAdminList.TotalRecords == 0 && !vCrewAcceptedForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (vCrewAcceptedForAdminList.TotalRecords > 0 || !Empty(vCrewAcceptedForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(vCrewAcceptedForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(vCrewAcceptedForAdminList.TableGridClass)">
+<form name="@(vCrewAcceptedForAdminList.FormName)" id="@(vCrewAcceptedForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(vCrewAcceptedForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (vCrewAcceptedForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_v_CrewAcceptedForAdmin" class="card-body ew-grid-middle-panel @(vCrewAcceptedForAdminList.TableContainerClass)" style="@(vCrewAcceptedForAdminList.TableContainerStyle)">
+@if (vCrewAcceptedForAdminList.TotalRecords > 0 || vCrewAcceptedForAdminList.IsGridEdit || vCrewAcceptedForAdminList.IsMultiEdit) {
+<table id="tbl_v_CrewAcceptedForAdminlist" class="@(vCrewAcceptedForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    vCrewAcceptedForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await vCrewAcceptedForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@vCrewAcceptedForAdminList.ListOptions.RenderHeader("left")
+@if (vCrewAcceptedForAdminList.IndividualCodeNumber.Visible) { // vCrewAcceptedForAdminList.IndividualCodeNumber.Visible (begin)
+        <th data-name="IndividualCodeNumber" class="@(vCrewAcceptedForAdminList.IndividualCodeNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_IndividualCodeNumber" class="v_CrewAcceptedForAdmin_IndividualCodeNumber">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.IndividualCodeNumber))</div></th>
+} @* vCrewAcceptedForAdminList.IndividualCodeNumber.Visible (end) *@
+@if (vCrewAcceptedForAdminList.EmployeeStatus.Visible) { // vCrewAcceptedForAdminList.EmployeeStatus.Visible (begin)
+        <th data-name="EmployeeStatus" class="@(vCrewAcceptedForAdminList.EmployeeStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_EmployeeStatus" class="v_CrewAcceptedForAdmin_EmployeeStatus">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.EmployeeStatus))</div></th>
+} @* vCrewAcceptedForAdminList.EmployeeStatus.Visible (end) *@
+@if (vCrewAcceptedForAdminList.FullName.Visible) { // vCrewAcceptedForAdminList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(vCrewAcceptedForAdminList.FullName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_FullName" class="v_CrewAcceptedForAdmin_FullName">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.FullName))</div></th>
+} @* vCrewAcceptedForAdminList.FullName.Visible (end) *@
+@if (vCrewAcceptedForAdminList.RequiredPhoto.Visible) { // vCrewAcceptedForAdminList.RequiredPhoto.Visible (begin)
+        <th data-name="RequiredPhoto" class="@(vCrewAcceptedForAdminList.RequiredPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_RequiredPhoto" class="v_CrewAcceptedForAdmin_RequiredPhoto">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.RequiredPhoto))</div></th>
+} @* vCrewAcceptedForAdminList.RequiredPhoto.Visible (end) *@
+@if (vCrewAcceptedForAdminList.VisaPhoto.Visible) { // vCrewAcceptedForAdminList.VisaPhoto.Visible (begin)
+        <th data-name="VisaPhoto" class="@(vCrewAcceptedForAdminList.VisaPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_VisaPhoto" class="v_CrewAcceptedForAdmin_VisaPhoto">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.VisaPhoto))</div></th>
+} @* vCrewAcceptedForAdminList.VisaPhoto.Visible (end) *@
+@if (vCrewAcceptedForAdminList.CityOfBirth.Visible) { // vCrewAcceptedForAdminList.CityOfBirth.Visible (begin)
+        <th data-name="CityOfBirth" class="@(vCrewAcceptedForAdminList.CityOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_CityOfBirth" class="v_CrewAcceptedForAdmin_CityOfBirth">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.CityOfBirth))</div></th>
+} @* vCrewAcceptedForAdminList.CityOfBirth.Visible (end) *@
+@if (vCrewAcceptedForAdminList.DateOfBirth.Visible) { // vCrewAcceptedForAdminList.DateOfBirth.Visible (begin)
+        <th data-name="DateOfBirth" class="@(vCrewAcceptedForAdminList.DateOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_DateOfBirth" class="v_CrewAcceptedForAdmin_DateOfBirth">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.DateOfBirth))</div></th>
+} @* vCrewAcceptedForAdminList.DateOfBirth.Visible (end) *@
+@if (vCrewAcceptedForAdminList.Gender.Visible) { // vCrewAcceptedForAdminList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(vCrewAcceptedForAdminList.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_Gender" class="v_CrewAcceptedForAdmin_Gender">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.Gender))</div></th>
+} @* vCrewAcceptedForAdminList.Gender.Visible (end) *@
+@if (vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible) { // vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible (begin)
+        <th data-name="RankAppliedFor_RankID" class="@(vCrewAcceptedForAdminList.RankAppliedFor_RankID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_RankAppliedFor_RankID" class="v_CrewAcceptedForAdmin_RankAppliedFor_RankID">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.RankAppliedFor_RankID))</div></th>
+} @* vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible (end) *@
+@if (vCrewAcceptedForAdminList.WillAcceptLowRank.Visible) { // vCrewAcceptedForAdminList.WillAcceptLowRank.Visible (begin)
+        <th data-name="WillAcceptLowRank" class="@(vCrewAcceptedForAdminList.WillAcceptLowRank.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_WillAcceptLowRank" class="v_CrewAcceptedForAdmin_WillAcceptLowRank">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.WillAcceptLowRank))</div></th>
+} @* vCrewAcceptedForAdminList.WillAcceptLowRank.Visible (end) *@
+@if (vCrewAcceptedForAdminList.AvailableFrom.Visible) { // vCrewAcceptedForAdminList.AvailableFrom.Visible (begin)
+        <th data-name="AvailableFrom" class="@(vCrewAcceptedForAdminList.AvailableFrom.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_AvailableFrom" class="v_CrewAcceptedForAdmin_AvailableFrom">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.AvailableFrom))</div></th>
+} @* vCrewAcceptedForAdminList.AvailableFrom.Visible (end) *@
+@if (vCrewAcceptedForAdminList.AvailableUntil.Visible) { // vCrewAcceptedForAdminList.AvailableUntil.Visible (begin)
+        <th data-name="AvailableUntil" class="@(vCrewAcceptedForAdminList.AvailableUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_CrewAcceptedForAdmin_AvailableUntil" class="v_CrewAcceptedForAdmin_AvailableUntil">@Html.Raw(vCrewAcceptedForAdminList.RenderFieldHeader(vCrewAcceptedForAdminList.AvailableUntil))</div></th>
+} @* vCrewAcceptedForAdminList.AvailableUntil.Visible (end) *@
+@* Render list options (header, right) *@
+@vCrewAcceptedForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(vCrewAcceptedForAdminList.PageNumber)">
+@{
+    await vCrewAcceptedForAdminList.SetupGrid();
+    bool eof = vCrewAcceptedForAdminList.Recordset == null; // DN
+}
+@while (vCrewAcceptedForAdminList.RecordCount < vCrewAcceptedForAdminList.StopRecord || SameString(vCrewAcceptedForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(vCrewAcceptedForAdminList.RowIndex, "$rowindex$") &&
+        (!vCrewAcceptedForAdminList.IsGridAdd || vCrewAcceptedForAdminList.CurrentMode == "copy") &&
+        (!((vCrewAcceptedForAdminList.IsCopy || vCrewAcceptedForAdminList.IsAdd) && vCrewAcceptedForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await vCrewAcceptedForAdminList.Recordset.ReadAsync();
+    vCrewAcceptedForAdminList.RecordCount++;
+    if (vCrewAcceptedForAdminList.RecordCount >= vCrewAcceptedForAdminList.StartRecord) {
+        await vCrewAcceptedForAdminList.SetupRow();
+    <tr @Html.Raw(vCrewAcceptedForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @vCrewAcceptedForAdminList.ListOptions.RenderBody("left", vCrewAcceptedForAdminList.RowCount)
+    @if (vCrewAcceptedForAdminList.IndividualCodeNumber.Visible) { // vCrewAcceptedForAdminList.IndividualCodeNumber.Visible (begin)
+        <td data-name="IndividualCodeNumber" @Html.Raw(vCrewAcceptedForAdminList.IndividualCodeNumber.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_IndividualCodeNumber" class="el_v_CrewAcceptedForAdmin_IndividualCodeNumber">
+<span @Html.Raw(vCrewAcceptedForAdminList.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.IndividualCodeNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.IndividualCodeNumber.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.EmployeeStatus.Visible) { // vCrewAcceptedForAdminList.EmployeeStatus.Visible (begin)
+        <td data-name="EmployeeStatus" @Html.Raw(vCrewAcceptedForAdminList.EmployeeStatus.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_EmployeeStatus" class="el_v_CrewAcceptedForAdmin_EmployeeStatus">
+<span @Html.Raw(vCrewAcceptedForAdminList.EmployeeStatus.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.EmployeeStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.EmployeeStatus.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.FullName.Visible) { // vCrewAcceptedForAdminList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(vCrewAcceptedForAdminList.FullName.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_FullName" class="el_v_CrewAcceptedForAdmin_FullName">
+<span @Html.Raw(vCrewAcceptedForAdminList.FullName.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.FullName.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.RequiredPhoto.Visible) { // vCrewAcceptedForAdminList.RequiredPhoto.Visible (begin)
+        <td data-name="RequiredPhoto" @Html.Raw(vCrewAcceptedForAdminList.RequiredPhoto.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_RequiredPhoto" class="el_v_CrewAcceptedForAdmin_RequiredPhoto">
+<span @Html.Raw(vCrewAcceptedForAdminList.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(vCrewAcceptedForAdminList.IndividualCodeNumber.GetViewValue())/@ConvertToString(vCrewAcceptedForAdminList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.RequiredPhoto.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.VisaPhoto.Visible) { // vCrewAcceptedForAdminList.VisaPhoto.Visible (begin)
+        <td data-name="VisaPhoto" @Html.Raw(vCrewAcceptedForAdminList.VisaPhoto.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_VisaPhoto" class="el_v_CrewAcceptedForAdmin_VisaPhoto">
+<span @Html.Raw(vCrewAcceptedForAdminList.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(vCrewAcceptedForAdminList.IndividualCodeNumber.GetViewValue())/@ConvertToString(vCrewAcceptedForAdminList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.VisaPhoto.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.CityOfBirth.Visible) { // vCrewAcceptedForAdminList.CityOfBirth.Visible (begin)
+        <td data-name="CityOfBirth" @Html.Raw(vCrewAcceptedForAdminList.CityOfBirth.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_CityOfBirth" class="el_v_CrewAcceptedForAdmin_CityOfBirth">
+<span @Html.Raw(vCrewAcceptedForAdminList.CityOfBirth.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.CityOfBirth.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.CityOfBirth.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.DateOfBirth.Visible) { // vCrewAcceptedForAdminList.DateOfBirth.Visible (begin)
+        <td data-name="DateOfBirth" @Html.Raw(vCrewAcceptedForAdminList.DateOfBirth.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_DateOfBirth" class="el_v_CrewAcceptedForAdmin_DateOfBirth">
+<span @Html.Raw(vCrewAcceptedForAdminList.DateOfBirth.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.DateOfBirth.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.DateOfBirth.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.Gender.Visible) { // vCrewAcceptedForAdminList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(vCrewAcceptedForAdminList.Gender.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_Gender" class="el_v_CrewAcceptedForAdmin_Gender">
+<span @Html.Raw(vCrewAcceptedForAdminList.Gender.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.Gender.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible) { // vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible (begin)
+        <td data-name="RankAppliedFor_RankID" @Html.Raw(vCrewAcceptedForAdminList.RankAppliedFor_RankID.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_RankAppliedFor_RankID" class="el_v_CrewAcceptedForAdmin_RankAppliedFor_RankID">
+<span @Html.Raw(vCrewAcceptedForAdminList.RankAppliedFor_RankID.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.RankAppliedFor_RankID.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.RankAppliedFor_RankID.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.WillAcceptLowRank.Visible) { // vCrewAcceptedForAdminList.WillAcceptLowRank.Visible (begin)
+        <td data-name="WillAcceptLowRank" @Html.Raw(vCrewAcceptedForAdminList.WillAcceptLowRank.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_WillAcceptLowRank" class="el_v_CrewAcceptedForAdmin_WillAcceptLowRank">
+<span @Html.Raw(vCrewAcceptedForAdminList.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(vCrewAcceptedForAdminList.RowCount)" class="form-check-input" value="@(vCrewAcceptedForAdminList.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(vCrewAcceptedForAdminList.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(vCrewAcceptedForAdminList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.WillAcceptLowRank.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.AvailableFrom.Visible) { // vCrewAcceptedForAdminList.AvailableFrom.Visible (begin)
+        <td data-name="AvailableFrom" @Html.Raw(vCrewAcceptedForAdminList.AvailableFrom.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_AvailableFrom" class="el_v_CrewAcceptedForAdmin_AvailableFrom">
+<span @Html.Raw(vCrewAcceptedForAdminList.AvailableFrom.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.AvailableFrom.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.AvailableFrom.Visible (end) *@
+    @if (vCrewAcceptedForAdminList.AvailableUntil.Visible) { // vCrewAcceptedForAdminList.AvailableUntil.Visible (begin)
+        <td data-name="AvailableUntil" @Html.Raw(vCrewAcceptedForAdminList.AvailableUntil.CellAttributes)>
+<span id="el@(vCrewAcceptedForAdminList.RowCount)_v_CrewAcceptedForAdmin_AvailableUntil" class="el_v_CrewAcceptedForAdmin_AvailableUntil">
+<span @Html.Raw(vCrewAcceptedForAdminList.AvailableUntil.ViewAttributes)>
+@Html.Raw(vCrewAcceptedForAdminList.AvailableUntil.GetViewValue())</span>
+</span>
+</td>
+    } @* vCrewAcceptedForAdminList.AvailableUntil.Visible (end) *@
+    @* Render list options (body, right) *@
+    @vCrewAcceptedForAdminList.ListOptions.RenderBody("right", vCrewAcceptedForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(vCrewAcceptedForAdminList.RowIndex, "$rowindex$"))
+        vCrewAcceptedForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((vCrewAcceptedForAdminList.IsCopy || vCrewAcceptedForAdminList.IsAdd) && vCrewAcceptedForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        vCrewAcceptedForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(vCrewAcceptedForAdminList.CurrentAction) && !vCrewAcceptedForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ vCrewAcceptedForAdminList.CloseRecordset(); }
+@if (!vCrewAcceptedForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!vCrewAcceptedForAdminList.IsGridAdd && !(vCrewAcceptedForAdminList.IsGridEdit && vCrewAcceptedForAdminList.ModalGridEdit) && !vCrewAcceptedForAdminList.IsMultiEdit) {
+@Html.Raw(vCrewAcceptedForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@vCrewAcceptedForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@vCrewAcceptedForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@vCrewAcceptedForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!vCrewAcceptedForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("v_CrewAcceptedForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    $('table#tbl_v_CrewAcceptedForAdminlist tbody tr td.ew-list-option-body.w-1 div.btn-group ul.ew-list-options li a.ew-row-link').each(function() {
+        const dataCaptionAttrValue = $(this).attr('data-caption');
+        if (dataCaptionAttrValue === ew.language.phrase("ViewLink")) {
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+            const newHref = `${ew.PATH_BASE}CrewPersonalDataForAdminViewModeView/${id}`;
+            $(this).attr('href', newHref);
+            $(this).find('i').removeClass('icon-view ew-icon me-2').addClass('icon-view ew-icon me-2');
+            $(this).text('Registration Records');
+        } else if (dataCaptionAttrValue === ew.language.phrase("EditLink")) {
+            const anchorElement = $(this);
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+
+            // Tambahkan kode untuk menampilkan "Checklist Records" di sini
+            anchorElement.text('Checklist Records');
+            anchorElement.find('i').removeClass('fa-solid fa-pen ew-icon me-2').addClass('icon-view ew-icon me-2');
+
+            // Bikin ajax request untuk dapatkan TRChecklist ID
+            const parentUrl = ew.PATH_BASE;
+            $.ajax({
+                url: `${parentUrl}api/Registration/get-trchecklist-id`,
+                method: 'GET',
+                data: {
+                    crewId: id
+                },
+                success: function(response) {
+                    const trChecklist_ID = response.data;
+                    if(trChecklist_ID != null) {
+                        const newHref = `${parentUrl}CrewChecklistForAdminView/${trChecklist_ID}?showdetail=TRChecklistPerformance`;
+                        anchorElement.attr('href', newHref);
+                        // Sembunyikan elemen buttn di halaman tujuan
+                        $('.row.ew-buttons.mt-3').addClass('hidden');
+                    }
+                    else {
+                        anchorElement.click(function(event) {
+                            event.preventDefault();
+                            // const errorMessage = (CurrentLanguage === 'en-US') ? 'Checklist Record is empty.' : 'Data Daftar Periksa kosong.';
+                            alert("Checklist Record is empty.");
+                        });   
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Ajax request error: ', error);
+                    console.log('Response error message: ', xhr.responseText);
+                }
+            });
+        } else if (dataCaptionAttrValue === ew.language.phrase("DeleteLink")) {
+            const anchorElement = $(this);
+            const oldHref = anchorElement.attr('href');
+            const id = oldHref.split('/').pop();
+
+            // Tambahkan kode untuk menampilkan "Medical Checkup Records" di sini
+            anchorElement.text('Medical Checkup Records');
+            anchorElement.find('i').removeClass('fa-solid fa-trash ew-icon me-2').addClass('icon-view ew-icon me-2');
+
+            // Bikin ajax request untuk dapatkan TRMCUResult ID
+            const parentUrl = ew.PATH_BASE;
+            $.ajax({
+                url: `${parentUrl}api/Registration/get-trmcuresult-id`,
+                method: 'GET',
+                data: {
+                    crewId: id
+                },
+                success: function(response) {
+                    const mCUResult_ID = response.data;
+                    if(mCUResult_ID != null) {
+                        const newHref = `${parentUrl}CrewMcuResultForAdminView/${mCUResult_ID}?showdetail=TRMCUResult`;
+                        anchorElement.attr('href', newHref);
+                        $('.card.border.rounded').addClass('hidden');
+                    }
+                    else {
+                        anchorElement.click(function(event) {
+                            event.preventDefault();
+                            // const errorMessage = (CurrentLanguage === 'en-US') ? 'Medical Checkup Record is empty.' : 'Data Pemeriksaan Medis kosong.';
+                            alert("Medical Checkup Record is empty.");
+                        });
+                    }  
+                },
+                error: function(xhr, status, error) {
+                    console.log('Ajax request error: ', error);
+                    console.log('Response error message: ', xhr.responseText);
+                }
+            });
+        }
+    });
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

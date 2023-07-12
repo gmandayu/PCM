@@ -1,0 +1,218 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (registrationView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!registrationView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!registrationView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!registrationView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @registrationView.ExportOptions.RenderBody()
+    @registrationView.OtherOptions.RenderBody()
+</div>
+}
+@registrationView.ShowPageHeader()
+@registrationView.ShowMessages()
+<main class="view">
+<form name="fRegistrationview" id="fRegistrationview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (!registrationView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(registrationView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Registration: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fRegistrationview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fRegistrationview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(registrationView.IsModal)">
+<table class="@(registrationView.TableClass)">
+@if (registrationView.IndividualCodeNumber.Visible) { // registrationView.IndividualCodeNumber.Visible (begin)
+    <tr id="r_IndividualCodeNumber" @Html.Raw(registrationView.IndividualCodeNumber.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_IndividualCodeNumber">@Html.Raw(registrationView.IndividualCodeNumber.Caption)</span></td>
+        <td data-name="IndividualCodeNumber" @Html.Raw(registrationView.IndividualCodeNumber.CellAttributes)>
+<span id="el_Registration_IndividualCodeNumber">
+<span @Html.Raw(registrationView.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(registrationView.IndividualCodeNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.IndividualCodeNumber.Visible (end) *@
+@if (registrationView.FullName.Visible) { // registrationView.FullName.Visible (begin)
+    <tr id="r_FullName" @Html.Raw(registrationView.FullName.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_FullName">@Html.Raw(registrationView.FullName.Caption)</span></td>
+        <td data-name="FullName" @Html.Raw(registrationView.FullName.CellAttributes)>
+<span id="el_Registration_FullName">
+<span @Html.Raw(registrationView.FullName.ViewAttributes)>
+@Html.Raw(registrationView.FullName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.FullName.Visible (end) *@
+@if (registrationView.RequiredPhoto.Visible) { // registrationView.RequiredPhoto.Visible (begin)
+    <tr id="r_RequiredPhoto" @Html.Raw(registrationView.RequiredPhoto.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_RequiredPhoto">@Html.Raw(registrationView.RequiredPhoto.Caption)</span></td>
+        <td data-name="RequiredPhoto" @Html.Raw(registrationView.RequiredPhoto.CellAttributes)>
+<span id="el_Registration_RequiredPhoto">
+<span @Html.Raw(registrationView.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(registrationList.IndividualCodeNumber.GetViewValue())/@ConvertToString(registrationList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span></td>
+    </tr>
+} @* registrationView.RequiredPhoto.Visible (end) *@
+@if (registrationView.VisaPhoto.Visible) { // registrationView.VisaPhoto.Visible (begin)
+    <tr id="r_VisaPhoto" @Html.Raw(registrationView.VisaPhoto.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_VisaPhoto">@Html.Raw(registrationView.VisaPhoto.Caption)</span></td>
+        <td data-name="VisaPhoto" @Html.Raw(registrationView.VisaPhoto.CellAttributes)>
+<span id="el_Registration_VisaPhoto">
+<span @Html.Raw(registrationView.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(registrationList.IndividualCodeNumber.GetViewValue())/@ConvertToString(registrationList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span></td>
+    </tr>
+} @* registrationView.VisaPhoto.Visible (end) *@
+@if (registrationView.Gender.Visible) { // registrationView.Gender.Visible (begin)
+    <tr id="r_Gender" @Html.Raw(registrationView.Gender.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_Gender">@Html.Raw(registrationView.Gender.Caption)</span></td>
+        <td data-name="Gender" @Html.Raw(registrationView.Gender.CellAttributes)>
+<span id="el_Registration_Gender">
+<span @Html.Raw(registrationView.Gender.ViewAttributes)>
+@Html.Raw(registrationView.Gender.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.Gender.Visible (end) *@
+@if (registrationView.RankAppliedFor.Visible) { // registrationView.RankAppliedFor.Visible (begin)
+    <tr id="r_RankAppliedFor" @Html.Raw(registrationView.RankAppliedFor.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_RankAppliedFor">@Html.Raw(registrationView.RankAppliedFor.Caption)</span></td>
+        <td data-name="RankAppliedFor" @Html.Raw(registrationView.RankAppliedFor.CellAttributes)>
+<span id="el_Registration_RankAppliedFor">
+<span @Html.Raw(registrationView.RankAppliedFor.ViewAttributes)>
+@Html.Raw(registrationView.RankAppliedFor.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.RankAppliedFor.Visible (end) *@
+@if (registrationView.WillAcceptLowRank.Visible) { // registrationView.WillAcceptLowRank.Visible (begin)
+    <tr id="r_WillAcceptLowRank" @Html.Raw(registrationView.WillAcceptLowRank.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_WillAcceptLowRank">@Html.Raw(registrationView.WillAcceptLowRank.Caption)</span></td>
+        <td data-name="WillAcceptLowRank" @Html.Raw(registrationView.WillAcceptLowRank.CellAttributes)>
+<span id="el_Registration_WillAcceptLowRank">
+<span @Html.Raw(registrationView.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(registrationView.RowCount)" class="form-check-input" value="@(registrationView.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(registrationView.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(registrationView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* registrationView.WillAcceptLowRank.Visible (end) *@
+@if (registrationView.AvailableFrom.Visible) { // registrationView.AvailableFrom.Visible (begin)
+    <tr id="r_AvailableFrom" @Html.Raw(registrationView.AvailableFrom.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_AvailableFrom">@Html.Raw(registrationView.AvailableFrom.Caption)</span></td>
+        <td data-name="AvailableFrom" @Html.Raw(registrationView.AvailableFrom.CellAttributes)>
+<span id="el_Registration_AvailableFrom">
+<span @Html.Raw(registrationView.AvailableFrom.ViewAttributes)>
+@Html.Raw(registrationView.AvailableFrom.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.AvailableFrom.Visible (end) *@
+@if (registrationView.AvailableUntil.Visible) { // registrationView.AvailableUntil.Visible (begin)
+    <tr id="r_AvailableUntil" @Html.Raw(registrationView.AvailableUntil.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_AvailableUntil">@Html.Raw(registrationView.AvailableUntil.Caption)</span></td>
+        <td data-name="AvailableUntil" @Html.Raw(registrationView.AvailableUntil.CellAttributes)>
+<span id="el_Registration_AvailableUntil">
+<span @Html.Raw(registrationView.AvailableUntil.ViewAttributes)>
+@Html.Raw(registrationView.AvailableUntil.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.AvailableUntil.Visible (end) *@
+@if (registrationView.CreatedBy.Visible) { // registrationView.CreatedBy.Visible (begin)
+    <tr id="r_CreatedBy" @Html.Raw(registrationView.CreatedBy.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_CreatedBy">@Html.Raw(registrationView.CreatedBy.Caption)</span></td>
+        <td data-name="CreatedBy" @Html.Raw(registrationView.CreatedBy.CellAttributes)>
+<span id="el_Registration_CreatedBy">
+<span @Html.Raw(registrationView.CreatedBy.ViewAttributes)>
+@Html.Raw(registrationView.CreatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.CreatedBy.Visible (end) *@
+@if (registrationView.CreatedDateTime.Visible) { // registrationView.CreatedDateTime.Visible (begin)
+    <tr id="r_CreatedDateTime" @Html.Raw(registrationView.CreatedDateTime.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_CreatedDateTime">@Html.Raw(registrationView.CreatedDateTime.Caption)</span></td>
+        <td data-name="CreatedDateTime" @Html.Raw(registrationView.CreatedDateTime.CellAttributes)>
+<span id="el_Registration_CreatedDateTime">
+<span @Html.Raw(registrationView.CreatedDateTime.ViewAttributes)>
+@Html.Raw(registrationView.CreatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.CreatedDateTime.Visible (end) *@
+@if (registrationView.LastUpdatedBy.Visible) { // registrationView.LastUpdatedBy.Visible (begin)
+    <tr id="r_LastUpdatedBy" @Html.Raw(registrationView.LastUpdatedBy.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_LastUpdatedBy">@Html.Raw(registrationView.LastUpdatedBy.Caption)</span></td>
+        <td data-name="LastUpdatedBy" @Html.Raw(registrationView.LastUpdatedBy.CellAttributes)>
+<span id="el_Registration_LastUpdatedBy">
+<span @Html.Raw(registrationView.LastUpdatedBy.ViewAttributes)>
+@Html.Raw(registrationView.LastUpdatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.LastUpdatedBy.Visible (end) *@
+@if (registrationView.LastUpdatedDateTime.Visible) { // registrationView.LastUpdatedDateTime.Visible (begin)
+    <tr id="r_LastUpdatedDateTime" @Html.Raw(registrationView.LastUpdatedDateTime.RowAttributes)>
+        <td class="@(registrationView.TableLeftColumnClass)"><span id="elh_Registration_LastUpdatedDateTime">@Html.Raw(registrationView.LastUpdatedDateTime.Caption)</span></td>
+        <td data-name="LastUpdatedDateTime" @Html.Raw(registrationView.LastUpdatedDateTime.CellAttributes)>
+<span id="el_Registration_LastUpdatedDateTime">
+<span @Html.Raw(registrationView.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(registrationView.LastUpdatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* registrationView.LastUpdatedDateTime.Visible (end) *@
+</table>
+@{ registrationView.CloseRecordset(); }
+</form>
+</main>
+@registrationView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!registrationView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

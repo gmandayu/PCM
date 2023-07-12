@@ -1,0 +1,565 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewMedicalCertificateSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewMedicalCertificateSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewMedicalCertificateSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewMedicalCertificate: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewMedicalCertificatesearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewMedicalCertificatesearch")
+        .setPageId("search")
+@if (mtCrewMedicalCertificateSearch.IsModal && mtCrewMedicalCertificateSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["MTMedicalCertificateID", [], fields.MTMedicalCertificateID.isInvalid],
+            ["Number", [], fields.Number.isInvalid],
+            ["PlaceOfIssue", [], fields.PlaceOfIssue.isInvalid],
+            ["DateOfIssue", [ew.Validators.datetime(fields.DateOfIssue.clientFormatPattern)], fields.DateOfIssue.isInvalid],
+            ["ExpirationDate", [ew.Validators.datetime(fields.ExpirationDate.clientFormatPattern)], fields.ExpirationDate.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewMedicalCertificateSearch.MTCrewID.ToClientList(mtCrewMedicalCertificateSearch)),
+            "MTMedicalCertificateID": @Html.Raw(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.ToClientList(mtCrewMedicalCertificateSearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewMedicalCertificateSearch.CreatedByUserID.ToClientList(mtCrewMedicalCertificateSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.ToClientList(mtCrewMedicalCertificateSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewMedicalCertificateSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewMedicalCertificateSearch.ShowPageHeader()
+@mtCrewMedicalCertificateSearch.ShowMessages()
+<form name="fMTCrewMedicalCertificatesearch" id="fMTCrewMedicalCertificatesearch" class="@(mtCrewMedicalCertificateSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewMedicalCertificateSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewMedicalCertificateSearch.MTCrewID.Visible) { // mtCrewMedicalCertificateSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.MTCrewID.RowAttributes)>
+        <label class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_MTCrewID">@Html.Raw(mtCrewMedicalCertificateSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_MTCrewID" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mtCrewMedicalCertificateSearch.MTCrewID.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_MTCrewID" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_MTCrewID" id="sv_x_MTCrewID" value="@(RemoveHtml(ConvertToString(mtCrewMedicalCertificateSearch.MTCrewID.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.MTCrewID.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(mtCrewMedicalCertificateSearch.MTCrewID.FormatPattern)" @Html.Raw(mtCrewMedicalCertificateSearch.MTCrewID.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="MTCrewMedicalCertificate" data-field="x_MTCrewID" data-input="sv_x_MTCrewID" data-value-separator="@(mtCrewMedicalCertificateSearch.MTCrewID.DisplayValueSeparatorAttribute)" name="x_MTCrewID" id="x_MTCrewID" value="@(HtmlEncode(mtCrewMedicalCertificateSearch.MTCrewID.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.MTCrewID.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMTCrewMedicalCertificatesearch"], function() {
+    fMTCrewMedicalCertificatesearch.createAutoSuggest(Object.assign({"id":"x_MTCrewID","forceSelect":false}, { lookupAllDisplayFields: @(mtCrewMedicalCertificateSearch.MTCrewID.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.MTCrewMedicalCertificate.fields.MTCrewID.autoSuggestOptions));
+});
+</script>
+@Html.Raw(mtCrewMedicalCertificateSearch.MTCrewID.Lookup.GetParamTag(mtCrewMedicalCertificateSearch, "p_x_MTCrewID"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.MTCrewID.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.MTMedicalCertificateID.Visible) { // mtCrewMedicalCertificateSearch.MTMedicalCertificateID.Visible (begin)
+    <div id="r_MTMedicalCertificateID" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.RowAttributes)>
+        <label for="x_MTMedicalCertificateID" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_MTMedicalCertificateID">@Html.Raw(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTMedicalCertificateID" id="z_MTMedicalCertificateID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_MTMedicalCertificateID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTMedicalCertificateID"
+        name="x_MTMedicalCertificateID"
+        class="form-select ew-select@(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.IsInvalidClass)"
+        data-select2-id="fMTCrewMedicalCertificatesearch_x_MTMedicalCertificateID"
+        data-table="MTCrewMedicalCertificate"
+        data-field="x_MTMedicalCertificateID"
+        data-value-separator="@(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.PlaceHolder))"
+        @Html.Raw(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.EditAttributes)>
+        @(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.SelectOptionListHtml("x_MTMedicalCertificateID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewMedicalCertificateSearch.MTMedicalCertificateID.Lookup.GetParamTag(mtCrewMedicalCertificateSearch, "p_x_MTMedicalCertificateID"))
+<script>
+loadjs.ready("fMTCrewMedicalCertificatesearch", function() {
+    var options = { name: "x_MTMedicalCertificateID", selectId: "fMTCrewMedicalCertificatesearch_x_MTMedicalCertificateID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewMedicalCertificatesearch.lists.MTMedicalCertificateID?.lookupOptions.length) {
+        options.data = { id: "x_MTMedicalCertificateID", form: "fMTCrewMedicalCertificatesearch" };
+    } else {
+        options.ajax = { id: "x_MTMedicalCertificateID", form: "fMTCrewMedicalCertificatesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalCertificate.fields.MTMedicalCertificateID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.MTMedicalCertificateID.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.Number.Visible) { // mtCrewMedicalCertificateSearch.Number.Visible (begin)
+    <div id="r_Number" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.Number.RowAttributes)>
+        <label for="x_Number" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_Number">@Html.Raw(mtCrewMedicalCertificateSearch.Number.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Number" id="z_Number" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.Number.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_Number" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalCertificateSearch.Number.InputTextType)" name="x_Number" id="x_Number" data-table="MTCrewMedicalCertificate" data-field="x_Number" value="@Html.Raw(mtCrewMedicalCertificateSearch.Number.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.Number.PlaceHolder))" data-format-pattern="@(mtCrewMedicalCertificateSearch.Number.FormatPattern)"@Html.Raw(mtCrewMedicalCertificateSearch.Number.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.Number.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.Number.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.PlaceOfIssue.Visible) { // mtCrewMedicalCertificateSearch.PlaceOfIssue.Visible (begin)
+    <div id="r_PlaceOfIssue" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.PlaceOfIssue.RowAttributes)>
+        <label for="x_PlaceOfIssue" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_PlaceOfIssue">@Html.Raw(mtCrewMedicalCertificateSearch.PlaceOfIssue.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PlaceOfIssue" id="z_PlaceOfIssue" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.PlaceOfIssue.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_PlaceOfIssue" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalCertificateSearch.PlaceOfIssue.InputTextType)" name="x_PlaceOfIssue" id="x_PlaceOfIssue" data-table="MTCrewMedicalCertificate" data-field="x_PlaceOfIssue" value="@Html.Raw(mtCrewMedicalCertificateSearch.PlaceOfIssue.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.PlaceOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewMedicalCertificateSearch.PlaceOfIssue.FormatPattern)"@Html.Raw(mtCrewMedicalCertificateSearch.PlaceOfIssue.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.PlaceOfIssue.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.PlaceOfIssue.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.DateOfIssue.Visible) { // mtCrewMedicalCertificateSearch.DateOfIssue.Visible (begin)
+    <div id="r_DateOfIssue" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.DateOfIssue.RowAttributes)>
+        <label for="x_DateOfIssue" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_DateOfIssue">@Html.Raw(mtCrewMedicalCertificateSearch.DateOfIssue.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateOfIssue" id="z_DateOfIssue" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.DateOfIssue.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_DateOfIssue" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalCertificateSearch.DateOfIssue.InputTextType)" name="x_DateOfIssue" id="x_DateOfIssue" data-table="MTCrewMedicalCertificate" data-field="x_DateOfIssue" value="@Html.Raw(mtCrewMedicalCertificateSearch.DateOfIssue.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.DateOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewMedicalCertificateSearch.DateOfIssue.FormatPattern)"@Html.Raw(mtCrewMedicalCertificateSearch.DateOfIssue.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.DateOfIssue.GetErrorMessage(false))</div>
+@if (!mtCrewMedicalCertificateSearch.DateOfIssue.ReadOnly && !mtCrewMedicalCertificateSearch.DateOfIssue.Disabled && !mtCrewMedicalCertificateSearch.DateOfIssue.EditAttrs.Is("readonly") && !mtCrewMedicalCertificateSearch.DateOfIssue.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewMedicalCertificatesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewMedicalCertificatesearch", "x_DateOfIssue", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.DateOfIssue.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.ExpirationDate.Visible) { // mtCrewMedicalCertificateSearch.ExpirationDate.Visible (begin)
+    <div id="r_ExpirationDate" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.ExpirationDate.RowAttributes)>
+        <label for="x_ExpirationDate" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_ExpirationDate">@Html.Raw(mtCrewMedicalCertificateSearch.ExpirationDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ExpirationDate" id="z_ExpirationDate" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.ExpirationDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_ExpirationDate" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalCertificateSearch.ExpirationDate.InputTextType)" name="x_ExpirationDate" id="x_ExpirationDate" data-table="MTCrewMedicalCertificate" data-field="x_ExpirationDate" value="@Html.Raw(mtCrewMedicalCertificateSearch.ExpirationDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.ExpirationDate.PlaceHolder))" data-format-pattern="@(mtCrewMedicalCertificateSearch.ExpirationDate.FormatPattern)"@Html.Raw(mtCrewMedicalCertificateSearch.ExpirationDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.ExpirationDate.GetErrorMessage(false))</div>
+@if (!mtCrewMedicalCertificateSearch.ExpirationDate.ReadOnly && !mtCrewMedicalCertificateSearch.ExpirationDate.Disabled && !mtCrewMedicalCertificateSearch.ExpirationDate.EditAttrs.Is("readonly") && !mtCrewMedicalCertificateSearch.ExpirationDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewMedicalCertificatesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewMedicalCertificatesearch", "x_ExpirationDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.ExpirationDate.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.CreatedByUserID.Visible) { // mtCrewMedicalCertificateSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_CreatedByUserID">@Html.Raw(mtCrewMedicalCertificateSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewMedicalCertificateSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewMedicalCertificatesearch_x_CreatedByUserID"
+        data-table="MTCrewMedicalCertificate"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewMedicalCertificateSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewMedicalCertificateSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewMedicalCertificateSearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewMedicalCertificateSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewMedicalCertificateSearch.CreatedByUserID.Lookup.GetParamTag(mtCrewMedicalCertificateSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewMedicalCertificatesearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewMedicalCertificatesearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewMedicalCertificatesearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewMedicalCertificatesearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewMedicalCertificatesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalCertificate.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.CreatedDateTime.Visible) { // mtCrewMedicalCertificateSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_CreatedDateTime">@Html.Raw(mtCrewMedicalCertificateSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalCertificateSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrewMedicalCertificate" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewMedicalCertificateSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalCertificateSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalCertificateSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewMedicalCertificateSearch.CreatedDateTime.ReadOnly && !mtCrewMedicalCertificateSearch.CreatedDateTime.Disabled && !mtCrewMedicalCertificateSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalCertificateSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewMedicalCertificatesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewMedicalCertificatesearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.LastUpdatedByUserID.Visible) { // mtCrewMedicalCertificateSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_LastUpdatedByUserID">@Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewMedicalCertificatesearch_x_LastUpdatedByUserID"
+        data-table="MTCrewMedicalCertificate"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewMedicalCertificateSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewMedicalCertificatesearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewMedicalCertificatesearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewMedicalCertificatesearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewMedicalCertificatesearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewMedicalCertificatesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalCertificate.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewMedicalCertificateSearch.LastUpdatedDateTime.Visible) { // mtCrewMedicalCertificateSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewMedicalCertificateSearch.LeftColumnClass)"><span id="elh_MTCrewMedicalCertificate_LastUpdatedDateTime">@Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalCertificateSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalCertificate_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrewMedicalCertificate" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalCertificateSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewMedicalCertificateSearch.LastUpdatedDateTime.ReadOnly && !mtCrewMedicalCertificateSearch.LastUpdatedDateTime.Disabled && !mtCrewMedicalCertificateSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalCertificateSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewMedicalCertificatesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewMedicalCertificatesearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalCertificateSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewMedicalCertificateSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewMedicalCertificateSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewMedicalCertificatesearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewMedicalCertificateSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewMedicalCertificatesearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewMedicalCertificatesearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewMedicalCertificateSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewMedicalCertificateSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewMedicalCertificate");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

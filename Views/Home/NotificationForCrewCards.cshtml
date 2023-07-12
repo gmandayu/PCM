@@ -1,0 +1,220 @@
+@if (notificationForCrewList.ModalGridAdd && notificationForCrewList.IsGridAdd || notificationForCrewList.ModalGridEdit && notificationForCrewList.IsGridEdit || notificationForCrewList.ModalMultiEdit && notificationForCrewList.IsMultiEdit) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(notificationForCrewList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { NotificationForCrew: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(notificationForCrewList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(notificationForCrewList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(notificationForCrewList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(notificationForCrewList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+}
+<form name="@(notificationForCrewList.FormName)" id="@(notificationForCrewList.FormName)" class="ew-form ew-list-form ew-multi-column-form" action="@AppPath(notificationForCrewList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (notificationForCrewList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="@(notificationForCrewList.GetMultiColumnRowClass())">
+@if (notificationForCrewList.TotalRecords > 0 || notificationForCrewList.IsGridEdit || notificationForCrewList.IsMultiEdit) {
+    await notificationForCrewList.SetupGrid();
+    bool eof = notificationForCrewList.Recordset == null; // DN
+while (notificationForCrewList.RecordCount < notificationForCrewList.StopRecord || SameString(notificationForCrewList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(notificationForCrewList.RowIndex, "$rowindex$") &&
+        (!notificationForCrewList.IsGridAdd || notificationForCrewList.CurrentMode == "copy") &&
+        (!((notificationForCrewList.IsCopy || notificationForCrewList.IsAdd) && notificationForCrewList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await notificationForCrewList.Recordset.ReadAsync();
+    notificationForCrewList.RecordCount++;
+    if (notificationForCrewList.RecordCount >= notificationForCrewList.StartRecord) {
+        await notificationForCrewList.SetupRow();
+<div class="@(notificationForCrewList.GetMultiColumnColClass())" @Html.Raw(notificationForCrewList.RowAttributes)>
+@if (!notificationForCrewList.IsAddOrEdit) { @* Show custom card layout *@
+<div class="card">
+  <div class="row g-0">
+    <div class="col-md-12">
+      <div class="card-body">
+        <h5 class="card-title">
+<span @Html.Raw(notificationForCrewList.Subject.ViewAttributes)>
+@Html.Raw(notificationForCrewList.Subject.GetViewValue())</span>
+</h5>
+        <p class="card-text">
+<span @Html.Raw(notificationForCrewList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(notificationForCrewList.CreatedDateTime.GetViewValue())</span>
+</p>
+        <p class="card-text">
+<span @Html.Raw(notificationForCrewList.Body.ViewAttributes)>
+@Html.Raw(notificationForCrewList.Body.GetViewValue())</span>
+</p>
+        <button class="btn btn-primary ew-btn mark-as-read-button" data-action="MarkAsRead">
+<span @Html.Raw(notificationForCrewList.MarkAsRead.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_MarkAsRead_@(notificationForCrewList.RowCount)" class="form-check-input" value="@(notificationForCrewList.MarkAsRead.GetViewValue())" disabled checked="@(ConvertToBool(notificationForCrewList.MarkAsRead.CurrentValue))">
+    <label class="form-check-label" for="x_MarkAsRead_@(notificationForCrewList.RowCount)"></label>
+</div></span>
+ Mark as Read</button>
+      </div>
+    </div>
+  </div>
+</div>
+} else { @* Show normal card layout *@
+<div class="@(notificationForCrewList.MultiColumnCardClass)">
+    @if (notificationForCrewList.MultiColumnListOptionsPosition.StartsWith("top", StringComparison.InvariantCultureIgnoreCase)) {
+    <div class="card-header">
+        <div class="ew-multi-column-list-option ew-@(notificationForCrewList.MultiColumnListOptionsPosition)">
+@{
+    // Render list options (body, bottom)
+    notificationForCrewList.ListOptions.Tag = "div";
+    notificationForCrewList.ListOptions.RenderBody(notificationForCrewList.MultiColumnListOptionsPosition, notificationForCrewList.RowCount);
+}
+        </div><!-- /.ew-multi-column-list-option -->
+    </div>
+    }
+    <div class="card-body">
+    @if (notificationForCrewList.Subject.Visible) { // notificationForCrewList.Subject.Visible (begin)
+        if (notificationForCrewList.RowType == RowType.View) { // View record
+        <div class="row NotificationForCrew_Subject">
+            <div class="col col-sm-4 NotificationForCrew_Subject" style="white-space: nowrap;">@Html.Raw(notificationForCrewList.RenderFieldHeader(notificationForCrewList.Subject))</div>
+            <div class="col col-sm-8"><div @Html.Raw(notificationForCrewList.Subject.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.Subject.ViewAttributes)>
+@Html.Raw(notificationForCrewList.Subject.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row NotificationForCrew_Subject">
+            <label class="@(notificationForCrewList.LeftColumnClass)">@Html.Raw(notificationForCrewList.Subject.Caption)</label>
+            <div class="@(notificationForCrewList.RightColumnClass)"><div @Html.Raw(notificationForCrewList.Subject.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.Subject.ViewAttributes)>
+@Html.Raw(notificationForCrewList.Subject.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (notificationForCrewList.Body.Visible) { // notificationForCrewList.Body.Visible (begin)
+        if (notificationForCrewList.RowType == RowType.View) { // View record
+        <div class="row NotificationForCrew_Body">
+            <div class="col col-sm-4 NotificationForCrew_Body" style="white-space: nowrap;">@Html.Raw(notificationForCrewList.RenderFieldHeader(notificationForCrewList.Body))</div>
+            <div class="col col-sm-8"><div @Html.Raw(notificationForCrewList.Body.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.Body.ViewAttributes)>
+@Html.Raw(notificationForCrewList.Body.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row NotificationForCrew_Body">
+            <label class="@(notificationForCrewList.LeftColumnClass)">@Html.Raw(notificationForCrewList.Body.Caption)</label>
+            <div class="@(notificationForCrewList.RightColumnClass)"><div @Html.Raw(notificationForCrewList.Body.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.Body.ViewAttributes)>
+@Html.Raw(notificationForCrewList.Body.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (notificationForCrewList.CreatedDateTime.Visible) { // notificationForCrewList.CreatedDateTime.Visible (begin)
+        if (notificationForCrewList.RowType == RowType.View) { // View record
+        <div class="row NotificationForCrew_CreatedDateTime">
+            <div class="col col-sm-4 NotificationForCrew_CreatedDateTime" style="white-space: nowrap;">@Html.Raw(notificationForCrewList.RenderFieldHeader(notificationForCrewList.CreatedDateTime))</div>
+            <div class="col col-sm-8"><div @Html.Raw(notificationForCrewList.CreatedDateTime.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(notificationForCrewList.CreatedDateTime.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row NotificationForCrew_CreatedDateTime">
+            <label class="@(notificationForCrewList.LeftColumnClass)">@Html.Raw(notificationForCrewList.CreatedDateTime.Caption)</label>
+            <div class="@(notificationForCrewList.RightColumnClass)"><div @Html.Raw(notificationForCrewList.CreatedDateTime.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(notificationForCrewList.CreatedDateTime.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (notificationForCrewList.MarkAsRead.Visible) { // notificationForCrewList.MarkAsRead.Visible (begin)
+        if (notificationForCrewList.RowType == RowType.View) { // View record
+        <div class="row NotificationForCrew_MarkAsRead">
+            <div class="col col-sm-4 NotificationForCrew_MarkAsRead" style="white-space: nowrap;">@Html.Raw(notificationForCrewList.RenderFieldHeader(notificationForCrewList.MarkAsRead))</div>
+            <div class="col col-sm-8"><div @Html.Raw(notificationForCrewList.MarkAsRead.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.MarkAsRead.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_MarkAsRead_@(notificationForCrewList.RowCount)" class="form-check-input" value="@(notificationForCrewList.MarkAsRead.GetViewValue())" disabled checked="@(ConvertToBool(notificationForCrewList.MarkAsRead.CurrentValue))">
+    <label class="form-check-label" for="x_MarkAsRead_@(notificationForCrewList.RowCount)"></label>
+</div></span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row NotificationForCrew_MarkAsRead">
+            <label class="@(notificationForCrewList.LeftColumnClass)">@Html.Raw(notificationForCrewList.MarkAsRead.Caption)</label>
+            <div class="@(notificationForCrewList.RightColumnClass)"><div @Html.Raw(notificationForCrewList.MarkAsRead.CellAttributes)>
+<span @Html.Raw(notificationForCrewList.MarkAsRead.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_MarkAsRead_@(notificationForCrewList.RowCount)" class="form-check-input" value="@(notificationForCrewList.MarkAsRead.GetViewValue())" disabled checked="@(ConvertToBool(notificationForCrewList.MarkAsRead.CurrentValue))">
+    <label class="form-check-label" for="x_MarkAsRead_@(notificationForCrewList.RowCount)"></label>
+</div></span>
+</div></div>
+        </div>
+        }
+    }
+    </div><!-- /.card-body -->
+@if (!notificationForCrewList.IsExport()) {
+    if (notificationForCrewList.MultiColumnListOptionsPosition.StartsWith("bottom", StringComparison.InvariantCultureIgnoreCase)) {
+    <div class="card-footer">
+        <div class="ew-multi-column-list-option ew-@(notificationForCrewList.MultiColumnListOptionsPosition)">
+@{
+    // Render list options (body, bottom)
+    notificationForCrewList.ListOptions.Tag = "div";
+}
+@notificationForCrewList.ListOptions.RenderBody(notificationForCrewList.MultiColumnListOptionsPosition, notificationForCrewList.RowCount)
+        </div><!-- /.ew-multi-column-list-option -->
+    </div><!-- /.card-footer -->
+    }
+}
+</div><!-- /.card -->
+} @* Show normal card layout (end) *@
+</div><!-- /.col-* -->
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(notificationForCrewList.RowIndex, "$rowindex$"))
+        notificationForCrewList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((notificationForCrewList.IsCopy || notificationForCrewList.IsAdd) && notificationForCrewList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        notificationForCrewList.RowIndex = 1;
+} @* End While *@
+} @* notificationForCrewList.TotalRecords > 0 (end) *@
+</div><!-- /.ew-multi-column-row -->
+@if (Empty(notificationForCrewList.CurrentAction) && !notificationForCrewList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ notificationForCrewList.CloseRecordset(); }
+@if (!notificationForCrewList.IsExport()) {
+<div>
+@if (!notificationForCrewList.IsGridAdd && !(notificationForCrewList.IsGridEdit && notificationForCrewList.ModalGridEdit) && !notificationForCrewList.IsMultiEdit) {
+@Html.Raw(notificationForCrewList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@notificationForCrewList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}

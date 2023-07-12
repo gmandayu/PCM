@@ -1,0 +1,135 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtDocumentView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtDocumentView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtDocumentView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtDocumentView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @mtDocumentView.ExportOptions.RenderBody()
+    @mtDocumentView.OtherOptions.RenderBody()
+</div>
+}
+@mtDocumentView.ShowPageHeader()
+@mtDocumentView.ShowMessages()
+<main class="view">
+<form name="fMTDocumentview" id="fMTDocumentview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (!mtDocumentView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtDocumentView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTDocument: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fMTDocumentview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTDocumentview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(mtDocumentView.IsModal)">
+<table class="@(mtDocumentView.TableClass)">
+@if (mtDocumentView._Type.Visible) { // mtDocumentView._Type.Visible (begin)
+    <tr id="r__Type" @Html.Raw(mtDocumentView._Type.RowAttributes)>
+        <td class="@(mtDocumentView.TableLeftColumnClass)"><span id="elh_MTDocument__Type">@Html.Raw(mtDocumentView._Type.Caption)</span></td>
+        <td data-name="_Type" @Html.Raw(mtDocumentView._Type.CellAttributes)>
+<span id="el_MTDocument__Type">
+<span @Html.Raw(mtDocumentView._Type.ViewAttributes)>
+@Html.Raw(mtDocumentView._Type.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtDocumentView._Type.Visible (end) *@
+@if (mtDocumentView.CreatedByUserID.Visible) { // mtDocumentView.CreatedByUserID.Visible (begin)
+    <tr id="r_CreatedByUserID" @Html.Raw(mtDocumentView.CreatedByUserID.RowAttributes)>
+        <td class="@(mtDocumentView.TableLeftColumnClass)"><span id="elh_MTDocument_CreatedByUserID">@Html.Raw(mtDocumentView.CreatedByUserID.Caption)</span></td>
+        <td data-name="CreatedByUserID" @Html.Raw(mtDocumentView.CreatedByUserID.CellAttributes)>
+<span id="el_MTDocument_CreatedByUserID">
+<span @Html.Raw(mtDocumentView.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtDocumentView.CreatedByUserID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtDocumentView.CreatedByUserID.Visible (end) *@
+@if (mtDocumentView.CreatedDateTime.Visible) { // mtDocumentView.CreatedDateTime.Visible (begin)
+    <tr id="r_CreatedDateTime" @Html.Raw(mtDocumentView.CreatedDateTime.RowAttributes)>
+        <td class="@(mtDocumentView.TableLeftColumnClass)"><span id="elh_MTDocument_CreatedDateTime">@Html.Raw(mtDocumentView.CreatedDateTime.Caption)</span></td>
+        <td data-name="CreatedDateTime" @Html.Raw(mtDocumentView.CreatedDateTime.CellAttributes)>
+<span id="el_MTDocument_CreatedDateTime">
+<span @Html.Raw(mtDocumentView.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtDocumentView.CreatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtDocumentView.CreatedDateTime.Visible (end) *@
+@if (mtDocumentView.LastUpdatedByUserID.Visible) { // mtDocumentView.LastUpdatedByUserID.Visible (begin)
+    <tr id="r_LastUpdatedByUserID" @Html.Raw(mtDocumentView.LastUpdatedByUserID.RowAttributes)>
+        <td class="@(mtDocumentView.TableLeftColumnClass)"><span id="elh_MTDocument_LastUpdatedByUserID">@Html.Raw(mtDocumentView.LastUpdatedByUserID.Caption)</span></td>
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtDocumentView.LastUpdatedByUserID.CellAttributes)>
+<span id="el_MTDocument_LastUpdatedByUserID">
+<span @Html.Raw(mtDocumentView.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtDocumentView.LastUpdatedByUserID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtDocumentView.LastUpdatedByUserID.Visible (end) *@
+@if (mtDocumentView.LastUpdatedDateTime.Visible) { // mtDocumentView.LastUpdatedDateTime.Visible (begin)
+    <tr id="r_LastUpdatedDateTime" @Html.Raw(mtDocumentView.LastUpdatedDateTime.RowAttributes)>
+        <td class="@(mtDocumentView.TableLeftColumnClass)"><span id="elh_MTDocument_LastUpdatedDateTime">@Html.Raw(mtDocumentView.LastUpdatedDateTime.Caption)</span></td>
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtDocumentView.LastUpdatedDateTime.CellAttributes)>
+<span id="el_MTDocument_LastUpdatedDateTime">
+<span @Html.Raw(mtDocumentView.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtDocumentView.LastUpdatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtDocumentView.LastUpdatedDateTime.Visible (end) *@
+</table>
+@{ mtDocumentView.CloseRecordset(); }
+</form>
+</main>
+@mtDocumentView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtDocumentView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

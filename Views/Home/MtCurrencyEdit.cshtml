@@ -1,0 +1,162 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCurrencyEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCurrencyEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCurrencyEdit.ShowPageHeader()
+@mtCurrencyEdit.ShowMessages()
+<main class="edit">
+<form name="fMTCurrencyedit" id="fMTCurrencyedit" class="@(mtCurrencyEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCurrencyEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCurrency: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fMTCurrencyedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCurrencyedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [fields._Name.visible && fields._Name.required ? ew.Validators.required(fields._Name.caption) : null], fields._Name.isInvalid],
+            ["Code", [fields.Code.visible && fields.Code.required ? ew.Validators.required(fields.Code.caption) : null], fields.Code.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    function validateFieldWithRegex (thisInstance, fieldName, errorMessage, regex) {
+                        const fieldValue = $(thisInstance).fields(fieldName)[0].value;
+                        if (!regex.test(fieldValue)) {
+                            thisInstance.fields[fieldName].addError({ custom: errorMessage });
+                            thisInstance.fields[fieldName].updateFeedback();
+                            thisInstance.addError(fieldName, { custom: errorMessage });   
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                    const regex = /^[A-Z]{3}$/;
+                    const regexErrorMessageEnglish = "Must contain 3 uppercase alphabet";
+                    const regexErrorMessageIndonesian = "Harus terdiri dari 3 alfabet kapital";
+                    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+                    let formErrorCount = 0;
+                    if (selectedLanguage.id === 'en-US') {
+                        formErrorCount += validateFieldWithRegex(this, "Code",  regexErrorMessageEnglish, regex) ? 0 : 1;
+                    } else {
+                        formErrorCount += validateFieldWithRegex(this, "Code",  regexErrorMessageIndonesian, regex) ? 0 : 1;
+                    }
+                    return formErrorCount === 0;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(mtCurrencyEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mtCurrencyEdit.OldKeyName)" value="@Html.Raw(mtCurrencyEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (mtCurrencyEdit._Name.Visible) { // mtCurrencyEdit._Name.Visible (begin)
+    <div id="r__Name" @Html.Raw(mtCurrencyEdit._Name.RowAttributes)>
+        <label id="elh_MTCurrency__Name" for="x__Name" class="@(mtCurrencyEdit.LeftColumnClass)">@Html.Raw(mtCurrencyEdit._Name.Caption)@Html.Raw(mtCurrencyEdit._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtCurrencyEdit.RightColumnClass)"><div @Html.Raw(mtCurrencyEdit._Name.CellAttributes)>
+<span id="el_MTCurrency__Name">
+<input type="@(mtCurrencyEdit._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTCurrency" data-field="x__Name" value="@Html.Raw(mtCurrencyEdit._Name.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCurrencyEdit._Name.PlaceHolder))" data-format-pattern="@(mtCurrencyEdit._Name.FormatPattern)"@Html.Raw(mtCurrencyEdit._Name.EditAttributes) aria-describedby="x__Name_help">
+@Html.Raw(mtCurrencyEdit._Name.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtCurrencyEdit._Name.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtCurrencyEdit._Name.Visible (end) *@
+@if (mtCurrencyEdit.Code.Visible) { // mtCurrencyEdit.Code.Visible (begin)
+    <div id="r_Code" @Html.Raw(mtCurrencyEdit.Code.RowAttributes)>
+        <label id="elh_MTCurrency_Code" for="x_Code" class="@(mtCurrencyEdit.LeftColumnClass)">@Html.Raw(mtCurrencyEdit.Code.Caption)@Html.Raw(mtCurrencyEdit.Code.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtCurrencyEdit.RightColumnClass)"><div @Html.Raw(mtCurrencyEdit.Code.CellAttributes)>
+<span id="el_MTCurrency_Code">
+<input type="@(mtCurrencyEdit.Code.InputTextType)" name="x_Code" id="x_Code" data-table="MTCurrency" data-field="x_Code" value="@Html.Raw(mtCurrencyEdit.Code.EditValue)" size="30" maxlength="3" placeholder="@Html.Raw(HtmlEncode(mtCurrencyEdit.Code.PlaceHolder))" data-format-pattern="@(mtCurrencyEdit.Code.FormatPattern)"@Html.Raw(mtCurrencyEdit.Code.EditAttributes) aria-describedby="x_Code_help">
+@Html.Raw(mtCurrencyEdit.Code.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtCurrencyEdit.Code.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtCurrencyEdit.Code.Visible (end) *@
+</div><!-- /page* -->
+    <input type="hidden" data-table="MTCurrency" data-field="x_ID" data-hidden="1" name="x_ID" id="x_ID" value="@Html.Raw(HtmlEncode(mtCurrencyEdit.ID.CurrentValue))">
+@{ mtCurrencyEdit.CloseRecordset(); }
+@Html.Raw(mtCurrencyEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mtCurrencyEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCurrencyedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCurrencyedit" data-href="@AppPath(mtCurrencyEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCurrencyEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+</main>
+@mtCurrencyEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCurrency");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

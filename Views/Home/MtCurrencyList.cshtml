@@ -1,0 +1,610 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCurrencyList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCurrencyList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCurrencyList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCurrencyList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCurrency: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtCurrencyList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtCurrencyList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtCurrencyList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtCurrencyList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtCurrencyList._Name.ToClientList(mtCurrencyList)),
+            "Code": @Html.Raw(mtCurrencyList.Code.ToClientList(mtCurrencyList)),
+            "CreatedByUserID": @Html.Raw(mtCurrencyList.CreatedByUserID.ToClientList(mtCurrencyList)),
+            "CreatedDateTime": @Html.Raw(mtCurrencyList.CreatedDateTime.ToClientList(mtCurrencyList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCurrencyList.LastUpdatedByUserID.ToClientList(mtCurrencyList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCurrencyList.LastUpdatedDateTime.ToClientList(mtCurrencyList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtCurrencyList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtCurrencyList.TotalRecords > 0 && mtCurrencyList.ExportOptions.Visible) {
+    mtCurrencyList.ExportOptions.Render("body");
+}
+@if (mtCurrencyList.ImportOptions.Visible) {
+    mtCurrencyList.ImportOptions.Render("body");
+}
+@if (mtCurrencyList.SearchOptions.Visible) {
+    mtCurrencyList.SearchOptions.Render("body");
+}
+@if (mtCurrencyList.FilterOptions.Visible) {
+    mtCurrencyList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtCurrencyList.ShowCurrentFilter) {
+    mtCurrencyList.ShowFilterList();
+}
+@if (!mtCurrencyList.IsModal) {
+<form name="fMTCurrencysrch" id="fMTCurrencysrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTCurrencysrch_search_panel" class="mb-2 mb-sm-0 @(mtCurrencyList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCurrencyList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCurrency: currentTable } });
+var currentForm;
+var fMTCurrencysrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCurrencysrch")
+        .setPageId("list")
+@if (mtCurrencyList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["Code", [], fields.Code.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtCurrencyList._Name.ToClientList(mtCurrencyList)),
+            "Code": @Html.Raw(mtCurrencyList.Code.ToClientList(mtCurrencyList)),
+            "CreatedByUserID": @Html.Raw(mtCurrencyList.CreatedByUserID.ToClientList(mtCurrencyList)),
+            "CreatedDateTime": @Html.Raw(mtCurrencyList.CreatedDateTime.ToClientList(mtCurrencyList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCurrencyList.LastUpdatedByUserID.ToClientList(mtCurrencyList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCurrencyList.LastUpdatedDateTime.ToClientList(mtCurrencyList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtCurrencyList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtCurrencyList.IsExport() && Empty(mtCurrencyList.CurrentAction) && mtCurrencyList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtCurrencyList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtCurrencyList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtCurrencyList.RowType = RowType.Search;
+    mtCurrencyList.ResetAttributes();
+    await mtCurrencyList.RenderRow();
+}
+@if (mtCurrencyList._Name.Visible) { // mtCurrencyList._Name.Visible (begin)
+    if (!mtCurrencyList._Name.UseFilter) {
+        mtCurrencyList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCurrencyList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtCurrencyList._Name.IsInvalidClass)"
+            data-select2-id="fMTCurrencysrch_x__Name"
+            data-table="MTCurrency"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCurrencyList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCurrencyList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCurrencyList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCurrencyList._Name.EditAttributes)>
+            @(mtCurrencyList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCurrencyList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCurrencysrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTCurrencysrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTCurrencysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCurrency.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCurrencyList._Name.Visible (end) *@
+@if (mtCurrencyList.Code.Visible) { // mtCurrencyList.Code.Visible (begin)
+    if (!mtCurrencyList.Code.UseFilter) {
+        mtCurrencyList.SearchColumnCount++;
+    }
+    <div id="xs_Code" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCurrencyList.Code.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Code"
+            name="x_Code[]"
+            class="form-control ew-select@(mtCurrencyList.Code.IsInvalidClass)"
+            data-select2-id="fMTCurrencysrch_x_Code"
+            data-table="MTCurrency"
+            data-field="x_Code"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCurrencyList.Code.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCurrencyList.Code.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCurrencyList.Code.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCurrencyList.Code.EditAttributes)>
+            @(mtCurrencyList.Code.SelectOptionListHtml("x_Code", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCurrencyList.Code.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCurrencysrch", function() {
+            var options = {
+                name: "x_Code",
+                selectId: "fMTCurrencysrch_x_Code",
+                ajax: { id: "x_Code", form: "fMTCurrencysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCurrency.fields.Code.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCurrencyList.Code.Visible (end) *@
+@if (mtCurrencyList.CreatedByUserID.Visible) { // mtCurrencyList.CreatedByUserID.Visible (begin)
+    if (!mtCurrencyList.CreatedByUserID.UseFilter) {
+        mtCurrencyList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCurrencyList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtCurrencyList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCurrencysrch_x_CreatedByUserID"
+            data-table="MTCurrency"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCurrencyList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCurrencyList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCurrencyList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCurrencyList.CreatedByUserID.EditAttributes)>
+            @(mtCurrencyList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCurrencyList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCurrencysrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTCurrencysrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTCurrencysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCurrency.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCurrencyList.CreatedByUserID.Visible (end) *@
+@if (mtCurrencyList.CreatedDateTime.Visible) { // mtCurrencyList.CreatedDateTime.Visible (begin)
+    if (!mtCurrencyList.CreatedDateTime.UseFilter) {
+        mtCurrencyList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCurrencyList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtCurrencyList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCurrencysrch_x_CreatedDateTime"
+            data-table="MTCurrency"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCurrencyList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCurrencyList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCurrencyList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCurrencyList.CreatedDateTime.EditAttributes)>
+            @(mtCurrencyList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCurrencyList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCurrencysrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTCurrencysrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTCurrencysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCurrency.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCurrencyList.CreatedDateTime.Visible (end) *@
+@if (mtCurrencyList.LastUpdatedByUserID.Visible) { // mtCurrencyList.LastUpdatedByUserID.Visible (begin)
+    if (!mtCurrencyList.LastUpdatedByUserID.UseFilter) {
+        mtCurrencyList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCurrencyList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtCurrencyList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCurrencysrch_x_LastUpdatedByUserID"
+            data-table="MTCurrency"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCurrencyList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCurrencyList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCurrencyList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCurrencyList.LastUpdatedByUserID.EditAttributes)>
+            @(mtCurrencyList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCurrencyList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCurrencysrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTCurrencysrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTCurrencysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCurrency.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCurrencyList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCurrencyList.LastUpdatedDateTime.Visible) { // mtCurrencyList.LastUpdatedDateTime.Visible (begin)
+    if (!mtCurrencyList.LastUpdatedDateTime.UseFilter) {
+        mtCurrencyList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCurrencyList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtCurrencyList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCurrencysrch_x_LastUpdatedDateTime"
+            data-table="MTCurrency"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCurrencyList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCurrencyList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCurrencyList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCurrencyList.LastUpdatedDateTime.EditAttributes)>
+            @(mtCurrencyList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCurrencyList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCurrencysrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTCurrencysrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTCurrencysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCurrency.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCurrencyList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtCurrencyList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtCurrencyList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtCurrencyList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtCurrencyList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTCurrencysrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtCurrencyList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTCurrencysrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtCurrencyList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTCurrencysrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtCurrencyList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTCurrencysrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtCurrencyList.ShowPageHeader()
+@mtCurrencyList.ShowMessages()
+<main class="list @(mtCurrencyList.TotalRecords == 0 && !mtCurrencyList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtCurrencyList.TotalRecords > 0 || !Empty(mtCurrencyList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCurrencyList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCurrencyList.TableGridClass)">
+<form name="@(mtCurrencyList.FormName)" id="@(mtCurrencyList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtCurrencyList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtCurrencyList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTCurrency" class="card-body ew-grid-middle-panel @(mtCurrencyList.TableContainerClass)" style="@(mtCurrencyList.TableContainerStyle)">
+@if (mtCurrencyList.TotalRecords > 0 || mtCurrencyList.IsGridEdit || mtCurrencyList.IsMultiEdit) {
+<table id="tbl_MTCurrencylist" class="@(mtCurrencyList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCurrencyList.RowType = RowType.Header;
+
+    // Render list options
+    await mtCurrencyList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCurrencyList.ListOptions.RenderHeader("left")
+@if (mtCurrencyList._Name.Visible) { // mtCurrencyList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtCurrencyList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCurrency__Name" class="MTCurrency__Name">@Html.Raw(mtCurrencyList.RenderFieldHeader(mtCurrencyList._Name))</div></th>
+} @* mtCurrencyList._Name.Visible (end) *@
+@if (mtCurrencyList.Code.Visible) { // mtCurrencyList.Code.Visible (begin)
+        <th data-name="Code" class="@(mtCurrencyList.Code.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCurrency_Code" class="MTCurrency_Code">@Html.Raw(mtCurrencyList.RenderFieldHeader(mtCurrencyList.Code))</div></th>
+} @* mtCurrencyList.Code.Visible (end) *@
+@if (mtCurrencyList.CreatedByUserID.Visible) { // mtCurrencyList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCurrencyList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCurrency_CreatedByUserID" class="MTCurrency_CreatedByUserID">@Html.Raw(mtCurrencyList.RenderFieldHeader(mtCurrencyList.CreatedByUserID))</div></th>
+} @* mtCurrencyList.CreatedByUserID.Visible (end) *@
+@if (mtCurrencyList.CreatedDateTime.Visible) { // mtCurrencyList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCurrencyList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCurrency_CreatedDateTime" class="MTCurrency_CreatedDateTime">@Html.Raw(mtCurrencyList.RenderFieldHeader(mtCurrencyList.CreatedDateTime))</div></th>
+} @* mtCurrencyList.CreatedDateTime.Visible (end) *@
+@if (mtCurrencyList.LastUpdatedByUserID.Visible) { // mtCurrencyList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCurrencyList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCurrency_LastUpdatedByUserID" class="MTCurrency_LastUpdatedByUserID">@Html.Raw(mtCurrencyList.RenderFieldHeader(mtCurrencyList.LastUpdatedByUserID))</div></th>
+} @* mtCurrencyList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCurrencyList.LastUpdatedDateTime.Visible) { // mtCurrencyList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCurrencyList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCurrency_LastUpdatedDateTime" class="MTCurrency_LastUpdatedDateTime">@Html.Raw(mtCurrencyList.RenderFieldHeader(mtCurrencyList.LastUpdatedDateTime))</div></th>
+} @* mtCurrencyList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCurrencyList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCurrencyList.PageNumber)">
+@{
+    await mtCurrencyList.SetupGrid();
+    bool eof = mtCurrencyList.Recordset == null; // DN
+}
+@while (mtCurrencyList.RecordCount < mtCurrencyList.StopRecord || SameString(mtCurrencyList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCurrencyList.RowIndex, "$rowindex$") &&
+        (!mtCurrencyList.IsGridAdd || mtCurrencyList.CurrentMode == "copy") &&
+        (!((mtCurrencyList.IsCopy || mtCurrencyList.IsAdd) && mtCurrencyList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCurrencyList.Recordset.ReadAsync();
+    mtCurrencyList.RecordCount++;
+    if (mtCurrencyList.RecordCount >= mtCurrencyList.StartRecord) {
+        await mtCurrencyList.SetupRow();
+    <tr @Html.Raw(mtCurrencyList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCurrencyList.ListOptions.RenderBody("left", mtCurrencyList.RowCount)
+    @if (mtCurrencyList._Name.Visible) { // mtCurrencyList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtCurrencyList._Name.CellAttributes)>
+<span id="el@(mtCurrencyList.RowCount)_MTCurrency__Name" class="el_MTCurrency__Name">
+<span @Html.Raw(mtCurrencyList._Name.ViewAttributes)>
+@Html.Raw(mtCurrencyList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCurrencyList._Name.Visible (end) *@
+    @if (mtCurrencyList.Code.Visible) { // mtCurrencyList.Code.Visible (begin)
+        <td data-name="Code" @Html.Raw(mtCurrencyList.Code.CellAttributes)>
+<span id="el@(mtCurrencyList.RowCount)_MTCurrency_Code" class="el_MTCurrency_Code">
+<span @Html.Raw(mtCurrencyList.Code.ViewAttributes)>
+@Html.Raw(mtCurrencyList.Code.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCurrencyList.Code.Visible (end) *@
+    @if (mtCurrencyList.CreatedByUserID.Visible) { // mtCurrencyList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCurrencyList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtCurrencyList.RowCount)_MTCurrency_CreatedByUserID" class="el_MTCurrency_CreatedByUserID">
+<span @Html.Raw(mtCurrencyList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCurrencyList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCurrencyList.CreatedByUserID.Visible (end) *@
+    @if (mtCurrencyList.CreatedDateTime.Visible) { // mtCurrencyList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCurrencyList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtCurrencyList.RowCount)_MTCurrency_CreatedDateTime" class="el_MTCurrency_CreatedDateTime">
+<span @Html.Raw(mtCurrencyList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCurrencyList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCurrencyList.CreatedDateTime.Visible (end) *@
+    @if (mtCurrencyList.LastUpdatedByUserID.Visible) { // mtCurrencyList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCurrencyList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtCurrencyList.RowCount)_MTCurrency_LastUpdatedByUserID" class="el_MTCurrency_LastUpdatedByUserID">
+<span @Html.Raw(mtCurrencyList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCurrencyList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCurrencyList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCurrencyList.LastUpdatedDateTime.Visible) { // mtCurrencyList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCurrencyList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtCurrencyList.RowCount)_MTCurrency_LastUpdatedDateTime" class="el_MTCurrency_LastUpdatedDateTime">
+<span @Html.Raw(mtCurrencyList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCurrencyList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCurrencyList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCurrencyList.ListOptions.RenderBody("right", mtCurrencyList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCurrencyList.RowIndex, "$rowindex$"))
+        mtCurrencyList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCurrencyList.IsCopy || mtCurrencyList.IsAdd) && mtCurrencyList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCurrencyList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCurrencyList.CurrentAction) && !mtCurrencyList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtCurrencyList.CloseRecordset(); }
+@if (!mtCurrencyList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtCurrencyList.IsGridAdd && !(mtCurrencyList.IsGridEdit && mtCurrencyList.ModalGridEdit) && !mtCurrencyList.IsMultiEdit) {
+@Html.Raw(mtCurrencyList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtCurrencyList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCurrencyList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtCurrencyList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtCurrencyList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCurrency");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

@@ -1,0 +1,153 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trChecklistPerformancePreview.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+ew.deepAssign(ew.vars, { tables: { TRChecklistPerformance: @Html.Raw(ConvertToJson(trChecklistPerformancePreview.ToClientVar())) } });
+</script>
+@trChecklistPerformancePreview.ShowPageHeader()
+@if (trChecklistPerformancePreview.TotalRecords > 0) {
+<div class="card ew-grid @(trChecklistPerformancePreview.TableGridClass)"><!-- .card -->
+<div class="card-body ew-preview-middle-panel ew-grid-middle-panel @(trChecklistPerformancePreview.TableContainerClass)" style="@(trChecklistPerformancePreview.TableContainerStyle)"><!-- .card-body -->
+<table class="@(trChecklistPerformancePreview.TableClass)"><!-- .table -->
+    <thead><!-- Table header -->
+        <tr class="ew-table-header">
+@{
+    await trChecklistPerformancePreview.RenderListOptions(); // Render list options
+}
+@trChecklistPerformancePreview.ListOptions.RenderHeader("left")
+@if (trChecklistPerformancePreview.ManningAgent.Visible) { // trChecklistPerformancePreview.ManningAgent.Visible (begin)
+    if (Empty(trChecklistPerformancePreview.SortUrl(trChecklistPerformancePreview.ManningAgent))) {
+        <th class="@trChecklistPerformancePreview.ManningAgent.HeaderCellClass">@Html.Raw(trChecklistPerformancePreview.ManningAgent.Caption)</th>
+    } else {
+        <th class="@trChecklistPerformancePreview.ManningAgent.HeaderCellClass"><div role="button" data-table="TRChecklistPerformance" data-sort="@trChecklistPerformancePreview.ManningAgent.Name" data-sort-type="2" data-sort-order="@trChecklistPerformancePreview.ManningAgent.NextSort">
+            <div class="ew-table-header-btn">
+                <span class="ew-table-header-caption">@Html.Raw(trChecklistPerformancePreview.ManningAgent.Caption)</span>
+                <span class="ew-table-header-sort">@Html.Raw(trChecklistPerformancePreview.ManningAgent.SortIcon)</span>
+            </div>
+        </th>
+    }
+} @* trChecklistPerformancePreview.ManningAgent.Visible (end) *@
+@if (trChecklistPerformancePreview.VesselName.Visible) { // trChecklistPerformancePreview.VesselName.Visible (begin)
+    if (Empty(trChecklistPerformancePreview.SortUrl(trChecklistPerformancePreview.VesselName))) {
+        <th class="@trChecklistPerformancePreview.VesselName.HeaderCellClass">@Html.Raw(trChecklistPerformancePreview.VesselName.Caption)</th>
+    } else {
+        <th class="@trChecklistPerformancePreview.VesselName.HeaderCellClass"><div role="button" data-table="TRChecklistPerformance" data-sort="@trChecklistPerformancePreview.VesselName.Name" data-sort-type="2" data-sort-order="@trChecklistPerformancePreview.VesselName.NextSort">
+            <div class="ew-table-header-btn">
+                <span class="ew-table-header-caption">@Html.Raw(trChecklistPerformancePreview.VesselName.Caption)</span>
+                <span class="ew-table-header-sort">@Html.Raw(trChecklistPerformancePreview.VesselName.SortIcon)</span>
+            </div>
+        </th>
+    }
+} @* trChecklistPerformancePreview.VesselName.Visible (end) *@
+@if (trChecklistPerformancePreview.Performance.Visible) { // trChecklistPerformancePreview.Performance.Visible (begin)
+    if (Empty(trChecklistPerformancePreview.SortUrl(trChecklistPerformancePreview.Performance))) {
+        <th class="@trChecklistPerformancePreview.Performance.HeaderCellClass">@Html.Raw(trChecklistPerformancePreview.Performance.Caption)</th>
+    } else {
+        <th class="@trChecklistPerformancePreview.Performance.HeaderCellClass"><div role="button" data-table="TRChecklistPerformance" data-sort="@trChecklistPerformancePreview.Performance.Name" data-sort-type="2" data-sort-order="@trChecklistPerformancePreview.Performance.NextSort">
+            <div class="ew-table-header-btn">
+                <span class="ew-table-header-caption">@Html.Raw(trChecklistPerformancePreview.Performance.Caption)</span>
+                <span class="ew-table-header-sort">@Html.Raw(trChecklistPerformancePreview.Performance.SortIcon)</span>
+            </div>
+        </th>
+    }
+} @* trChecklistPerformancePreview.Performance.Visible (end) *@
+@if (trChecklistPerformancePreview.DateChecked.Visible) { // trChecklistPerformancePreview.DateChecked.Visible (begin)
+    if (Empty(trChecklistPerformancePreview.SortUrl(trChecklistPerformancePreview.DateChecked))) {
+        <th class="@trChecklistPerformancePreview.DateChecked.HeaderCellClass">@Html.Raw(trChecklistPerformancePreview.DateChecked.Caption)</th>
+    } else {
+        <th class="@trChecklistPerformancePreview.DateChecked.HeaderCellClass"><div role="button" data-table="TRChecklistPerformance" data-sort="@trChecklistPerformancePreview.DateChecked.Name" data-sort-type="2" data-sort-order="@trChecklistPerformancePreview.DateChecked.NextSort">
+            <div class="ew-table-header-btn">
+                <span class="ew-table-header-caption">@Html.Raw(trChecklistPerformancePreview.DateChecked.Caption)</span>
+                <span class="ew-table-header-sort">@Html.Raw(trChecklistPerformancePreview.DateChecked.SortIcon)</span>
+            </div>
+        </th>
+    }
+} @* trChecklistPerformancePreview.DateChecked.Visible (end) *@
+@trChecklistPerformancePreview.ListOptions.RenderHeader("right")
+        </tr>
+    </thead>
+    <tbody><!-- Table body -->
+@{
+    trChecklistPerformancePreview.RecordCount = 0;
+    trChecklistPerformancePreview.RowCount = 0;
+}
+@do {
+    // Init row class and style
+    trChecklistPerformancePreview.RecordCount++;
+    trChecklistPerformancePreview.RowCount++;
+    trChecklistPerformancePreview.CssStyle = "";
+    trChecklistPerformancePreview.LoadListRowValues(trChecklistPerformancePreview.Recordset);
+
+    // Render row
+    trChecklistPerformancePreview.RowType = RowType.Preview; // Preview record
+    trChecklistPerformancePreview.ResetAttributes();
+    await trChecklistPerformancePreview.RenderListRow();
+
+    // Render list options
+    await trChecklistPerformancePreview.RenderListOptions();
+    <tr @Html.Raw(trChecklistPerformancePreview.RowAttributes)>
+    @trChecklistPerformancePreview.ListOptions.RenderBody("left", trChecklistPerformancePreview.RowCount)
+    @if (trChecklistPerformancePreview.ManningAgent.Visible) { // trChecklistPerformancePreview.ManningAgent.Visible (begin)
+            <td @Html.Raw(trChecklistPerformancePreview.ManningAgent.CellAttributes)>
+<span @Html.Raw(trChecklistPerformancePreview.ManningAgent.ViewAttributes)>
+@Html.Raw(trChecklistPerformancePreview.ManningAgent.GetViewValue())</span>
+</td>
+    } @* trChecklistPerformancePreview.ManningAgent.Visible (end) *@
+    @if (trChecklistPerformancePreview.VesselName.Visible) { // trChecklistPerformancePreview.VesselName.Visible (begin)
+            <td @Html.Raw(trChecklistPerformancePreview.VesselName.CellAttributes)>
+<span @Html.Raw(trChecklistPerformancePreview.VesselName.ViewAttributes)>
+@Html.Raw(trChecklistPerformancePreview.VesselName.GetViewValue())</span>
+</td>
+    } @* trChecklistPerformancePreview.VesselName.Visible (end) *@
+    @if (trChecklistPerformancePreview.Performance.Visible) { // trChecklistPerformancePreview.Performance.Visible (begin)
+            <td @Html.Raw(trChecklistPerformancePreview.Performance.CellAttributes)>
+<span @Html.Raw(trChecklistPerformancePreview.Performance.ViewAttributes)>
+@Html.Raw(trChecklistPerformancePreview.Performance.GetViewValue())</span>
+</td>
+    } @* trChecklistPerformancePreview.Performance.Visible (end) *@
+    @if (trChecklistPerformancePreview.DateChecked.Visible) { // trChecklistPerformancePreview.DateChecked.Visible (begin)
+            <td @Html.Raw(trChecklistPerformancePreview.DateChecked.CellAttributes)>
+<span @Html.Raw(trChecklistPerformancePreview.DateChecked.ViewAttributes)>
+@Html.Raw(trChecklistPerformancePreview.DateChecked.GetViewValue())</span>
+</td>
+    } @* trChecklistPerformancePreview.DateChecked.Visible (end) *@
+    @trChecklistPerformancePreview.ListOptions.RenderBody("right", trChecklistPerformancePreview.RowCount)
+    </tr>
+} while (await trChecklistPerformancePreview.Recordset.ReadAsync());
+    </tbody>
+</table><!-- /.table -->
+</div><!-- /.card-body -->
+<div class="card-footer ew-grid-lower-panel ew-preview-lower-panel"><!-- .card-footer -->
+@Html.Raw(trChecklistPerformancePreview.Pager.Render())
+<div class="ew-preview-other-options">
+@trChecklistPerformancePreview.OtherOptions.RenderBody()
+</div>
+</div><!-- /.card-footer -->
+</div><!-- /.card -->
+} else { @* No record *@
+<div class="card border-0"><!-- .card -->
+<div class="ew-detail-count">@Html.Raw(Language.Phrase("NoRecord"))</div>
+<div class="ew-preview-other-options">
+@trChecklistPerformancePreview.OtherOptions.RenderBody()
+</div>
+</div><!-- /.card -->
+}
+@trChecklistPerformancePreview.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()

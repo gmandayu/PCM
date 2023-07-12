@@ -1,0 +1,500 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewGeneralDataForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewGeneralDataForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewGeneralDataForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewGeneralDataForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewGeneralDataForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewGeneralDataForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewGeneralDataForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewGeneralDataForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewGeneralDataForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "EmployeeStatus": @Html.Raw(crewGeneralDataForAdminList.EmployeeStatus.ToClientList(crewGeneralDataForAdminList)),
+            "FormSubmittedDateTime": @Html.Raw(crewGeneralDataForAdminList.FormSubmittedDateTime.ToClientList(crewGeneralDataForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewGeneralDataForAdminList.LastUpdatedByUserID.ToClientList(crewGeneralDataForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewGeneralDataForAdminList.LastUpdatedDateTime.ToClientList(crewGeneralDataForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewGeneralDataForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewGeneralDataForAdminList.TotalRecords > 0 && crewGeneralDataForAdminList.ExportOptions.Visible) {
+    crewGeneralDataForAdminList.ExportOptions.Render("body");
+}
+@if (crewGeneralDataForAdminList.ImportOptions.Visible) {
+    crewGeneralDataForAdminList.ImportOptions.Render("body");
+}
+@if (crewGeneralDataForAdminList.SearchOptions.Visible) {
+    crewGeneralDataForAdminList.SearchOptions.Render("body");
+}
+@if (crewGeneralDataForAdminList.FilterOptions.Visible) {
+    crewGeneralDataForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewGeneralDataForAdminList.ShowCurrentFilter) {
+    crewGeneralDataForAdminList.ShowFilterList();
+}
+@if (!crewGeneralDataForAdminList.IsModal) {
+<form name="fCrewGeneralDataForAdminsrch" id="fCrewGeneralDataForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewGeneralDataForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewGeneralDataForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewGeneralDataForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewGeneralDataForAdmin: currentTable } });
+var currentForm;
+var fCrewGeneralDataForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewGeneralDataForAdminsrch")
+        .setPageId("list")
+@if (crewGeneralDataForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["FormSubmittedDateTime", [], fields.FormSubmittedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "EmployeeStatus": @Html.Raw(crewGeneralDataForAdminList.EmployeeStatus.ToClientList(crewGeneralDataForAdminList)),
+            "FormSubmittedDateTime": @Html.Raw(crewGeneralDataForAdminList.FormSubmittedDateTime.ToClientList(crewGeneralDataForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewGeneralDataForAdminList.LastUpdatedByUserID.ToClientList(crewGeneralDataForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewGeneralDataForAdminList.LastUpdatedDateTime.ToClientList(crewGeneralDataForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewGeneralDataForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewGeneralDataForAdminList.IsExport() && Empty(crewGeneralDataForAdminList.CurrentAction) && crewGeneralDataForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewGeneralDataForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewGeneralDataForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewGeneralDataForAdminList.RowType = RowType.Search;
+    crewGeneralDataForAdminList.ResetAttributes();
+    await crewGeneralDataForAdminList.RenderRow();
+}
+@if (crewGeneralDataForAdminList.EmployeeStatus.Visible) { // crewGeneralDataForAdminList.EmployeeStatus.Visible (begin)
+    if (!crewGeneralDataForAdminList.EmployeeStatus.UseFilter) {
+        crewGeneralDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_EmployeeStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewGeneralDataForAdminList.EmployeeStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EmployeeStatus"
+            name="x_EmployeeStatus[]"
+            class="form-control ew-select@(crewGeneralDataForAdminList.EmployeeStatus.IsInvalidClass)"
+            data-select2-id="fCrewGeneralDataForAdminsrch_x_EmployeeStatus"
+            data-table="CrewGeneralDataForAdmin"
+            data-field="x_EmployeeStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewGeneralDataForAdminList.EmployeeStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewGeneralDataForAdminList.EmployeeStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewGeneralDataForAdminList.EmployeeStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewGeneralDataForAdminList.EmployeeStatus.EditAttributes)>
+            @(crewGeneralDataForAdminList.EmployeeStatus.SelectOptionListHtml("x_EmployeeStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewGeneralDataForAdminList.EmployeeStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewGeneralDataForAdminsrch", function() {
+            var options = {
+                name: "x_EmployeeStatus",
+                selectId: "fCrewGeneralDataForAdminsrch_x_EmployeeStatus",
+                ajax: { id: "x_EmployeeStatus", form: "fCrewGeneralDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewGeneralDataForAdmin.fields.EmployeeStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewGeneralDataForAdminList.EmployeeStatus.Visible (end) *@
+@if (crewGeneralDataForAdminList.FormSubmittedDateTime.Visible) { // crewGeneralDataForAdminList.FormSubmittedDateTime.Visible (begin)
+    if (!crewGeneralDataForAdminList.FormSubmittedDateTime.UseFilter) {
+        crewGeneralDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_FormSubmittedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewGeneralDataForAdminList.FormSubmittedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FormSubmittedDateTime"
+            name="x_FormSubmittedDateTime[]"
+            class="form-control ew-select@(crewGeneralDataForAdminList.FormSubmittedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewGeneralDataForAdminsrch_x_FormSubmittedDateTime"
+            data-table="CrewGeneralDataForAdmin"
+            data-field="x_FormSubmittedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewGeneralDataForAdminList.FormSubmittedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewGeneralDataForAdminList.FormSubmittedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewGeneralDataForAdminList.FormSubmittedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewGeneralDataForAdminList.FormSubmittedDateTime.EditAttributes)>
+            @(crewGeneralDataForAdminList.FormSubmittedDateTime.SelectOptionListHtml("x_FormSubmittedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewGeneralDataForAdminList.FormSubmittedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewGeneralDataForAdminsrch", function() {
+            var options = {
+                name: "x_FormSubmittedDateTime",
+                selectId: "fCrewGeneralDataForAdminsrch_x_FormSubmittedDateTime",
+                ajax: { id: "x_FormSubmittedDateTime", form: "fCrewGeneralDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewGeneralDataForAdmin.fields.FormSubmittedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewGeneralDataForAdminList.FormSubmittedDateTime.Visible (end) *@
+@if (crewGeneralDataForAdminList.LastUpdatedByUserID.Visible) { // crewGeneralDataForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewGeneralDataForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewGeneralDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewGeneralDataForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewGeneralDataForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewGeneralDataForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewGeneralDataForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewGeneralDataForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewGeneralDataForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewGeneralDataForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewGeneralDataForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewGeneralDataForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewGeneralDataForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewGeneralDataForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewGeneralDataForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewGeneralDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewGeneralDataForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewGeneralDataForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewGeneralDataForAdminList.LastUpdatedDateTime.Visible) { // crewGeneralDataForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewGeneralDataForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewGeneralDataForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewGeneralDataForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewGeneralDataForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewGeneralDataForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewGeneralDataForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewGeneralDataForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewGeneralDataForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewGeneralDataForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewGeneralDataForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewGeneralDataForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewGeneralDataForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewGeneralDataForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewGeneralDataForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewGeneralDataForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewGeneralDataForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewGeneralDataForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewGeneralDataForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewGeneralDataForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewGeneralDataForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewGeneralDataForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewGeneralDataForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewGeneralDataForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewGeneralDataForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewGeneralDataForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewGeneralDataForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewGeneralDataForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewGeneralDataForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewGeneralDataForAdminList.ShowPageHeader()
+@crewGeneralDataForAdminList.ShowMessages()
+<main class="list @(crewGeneralDataForAdminList.TotalRecords == 0 && !crewGeneralDataForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewGeneralDataForAdminList.TotalRecords > 0 || !Empty(crewGeneralDataForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewGeneralDataForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewGeneralDataForAdminList.TableGridClass)">
+<form name="@(crewGeneralDataForAdminList.FormName)" id="@(crewGeneralDataForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewGeneralDataForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewGeneralDataForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewGeneralDataForAdmin" class="card-body ew-grid-middle-panel @(crewGeneralDataForAdminList.TableContainerClass)" style="@(crewGeneralDataForAdminList.TableContainerStyle)">
+@if (crewGeneralDataForAdminList.TotalRecords > 0 || crewGeneralDataForAdminList.IsGridEdit || crewGeneralDataForAdminList.IsMultiEdit) {
+<table id="tbl_CrewGeneralDataForAdminlist" class="@(crewGeneralDataForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewGeneralDataForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewGeneralDataForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewGeneralDataForAdminList.ListOptions.RenderHeader("left")
+@if (crewGeneralDataForAdminList.EmployeeStatus.Visible) { // crewGeneralDataForAdminList.EmployeeStatus.Visible (begin)
+        <th data-name="EmployeeStatus" class="@(crewGeneralDataForAdminList.EmployeeStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewGeneralDataForAdmin_EmployeeStatus" class="CrewGeneralDataForAdmin_EmployeeStatus">@Html.Raw(crewGeneralDataForAdminList.RenderFieldHeader(crewGeneralDataForAdminList.EmployeeStatus))</div></th>
+} @* crewGeneralDataForAdminList.EmployeeStatus.Visible (end) *@
+@if (crewGeneralDataForAdminList.FormSubmittedDateTime.Visible) { // crewGeneralDataForAdminList.FormSubmittedDateTime.Visible (begin)
+        <th data-name="FormSubmittedDateTime" class="@(crewGeneralDataForAdminList.FormSubmittedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewGeneralDataForAdmin_FormSubmittedDateTime" class="CrewGeneralDataForAdmin_FormSubmittedDateTime">@Html.Raw(crewGeneralDataForAdminList.RenderFieldHeader(crewGeneralDataForAdminList.FormSubmittedDateTime))</div></th>
+} @* crewGeneralDataForAdminList.FormSubmittedDateTime.Visible (end) *@
+@if (crewGeneralDataForAdminList.LastUpdatedByUserID.Visible) { // crewGeneralDataForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewGeneralDataForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewGeneralDataForAdmin_LastUpdatedByUserID" class="CrewGeneralDataForAdmin_LastUpdatedByUserID">@Html.Raw(crewGeneralDataForAdminList.RenderFieldHeader(crewGeneralDataForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewGeneralDataForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewGeneralDataForAdminList.LastUpdatedDateTime.Visible) { // crewGeneralDataForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewGeneralDataForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewGeneralDataForAdmin_LastUpdatedDateTime" class="CrewGeneralDataForAdmin_LastUpdatedDateTime">@Html.Raw(crewGeneralDataForAdminList.RenderFieldHeader(crewGeneralDataForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewGeneralDataForAdminList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewGeneralDataForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewGeneralDataForAdminList.PageNumber)">
+@{
+    await crewGeneralDataForAdminList.SetupGrid();
+    bool eof = crewGeneralDataForAdminList.Recordset == null; // DN
+}
+@while (crewGeneralDataForAdminList.RecordCount < crewGeneralDataForAdminList.StopRecord || SameString(crewGeneralDataForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewGeneralDataForAdminList.RowIndex, "$rowindex$") &&
+        (!crewGeneralDataForAdminList.IsGridAdd || crewGeneralDataForAdminList.CurrentMode == "copy") &&
+        (!((crewGeneralDataForAdminList.IsCopy || crewGeneralDataForAdminList.IsAdd) && crewGeneralDataForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewGeneralDataForAdminList.Recordset.ReadAsync();
+    crewGeneralDataForAdminList.RecordCount++;
+    if (crewGeneralDataForAdminList.RecordCount >= crewGeneralDataForAdminList.StartRecord) {
+        await crewGeneralDataForAdminList.SetupRow();
+    <tr @Html.Raw(crewGeneralDataForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewGeneralDataForAdminList.ListOptions.RenderBody("left", crewGeneralDataForAdminList.RowCount)
+    @if (crewGeneralDataForAdminList.EmployeeStatus.Visible) { // crewGeneralDataForAdminList.EmployeeStatus.Visible (begin)
+        <td data-name="EmployeeStatus" @Html.Raw(crewGeneralDataForAdminList.EmployeeStatus.CellAttributes)>
+<span id="el@(crewGeneralDataForAdminList.RowCount)_CrewGeneralDataForAdmin_EmployeeStatus" class="el_CrewGeneralDataForAdmin_EmployeeStatus">
+<span @Html.Raw(crewGeneralDataForAdminList.EmployeeStatus.ViewAttributes)>
+@Html.Raw(crewGeneralDataForAdminList.EmployeeStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* crewGeneralDataForAdminList.EmployeeStatus.Visible (end) *@
+    @if (crewGeneralDataForAdminList.FormSubmittedDateTime.Visible) { // crewGeneralDataForAdminList.FormSubmittedDateTime.Visible (begin)
+        <td data-name="FormSubmittedDateTime" @Html.Raw(crewGeneralDataForAdminList.FormSubmittedDateTime.CellAttributes)>
+<span id="el@(crewGeneralDataForAdminList.RowCount)_CrewGeneralDataForAdmin_FormSubmittedDateTime" class="el_CrewGeneralDataForAdmin_FormSubmittedDateTime">
+<span @Html.Raw(crewGeneralDataForAdminList.FormSubmittedDateTime.ViewAttributes)>
+@Html.Raw(crewGeneralDataForAdminList.FormSubmittedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewGeneralDataForAdminList.FormSubmittedDateTime.Visible (end) *@
+    @if (crewGeneralDataForAdminList.LastUpdatedByUserID.Visible) { // crewGeneralDataForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewGeneralDataForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewGeneralDataForAdminList.RowCount)_CrewGeneralDataForAdmin_LastUpdatedByUserID" class="el_CrewGeneralDataForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewGeneralDataForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewGeneralDataForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewGeneralDataForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewGeneralDataForAdminList.LastUpdatedDateTime.Visible) { // crewGeneralDataForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewGeneralDataForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewGeneralDataForAdminList.RowCount)_CrewGeneralDataForAdmin_LastUpdatedDateTime" class="el_CrewGeneralDataForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewGeneralDataForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewGeneralDataForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewGeneralDataForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewGeneralDataForAdminList.ListOptions.RenderBody("right", crewGeneralDataForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewGeneralDataForAdminList.RowIndex, "$rowindex$"))
+        crewGeneralDataForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewGeneralDataForAdminList.IsCopy || crewGeneralDataForAdminList.IsAdd) && crewGeneralDataForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewGeneralDataForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewGeneralDataForAdminList.CurrentAction) && !crewGeneralDataForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewGeneralDataForAdminList.CloseRecordset(); }
+@if (!crewGeneralDataForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewGeneralDataForAdminList.IsGridAdd && !(crewGeneralDataForAdminList.IsGridEdit && crewGeneralDataForAdminList.ModalGridEdit) && !crewGeneralDataForAdminList.IsMultiEdit) {
+@Html.Raw(crewGeneralDataForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewGeneralDataForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewGeneralDataForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewGeneralDataForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewGeneralDataForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewGeneralDataForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

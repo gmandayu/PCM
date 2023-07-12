@@ -1,0 +1,226 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (notificationForAdminSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!notificationForAdminSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(notificationForAdminSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { NotificationForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fNotificationForAdminsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fNotificationForAdminsearch")
+        .setPageId("search")
+@if (notificationForAdminSearch.IsModal && notificationForAdminSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["CrewSeafarerIDWithName", [], fields.CrewSeafarerIDWithName.isInvalid],
+            ["Subject", [], fields.Subject.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+@if (notificationForAdminSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@notificationForAdminSearch.ShowPageHeader()
+@notificationForAdminSearch.ShowMessages()
+<form name="fNotificationForAdminsearch" id="fNotificationForAdminsearch" class="@(notificationForAdminSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (notificationForAdminSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (notificationForAdminSearch.CrewSeafarerIDWithName.Visible) { // notificationForAdminSearch.CrewSeafarerIDWithName.Visible (begin)
+    <div id="r_CrewSeafarerIDWithName" class="row" @Html.Raw(notificationForAdminSearch.CrewSeafarerIDWithName.RowAttributes)>
+        <label for="x_CrewSeafarerIDWithName" class="@(notificationForAdminSearch.LeftColumnClass)"><span id="elh_NotificationForAdmin_CrewSeafarerIDWithName">@Html.Raw(notificationForAdminSearch.CrewSeafarerIDWithName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CrewSeafarerIDWithName" id="z_CrewSeafarerIDWithName" value="LIKE">
+</span>
+        </label>
+        <div class="@(notificationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(notificationForAdminSearch.CrewSeafarerIDWithName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_NotificationForAdmin_CrewSeafarerIDWithName" class="ew-search-field ew-search-field-single">
+<input type="@(notificationForAdminSearch.CrewSeafarerIDWithName.InputTextType)" name="x_CrewSeafarerIDWithName" id="x_CrewSeafarerIDWithName" data-table="NotificationForAdmin" data-field="x_CrewSeafarerIDWithName" value="@Html.Raw(notificationForAdminSearch.CrewSeafarerIDWithName.EditValue)" size="30" maxlength="123" placeholder="@Html.Raw(HtmlEncode(notificationForAdminSearch.CrewSeafarerIDWithName.PlaceHolder))" data-format-pattern="@(notificationForAdminSearch.CrewSeafarerIDWithName.FormatPattern)"@Html.Raw(notificationForAdminSearch.CrewSeafarerIDWithName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(notificationForAdminSearch.CrewSeafarerIDWithName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* notificationForAdminSearch.CrewSeafarerIDWithName.Visible (end) *@
+@if (notificationForAdminSearch.Subject.Visible) { // notificationForAdminSearch.Subject.Visible (begin)
+    <div id="r_Subject" class="row" @Html.Raw(notificationForAdminSearch.Subject.RowAttributes)>
+        <label for="x_Subject" class="@(notificationForAdminSearch.LeftColumnClass)"><span id="elh_NotificationForAdmin_Subject">@Html.Raw(notificationForAdminSearch.Subject.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Subject" id="z_Subject" value="LIKE">
+</span>
+        </label>
+        <div class="@(notificationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(notificationForAdminSearch.Subject.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_NotificationForAdmin_Subject" class="ew-search-field ew-search-field-single">
+<input type="@(notificationForAdminSearch.Subject.InputTextType)" name="x_Subject" id="x_Subject" data-table="NotificationForAdmin" data-field="x_Subject" value="@Html.Raw(notificationForAdminSearch.Subject.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(notificationForAdminSearch.Subject.PlaceHolder))" data-format-pattern="@(notificationForAdminSearch.Subject.FormatPattern)"@Html.Raw(notificationForAdminSearch.Subject.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(notificationForAdminSearch.Subject.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* notificationForAdminSearch.Subject.Visible (end) *@
+@if (notificationForAdminSearch.CreatedDateTime.Visible) { // notificationForAdminSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(notificationForAdminSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(notificationForAdminSearch.LeftColumnClass)"><span id="elh_NotificationForAdmin_CreatedDateTime">@Html.Raw(notificationForAdminSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(notificationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(notificationForAdminSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_NotificationForAdmin_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(notificationForAdminSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="NotificationForAdmin" data-field="x_CreatedDateTime" value="@Html.Raw(notificationForAdminSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(notificationForAdminSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(notificationForAdminSearch.CreatedDateTime.FormatPattern)"@Html.Raw(notificationForAdminSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(notificationForAdminSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!notificationForAdminSearch.CreatedDateTime.ReadOnly && !notificationForAdminSearch.CreatedDateTime.Disabled && !notificationForAdminSearch.CreatedDateTime.EditAttrs.Is("readonly") && !notificationForAdminSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fNotificationForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fNotificationForAdminsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* notificationForAdminSearch.CreatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(notificationForAdminSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(notificationForAdminSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fNotificationForAdminsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (notificationForAdminSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fNotificationForAdminsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fNotificationForAdminsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(notificationForAdminSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@notificationForAdminSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("NotificationForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

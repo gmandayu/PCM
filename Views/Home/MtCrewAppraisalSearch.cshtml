@@ -1,0 +1,630 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewAppraisalSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewAppraisalSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewAppraisalSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewAppraisal: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewAppraisalsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewAppraisalsearch")
+        .setPageId("search")
+@if (mtCrewAppraisalSearch.IsModal && mtCrewAppraisalSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["MTRankID", [], fields.MTRankID.isInvalid],
+            ["Questionnaire", [], fields.Questionnaire.isInvalid],
+            ["Approved", [], fields.Approved.isInvalid],
+            ["AverageRating", [ew.Validators.float], fields.AverageRating.isInvalid],
+            ["Rehire", [], fields.Rehire.isInvalid],
+            ["Promote", [], fields.Promote.isInvalid],
+            ["Appraiser", [], fields.Appraiser.isInvalid],
+            ["DateInput", [ew.Validators.datetime(fields.DateInput.clientFormatPattern)], fields.DateInput.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewAppraisalSearch.MTCrewID.ToClientList(mtCrewAppraisalSearch)),
+            "MTRankID": @Html.Raw(mtCrewAppraisalSearch.MTRankID.ToClientList(mtCrewAppraisalSearch)),
+            "Approved": @Html.Raw(mtCrewAppraisalSearch.Approved.ToClientList(mtCrewAppraisalSearch)),
+            "Rehire": @Html.Raw(mtCrewAppraisalSearch.Rehire.ToClientList(mtCrewAppraisalSearch)),
+            "Promote": @Html.Raw(mtCrewAppraisalSearch.Promote.ToClientList(mtCrewAppraisalSearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewAppraisalSearch.CreatedByUserID.ToClientList(mtCrewAppraisalSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewAppraisalSearch.LastUpdatedByUserID.ToClientList(mtCrewAppraisalSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewAppraisalSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewAppraisalSearch.ShowPageHeader()
+@mtCrewAppraisalSearch.ShowMessages()
+<form name="fMTCrewAppraisalsearch" id="fMTCrewAppraisalsearch" class="@(mtCrewAppraisalSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewAppraisalSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewAppraisalSearch.MTCrewID.Visible) { // mtCrewAppraisalSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(mtCrewAppraisalSearch.MTCrewID.RowAttributes)>
+        <label class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_MTCrewID">@Html.Raw(mtCrewAppraisalSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_MTCrewID" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mtCrewAppraisalSearch.MTCrewID.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_MTCrewID" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_MTCrewID" id="sv_x_MTCrewID" value="@(RemoveHtml(ConvertToString(mtCrewAppraisalSearch.MTCrewID.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.MTCrewID.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.MTCrewID.FormatPattern)" @Html.Raw(mtCrewAppraisalSearch.MTCrewID.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="MTCrewAppraisal" data-field="x_MTCrewID" data-input="sv_x_MTCrewID" data-value-separator="@(mtCrewAppraisalSearch.MTCrewID.DisplayValueSeparatorAttribute)" name="x_MTCrewID" id="x_MTCrewID" value="@(HtmlEncode(mtCrewAppraisalSearch.MTCrewID.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.MTCrewID.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMTCrewAppraisalsearch"], function() {
+    fMTCrewAppraisalsearch.createAutoSuggest(Object.assign({"id":"x_MTCrewID","forceSelect":false}, { lookupAllDisplayFields: @(mtCrewAppraisalSearch.MTCrewID.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.MTCrewAppraisal.fields.MTCrewID.autoSuggestOptions));
+});
+</script>
+@Html.Raw(mtCrewAppraisalSearch.MTCrewID.Lookup.GetParamTag(mtCrewAppraisalSearch, "p_x_MTCrewID"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.MTCrewID.Visible (end) *@
+@if (mtCrewAppraisalSearch.VesselName.Visible) { // mtCrewAppraisalSearch.VesselName.Visible (begin)
+    <div id="r_VesselName" class="row" @Html.Raw(mtCrewAppraisalSearch.VesselName.RowAttributes)>
+        <label for="x_VesselName" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_VesselName">@Html.Raw(mtCrewAppraisalSearch.VesselName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VesselName" id="z_VesselName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.VesselName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_VesselName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewAppraisalSearch.VesselName.InputTextType)" name="x_VesselName" id="x_VesselName" data-table="MTCrewAppraisal" data-field="x_VesselName" value="@Html.Raw(mtCrewAppraisalSearch.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.VesselName.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.VesselName.FormatPattern)"@Html.Raw(mtCrewAppraisalSearch.VesselName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.VesselName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.VesselName.Visible (end) *@
+@if (mtCrewAppraisalSearch.MTRankID.Visible) { // mtCrewAppraisalSearch.MTRankID.Visible (begin)
+    <div id="r_MTRankID" class="row" @Html.Raw(mtCrewAppraisalSearch.MTRankID.RowAttributes)>
+        <label for="x_MTRankID" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_MTRankID">@Html.Raw(mtCrewAppraisalSearch.MTRankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTRankID" id="z_MTRankID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.MTRankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_MTRankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTRankID"
+        name="x_MTRankID"
+        class="form-select ew-select@(mtCrewAppraisalSearch.MTRankID.IsInvalidClass)"
+        data-select2-id="fMTCrewAppraisalsearch_x_MTRankID"
+        data-table="MTCrewAppraisal"
+        data-field="x_MTRankID"
+        data-value-separator="@(mtCrewAppraisalSearch.MTRankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewAppraisalSearch.MTRankID.PlaceHolder))"
+        @Html.Raw(mtCrewAppraisalSearch.MTRankID.EditAttributes)>
+        @(mtCrewAppraisalSearch.MTRankID.SelectOptionListHtml("x_MTRankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.MTRankID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewAppraisalSearch.MTRankID.Lookup.GetParamTag(mtCrewAppraisalSearch, "p_x_MTRankID"))
+<script>
+loadjs.ready("fMTCrewAppraisalsearch", function() {
+    var options = { name: "x_MTRankID", selectId: "fMTCrewAppraisalsearch_x_MTRankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewAppraisalsearch.lists.MTRankID?.lookupOptions.length) {
+        options.data = { id: "x_MTRankID", form: "fMTCrewAppraisalsearch" };
+    } else {
+        options.ajax = { id: "x_MTRankID", form: "fMTCrewAppraisalsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewAppraisal.fields.MTRankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.MTRankID.Visible (end) *@
+@if (mtCrewAppraisalSearch.Questionnaire.Visible) { // mtCrewAppraisalSearch.Questionnaire.Visible (begin)
+    <div id="r_Questionnaire" class="row" @Html.Raw(mtCrewAppraisalSearch.Questionnaire.RowAttributes)>
+        <label for="x_Questionnaire" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_Questionnaire">@Html.Raw(mtCrewAppraisalSearch.Questionnaire.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Questionnaire" id="z_Questionnaire" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.Questionnaire.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_Questionnaire" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewAppraisalSearch.Questionnaire.InputTextType)" name="x_Questionnaire" id="x_Questionnaire" data-table="MTCrewAppraisal" data-field="x_Questionnaire" value="@Html.Raw(mtCrewAppraisalSearch.Questionnaire.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.Questionnaire.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.Questionnaire.FormatPattern)"@Html.Raw(mtCrewAppraisalSearch.Questionnaire.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.Questionnaire.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.Questionnaire.Visible (end) *@
+@if (mtCrewAppraisalSearch.Approved.Visible) { // mtCrewAppraisalSearch.Approved.Visible (begin)
+    <div id="r_Approved" class="row" @Html.Raw(mtCrewAppraisalSearch.Approved.RowAttributes)>
+        <label class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_Approved">@Html.Raw(mtCrewAppraisalSearch.Approved.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Approved" id="z_Approved" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.Approved.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_Approved" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewAppraisalSearch.Approved.IsInvalidClass)" data-table="MTCrewAppraisal" data-field="x_Approved" data-boolean name="x_Approved" id="x_Approved" value="1" checked="@ConvertToBool(mtCrewAppraisalSearch.Approved.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewAppraisalSearch.Approved.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.Approved.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.Approved.Visible (end) *@
+@if (mtCrewAppraisalSearch.AverageRating.Visible) { // mtCrewAppraisalSearch.AverageRating.Visible (begin)
+    <div id="r_AverageRating" class="row" @Html.Raw(mtCrewAppraisalSearch.AverageRating.RowAttributes)>
+        <label for="x_AverageRating" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_AverageRating">@Html.Raw(mtCrewAppraisalSearch.AverageRating.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AverageRating" id="z_AverageRating" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.AverageRating.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_AverageRating" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewAppraisalSearch.AverageRating.InputTextType)" name="x_AverageRating" id="x_AverageRating" data-table="MTCrewAppraisal" data-field="x_AverageRating" value="@Html.Raw(mtCrewAppraisalSearch.AverageRating.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.AverageRating.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.AverageRating.FormatPattern)"@Html.Raw(mtCrewAppraisalSearch.AverageRating.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.AverageRating.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.AverageRating.Visible (end) *@
+@if (mtCrewAppraisalSearch.Rehire.Visible) { // mtCrewAppraisalSearch.Rehire.Visible (begin)
+    <div id="r_Rehire" class="row" @Html.Raw(mtCrewAppraisalSearch.Rehire.RowAttributes)>
+        <label class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_Rehire">@Html.Raw(mtCrewAppraisalSearch.Rehire.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Rehire" id="z_Rehire" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.Rehire.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_Rehire" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewAppraisalSearch.Rehire.IsInvalidClass)" data-table="MTCrewAppraisal" data-field="x_Rehire" data-boolean name="x_Rehire" id="x_Rehire" value="1" checked="@ConvertToBool(mtCrewAppraisalSearch.Rehire.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewAppraisalSearch.Rehire.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.Rehire.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.Rehire.Visible (end) *@
+@if (mtCrewAppraisalSearch.Promote.Visible) { // mtCrewAppraisalSearch.Promote.Visible (begin)
+    <div id="r_Promote" class="row" @Html.Raw(mtCrewAppraisalSearch.Promote.RowAttributes)>
+        <label class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_Promote">@Html.Raw(mtCrewAppraisalSearch.Promote.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Promote" id="z_Promote" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.Promote.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_Promote" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewAppraisalSearch.Promote.IsInvalidClass)" data-table="MTCrewAppraisal" data-field="x_Promote" data-boolean name="x_Promote" id="x_Promote" value="1" checked="@ConvertToBool(mtCrewAppraisalSearch.Promote.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewAppraisalSearch.Promote.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.Promote.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.Promote.Visible (end) *@
+@if (mtCrewAppraisalSearch.Appraiser.Visible) { // mtCrewAppraisalSearch.Appraiser.Visible (begin)
+    <div id="r_Appraiser" class="row" @Html.Raw(mtCrewAppraisalSearch.Appraiser.RowAttributes)>
+        <label for="x_Appraiser" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_Appraiser">@Html.Raw(mtCrewAppraisalSearch.Appraiser.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Appraiser" id="z_Appraiser" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.Appraiser.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_Appraiser" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewAppraisalSearch.Appraiser.InputTextType)" name="x_Appraiser" id="x_Appraiser" data-table="MTCrewAppraisal" data-field="x_Appraiser" value="@Html.Raw(mtCrewAppraisalSearch.Appraiser.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.Appraiser.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.Appraiser.FormatPattern)"@Html.Raw(mtCrewAppraisalSearch.Appraiser.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.Appraiser.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.Appraiser.Visible (end) *@
+@if (mtCrewAppraisalSearch.DateInput.Visible) { // mtCrewAppraisalSearch.DateInput.Visible (begin)
+    <div id="r_DateInput" class="row" @Html.Raw(mtCrewAppraisalSearch.DateInput.RowAttributes)>
+        <label for="x_DateInput" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_DateInput">@Html.Raw(mtCrewAppraisalSearch.DateInput.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateInput" id="z_DateInput" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.DateInput.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_DateInput" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewAppraisalSearch.DateInput.InputTextType)" name="x_DateInput" id="x_DateInput" data-table="MTCrewAppraisal" data-field="x_DateInput" value="@Html.Raw(mtCrewAppraisalSearch.DateInput.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.DateInput.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.DateInput.FormatPattern)"@Html.Raw(mtCrewAppraisalSearch.DateInput.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.DateInput.GetErrorMessage(false))</div>
+@if (!mtCrewAppraisalSearch.DateInput.ReadOnly && !mtCrewAppraisalSearch.DateInput.Disabled && !mtCrewAppraisalSearch.DateInput.EditAttrs.Is("readonly") && !mtCrewAppraisalSearch.DateInput.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewAppraisalsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewAppraisalsearch", "x_DateInput", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.DateInput.Visible (end) *@
+@if (mtCrewAppraisalSearch.CreatedByUserID.Visible) { // mtCrewAppraisalSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewAppraisalSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_CreatedByUserID">@Html.Raw(mtCrewAppraisalSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewAppraisalSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewAppraisalsearch_x_CreatedByUserID"
+        data-table="MTCrewAppraisal"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewAppraisalSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewAppraisalSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewAppraisalSearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewAppraisalSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewAppraisalSearch.CreatedByUserID.Lookup.GetParamTag(mtCrewAppraisalSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewAppraisalsearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewAppraisalsearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewAppraisalsearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewAppraisalsearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewAppraisalsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewAppraisal.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewAppraisalSearch.CreatedDateTime.Visible) { // mtCrewAppraisalSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewAppraisalSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_CreatedDateTime">@Html.Raw(mtCrewAppraisalSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewAppraisalSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrewAppraisal" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewAppraisalSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewAppraisalSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewAppraisalSearch.CreatedDateTime.ReadOnly && !mtCrewAppraisalSearch.CreatedDateTime.Disabled && !mtCrewAppraisalSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewAppraisalSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewAppraisalsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewAppraisalsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewAppraisalSearch.LastUpdatedByUserID.Visible) { // mtCrewAppraisalSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewAppraisalSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_LastUpdatedByUserID">@Html.Raw(mtCrewAppraisalSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewAppraisalSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewAppraisalsearch_x_LastUpdatedByUserID"
+        data-table="MTCrewAppraisal"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewAppraisalSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewAppraisalSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewAppraisalSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewAppraisalSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewAppraisalSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewAppraisalSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewAppraisalsearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewAppraisalsearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewAppraisalsearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewAppraisalsearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewAppraisalsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewAppraisal.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewAppraisalSearch.LastUpdatedDateTime.Visible) { // mtCrewAppraisalSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewAppraisalSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewAppraisalSearch.LeftColumnClass)"><span id="elh_MTCrewAppraisal_LastUpdatedDateTime">@Html.Raw(mtCrewAppraisalSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewAppraisalSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewAppraisalSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewAppraisal_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewAppraisalSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrewAppraisal" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewAppraisalSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewAppraisalSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewAppraisalSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewAppraisalSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewAppraisalSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewAppraisalSearch.LastUpdatedDateTime.ReadOnly && !mtCrewAppraisalSearch.LastUpdatedDateTime.Disabled && !mtCrewAppraisalSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewAppraisalSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewAppraisalsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewAppraisalsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewAppraisalSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewAppraisalSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewAppraisalSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewAppraisalsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewAppraisalSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewAppraisalsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewAppraisalsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewAppraisalSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewAppraisalSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewAppraisal");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

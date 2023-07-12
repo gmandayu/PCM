@@ -1,0 +1,141 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtUserLevelEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtUserLevelEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtUserLevelEdit.ShowPageHeader()
+@mtUserLevelEdit.ShowMessages()
+<main class="edit">
+<form name="fMTUserLeveledit" id="fMTUserLeveledit" class="@(mtUserLevelEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtUserLevelEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTUserLevel: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fMTUserLeveledit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTUserLeveledit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["UserLevelID", [fields.UserLevelID.visible && fields.UserLevelID.required ? ew.Validators.required(fields.UserLevelID.caption) : null, ew.Validators.userLevelId, ew.Validators.integer], fields.UserLevelID.isInvalid],
+            ["UserLevelName", [fields.UserLevelName.visible && fields.UserLevelName.required ? ew.Validators.required(fields.UserLevelName.caption) : null, ew.Validators.userLevelName('UserLevelID')], fields.UserLevelName.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(mtUserLevelEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mtUserLevelEdit.OldKeyName)" value="@Html.Raw(mtUserLevelEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (mtUserLevelEdit.UserLevelID.Visible) { // mtUserLevelEdit.UserLevelID.Visible (begin)
+    <div id="r_UserLevelID" @Html.Raw(mtUserLevelEdit.UserLevelID.RowAttributes)>
+        <label id="elh_MTUserLevel_UserLevelID" for="x_UserLevelID" class="@(mtUserLevelEdit.LeftColumnClass)">@Html.Raw(mtUserLevelEdit.UserLevelID.Caption)@Html.Raw(mtUserLevelEdit.UserLevelID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtUserLevelEdit.RightColumnClass)"><div @Html.Raw(mtUserLevelEdit.UserLevelID.CellAttributes)>
+<span id="el_MTUserLevel_UserLevelID">
+<input type="@(mtUserLevelEdit.UserLevelID.InputTextType)" name="x_UserLevelID" id="x_UserLevelID" data-table="MTUserLevel" data-field="x_UserLevelID" value="@Html.Raw(mtUserLevelEdit.UserLevelID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtUserLevelEdit.UserLevelID.PlaceHolder))" data-format-pattern="@(mtUserLevelEdit.UserLevelID.FormatPattern)"@Html.Raw(mtUserLevelEdit.UserLevelID.EditAttributes) aria-describedby="x_UserLevelID_help">
+@Html.Raw(mtUserLevelEdit.UserLevelID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtUserLevelEdit.UserLevelID.GetErrorMessage())</div>
+<input type="hidden" data-table="MTUserLevel" data-field="x_UserLevelID" data-hidden="1" data-old name="o_UserLevelID" id="o_UserLevelID" value="@Html.Raw(HtmlEncode(mtUserLevelEdit.UserLevelID.OldValue ?? mtUserLevelEdit.UserLevelID.CurrentValue))">
+</span>
+</div></div>
+    </div>
+} @* mtUserLevelEdit.UserLevelID.Visible (end) *@
+@if (mtUserLevelEdit.UserLevelName.Visible) { // mtUserLevelEdit.UserLevelName.Visible (begin)
+    <div id="r_UserLevelName" @Html.Raw(mtUserLevelEdit.UserLevelName.RowAttributes)>
+        <label id="elh_MTUserLevel_UserLevelName" for="x_UserLevelName" class="@(mtUserLevelEdit.LeftColumnClass)">@Html.Raw(mtUserLevelEdit.UserLevelName.Caption)@Html.Raw(mtUserLevelEdit.UserLevelName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtUserLevelEdit.RightColumnClass)"><div @Html.Raw(mtUserLevelEdit.UserLevelName.CellAttributes)>
+<span id="el_MTUserLevel_UserLevelName">
+<input type="@(mtUserLevelEdit.UserLevelName.InputTextType)" name="x_UserLevelName" id="x_UserLevelName" data-table="MTUserLevel" data-field="x_UserLevelName" value="@Html.Raw(mtUserLevelEdit.UserLevelName.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mtUserLevelEdit.UserLevelName.PlaceHolder))" data-format-pattern="@(mtUserLevelEdit.UserLevelName.FormatPattern)"@Html.Raw(mtUserLevelEdit.UserLevelName.EditAttributes) aria-describedby="x_UserLevelName_help">
+@Html.Raw(mtUserLevelEdit.UserLevelName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtUserLevelEdit.UserLevelName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtUserLevelEdit.UserLevelName.Visible (end) *@
+</div><!-- /page* -->
+@{ mtUserLevelEdit.CloseRecordset(); }
+@Html.Raw(mtUserLevelEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mtUserLevelEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTUserLeveledit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTUserLeveledit" data-href="@AppPath(mtUserLevelEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtUserLevelEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+</main>
+@mtUserLevelEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTUserLevel");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

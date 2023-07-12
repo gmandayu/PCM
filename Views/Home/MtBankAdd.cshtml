@@ -1,0 +1,138 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtBankAdd.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtBankAdd.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtBankAdd.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTBank: currentTable } });
+var currentPageID = ew.PAGE_ID = "add";
+var currentForm;
+var fMTBankadd;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTBankadd")
+        .setPageId("add")
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [fields._Name.visible && fields._Name.required ? ew.Validators.required(fields._Name.caption) : null], fields._Name.isInvalid],
+            ["Code", [fields.Code.visible && fields.Code.required ? ew.Validators.required(fields.Code.caption) : null], fields.Code.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtBankAdd.ShowPageHeader()
+@mtBankAdd.ShowMessages()
+<form name="fMTBankadd" id="fMTBankadd" class="@(mtBankAdd.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="insert">
+<input type="hidden" name="modal" value="@ConvertToInt(mtBankAdd.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mtBankAdd.OldKeyName)" value="@Html.Raw(mtBankAdd.OldKey)">
+<div class="ew-add-div"><!-- page* -->
+@if (mtBankAdd._Name.Visible) { // mtBankAdd._Name.Visible (begin)
+    <div id="r__Name" @Html.Raw(mtBankAdd._Name.RowAttributes)>
+        <label id="elh_MTBank__Name" for="x__Name" class="@(mtBankAdd.LeftColumnClass)">@Html.Raw(mtBankAdd._Name.Caption)@Html.Raw(mtBankAdd._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtBankAdd.RightColumnClass)"><div @Html.Raw(mtBankAdd._Name.CellAttributes)>
+<span id="el_MTBank__Name">
+<input type="@(mtBankAdd._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTBank" data-field="x__Name" value="@Html.Raw(mtBankAdd._Name.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtBankAdd._Name.PlaceHolder))" data-format-pattern="@(mtBankAdd._Name.FormatPattern)"@Html.Raw(mtBankAdd._Name.EditAttributes) aria-describedby="x__Name_help">
+@Html.Raw(mtBankAdd._Name.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtBankAdd._Name.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtBankAdd._Name.Visible (end) *@
+@if (mtBankAdd.Code.Visible) { // mtBankAdd.Code.Visible (begin)
+    <div id="r_Code" @Html.Raw(mtBankAdd.Code.RowAttributes)>
+        <label id="elh_MTBank_Code" for="x_Code" class="@(mtBankAdd.LeftColumnClass)">@Html.Raw(mtBankAdd.Code.Caption)@Html.Raw(mtBankAdd.Code.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mtBankAdd.RightColumnClass)"><div @Html.Raw(mtBankAdd.Code.CellAttributes)>
+<span id="el_MTBank_Code">
+<input type="@(mtBankAdd.Code.InputTextType)" name="x_Code" id="x_Code" data-table="MTBank" data-field="x_Code" value="@Html.Raw(mtBankAdd.Code.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtBankAdd.Code.PlaceHolder))" data-format-pattern="@(mtBankAdd.Code.FormatPattern)"@Html.Raw(mtBankAdd.Code.EditAttributes) aria-describedby="x_Code_help">
+@Html.Raw(mtBankAdd.Code.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mtBankAdd.Code.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mtBankAdd.Code.Visible (end) *@
+</div><!-- /page* -->
+@{ mtBankAdd.CloseRecordset(); }
+@Html.Raw(mtBankAdd.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mtBankAdd.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTBankadd">@Html.Raw(Language.Phrase("AddBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTBankadd" data-href="@AppPath(mtBankAdd.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtBankAdd.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@mtBankAdd.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTBank");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

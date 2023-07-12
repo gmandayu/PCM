@@ -1,0 +1,610 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCertificateList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCertificateList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCertificateList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCertificateList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCertificate: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtCertificateList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtCertificateList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtCertificateList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtCertificateList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "CategoryName": @Html.Raw(mtCertificateList.CategoryName.ToClientList(mtCertificateList)),
+            "_Name": @Html.Raw(mtCertificateList._Name.ToClientList(mtCertificateList)),
+            "CreatedByUserID": @Html.Raw(mtCertificateList.CreatedByUserID.ToClientList(mtCertificateList)),
+            "CreatedDateTime": @Html.Raw(mtCertificateList.CreatedDateTime.ToClientList(mtCertificateList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCertificateList.LastUpdatedByUserID.ToClientList(mtCertificateList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCertificateList.LastUpdatedDateTime.ToClientList(mtCertificateList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtCertificateList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtCertificateList.TotalRecords > 0 && mtCertificateList.ExportOptions.Visible) {
+    mtCertificateList.ExportOptions.Render("body");
+}
+@if (mtCertificateList.ImportOptions.Visible) {
+    mtCertificateList.ImportOptions.Render("body");
+}
+@if (mtCertificateList.SearchOptions.Visible) {
+    mtCertificateList.SearchOptions.Render("body");
+}
+@if (mtCertificateList.FilterOptions.Visible) {
+    mtCertificateList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtCertificateList.ShowCurrentFilter) {
+    mtCertificateList.ShowFilterList();
+}
+@if (!mtCertificateList.IsModal) {
+<form name="fMTCertificatesrch" id="fMTCertificatesrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTCertificatesrch_search_panel" class="mb-2 mb-sm-0 @(mtCertificateList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCertificateList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCertificate: currentTable } });
+var currentForm;
+var fMTCertificatesrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCertificatesrch")
+        .setPageId("list")
+@if (mtCertificateList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["CategoryName", [], fields.CategoryName.isInvalid],
+            ["_Name", [], fields._Name.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CategoryName": @Html.Raw(mtCertificateList.CategoryName.ToClientList(mtCertificateList)),
+            "_Name": @Html.Raw(mtCertificateList._Name.ToClientList(mtCertificateList)),
+            "CreatedByUserID": @Html.Raw(mtCertificateList.CreatedByUserID.ToClientList(mtCertificateList)),
+            "CreatedDateTime": @Html.Raw(mtCertificateList.CreatedDateTime.ToClientList(mtCertificateList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCertificateList.LastUpdatedByUserID.ToClientList(mtCertificateList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCertificateList.LastUpdatedDateTime.ToClientList(mtCertificateList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtCertificateList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtCertificateList.IsExport() && Empty(mtCertificateList.CurrentAction) && mtCertificateList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtCertificateList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtCertificateList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtCertificateList.RowType = RowType.Search;
+    mtCertificateList.ResetAttributes();
+    await mtCertificateList.RenderRow();
+}
+@if (mtCertificateList.CategoryName.Visible) { // mtCertificateList.CategoryName.Visible (begin)
+    if (!mtCertificateList.CategoryName.UseFilter) {
+        mtCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_CategoryName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCertificateList.CategoryName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CategoryName"
+            name="x_CategoryName[]"
+            class="form-control ew-select@(mtCertificateList.CategoryName.IsInvalidClass)"
+            data-select2-id="fMTCertificatesrch_x_CategoryName"
+            data-table="MTCertificate"
+            data-field="x_CategoryName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCertificateList.CategoryName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCertificateList.CategoryName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCertificateList.CategoryName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCertificateList.CategoryName.EditAttributes)>
+            @(mtCertificateList.CategoryName.SelectOptionListHtml("x_CategoryName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCertificateList.CategoryName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCertificatesrch", function() {
+            var options = {
+                name: "x_CategoryName",
+                selectId: "fMTCertificatesrch_x_CategoryName",
+                ajax: { id: "x_CategoryName", form: "fMTCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCertificate.fields.CategoryName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCertificateList.CategoryName.Visible (end) *@
+@if (mtCertificateList._Name.Visible) { // mtCertificateList._Name.Visible (begin)
+    if (!mtCertificateList._Name.UseFilter) {
+        mtCertificateList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCertificateList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtCertificateList._Name.IsInvalidClass)"
+            data-select2-id="fMTCertificatesrch_x__Name"
+            data-table="MTCertificate"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCertificateList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCertificateList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCertificateList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCertificateList._Name.EditAttributes)>
+            @(mtCertificateList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCertificateList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCertificatesrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTCertificatesrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCertificate.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCertificateList._Name.Visible (end) *@
+@if (mtCertificateList.CreatedByUserID.Visible) { // mtCertificateList.CreatedByUserID.Visible (begin)
+    if (!mtCertificateList.CreatedByUserID.UseFilter) {
+        mtCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCertificateList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtCertificateList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCertificatesrch_x_CreatedByUserID"
+            data-table="MTCertificate"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCertificateList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCertificateList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCertificateList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCertificateList.CreatedByUserID.EditAttributes)>
+            @(mtCertificateList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCertificateList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCertificatesrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTCertificatesrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCertificate.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCertificateList.CreatedByUserID.Visible (end) *@
+@if (mtCertificateList.CreatedDateTime.Visible) { // mtCertificateList.CreatedDateTime.Visible (begin)
+    if (!mtCertificateList.CreatedDateTime.UseFilter) {
+        mtCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCertificateList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtCertificateList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCertificatesrch_x_CreatedDateTime"
+            data-table="MTCertificate"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCertificateList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCertificateList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCertificateList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCertificateList.CreatedDateTime.EditAttributes)>
+            @(mtCertificateList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCertificateList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCertificatesrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTCertificatesrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCertificate.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCertificateList.CreatedDateTime.Visible (end) *@
+@if (mtCertificateList.LastUpdatedByUserID.Visible) { // mtCertificateList.LastUpdatedByUserID.Visible (begin)
+    if (!mtCertificateList.LastUpdatedByUserID.UseFilter) {
+        mtCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCertificateList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtCertificateList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCertificatesrch_x_LastUpdatedByUserID"
+            data-table="MTCertificate"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCertificateList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCertificateList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCertificateList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCertificateList.LastUpdatedByUserID.EditAttributes)>
+            @(mtCertificateList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCertificateList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCertificatesrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTCertificatesrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCertificate.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCertificateList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCertificateList.LastUpdatedDateTime.Visible) { // mtCertificateList.LastUpdatedDateTime.Visible (begin)
+    if (!mtCertificateList.LastUpdatedDateTime.UseFilter) {
+        mtCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCertificateList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtCertificateList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCertificatesrch_x_LastUpdatedDateTime"
+            data-table="MTCertificate"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCertificateList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCertificateList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCertificateList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCertificateList.LastUpdatedDateTime.EditAttributes)>
+            @(mtCertificateList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCertificateList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCertificatesrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTCertificatesrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCertificate.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCertificateList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtCertificateList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtCertificateList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtCertificateList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtCertificateList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTCertificatesrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtCertificateList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTCertificatesrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtCertificateList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTCertificatesrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtCertificateList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTCertificatesrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtCertificateList.ShowPageHeader()
+@mtCertificateList.ShowMessages()
+<main class="list @(mtCertificateList.TotalRecords == 0 && !mtCertificateList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtCertificateList.TotalRecords > 0 || !Empty(mtCertificateList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCertificateList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCertificateList.TableGridClass)">
+<form name="@(mtCertificateList.FormName)" id="@(mtCertificateList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtCertificateList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtCertificateList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTCertificate" class="card-body ew-grid-middle-panel @(mtCertificateList.TableContainerClass)" style="@(mtCertificateList.TableContainerStyle)">
+@if (mtCertificateList.TotalRecords > 0 || mtCertificateList.IsGridEdit || mtCertificateList.IsMultiEdit) {
+<table id="tbl_MTCertificatelist" class="@(mtCertificateList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCertificateList.RowType = RowType.Header;
+
+    // Render list options
+    await mtCertificateList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCertificateList.ListOptions.RenderHeader("left")
+@if (mtCertificateList.CategoryName.Visible) { // mtCertificateList.CategoryName.Visible (begin)
+        <th data-name="CategoryName" class="@(mtCertificateList.CategoryName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCertificate_CategoryName" class="MTCertificate_CategoryName">@Html.Raw(mtCertificateList.RenderFieldHeader(mtCertificateList.CategoryName))</div></th>
+} @* mtCertificateList.CategoryName.Visible (end) *@
+@if (mtCertificateList._Name.Visible) { // mtCertificateList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtCertificateList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCertificate__Name" class="MTCertificate__Name">@Html.Raw(mtCertificateList.RenderFieldHeader(mtCertificateList._Name))</div></th>
+} @* mtCertificateList._Name.Visible (end) *@
+@if (mtCertificateList.CreatedByUserID.Visible) { // mtCertificateList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCertificateList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCertificate_CreatedByUserID" class="MTCertificate_CreatedByUserID">@Html.Raw(mtCertificateList.RenderFieldHeader(mtCertificateList.CreatedByUserID))</div></th>
+} @* mtCertificateList.CreatedByUserID.Visible (end) *@
+@if (mtCertificateList.CreatedDateTime.Visible) { // mtCertificateList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCertificateList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCertificate_CreatedDateTime" class="MTCertificate_CreatedDateTime">@Html.Raw(mtCertificateList.RenderFieldHeader(mtCertificateList.CreatedDateTime))</div></th>
+} @* mtCertificateList.CreatedDateTime.Visible (end) *@
+@if (mtCertificateList.LastUpdatedByUserID.Visible) { // mtCertificateList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCertificateList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCertificate_LastUpdatedByUserID" class="MTCertificate_LastUpdatedByUserID">@Html.Raw(mtCertificateList.RenderFieldHeader(mtCertificateList.LastUpdatedByUserID))</div></th>
+} @* mtCertificateList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCertificateList.LastUpdatedDateTime.Visible) { // mtCertificateList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCertificateList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCertificate_LastUpdatedDateTime" class="MTCertificate_LastUpdatedDateTime">@Html.Raw(mtCertificateList.RenderFieldHeader(mtCertificateList.LastUpdatedDateTime))</div></th>
+} @* mtCertificateList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCertificateList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCertificateList.PageNumber)">
+@{
+    await mtCertificateList.SetupGrid();
+    bool eof = mtCertificateList.Recordset == null; // DN
+}
+@while (mtCertificateList.RecordCount < mtCertificateList.StopRecord || SameString(mtCertificateList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCertificateList.RowIndex, "$rowindex$") &&
+        (!mtCertificateList.IsGridAdd || mtCertificateList.CurrentMode == "copy") &&
+        (!((mtCertificateList.IsCopy || mtCertificateList.IsAdd) && mtCertificateList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCertificateList.Recordset.ReadAsync();
+    mtCertificateList.RecordCount++;
+    if (mtCertificateList.RecordCount >= mtCertificateList.StartRecord) {
+        await mtCertificateList.SetupRow();
+    <tr @Html.Raw(mtCertificateList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCertificateList.ListOptions.RenderBody("left", mtCertificateList.RowCount)
+    @if (mtCertificateList.CategoryName.Visible) { // mtCertificateList.CategoryName.Visible (begin)
+        <td data-name="CategoryName" @Html.Raw(mtCertificateList.CategoryName.CellAttributes)>
+<span id="el@(mtCertificateList.RowCount)_MTCertificate_CategoryName" class="el_MTCertificate_CategoryName">
+<span @Html.Raw(mtCertificateList.CategoryName.ViewAttributes)>
+@Html.Raw(mtCertificateList.CategoryName.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCertificateList.CategoryName.Visible (end) *@
+    @if (mtCertificateList._Name.Visible) { // mtCertificateList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtCertificateList._Name.CellAttributes)>
+<span id="el@(mtCertificateList.RowCount)_MTCertificate__Name" class="el_MTCertificate__Name">
+<span @Html.Raw(mtCertificateList._Name.ViewAttributes)>
+@Html.Raw(mtCertificateList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCertificateList._Name.Visible (end) *@
+    @if (mtCertificateList.CreatedByUserID.Visible) { // mtCertificateList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCertificateList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtCertificateList.RowCount)_MTCertificate_CreatedByUserID" class="el_MTCertificate_CreatedByUserID">
+<span @Html.Raw(mtCertificateList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCertificateList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCertificateList.CreatedByUserID.Visible (end) *@
+    @if (mtCertificateList.CreatedDateTime.Visible) { // mtCertificateList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCertificateList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtCertificateList.RowCount)_MTCertificate_CreatedDateTime" class="el_MTCertificate_CreatedDateTime">
+<span @Html.Raw(mtCertificateList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCertificateList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCertificateList.CreatedDateTime.Visible (end) *@
+    @if (mtCertificateList.LastUpdatedByUserID.Visible) { // mtCertificateList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCertificateList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtCertificateList.RowCount)_MTCertificate_LastUpdatedByUserID" class="el_MTCertificate_LastUpdatedByUserID">
+<span @Html.Raw(mtCertificateList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCertificateList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCertificateList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCertificateList.LastUpdatedDateTime.Visible) { // mtCertificateList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCertificateList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtCertificateList.RowCount)_MTCertificate_LastUpdatedDateTime" class="el_MTCertificate_LastUpdatedDateTime">
+<span @Html.Raw(mtCertificateList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCertificateList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCertificateList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCertificateList.ListOptions.RenderBody("right", mtCertificateList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCertificateList.RowIndex, "$rowindex$"))
+        mtCertificateList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCertificateList.IsCopy || mtCertificateList.IsAdd) && mtCertificateList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCertificateList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCertificateList.CurrentAction) && !mtCertificateList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtCertificateList.CloseRecordset(); }
+@if (!mtCertificateList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtCertificateList.IsGridAdd && !(mtCertificateList.IsGridEdit && mtCertificateList.ModalGridEdit) && !mtCertificateList.IsMultiEdit) {
+@Html.Raw(mtCertificateList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtCertificateList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCertificateList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtCertificateList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtCertificateList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCertificate");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

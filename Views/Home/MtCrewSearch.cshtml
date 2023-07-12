@@ -1,0 +1,2948 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrew: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewsearch")
+        .setPageId("search")
+@if (mtCrewSearch.IsModal && mtCrewSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["Nationality_CountryID", [], fields.Nationality_CountryID.isInvalid],
+            ["CountryOfOrigin_CountryID", [], fields.CountryOfOrigin_CountryID.isInvalid],
+            ["DateOfBirth", [ew.Validators.datetime(fields.DateOfBirth.clientFormatPattern)], fields.DateOfBirth.isInvalid],
+            ["CityOfBirth", [], fields.CityOfBirth.isInvalid],
+            ["MaritalStatus", [], fields.MaritalStatus.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["ReligionID", [], fields.ReligionID.isInvalid],
+            ["BloodType", [], fields.BloodType.isInvalid],
+            ["RankAppliedFor_RankID", [], fields.RankAppliedFor_RankID.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["PrimaryAddressDetail", [], fields.PrimaryAddressDetail.isInvalid],
+            ["PrimaryAddressCity", [], fields.PrimaryAddressCity.isInvalid],
+            ["PrimaryAddressState", [], fields.PrimaryAddressState.isInvalid],
+            ["PrimaryAddressNearestAirport", [], fields.PrimaryAddressNearestAirport.isInvalid],
+            ["PrimaryAddressPostCode", [], fields.PrimaryAddressPostCode.isInvalid],
+            ["PrimaryAddressCountryID", [], fields.PrimaryAddressCountryID.isInvalid],
+            ["PrimaryAddressHomeTel", [], fields.PrimaryAddressHomeTel.isInvalid],
+            ["PrimaryAddressFax", [], fields.PrimaryAddressFax.isInvalid],
+            ["AlternativeAddressDetail", [], fields.AlternativeAddressDetail.isInvalid],
+            ["AlternativeAddressCity", [], fields.AlternativeAddressCity.isInvalid],
+            ["AlternativeAddressState", [], fields.AlternativeAddressState.isInvalid],
+            ["AlternativeAddressHomeTel", [], fields.AlternativeAddressHomeTel.isInvalid],
+            ["AlternativeAddressPostCode", [], fields.AlternativeAddressPostCode.isInvalid],
+            ["AlternativeAddressCountryID", [], fields.AlternativeAddressCountryID.isInvalid],
+            ["MobileNumber", [], fields.MobileNumber.isInvalid],
+            ["_Email", [], fields._Email.isInvalid],
+            ["ContactMethodEmail", [], fields.ContactMethodEmail.isInvalid],
+            ["ContactMethodFax", [], fields.ContactMethodFax.isInvalid],
+            ["ContactMethodMobilePhone", [], fields.ContactMethodMobilePhone.isInvalid],
+            ["ContactMethodHomePhone", [], fields.ContactMethodHomePhone.isInvalid],
+            ["ContactMethodPost", [], fields.ContactMethodPost.isInvalid],
+            ["CollarSize", [ew.Validators.float], fields.CollarSize.isInvalid],
+            ["ChestSize", [ew.Validators.float], fields.ChestSize.isInvalid],
+            ["WaistSize", [ew.Validators.float], fields.WaistSize.isInvalid],
+            ["InsideLegSize", [ew.Validators.float], fields.InsideLegSize.isInvalid],
+            ["CapSize", [ew.Validators.float], fields.CapSize.isInvalid],
+            ["SweaterSize_ClothesSizeID", [], fields.SweaterSize_ClothesSizeID.isInvalid],
+            ["BoilersuitSize_ClothesSizeID", [], fields.BoilersuitSize_ClothesSizeID.isInvalid],
+            ["SocialSecurityNumber", [], fields.SocialSecurityNumber.isInvalid],
+            ["SocialSecurityIssuingCountryID", [], fields.SocialSecurityIssuingCountryID.isInvalid],
+            ["SocialSecurityImage", [], fields.SocialSecurityImage.isInvalid],
+            ["PersonalTaxNumber", [], fields.PersonalTaxNumber.isInvalid],
+            ["PersonalTaxIssuingCountryID", [], fields.PersonalTaxIssuingCountryID.isInvalid],
+            ["PersonalTaxImage", [], fields.PersonalTaxImage.isInvalid],
+            ["NomineeFullName", [], fields.NomineeFullName.isInvalid],
+            ["NomineeRelationship", [], fields.NomineeRelationship.isInvalid],
+            ["NomineeGender", [], fields.NomineeGender.isInvalid],
+            ["NomineeNationality_CountryID", [], fields.NomineeNationality_CountryID.isInvalid],
+            ["NomineeAddressDetail", [], fields.NomineeAddressDetail.isInvalid],
+            ["NomineeAddressCity", [], fields.NomineeAddressCity.isInvalid],
+            ["NomineeAddressPostCode", [], fields.NomineeAddressPostCode.isInvalid],
+            ["NomineeAddressCountryID", [], fields.NomineeAddressCountryID.isInvalid],
+            ["NomineeAddressHomeTel", [], fields.NomineeAddressHomeTel.isInvalid],
+            ["NomineeEmail", [], fields.NomineeEmail.isInvalid],
+            ["NomineeMobileNumber", [], fields.NomineeMobileNumber.isInvalid],
+            ["NomineeValidVisa", [], fields.NomineeValidVisa.isInvalid],
+            ["BankName", [], fields.BankName.isInvalid],
+            ["BankAddress", [], fields.BankAddress.isInvalid],
+            ["BankAccountName", [], fields.BankAccountName.isInvalid],
+            ["BankAccountNumber", [], fields.BankAccountNumber.isInvalid],
+            ["BankSortCode", [], fields.BankSortCode.isInvalid],
+            ["MNOPF", [], fields.MNOPF.isInvalid],
+            ["MembershipNumber", [], fields.MembershipNumber.isInvalid],
+            ["NationalInsuranceNumber", [], fields.NationalInsuranceNumber.isInvalid],
+            ["AVC", [], fields.AVC.isInvalid],
+            ["ForeignVisaHasBeenDenied", [], fields.ForeignVisaHasBeenDenied.isInvalid],
+            ["ForeignVisaDenied_CountryID", [], fields.ForeignVisaDenied_CountryID.isInvalid],
+            ["ForeignVisaDeniedReason", [], fields.ForeignVisaDeniedReason.isInvalid],
+            ["HasMaritimeAccidentOrCourtOfEnquiry", [], fields.HasMaritimeAccidentOrCourtOfEnquiry.isInvalid],
+            ["HasMaritimeAccidentOrCourtOfEnquiryDetails", [], fields.HasMaritimeAccidentOrCourtOfEnquiryDetails.isInvalid],
+            ["Reference1CompanyName", [], fields.Reference1CompanyName.isInvalid],
+            ["Reference1ContactPersonName", [], fields.Reference1ContactPersonName.isInvalid],
+            ["Reference1CompanyAddress", [], fields.Reference1CompanyAddress.isInvalid],
+            ["Reference1CompanyCountryID", [], fields.Reference1CompanyCountryID.isInvalid],
+            ["Reference1CompanyTelephone", [], fields.Reference1CompanyTelephone.isInvalid],
+            ["Reference2CompanyName", [], fields.Reference2CompanyName.isInvalid],
+            ["Reference2ContactPersonName", [], fields.Reference2ContactPersonName.isInvalid],
+            ["Reference2CompanyAddress", [], fields.Reference2CompanyAddress.isInvalid],
+            ["Reference2CompanyCountryID", [], fields.Reference2CompanyCountryID.isInvalid],
+            ["Reference2CompanyTelephone", [], fields.Reference2CompanyTelephone.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["FormSubmittedDateTime", [ew.Validators.datetime(fields.FormSubmittedDateTime.clientFormatPattern)], fields.FormSubmittedDateTime.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid],
+            ["RevisedReason", [], fields.RevisedReason.isInvalid],
+            ["RevisedDateTime", [ew.Validators.datetime(fields.RevisedDateTime.clientFormatPattern)], fields.RevisedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Nationality_CountryID": @Html.Raw(mtCrewSearch.Nationality_CountryID.ToClientList(mtCrewSearch)),
+            "CountryOfOrigin_CountryID": @Html.Raw(mtCrewSearch.CountryOfOrigin_CountryID.ToClientList(mtCrewSearch)),
+            "MaritalStatus": @Html.Raw(mtCrewSearch.MaritalStatus.ToClientList(mtCrewSearch)),
+            "Gender": @Html.Raw(mtCrewSearch.Gender.ToClientList(mtCrewSearch)),
+            "ReligionID": @Html.Raw(mtCrewSearch.ReligionID.ToClientList(mtCrewSearch)),
+            "BloodType": @Html.Raw(mtCrewSearch.BloodType.ToClientList(mtCrewSearch)),
+            "RankAppliedFor_RankID": @Html.Raw(mtCrewSearch.RankAppliedFor_RankID.ToClientList(mtCrewSearch)),
+            "WillAcceptLowRank": @Html.Raw(mtCrewSearch.WillAcceptLowRank.ToClientList(mtCrewSearch)),
+            "PrimaryAddressCountryID": @Html.Raw(mtCrewSearch.PrimaryAddressCountryID.ToClientList(mtCrewSearch)),
+            "AlternativeAddressCountryID": @Html.Raw(mtCrewSearch.AlternativeAddressCountryID.ToClientList(mtCrewSearch)),
+            "ContactMethodEmail": @Html.Raw(mtCrewSearch.ContactMethodEmail.ToClientList(mtCrewSearch)),
+            "ContactMethodFax": @Html.Raw(mtCrewSearch.ContactMethodFax.ToClientList(mtCrewSearch)),
+            "ContactMethodMobilePhone": @Html.Raw(mtCrewSearch.ContactMethodMobilePhone.ToClientList(mtCrewSearch)),
+            "ContactMethodHomePhone": @Html.Raw(mtCrewSearch.ContactMethodHomePhone.ToClientList(mtCrewSearch)),
+            "ContactMethodPost": @Html.Raw(mtCrewSearch.ContactMethodPost.ToClientList(mtCrewSearch)),
+            "SweaterSize_ClothesSizeID": @Html.Raw(mtCrewSearch.SweaterSize_ClothesSizeID.ToClientList(mtCrewSearch)),
+            "BoilersuitSize_ClothesSizeID": @Html.Raw(mtCrewSearch.BoilersuitSize_ClothesSizeID.ToClientList(mtCrewSearch)),
+            "SocialSecurityIssuingCountryID": @Html.Raw(mtCrewSearch.SocialSecurityIssuingCountryID.ToClientList(mtCrewSearch)),
+            "PersonalTaxIssuingCountryID": @Html.Raw(mtCrewSearch.PersonalTaxIssuingCountryID.ToClientList(mtCrewSearch)),
+            "NomineeGender": @Html.Raw(mtCrewSearch.NomineeGender.ToClientList(mtCrewSearch)),
+            "NomineeNationality_CountryID": @Html.Raw(mtCrewSearch.NomineeNationality_CountryID.ToClientList(mtCrewSearch)),
+            "NomineeAddressCountryID": @Html.Raw(mtCrewSearch.NomineeAddressCountryID.ToClientList(mtCrewSearch)),
+            "NomineeValidVisa": @Html.Raw(mtCrewSearch.NomineeValidVisa.ToClientList(mtCrewSearch)),
+            "ForeignVisaHasBeenDenied": @Html.Raw(mtCrewSearch.ForeignVisaHasBeenDenied.ToClientList(mtCrewSearch)),
+            "ForeignVisaDenied_CountryID": @Html.Raw(mtCrewSearch.ForeignVisaDenied_CountryID.ToClientList(mtCrewSearch)),
+            "HasMaritimeAccidentOrCourtOfEnquiry": @Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.ToClientList(mtCrewSearch)),
+            "Reference1CompanyCountryID": @Html.Raw(mtCrewSearch.Reference1CompanyCountryID.ToClientList(mtCrewSearch)),
+            "Reference2CompanyCountryID": @Html.Raw(mtCrewSearch.Reference2CompanyCountryID.ToClientList(mtCrewSearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewSearch.CreatedByUserID.ToClientList(mtCrewSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewSearch.LastUpdatedByUserID.ToClientList(mtCrewSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewSearch.ShowPageHeader()
+@mtCrewSearch.ShowMessages()
+<form name="fMTCrewsearch" id="fMTCrewsearch" class="@(mtCrewSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewSearch.IndividualCodeNumber.Visible) { // mtCrewSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(mtCrewSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_IndividualCodeNumber">@Html.Raw(mtCrewSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="MTCrew" data-field="x_IndividualCodeNumber" value="@Html.Raw(mtCrewSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(mtCrewSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.IndividualCodeNumber.Visible (end) *@
+@if (mtCrewSearch.FullName.Visible) { // mtCrewSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(mtCrewSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_FullName">@Html.Raw(mtCrewSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="MTCrew" data-field="x_FullName" value="@Html.Raw(mtCrewSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.FullName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.FullName.FormatPattern)"@Html.Raw(mtCrewSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.FullName.Visible (end) *@
+@if (mtCrewSearch.Nationality_CountryID.Visible) { // mtCrewSearch.Nationality_CountryID.Visible (begin)
+    <div id="r_Nationality_CountryID" class="row" @Html.Raw(mtCrewSearch.Nationality_CountryID.RowAttributes)>
+        <label for="x_Nationality_CountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Nationality_CountryID">@Html.Raw(mtCrewSearch.Nationality_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Nationality_CountryID" id="z_Nationality_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Nationality_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Nationality_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Nationality_CountryID"
+        name="x_Nationality_CountryID"
+        class="form-select ew-select@(mtCrewSearch.Nationality_CountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_Nationality_CountryID"
+        data-table="MTCrew"
+        data-field="x_Nationality_CountryID"
+        data-value-separator="@(mtCrewSearch.Nationality_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.Nationality_CountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.Nationality_CountryID.EditAttributes)>
+        @(mtCrewSearch.Nationality_CountryID.SelectOptionListHtml("x_Nationality_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.Nationality_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.Nationality_CountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_Nationality_CountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_Nationality_CountryID", selectId: "fMTCrewsearch_x_Nationality_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.Nationality_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_Nationality_CountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_Nationality_CountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.Nationality_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Nationality_CountryID.Visible (end) *@
+@if (mtCrewSearch.CountryOfOrigin_CountryID.Visible) { // mtCrewSearch.CountryOfOrigin_CountryID.Visible (begin)
+    <div id="r_CountryOfOrigin_CountryID" class="row" @Html.Raw(mtCrewSearch.CountryOfOrigin_CountryID.RowAttributes)>
+        <label for="x_CountryOfOrigin_CountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_CountryOfOrigin_CountryID">@Html.Raw(mtCrewSearch.CountryOfOrigin_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CountryOfOrigin_CountryID" id="z_CountryOfOrigin_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.CountryOfOrigin_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_CountryOfOrigin_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CountryOfOrigin_CountryID"
+        name="x_CountryOfOrigin_CountryID"
+        class="form-select ew-select@(mtCrewSearch.CountryOfOrigin_CountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_CountryOfOrigin_CountryID"
+        data-table="MTCrew"
+        data-field="x_CountryOfOrigin_CountryID"
+        data-value-separator="@(mtCrewSearch.CountryOfOrigin_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.CountryOfOrigin_CountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.CountryOfOrigin_CountryID.EditAttributes)>
+        @(mtCrewSearch.CountryOfOrigin_CountryID.SelectOptionListHtml("x_CountryOfOrigin_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.CountryOfOrigin_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.CountryOfOrigin_CountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_CountryOfOrigin_CountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_CountryOfOrigin_CountryID", selectId: "fMTCrewsearch_x_CountryOfOrigin_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.CountryOfOrigin_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_CountryOfOrigin_CountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_CountryOfOrigin_CountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.CountryOfOrigin_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.CountryOfOrigin_CountryID.Visible (end) *@
+@if (mtCrewSearch.DateOfBirth.Visible) { // mtCrewSearch.DateOfBirth.Visible (begin)
+    <div id="r_DateOfBirth" class="row" @Html.Raw(mtCrewSearch.DateOfBirth.RowAttributes)>
+        <label for="x_DateOfBirth" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_DateOfBirth">@Html.Raw(mtCrewSearch.DateOfBirth.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateOfBirth" id="z_DateOfBirth" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.DateOfBirth.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_DateOfBirth" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.DateOfBirth.InputTextType)" name="x_DateOfBirth" id="x_DateOfBirth" data-table="MTCrew" data-field="x_DateOfBirth" value="@Html.Raw(mtCrewSearch.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.DateOfBirth.PlaceHolder))" data-format-pattern="@(mtCrewSearch.DateOfBirth.FormatPattern)"@Html.Raw(mtCrewSearch.DateOfBirth.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.DateOfBirth.GetErrorMessage(false))</div>
+@if (!mtCrewSearch.DateOfBirth.ReadOnly && !mtCrewSearch.DateOfBirth.Disabled && !mtCrewSearch.DateOfBirth.EditAttrs.Is("readonly") && !mtCrewSearch.DateOfBirth.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewsearch", "x_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.DateOfBirth.Visible (end) *@
+@if (mtCrewSearch.CityOfBirth.Visible) { // mtCrewSearch.CityOfBirth.Visible (begin)
+    <div id="r_CityOfBirth" class="row" @Html.Raw(mtCrewSearch.CityOfBirth.RowAttributes)>
+        <label for="x_CityOfBirth" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_CityOfBirth">@Html.Raw(mtCrewSearch.CityOfBirth.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CityOfBirth" id="z_CityOfBirth" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.CityOfBirth.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_CityOfBirth" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.CityOfBirth.InputTextType)" name="x_CityOfBirth" id="x_CityOfBirth" data-table="MTCrew" data-field="x_CityOfBirth" value="@Html.Raw(mtCrewSearch.CityOfBirth.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.CityOfBirth.PlaceHolder))" data-format-pattern="@(mtCrewSearch.CityOfBirth.FormatPattern)"@Html.Raw(mtCrewSearch.CityOfBirth.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.CityOfBirth.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.CityOfBirth.Visible (end) *@
+@if (mtCrewSearch.MaritalStatus.Visible) { // mtCrewSearch.MaritalStatus.Visible (begin)
+    <div id="r_MaritalStatus" class="row" @Html.Raw(mtCrewSearch.MaritalStatus.RowAttributes)>
+        <label for="x_MaritalStatus" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_MaritalStatus">@Html.Raw(mtCrewSearch.MaritalStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MaritalStatus" id="z_MaritalStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.MaritalStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_MaritalStatus" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MaritalStatus"
+        name="x_MaritalStatus"
+        class="form-select ew-select@(mtCrewSearch.MaritalStatus.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_MaritalStatus"
+        data-table="MTCrew"
+        data-field="x_MaritalStatus"
+        data-value-separator="@(mtCrewSearch.MaritalStatus.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.MaritalStatus.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.MaritalStatus.EditAttributes)>
+        @(mtCrewSearch.MaritalStatus.SelectOptionListHtml("x_MaritalStatus"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.MaritalStatus.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_MaritalStatus", selectId: "fMTCrewsearch_x_MaritalStatus" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.MaritalStatus?.lookupOptions.length) {
+        options.data = { id: "x_MaritalStatus", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_MaritalStatus", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.MaritalStatus.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.MaritalStatus.Visible (end) *@
+@if (mtCrewSearch.Gender.Visible) { // mtCrewSearch.Gender.Visible (begin)
+    <div id="r_Gender" class="row" @Html.Raw(mtCrewSearch.Gender.RowAttributes)>
+        <label for="x_Gender" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Gender">@Html.Raw(mtCrewSearch.Gender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Gender" id="z_Gender" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Gender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Gender" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Gender"
+        name="x_Gender"
+        class="form-select ew-select@(mtCrewSearch.Gender.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_Gender"
+        data-table="MTCrew"
+        data-field="x_Gender"
+        data-value-separator="@(mtCrewSearch.Gender.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.Gender.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.Gender.EditAttributes)>
+        @(mtCrewSearch.Gender.SelectOptionListHtml("x_Gender"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.Gender.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_Gender", selectId: "fMTCrewsearch_x_Gender" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.Gender?.lookupOptions.length) {
+        options.data = { id: "x_Gender", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_Gender", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.Gender.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Gender.Visible (end) *@
+@if (mtCrewSearch.ReligionID.Visible) { // mtCrewSearch.ReligionID.Visible (begin)
+    <div id="r_ReligionID" class="row" @Html.Raw(mtCrewSearch.ReligionID.RowAttributes)>
+        <label for="x_ReligionID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ReligionID">@Html.Raw(mtCrewSearch.ReligionID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ReligionID" id="z_ReligionID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ReligionID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ReligionID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_ReligionID"
+        name="x_ReligionID"
+        class="form-select ew-select@(mtCrewSearch.ReligionID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_ReligionID"
+        data-table="MTCrew"
+        data-field="x_ReligionID"
+        data-value-separator="@(mtCrewSearch.ReligionID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.ReligionID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.ReligionID.EditAttributes)>
+        @(mtCrewSearch.ReligionID.SelectOptionListHtml("x_ReligionID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ReligionID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.ReligionID.Lookup.GetParamTag(mtCrewSearch, "p_x_ReligionID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_ReligionID", selectId: "fMTCrewsearch_x_ReligionID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.ReligionID?.lookupOptions.length) {
+        options.data = { id: "x_ReligionID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_ReligionID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.ReligionID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ReligionID.Visible (end) *@
+@if (mtCrewSearch.BloodType.Visible) { // mtCrewSearch.BloodType.Visible (begin)
+    <div id="r_BloodType" class="row" @Html.Raw(mtCrewSearch.BloodType.RowAttributes)>
+        <label for="x_BloodType" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_BloodType">@Html.Raw(mtCrewSearch.BloodType.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BloodType" id="z_BloodType" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.BloodType.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_BloodType" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_BloodType"
+        name="x_BloodType"
+        class="form-select ew-select@(mtCrewSearch.BloodType.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_BloodType"
+        data-table="MTCrew"
+        data-field="x_BloodType"
+        data-value-separator="@(mtCrewSearch.BloodType.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.BloodType.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.BloodType.EditAttributes)>
+        @(mtCrewSearch.BloodType.SelectOptionListHtml("x_BloodType"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.BloodType.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_BloodType", selectId: "fMTCrewsearch_x_BloodType" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.BloodType?.lookupOptions.length) {
+        options.data = { id: "x_BloodType", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_BloodType", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.BloodType.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.BloodType.Visible (end) *@
+@if (mtCrewSearch.RankAppliedFor_RankID.Visible) { // mtCrewSearch.RankAppliedFor_RankID.Visible (begin)
+    <div id="r_RankAppliedFor_RankID" class="row" @Html.Raw(mtCrewSearch.RankAppliedFor_RankID.RowAttributes)>
+        <label for="x_RankAppliedFor_RankID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_RankAppliedFor_RankID">@Html.Raw(mtCrewSearch.RankAppliedFor_RankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_RankAppliedFor_RankID" id="z_RankAppliedFor_RankID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.RankAppliedFor_RankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_RankAppliedFor_RankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_RankAppliedFor_RankID"
+        name="x_RankAppliedFor_RankID"
+        class="form-select ew-select@(mtCrewSearch.RankAppliedFor_RankID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_RankAppliedFor_RankID"
+        data-table="MTCrew"
+        data-field="x_RankAppliedFor_RankID"
+        data-value-separator="@(mtCrewSearch.RankAppliedFor_RankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.RankAppliedFor_RankID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.RankAppliedFor_RankID.EditAttributes)>
+        @(mtCrewSearch.RankAppliedFor_RankID.SelectOptionListHtml("x_RankAppliedFor_RankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.RankAppliedFor_RankID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.RankAppliedFor_RankID.Lookup.GetParamTag(mtCrewSearch, "p_x_RankAppliedFor_RankID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_RankAppliedFor_RankID", selectId: "fMTCrewsearch_x_RankAppliedFor_RankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.RankAppliedFor_RankID?.lookupOptions.length) {
+        options.data = { id: "x_RankAppliedFor_RankID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_RankAppliedFor_RankID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.RankAppliedFor_RankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.RankAppliedFor_RankID.Visible (end) *@
+@if (mtCrewSearch.WillAcceptLowRank.Visible) { // mtCrewSearch.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" class="row" @Html.Raw(mtCrewSearch.WillAcceptLowRank.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_WillAcceptLowRank">@Html.Raw(mtCrewSearch.WillAcceptLowRank.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WillAcceptLowRank" id="z_WillAcceptLowRank" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.WillAcceptLowRank.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_WillAcceptLowRank" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.WillAcceptLowRank.IsInvalidClass)" data-table="MTCrew" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(mtCrewSearch.WillAcceptLowRank.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.WillAcceptLowRank.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.WillAcceptLowRank.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.WillAcceptLowRank.Visible (end) *@
+@if (mtCrewSearch.AvailableFrom.Visible) { // mtCrewSearch.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" class="row" @Html.Raw(mtCrewSearch.AvailableFrom.RowAttributes)>
+        <label for="x_AvailableFrom" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AvailableFrom">@Html.Raw(mtCrewSearch.AvailableFrom.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableFrom" id="z_AvailableFrom" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AvailableFrom.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AvailableFrom" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="MTCrew" data-field="x_AvailableFrom" value="@Html.Raw(mtCrewSearch.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AvailableFrom.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AvailableFrom.FormatPattern)"@Html.Raw(mtCrewSearch.AvailableFrom.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AvailableFrom.GetErrorMessage(false))</div>
+@if (!mtCrewSearch.AvailableFrom.ReadOnly && !mtCrewSearch.AvailableFrom.Disabled && !mtCrewSearch.AvailableFrom.EditAttrs.Is("readonly") && !mtCrewSearch.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewsearch", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AvailableFrom.Visible (end) *@
+@if (mtCrewSearch.AvailableUntil.Visible) { // mtCrewSearch.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" class="row" @Html.Raw(mtCrewSearch.AvailableUntil.RowAttributes)>
+        <label for="x_AvailableUntil" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AvailableUntil">@Html.Raw(mtCrewSearch.AvailableUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableUntil" id="z_AvailableUntil" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AvailableUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AvailableUntil" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="MTCrew" data-field="x_AvailableUntil" value="@Html.Raw(mtCrewSearch.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AvailableUntil.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AvailableUntil.FormatPattern)"@Html.Raw(mtCrewSearch.AvailableUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AvailableUntil.GetErrorMessage(false))</div>
+@if (!mtCrewSearch.AvailableUntil.ReadOnly && !mtCrewSearch.AvailableUntil.Disabled && !mtCrewSearch.AvailableUntil.EditAttrs.Is("readonly") && !mtCrewSearch.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewsearch", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AvailableUntil.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressDetail.Visible) { // mtCrewSearch.PrimaryAddressDetail.Visible (begin)
+    <div id="r_PrimaryAddressDetail" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressDetail.RowAttributes)>
+        <label for="x_PrimaryAddressDetail" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressDetail">@Html.Raw(mtCrewSearch.PrimaryAddressDetail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressDetail" id="z_PrimaryAddressDetail" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressDetail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressDetail" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PrimaryAddressDetail.InputTextType)" name="x_PrimaryAddressDetail" id="x_PrimaryAddressDetail" data-table="MTCrew" data-field="x_PrimaryAddressDetail" value="@Html.Raw(mtCrewSearch.PrimaryAddressDetail.EditValue)" size="50" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PrimaryAddressDetail.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PrimaryAddressDetail.FormatPattern)"@Html.Raw(mtCrewSearch.PrimaryAddressDetail.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressDetail.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressDetail.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressCity.Visible) { // mtCrewSearch.PrimaryAddressCity.Visible (begin)
+    <div id="r_PrimaryAddressCity" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressCity.RowAttributes)>
+        <label for="x_PrimaryAddressCity" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressCity">@Html.Raw(mtCrewSearch.PrimaryAddressCity.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressCity" id="z_PrimaryAddressCity" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressCity.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressCity" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PrimaryAddressCity.InputTextType)" name="x_PrimaryAddressCity" id="x_PrimaryAddressCity" data-table="MTCrew" data-field="x_PrimaryAddressCity" value="@Html.Raw(mtCrewSearch.PrimaryAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PrimaryAddressCity.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PrimaryAddressCity.FormatPattern)"@Html.Raw(mtCrewSearch.PrimaryAddressCity.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressCity.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressCity.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressState.Visible) { // mtCrewSearch.PrimaryAddressState.Visible (begin)
+    <div id="r_PrimaryAddressState" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressState.RowAttributes)>
+        <label for="x_PrimaryAddressState" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressState">@Html.Raw(mtCrewSearch.PrimaryAddressState.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressState" id="z_PrimaryAddressState" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressState.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressState" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PrimaryAddressState.InputTextType)" name="x_PrimaryAddressState" id="x_PrimaryAddressState" data-table="MTCrew" data-field="x_PrimaryAddressState" value="@Html.Raw(mtCrewSearch.PrimaryAddressState.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PrimaryAddressState.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PrimaryAddressState.FormatPattern)"@Html.Raw(mtCrewSearch.PrimaryAddressState.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressState.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressState.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressNearestAirport.Visible) { // mtCrewSearch.PrimaryAddressNearestAirport.Visible (begin)
+    <div id="r_PrimaryAddressNearestAirport" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressNearestAirport.RowAttributes)>
+        <label for="x_PrimaryAddressNearestAirport" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressNearestAirport">@Html.Raw(mtCrewSearch.PrimaryAddressNearestAirport.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressNearestAirport" id="z_PrimaryAddressNearestAirport" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressNearestAirport.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressNearestAirport" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PrimaryAddressNearestAirport.InputTextType)" name="x_PrimaryAddressNearestAirport" id="x_PrimaryAddressNearestAirport" data-table="MTCrew" data-field="x_PrimaryAddressNearestAirport" value="@Html.Raw(mtCrewSearch.PrimaryAddressNearestAirport.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PrimaryAddressNearestAirport.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PrimaryAddressNearestAirport.FormatPattern)"@Html.Raw(mtCrewSearch.PrimaryAddressNearestAirport.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressNearestAirport.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressNearestAirport.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressPostCode.Visible) { // mtCrewSearch.PrimaryAddressPostCode.Visible (begin)
+    <div id="r_PrimaryAddressPostCode" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressPostCode.RowAttributes)>
+        <label for="x_PrimaryAddressPostCode" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressPostCode">@Html.Raw(mtCrewSearch.PrimaryAddressPostCode.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressPostCode" id="z_PrimaryAddressPostCode" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressPostCode.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressPostCode" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PrimaryAddressPostCode.InputTextType)" name="x_PrimaryAddressPostCode" id="x_PrimaryAddressPostCode" data-table="MTCrew" data-field="x_PrimaryAddressPostCode" value="@Html.Raw(mtCrewSearch.PrimaryAddressPostCode.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PrimaryAddressPostCode.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PrimaryAddressPostCode.FormatPattern)"@Html.Raw(mtCrewSearch.PrimaryAddressPostCode.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressPostCode.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressPostCode.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressCountryID.Visible) { // mtCrewSearch.PrimaryAddressCountryID.Visible (begin)
+    <div id="r_PrimaryAddressCountryID" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressCountryID.RowAttributes)>
+        <label for="x_PrimaryAddressCountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressCountryID">@Html.Raw(mtCrewSearch.PrimaryAddressCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PrimaryAddressCountryID" id="z_PrimaryAddressCountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_PrimaryAddressCountryID"
+        name="x_PrimaryAddressCountryID"
+        class="form-select ew-select@(mtCrewSearch.PrimaryAddressCountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_PrimaryAddressCountryID"
+        data-table="MTCrew"
+        data-field="x_PrimaryAddressCountryID"
+        data-value-separator="@(mtCrewSearch.PrimaryAddressCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.PrimaryAddressCountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.PrimaryAddressCountryID.EditAttributes)>
+        @(mtCrewSearch.PrimaryAddressCountryID.SelectOptionListHtml("x_PrimaryAddressCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressCountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.PrimaryAddressCountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_PrimaryAddressCountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_PrimaryAddressCountryID", selectId: "fMTCrewsearch_x_PrimaryAddressCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.PrimaryAddressCountryID?.lookupOptions.length) {
+        options.data = { id: "x_PrimaryAddressCountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_PrimaryAddressCountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.PrimaryAddressCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressCountryID.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressHomeTel.Visible) { // mtCrewSearch.PrimaryAddressHomeTel.Visible (begin)
+    <div id="r_PrimaryAddressHomeTel" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressHomeTel.RowAttributes)>
+        <label for="x_PrimaryAddressHomeTel" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressHomeTel">@Html.Raw(mtCrewSearch.PrimaryAddressHomeTel.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressHomeTel" id="z_PrimaryAddressHomeTel" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressHomeTel.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressHomeTel" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PrimaryAddressHomeTel.InputTextType)" name="x_PrimaryAddressHomeTel" id="x_PrimaryAddressHomeTel" data-table="MTCrew" data-field="x_PrimaryAddressHomeTel" value="@Html.Raw(mtCrewSearch.PrimaryAddressHomeTel.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PrimaryAddressHomeTel.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PrimaryAddressHomeTel.FormatPattern)"@Html.Raw(mtCrewSearch.PrimaryAddressHomeTel.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressHomeTel.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressHomeTel.Visible (end) *@
+@if (mtCrewSearch.PrimaryAddressFax.Visible) { // mtCrewSearch.PrimaryAddressFax.Visible (begin)
+    <div id="r_PrimaryAddressFax" class="row" @Html.Raw(mtCrewSearch.PrimaryAddressFax.RowAttributes)>
+        <label for="x_PrimaryAddressFax" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressFax">@Html.Raw(mtCrewSearch.PrimaryAddressFax.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PrimaryAddressFax" id="z_PrimaryAddressFax" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PrimaryAddressFax.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PrimaryAddressFax" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PrimaryAddressFax.InputTextType)" name="x_PrimaryAddressFax" id="x_PrimaryAddressFax" data-table="MTCrew" data-field="x_PrimaryAddressFax" value="@Html.Raw(mtCrewSearch.PrimaryAddressFax.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PrimaryAddressFax.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PrimaryAddressFax.FormatPattern)"@Html.Raw(mtCrewSearch.PrimaryAddressFax.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PrimaryAddressFax.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PrimaryAddressFax.Visible (end) *@
+@if (mtCrewSearch.AlternativeAddressDetail.Visible) { // mtCrewSearch.AlternativeAddressDetail.Visible (begin)
+    <div id="r_AlternativeAddressDetail" class="row" @Html.Raw(mtCrewSearch.AlternativeAddressDetail.RowAttributes)>
+        <label for="x_AlternativeAddressDetail" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressDetail">@Html.Raw(mtCrewSearch.AlternativeAddressDetail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressDetail" id="z_AlternativeAddressDetail" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AlternativeAddressDetail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AlternativeAddressDetail" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AlternativeAddressDetail.InputTextType)" name="x_AlternativeAddressDetail" id="x_AlternativeAddressDetail" data-table="MTCrew" data-field="x_AlternativeAddressDetail" value="@Html.Raw(mtCrewSearch.AlternativeAddressDetail.EditValue)" size="50" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AlternativeAddressDetail.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AlternativeAddressDetail.FormatPattern)"@Html.Raw(mtCrewSearch.AlternativeAddressDetail.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AlternativeAddressDetail.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AlternativeAddressDetail.Visible (end) *@
+@if (mtCrewSearch.AlternativeAddressCity.Visible) { // mtCrewSearch.AlternativeAddressCity.Visible (begin)
+    <div id="r_AlternativeAddressCity" class="row" @Html.Raw(mtCrewSearch.AlternativeAddressCity.RowAttributes)>
+        <label for="x_AlternativeAddressCity" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressCity">@Html.Raw(mtCrewSearch.AlternativeAddressCity.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressCity" id="z_AlternativeAddressCity" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AlternativeAddressCity.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AlternativeAddressCity" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AlternativeAddressCity.InputTextType)" name="x_AlternativeAddressCity" id="x_AlternativeAddressCity" data-table="MTCrew" data-field="x_AlternativeAddressCity" value="@Html.Raw(mtCrewSearch.AlternativeAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AlternativeAddressCity.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AlternativeAddressCity.FormatPattern)"@Html.Raw(mtCrewSearch.AlternativeAddressCity.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AlternativeAddressCity.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AlternativeAddressCity.Visible (end) *@
+@if (mtCrewSearch.AlternativeAddressState.Visible) { // mtCrewSearch.AlternativeAddressState.Visible (begin)
+    <div id="r_AlternativeAddressState" class="row" @Html.Raw(mtCrewSearch.AlternativeAddressState.RowAttributes)>
+        <label for="x_AlternativeAddressState" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressState">@Html.Raw(mtCrewSearch.AlternativeAddressState.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressState" id="z_AlternativeAddressState" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AlternativeAddressState.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AlternativeAddressState" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AlternativeAddressState.InputTextType)" name="x_AlternativeAddressState" id="x_AlternativeAddressState" data-table="MTCrew" data-field="x_AlternativeAddressState" value="@Html.Raw(mtCrewSearch.AlternativeAddressState.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AlternativeAddressState.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AlternativeAddressState.FormatPattern)"@Html.Raw(mtCrewSearch.AlternativeAddressState.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AlternativeAddressState.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AlternativeAddressState.Visible (end) *@
+@if (mtCrewSearch.AlternativeAddressHomeTel.Visible) { // mtCrewSearch.AlternativeAddressHomeTel.Visible (begin)
+    <div id="r_AlternativeAddressHomeTel" class="row" @Html.Raw(mtCrewSearch.AlternativeAddressHomeTel.RowAttributes)>
+        <label for="x_AlternativeAddressHomeTel" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressHomeTel">@Html.Raw(mtCrewSearch.AlternativeAddressHomeTel.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressHomeTel" id="z_AlternativeAddressHomeTel" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AlternativeAddressHomeTel.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AlternativeAddressHomeTel" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AlternativeAddressHomeTel.InputTextType)" name="x_AlternativeAddressHomeTel" id="x_AlternativeAddressHomeTel" data-table="MTCrew" data-field="x_AlternativeAddressHomeTel" value="@Html.Raw(mtCrewSearch.AlternativeAddressHomeTel.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AlternativeAddressHomeTel.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AlternativeAddressHomeTel.FormatPattern)"@Html.Raw(mtCrewSearch.AlternativeAddressHomeTel.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AlternativeAddressHomeTel.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AlternativeAddressHomeTel.Visible (end) *@
+@if (mtCrewSearch.AlternativeAddressPostCode.Visible) { // mtCrewSearch.AlternativeAddressPostCode.Visible (begin)
+    <div id="r_AlternativeAddressPostCode" class="row" @Html.Raw(mtCrewSearch.AlternativeAddressPostCode.RowAttributes)>
+        <label for="x_AlternativeAddressPostCode" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressPostCode">@Html.Raw(mtCrewSearch.AlternativeAddressPostCode.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AlternativeAddressPostCode" id="z_AlternativeAddressPostCode" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AlternativeAddressPostCode.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AlternativeAddressPostCode" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AlternativeAddressPostCode.InputTextType)" name="x_AlternativeAddressPostCode" id="x_AlternativeAddressPostCode" data-table="MTCrew" data-field="x_AlternativeAddressPostCode" value="@Html.Raw(mtCrewSearch.AlternativeAddressPostCode.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AlternativeAddressPostCode.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AlternativeAddressPostCode.FormatPattern)"@Html.Raw(mtCrewSearch.AlternativeAddressPostCode.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AlternativeAddressPostCode.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AlternativeAddressPostCode.Visible (end) *@
+@if (mtCrewSearch.AlternativeAddressCountryID.Visible) { // mtCrewSearch.AlternativeAddressCountryID.Visible (begin)
+    <div id="r_AlternativeAddressCountryID" class="row" @Html.Raw(mtCrewSearch.AlternativeAddressCountryID.RowAttributes)>
+        <label for="x_AlternativeAddressCountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressCountryID">@Html.Raw(mtCrewSearch.AlternativeAddressCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AlternativeAddressCountryID" id="z_AlternativeAddressCountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AlternativeAddressCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AlternativeAddressCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_AlternativeAddressCountryID"
+        name="x_AlternativeAddressCountryID"
+        class="form-select ew-select@(mtCrewSearch.AlternativeAddressCountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_AlternativeAddressCountryID"
+        data-table="MTCrew"
+        data-field="x_AlternativeAddressCountryID"
+        data-value-separator="@(mtCrewSearch.AlternativeAddressCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.AlternativeAddressCountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.AlternativeAddressCountryID.EditAttributes)>
+        @(mtCrewSearch.AlternativeAddressCountryID.SelectOptionListHtml("x_AlternativeAddressCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.AlternativeAddressCountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.AlternativeAddressCountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_AlternativeAddressCountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_AlternativeAddressCountryID", selectId: "fMTCrewsearch_x_AlternativeAddressCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.AlternativeAddressCountryID?.lookupOptions.length) {
+        options.data = { id: "x_AlternativeAddressCountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_AlternativeAddressCountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.AlternativeAddressCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AlternativeAddressCountryID.Visible (end) *@
+@if (mtCrewSearch.MobileNumber.Visible) { // mtCrewSearch.MobileNumber.Visible (begin)
+    <div id="r_MobileNumber" class="row" @Html.Raw(mtCrewSearch.MobileNumber.RowAttributes)>
+        <label for="x_MobileNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_MobileNumber">@Html.Raw(mtCrewSearch.MobileNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MobileNumber" id="z_MobileNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.MobileNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_MobileNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.MobileNumber.InputTextType)" name="x_MobileNumber" id="x_MobileNumber" data-table="MTCrew" data-field="x_MobileNumber" value="@Html.Raw(mtCrewSearch.MobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.MobileNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.MobileNumber.FormatPattern)"@Html.Raw(mtCrewSearch.MobileNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.MobileNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.MobileNumber.Visible (end) *@
+@if (mtCrewSearch._Email.Visible) { // mtCrewSearch._Email.Visible (begin)
+    <div id="r__Email" class="row" @Html.Raw(mtCrewSearch._Email.RowAttributes)>
+        <label for="x__Email" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew__Email">@Html.Raw(mtCrewSearch._Email.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Email" id="z__Email" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch._Email.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew__Email" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch._Email.InputTextType)" name="x__Email" id="x__Email" data-table="MTCrew" data-field="x__Email" value="@Html.Raw(mtCrewSearch._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch._Email.PlaceHolder))" data-format-pattern="@(mtCrewSearch._Email.FormatPattern)"@Html.Raw(mtCrewSearch._Email.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch._Email.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch._Email.Visible (end) *@
+@if (mtCrewSearch.ContactMethodEmail.Visible) { // mtCrewSearch.ContactMethodEmail.Visible (begin)
+    <div id="r_ContactMethodEmail" class="row" @Html.Raw(mtCrewSearch.ContactMethodEmail.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ContactMethodEmail">@Html.Raw(mtCrewSearch.ContactMethodEmail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ContactMethodEmail" id="z_ContactMethodEmail" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ContactMethodEmail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ContactMethodEmail" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.ContactMethodEmail.IsInvalidClass)" data-table="MTCrew" data-field="x_ContactMethodEmail" data-boolean name="x_ContactMethodEmail" id="x_ContactMethodEmail" value="1" checked="@ConvertToBool(mtCrewSearch.ContactMethodEmail.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.ContactMethodEmail.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ContactMethodEmail.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ContactMethodEmail.Visible (end) *@
+@if (mtCrewSearch.ContactMethodFax.Visible) { // mtCrewSearch.ContactMethodFax.Visible (begin)
+    <div id="r_ContactMethodFax" class="row" @Html.Raw(mtCrewSearch.ContactMethodFax.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ContactMethodFax">@Html.Raw(mtCrewSearch.ContactMethodFax.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ContactMethodFax" id="z_ContactMethodFax" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ContactMethodFax.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ContactMethodFax" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.ContactMethodFax.IsInvalidClass)" data-table="MTCrew" data-field="x_ContactMethodFax" data-boolean name="x_ContactMethodFax" id="x_ContactMethodFax" value="1" checked="@ConvertToBool(mtCrewSearch.ContactMethodFax.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.ContactMethodFax.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ContactMethodFax.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ContactMethodFax.Visible (end) *@
+@if (mtCrewSearch.ContactMethodMobilePhone.Visible) { // mtCrewSearch.ContactMethodMobilePhone.Visible (begin)
+    <div id="r_ContactMethodMobilePhone" class="row" @Html.Raw(mtCrewSearch.ContactMethodMobilePhone.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ContactMethodMobilePhone">@Html.Raw(mtCrewSearch.ContactMethodMobilePhone.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ContactMethodMobilePhone" id="z_ContactMethodMobilePhone" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ContactMethodMobilePhone.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ContactMethodMobilePhone" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.ContactMethodMobilePhone.IsInvalidClass)" data-table="MTCrew" data-field="x_ContactMethodMobilePhone" data-boolean name="x_ContactMethodMobilePhone" id="x_ContactMethodMobilePhone" value="1" checked="@ConvertToBool(mtCrewSearch.ContactMethodMobilePhone.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.ContactMethodMobilePhone.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ContactMethodMobilePhone.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ContactMethodMobilePhone.Visible (end) *@
+@if (mtCrewSearch.ContactMethodHomePhone.Visible) { // mtCrewSearch.ContactMethodHomePhone.Visible (begin)
+    <div id="r_ContactMethodHomePhone" class="row" @Html.Raw(mtCrewSearch.ContactMethodHomePhone.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ContactMethodHomePhone">@Html.Raw(mtCrewSearch.ContactMethodHomePhone.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ContactMethodHomePhone" id="z_ContactMethodHomePhone" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ContactMethodHomePhone.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ContactMethodHomePhone" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.ContactMethodHomePhone.IsInvalidClass)" data-table="MTCrew" data-field="x_ContactMethodHomePhone" data-boolean name="x_ContactMethodHomePhone" id="x_ContactMethodHomePhone" value="1" checked="@ConvertToBool(mtCrewSearch.ContactMethodHomePhone.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.ContactMethodHomePhone.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ContactMethodHomePhone.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ContactMethodHomePhone.Visible (end) *@
+@if (mtCrewSearch.ContactMethodPost.Visible) { // mtCrewSearch.ContactMethodPost.Visible (begin)
+    <div id="r_ContactMethodPost" class="row" @Html.Raw(mtCrewSearch.ContactMethodPost.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ContactMethodPost">@Html.Raw(mtCrewSearch.ContactMethodPost.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ContactMethodPost" id="z_ContactMethodPost" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ContactMethodPost.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ContactMethodPost" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.ContactMethodPost.IsInvalidClass)" data-table="MTCrew" data-field="x_ContactMethodPost" data-boolean name="x_ContactMethodPost" id="x_ContactMethodPost" value="1" checked="@ConvertToBool(mtCrewSearch.ContactMethodPost.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.ContactMethodPost.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ContactMethodPost.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ContactMethodPost.Visible (end) *@
+@if (mtCrewSearch.CollarSize.Visible) { // mtCrewSearch.CollarSize.Visible (begin)
+    <div id="r_CollarSize" class="row" @Html.Raw(mtCrewSearch.CollarSize.RowAttributes)>
+        <label for="x_CollarSize" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_CollarSize">@Html.Raw(mtCrewSearch.CollarSize.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CollarSize" id="z_CollarSize" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.CollarSize.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_CollarSize" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.CollarSize.InputTextType)" name="x_CollarSize" id="x_CollarSize" data-table="MTCrew" data-field="x_CollarSize" value="@Html.Raw(mtCrewSearch.CollarSize.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.CollarSize.PlaceHolder))" data-format-pattern="@(mtCrewSearch.CollarSize.FormatPattern)"@Html.Raw(mtCrewSearch.CollarSize.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.CollarSize.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.CollarSize.Visible (end) *@
+@if (mtCrewSearch.ChestSize.Visible) { // mtCrewSearch.ChestSize.Visible (begin)
+    <div id="r_ChestSize" class="row" @Html.Raw(mtCrewSearch.ChestSize.RowAttributes)>
+        <label for="x_ChestSize" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ChestSize">@Html.Raw(mtCrewSearch.ChestSize.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ChestSize" id="z_ChestSize" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ChestSize.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ChestSize" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.ChestSize.InputTextType)" name="x_ChestSize" id="x_ChestSize" data-table="MTCrew" data-field="x_ChestSize" value="@Html.Raw(mtCrewSearch.ChestSize.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.ChestSize.PlaceHolder))" data-format-pattern="@(mtCrewSearch.ChestSize.FormatPattern)"@Html.Raw(mtCrewSearch.ChestSize.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.ChestSize.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ChestSize.Visible (end) *@
+@if (mtCrewSearch.WaistSize.Visible) { // mtCrewSearch.WaistSize.Visible (begin)
+    <div id="r_WaistSize" class="row" @Html.Raw(mtCrewSearch.WaistSize.RowAttributes)>
+        <label for="x_WaistSize" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_WaistSize">@Html.Raw(mtCrewSearch.WaistSize.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WaistSize" id="z_WaistSize" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.WaistSize.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_WaistSize" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.WaistSize.InputTextType)" name="x_WaistSize" id="x_WaistSize" data-table="MTCrew" data-field="x_WaistSize" value="@Html.Raw(mtCrewSearch.WaistSize.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.WaistSize.PlaceHolder))" data-format-pattern="@(mtCrewSearch.WaistSize.FormatPattern)"@Html.Raw(mtCrewSearch.WaistSize.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.WaistSize.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.WaistSize.Visible (end) *@
+@if (mtCrewSearch.InsideLegSize.Visible) { // mtCrewSearch.InsideLegSize.Visible (begin)
+    <div id="r_InsideLegSize" class="row" @Html.Raw(mtCrewSearch.InsideLegSize.RowAttributes)>
+        <label for="x_InsideLegSize" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_InsideLegSize">@Html.Raw(mtCrewSearch.InsideLegSize.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_InsideLegSize" id="z_InsideLegSize" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.InsideLegSize.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_InsideLegSize" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.InsideLegSize.InputTextType)" name="x_InsideLegSize" id="x_InsideLegSize" data-table="MTCrew" data-field="x_InsideLegSize" value="@Html.Raw(mtCrewSearch.InsideLegSize.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.InsideLegSize.PlaceHolder))" data-format-pattern="@(mtCrewSearch.InsideLegSize.FormatPattern)"@Html.Raw(mtCrewSearch.InsideLegSize.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.InsideLegSize.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.InsideLegSize.Visible (end) *@
+@if (mtCrewSearch.CapSize.Visible) { // mtCrewSearch.CapSize.Visible (begin)
+    <div id="r_CapSize" class="row" @Html.Raw(mtCrewSearch.CapSize.RowAttributes)>
+        <label for="x_CapSize" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_CapSize">@Html.Raw(mtCrewSearch.CapSize.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CapSize" id="z_CapSize" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.CapSize.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_CapSize" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.CapSize.InputTextType)" name="x_CapSize" id="x_CapSize" data-table="MTCrew" data-field="x_CapSize" value="@Html.Raw(mtCrewSearch.CapSize.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.CapSize.PlaceHolder))" data-format-pattern="@(mtCrewSearch.CapSize.FormatPattern)"@Html.Raw(mtCrewSearch.CapSize.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.CapSize.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.CapSize.Visible (end) *@
+@if (mtCrewSearch.SweaterSize_ClothesSizeID.Visible) { // mtCrewSearch.SweaterSize_ClothesSizeID.Visible (begin)
+    <div id="r_SweaterSize_ClothesSizeID" class="row" @Html.Raw(mtCrewSearch.SweaterSize_ClothesSizeID.RowAttributes)>
+        <label for="x_SweaterSize_ClothesSizeID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_SweaterSize_ClothesSizeID">@Html.Raw(mtCrewSearch.SweaterSize_ClothesSizeID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_SweaterSize_ClothesSizeID" id="z_SweaterSize_ClothesSizeID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.SweaterSize_ClothesSizeID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_SweaterSize_ClothesSizeID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_SweaterSize_ClothesSizeID"
+        name="x_SweaterSize_ClothesSizeID"
+        class="form-select ew-select@(mtCrewSearch.SweaterSize_ClothesSizeID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_SweaterSize_ClothesSizeID"
+        data-table="MTCrew"
+        data-field="x_SweaterSize_ClothesSizeID"
+        data-value-separator="@(mtCrewSearch.SweaterSize_ClothesSizeID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.SweaterSize_ClothesSizeID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.SweaterSize_ClothesSizeID.EditAttributes)>
+        @(mtCrewSearch.SweaterSize_ClothesSizeID.SelectOptionListHtml("x_SweaterSize_ClothesSizeID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.SweaterSize_ClothesSizeID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.SweaterSize_ClothesSizeID.Lookup.GetParamTag(mtCrewSearch, "p_x_SweaterSize_ClothesSizeID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_SweaterSize_ClothesSizeID", selectId: "fMTCrewsearch_x_SweaterSize_ClothesSizeID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.SweaterSize_ClothesSizeID?.lookupOptions.length) {
+        options.data = { id: "x_SweaterSize_ClothesSizeID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_SweaterSize_ClothesSizeID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.SweaterSize_ClothesSizeID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.SweaterSize_ClothesSizeID.Visible (end) *@
+@if (mtCrewSearch.BoilersuitSize_ClothesSizeID.Visible) { // mtCrewSearch.BoilersuitSize_ClothesSizeID.Visible (begin)
+    <div id="r_BoilersuitSize_ClothesSizeID" class="row" @Html.Raw(mtCrewSearch.BoilersuitSize_ClothesSizeID.RowAttributes)>
+        <label for="x_BoilersuitSize_ClothesSizeID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_BoilersuitSize_ClothesSizeID">@Html.Raw(mtCrewSearch.BoilersuitSize_ClothesSizeID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_BoilersuitSize_ClothesSizeID" id="z_BoilersuitSize_ClothesSizeID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.BoilersuitSize_ClothesSizeID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_BoilersuitSize_ClothesSizeID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_BoilersuitSize_ClothesSizeID"
+        name="x_BoilersuitSize_ClothesSizeID"
+        class="form-select ew-select@(mtCrewSearch.BoilersuitSize_ClothesSizeID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_BoilersuitSize_ClothesSizeID"
+        data-table="MTCrew"
+        data-field="x_BoilersuitSize_ClothesSizeID"
+        data-value-separator="@(mtCrewSearch.BoilersuitSize_ClothesSizeID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.BoilersuitSize_ClothesSizeID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.BoilersuitSize_ClothesSizeID.EditAttributes)>
+        @(mtCrewSearch.BoilersuitSize_ClothesSizeID.SelectOptionListHtml("x_BoilersuitSize_ClothesSizeID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.BoilersuitSize_ClothesSizeID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.BoilersuitSize_ClothesSizeID.Lookup.GetParamTag(mtCrewSearch, "p_x_BoilersuitSize_ClothesSizeID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_BoilersuitSize_ClothesSizeID", selectId: "fMTCrewsearch_x_BoilersuitSize_ClothesSizeID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.BoilersuitSize_ClothesSizeID?.lookupOptions.length) {
+        options.data = { id: "x_BoilersuitSize_ClothesSizeID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_BoilersuitSize_ClothesSizeID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.BoilersuitSize_ClothesSizeID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.BoilersuitSize_ClothesSizeID.Visible (end) *@
+@if (mtCrewSearch.SocialSecurityNumber.Visible) { // mtCrewSearch.SocialSecurityNumber.Visible (begin)
+    <div id="r_SocialSecurityNumber" class="row" @Html.Raw(mtCrewSearch.SocialSecurityNumber.RowAttributes)>
+        <label for="x_SocialSecurityNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_SocialSecurityNumber">@Html.Raw(mtCrewSearch.SocialSecurityNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SocialSecurityNumber" id="z_SocialSecurityNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.SocialSecurityNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_SocialSecurityNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.SocialSecurityNumber.InputTextType)" name="x_SocialSecurityNumber" id="x_SocialSecurityNumber" data-table="MTCrew" data-field="x_SocialSecurityNumber" value="@Html.Raw(mtCrewSearch.SocialSecurityNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.SocialSecurityNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.SocialSecurityNumber.FormatPattern)"@Html.Raw(mtCrewSearch.SocialSecurityNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.SocialSecurityNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.SocialSecurityNumber.Visible (end) *@
+@if (mtCrewSearch.SocialSecurityIssuingCountryID.Visible) { // mtCrewSearch.SocialSecurityIssuingCountryID.Visible (begin)
+    <div id="r_SocialSecurityIssuingCountryID" class="row" @Html.Raw(mtCrewSearch.SocialSecurityIssuingCountryID.RowAttributes)>
+        <label for="x_SocialSecurityIssuingCountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_SocialSecurityIssuingCountryID">@Html.Raw(mtCrewSearch.SocialSecurityIssuingCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_SocialSecurityIssuingCountryID" id="z_SocialSecurityIssuingCountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.SocialSecurityIssuingCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_SocialSecurityIssuingCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_SocialSecurityIssuingCountryID"
+        name="x_SocialSecurityIssuingCountryID"
+        class="form-select ew-select@(mtCrewSearch.SocialSecurityIssuingCountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_SocialSecurityIssuingCountryID"
+        data-table="MTCrew"
+        data-field="x_SocialSecurityIssuingCountryID"
+        data-value-separator="@(mtCrewSearch.SocialSecurityIssuingCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.SocialSecurityIssuingCountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.SocialSecurityIssuingCountryID.EditAttributes)>
+        @(mtCrewSearch.SocialSecurityIssuingCountryID.SelectOptionListHtml("x_SocialSecurityIssuingCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.SocialSecurityIssuingCountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.SocialSecurityIssuingCountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_SocialSecurityIssuingCountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_SocialSecurityIssuingCountryID", selectId: "fMTCrewsearch_x_SocialSecurityIssuingCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.SocialSecurityIssuingCountryID?.lookupOptions.length) {
+        options.data = { id: "x_SocialSecurityIssuingCountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_SocialSecurityIssuingCountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.SocialSecurityIssuingCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.SocialSecurityIssuingCountryID.Visible (end) *@
+@if (mtCrewSearch.SocialSecurityImage.Visible) { // mtCrewSearch.SocialSecurityImage.Visible (begin)
+    <div id="r_SocialSecurityImage" class="row" @Html.Raw(mtCrewSearch.SocialSecurityImage.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_SocialSecurityImage">@Html.Raw(mtCrewSearch.SocialSecurityImage.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SocialSecurityImage" id="z_SocialSecurityImage" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.SocialSecurityImage.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_SocialSecurityImage" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.SocialSecurityImage.InputTextType)" name="x_SocialSecurityImage" id="x_SocialSecurityImage" data-table="MTCrew" data-field="x_SocialSecurityImage" value="@Html.Raw(mtCrewSearch.SocialSecurityImage.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.SocialSecurityImage.PlaceHolder))" data-format-pattern="@(mtCrewSearch.SocialSecurityImage.FormatPattern)"@Html.Raw(mtCrewSearch.SocialSecurityImage.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.SocialSecurityImage.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.SocialSecurityImage.Visible (end) *@
+@if (mtCrewSearch.PersonalTaxNumber.Visible) { // mtCrewSearch.PersonalTaxNumber.Visible (begin)
+    <div id="r_PersonalTaxNumber" class="row" @Html.Raw(mtCrewSearch.PersonalTaxNumber.RowAttributes)>
+        <label for="x_PersonalTaxNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PersonalTaxNumber">@Html.Raw(mtCrewSearch.PersonalTaxNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PersonalTaxNumber" id="z_PersonalTaxNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PersonalTaxNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PersonalTaxNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PersonalTaxNumber.InputTextType)" name="x_PersonalTaxNumber" id="x_PersonalTaxNumber" data-table="MTCrew" data-field="x_PersonalTaxNumber" value="@Html.Raw(mtCrewSearch.PersonalTaxNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PersonalTaxNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PersonalTaxNumber.FormatPattern)"@Html.Raw(mtCrewSearch.PersonalTaxNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PersonalTaxNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PersonalTaxNumber.Visible (end) *@
+@if (mtCrewSearch.PersonalTaxIssuingCountryID.Visible) { // mtCrewSearch.PersonalTaxIssuingCountryID.Visible (begin)
+    <div id="r_PersonalTaxIssuingCountryID" class="row" @Html.Raw(mtCrewSearch.PersonalTaxIssuingCountryID.RowAttributes)>
+        <label for="x_PersonalTaxIssuingCountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PersonalTaxIssuingCountryID">@Html.Raw(mtCrewSearch.PersonalTaxIssuingCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PersonalTaxIssuingCountryID" id="z_PersonalTaxIssuingCountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PersonalTaxIssuingCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PersonalTaxIssuingCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_PersonalTaxIssuingCountryID"
+        name="x_PersonalTaxIssuingCountryID"
+        class="form-select ew-select@(mtCrewSearch.PersonalTaxIssuingCountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_PersonalTaxIssuingCountryID"
+        data-table="MTCrew"
+        data-field="x_PersonalTaxIssuingCountryID"
+        data-value-separator="@(mtCrewSearch.PersonalTaxIssuingCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.PersonalTaxIssuingCountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.PersonalTaxIssuingCountryID.EditAttributes)>
+        @(mtCrewSearch.PersonalTaxIssuingCountryID.SelectOptionListHtml("x_PersonalTaxIssuingCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.PersonalTaxIssuingCountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.PersonalTaxIssuingCountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_PersonalTaxIssuingCountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_PersonalTaxIssuingCountryID", selectId: "fMTCrewsearch_x_PersonalTaxIssuingCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.PersonalTaxIssuingCountryID?.lookupOptions.length) {
+        options.data = { id: "x_PersonalTaxIssuingCountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_PersonalTaxIssuingCountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.PersonalTaxIssuingCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PersonalTaxIssuingCountryID.Visible (end) *@
+@if (mtCrewSearch.PersonalTaxImage.Visible) { // mtCrewSearch.PersonalTaxImage.Visible (begin)
+    <div id="r_PersonalTaxImage" class="row" @Html.Raw(mtCrewSearch.PersonalTaxImage.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_PersonalTaxImage">@Html.Raw(mtCrewSearch.PersonalTaxImage.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PersonalTaxImage" id="z_PersonalTaxImage" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.PersonalTaxImage.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_PersonalTaxImage" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.PersonalTaxImage.InputTextType)" name="x_PersonalTaxImage" id="x_PersonalTaxImage" data-table="MTCrew" data-field="x_PersonalTaxImage" value="@Html.Raw(mtCrewSearch.PersonalTaxImage.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.PersonalTaxImage.PlaceHolder))" data-format-pattern="@(mtCrewSearch.PersonalTaxImage.FormatPattern)"@Html.Raw(mtCrewSearch.PersonalTaxImage.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.PersonalTaxImage.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.PersonalTaxImage.Visible (end) *@
+@if (mtCrewSearch.NomineeFullName.Visible) { // mtCrewSearch.NomineeFullName.Visible (begin)
+    <div id="r_NomineeFullName" class="row" @Html.Raw(mtCrewSearch.NomineeFullName.RowAttributes)>
+        <label for="x_NomineeFullName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeFullName">@Html.Raw(mtCrewSearch.NomineeFullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeFullName" id="z_NomineeFullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeFullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeFullName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeFullName.InputTextType)" name="x_NomineeFullName" id="x_NomineeFullName" data-table="MTCrew" data-field="x_NomineeFullName" value="@Html.Raw(mtCrewSearch.NomineeFullName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeFullName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeFullName.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeFullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeFullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeFullName.Visible (end) *@
+@if (mtCrewSearch.NomineeRelationship.Visible) { // mtCrewSearch.NomineeRelationship.Visible (begin)
+    <div id="r_NomineeRelationship" class="row" @Html.Raw(mtCrewSearch.NomineeRelationship.RowAttributes)>
+        <label for="x_NomineeRelationship" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeRelationship">@Html.Raw(mtCrewSearch.NomineeRelationship.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeRelationship" id="z_NomineeRelationship" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeRelationship.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeRelationship" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeRelationship.InputTextType)" name="x_NomineeRelationship" id="x_NomineeRelationship" data-table="MTCrew" data-field="x_NomineeRelationship" value="@Html.Raw(mtCrewSearch.NomineeRelationship.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeRelationship.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeRelationship.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeRelationship.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeRelationship.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeRelationship.Visible (end) *@
+@if (mtCrewSearch.NomineeGender.Visible) { // mtCrewSearch.NomineeGender.Visible (begin)
+    <div id="r_NomineeGender" class="row" @Html.Raw(mtCrewSearch.NomineeGender.RowAttributes)>
+        <label for="x_NomineeGender" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeGender">@Html.Raw(mtCrewSearch.NomineeGender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeGender" id="z_NomineeGender" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeGender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeGender" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_NomineeGender"
+        name="x_NomineeGender"
+        class="form-select ew-select@(mtCrewSearch.NomineeGender.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_NomineeGender"
+        data-table="MTCrew"
+        data-field="x_NomineeGender"
+        data-value-separator="@(mtCrewSearch.NomineeGender.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.NomineeGender.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.NomineeGender.EditAttributes)>
+        @(mtCrewSearch.NomineeGender.SelectOptionListHtml("x_NomineeGender"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeGender.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_NomineeGender", selectId: "fMTCrewsearch_x_NomineeGender" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.NomineeGender?.lookupOptions.length) {
+        options.data = { id: "x_NomineeGender", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_NomineeGender", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.NomineeGender.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeGender.Visible (end) *@
+@if (mtCrewSearch.NomineeNationality_CountryID.Visible) { // mtCrewSearch.NomineeNationality_CountryID.Visible (begin)
+    <div id="r_NomineeNationality_CountryID" class="row" @Html.Raw(mtCrewSearch.NomineeNationality_CountryID.RowAttributes)>
+        <label for="x_NomineeNationality_CountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeNationality_CountryID">@Html.Raw(mtCrewSearch.NomineeNationality_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_NomineeNationality_CountryID" id="z_NomineeNationality_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeNationality_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeNationality_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_NomineeNationality_CountryID"
+        name="x_NomineeNationality_CountryID"
+        class="form-select ew-select@(mtCrewSearch.NomineeNationality_CountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_NomineeNationality_CountryID"
+        data-table="MTCrew"
+        data-field="x_NomineeNationality_CountryID"
+        data-value-separator="@(mtCrewSearch.NomineeNationality_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.NomineeNationality_CountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.NomineeNationality_CountryID.EditAttributes)>
+        @(mtCrewSearch.NomineeNationality_CountryID.SelectOptionListHtml("x_NomineeNationality_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeNationality_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.NomineeNationality_CountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_NomineeNationality_CountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_NomineeNationality_CountryID", selectId: "fMTCrewsearch_x_NomineeNationality_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.NomineeNationality_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_NomineeNationality_CountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_NomineeNationality_CountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.NomineeNationality_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeNationality_CountryID.Visible (end) *@
+@if (mtCrewSearch.NomineeAddressDetail.Visible) { // mtCrewSearch.NomineeAddressDetail.Visible (begin)
+    <div id="r_NomineeAddressDetail" class="row" @Html.Raw(mtCrewSearch.NomineeAddressDetail.RowAttributes)>
+        <label for="x_NomineeAddressDetail" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeAddressDetail">@Html.Raw(mtCrewSearch.NomineeAddressDetail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeAddressDetail" id="z_NomineeAddressDetail" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeAddressDetail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeAddressDetail" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeAddressDetail.InputTextType)" name="x_NomineeAddressDetail" id="x_NomineeAddressDetail" data-table="MTCrew" data-field="x_NomineeAddressDetail" value="@Html.Raw(mtCrewSearch.NomineeAddressDetail.EditValue)" size="50" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeAddressDetail.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeAddressDetail.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeAddressDetail.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeAddressDetail.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeAddressDetail.Visible (end) *@
+@if (mtCrewSearch.NomineeAddressCity.Visible) { // mtCrewSearch.NomineeAddressCity.Visible (begin)
+    <div id="r_NomineeAddressCity" class="row" @Html.Raw(mtCrewSearch.NomineeAddressCity.RowAttributes)>
+        <label for="x_NomineeAddressCity" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeAddressCity">@Html.Raw(mtCrewSearch.NomineeAddressCity.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeAddressCity" id="z_NomineeAddressCity" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeAddressCity.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeAddressCity" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeAddressCity.InputTextType)" name="x_NomineeAddressCity" id="x_NomineeAddressCity" data-table="MTCrew" data-field="x_NomineeAddressCity" value="@Html.Raw(mtCrewSearch.NomineeAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeAddressCity.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeAddressCity.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeAddressCity.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeAddressCity.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeAddressCity.Visible (end) *@
+@if (mtCrewSearch.NomineeAddressPostCode.Visible) { // mtCrewSearch.NomineeAddressPostCode.Visible (begin)
+    <div id="r_NomineeAddressPostCode" class="row" @Html.Raw(mtCrewSearch.NomineeAddressPostCode.RowAttributes)>
+        <label for="x_NomineeAddressPostCode" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeAddressPostCode">@Html.Raw(mtCrewSearch.NomineeAddressPostCode.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeAddressPostCode" id="z_NomineeAddressPostCode" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeAddressPostCode.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeAddressPostCode" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeAddressPostCode.InputTextType)" name="x_NomineeAddressPostCode" id="x_NomineeAddressPostCode" data-table="MTCrew" data-field="x_NomineeAddressPostCode" value="@Html.Raw(mtCrewSearch.NomineeAddressPostCode.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeAddressPostCode.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeAddressPostCode.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeAddressPostCode.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeAddressPostCode.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeAddressPostCode.Visible (end) *@
+@if (mtCrewSearch.NomineeAddressCountryID.Visible) { // mtCrewSearch.NomineeAddressCountryID.Visible (begin)
+    <div id="r_NomineeAddressCountryID" class="row" @Html.Raw(mtCrewSearch.NomineeAddressCountryID.RowAttributes)>
+        <label for="x_NomineeAddressCountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeAddressCountryID">@Html.Raw(mtCrewSearch.NomineeAddressCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_NomineeAddressCountryID" id="z_NomineeAddressCountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeAddressCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeAddressCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_NomineeAddressCountryID"
+        name="x_NomineeAddressCountryID"
+        class="form-select ew-select@(mtCrewSearch.NomineeAddressCountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_NomineeAddressCountryID"
+        data-table="MTCrew"
+        data-field="x_NomineeAddressCountryID"
+        data-value-separator="@(mtCrewSearch.NomineeAddressCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.NomineeAddressCountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.NomineeAddressCountryID.EditAttributes)>
+        @(mtCrewSearch.NomineeAddressCountryID.SelectOptionListHtml("x_NomineeAddressCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeAddressCountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.NomineeAddressCountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_NomineeAddressCountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_NomineeAddressCountryID", selectId: "fMTCrewsearch_x_NomineeAddressCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.NomineeAddressCountryID?.lookupOptions.length) {
+        options.data = { id: "x_NomineeAddressCountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_NomineeAddressCountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.NomineeAddressCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeAddressCountryID.Visible (end) *@
+@if (mtCrewSearch.NomineeAddressHomeTel.Visible) { // mtCrewSearch.NomineeAddressHomeTel.Visible (begin)
+    <div id="r_NomineeAddressHomeTel" class="row" @Html.Raw(mtCrewSearch.NomineeAddressHomeTel.RowAttributes)>
+        <label for="x_NomineeAddressHomeTel" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeAddressHomeTel">@Html.Raw(mtCrewSearch.NomineeAddressHomeTel.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeAddressHomeTel" id="z_NomineeAddressHomeTel" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeAddressHomeTel.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeAddressHomeTel" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeAddressHomeTel.InputTextType)" name="x_NomineeAddressHomeTel" id="x_NomineeAddressHomeTel" data-table="MTCrew" data-field="x_NomineeAddressHomeTel" value="@Html.Raw(mtCrewSearch.NomineeAddressHomeTel.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeAddressHomeTel.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeAddressHomeTel.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeAddressHomeTel.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeAddressHomeTel.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeAddressHomeTel.Visible (end) *@
+@if (mtCrewSearch.NomineeEmail.Visible) { // mtCrewSearch.NomineeEmail.Visible (begin)
+    <div id="r_NomineeEmail" class="row" @Html.Raw(mtCrewSearch.NomineeEmail.RowAttributes)>
+        <label for="x_NomineeEmail" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeEmail">@Html.Raw(mtCrewSearch.NomineeEmail.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeEmail" id="z_NomineeEmail" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeEmail.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeEmail" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeEmail.InputTextType)" name="x_NomineeEmail" id="x_NomineeEmail" data-table="MTCrew" data-field="x_NomineeEmail" value="@Html.Raw(mtCrewSearch.NomineeEmail.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeEmail.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeEmail.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeEmail.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeEmail.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeEmail.Visible (end) *@
+@if (mtCrewSearch.NomineeMobileNumber.Visible) { // mtCrewSearch.NomineeMobileNumber.Visible (begin)
+    <div id="r_NomineeMobileNumber" class="row" @Html.Raw(mtCrewSearch.NomineeMobileNumber.RowAttributes)>
+        <label for="x_NomineeMobileNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeMobileNumber">@Html.Raw(mtCrewSearch.NomineeMobileNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeMobileNumber" id="z_NomineeMobileNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeMobileNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeMobileNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NomineeMobileNumber.InputTextType)" name="x_NomineeMobileNumber" id="x_NomineeMobileNumber" data-table="MTCrew" data-field="x_NomineeMobileNumber" value="@Html.Raw(mtCrewSearch.NomineeMobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeMobileNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeMobileNumber.FormatPattern)"@Html.Raw(mtCrewSearch.NomineeMobileNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeMobileNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeMobileNumber.Visible (end) *@
+@if (mtCrewSearch.NomineeValidVisa.Visible) { // mtCrewSearch.NomineeValidVisa.Visible (begin)
+    <div id="r_NomineeValidVisa" class="row" @Html.Raw(mtCrewSearch.NomineeValidVisa.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NomineeValidVisa">@Html.Raw(mtCrewSearch.NomineeValidVisa.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NomineeValidVisa" id="z_NomineeValidVisa" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NomineeValidVisa.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NomineeValidVisa" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mtCrewSearch.NomineeValidVisa.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_NomineeValidVisa" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_NomineeValidVisa" id="sv_x_NomineeValidVisa" value="@(RemoveHtml(ConvertToString(mtCrewSearch.NomineeValidVisa.EditValue)))" autocomplete="off" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeValidVisa.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NomineeValidVisa.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NomineeValidVisa.FormatPattern)" @Html.Raw(mtCrewSearch.NomineeValidVisa.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="MTCrew" data-field="x_NomineeValidVisa" data-input="sv_x_NomineeValidVisa" data-value-separator="@(mtCrewSearch.NomineeValidVisa.DisplayValueSeparatorAttribute)" name="x_NomineeValidVisa" id="x_NomineeValidVisa" value="@(HtmlEncode(mtCrewSearch.NomineeValidVisa.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NomineeValidVisa.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMTCrewsearch"], function() {
+    fMTCrewsearch.createAutoSuggest(Object.assign({"id":"x_NomineeValidVisa","forceSelect":false}, { lookupAllDisplayFields: @(mtCrewSearch.NomineeValidVisa.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.MTCrew.fields.NomineeValidVisa.autoSuggestOptions));
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NomineeValidVisa.Visible (end) *@
+@if (mtCrewSearch.BankName.Visible) { // mtCrewSearch.BankName.Visible (begin)
+    <div id="r_BankName" class="row" @Html.Raw(mtCrewSearch.BankName.RowAttributes)>
+        <label for="x_BankName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_BankName">@Html.Raw(mtCrewSearch.BankName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BankName" id="z_BankName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.BankName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_BankName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.BankName.InputTextType)" name="x_BankName" id="x_BankName" data-table="MTCrew" data-field="x_BankName" value="@Html.Raw(mtCrewSearch.BankName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.BankName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.BankName.FormatPattern)"@Html.Raw(mtCrewSearch.BankName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.BankName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.BankName.Visible (end) *@
+@if (mtCrewSearch.BankAddress.Visible) { // mtCrewSearch.BankAddress.Visible (begin)
+    <div id="r_BankAddress" class="row" @Html.Raw(mtCrewSearch.BankAddress.RowAttributes)>
+        <label for="x_BankAddress" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_BankAddress">@Html.Raw(mtCrewSearch.BankAddress.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BankAddress" id="z_BankAddress" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.BankAddress.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_BankAddress" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.BankAddress.InputTextType)" name="x_BankAddress" id="x_BankAddress" data-table="MTCrew" data-field="x_BankAddress" value="@Html.Raw(mtCrewSearch.BankAddress.EditValue)" size="50" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.BankAddress.PlaceHolder))" data-format-pattern="@(mtCrewSearch.BankAddress.FormatPattern)"@Html.Raw(mtCrewSearch.BankAddress.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.BankAddress.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.BankAddress.Visible (end) *@
+@if (mtCrewSearch.BankAccountName.Visible) { // mtCrewSearch.BankAccountName.Visible (begin)
+    <div id="r_BankAccountName" class="row" @Html.Raw(mtCrewSearch.BankAccountName.RowAttributes)>
+        <label for="x_BankAccountName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_BankAccountName">@Html.Raw(mtCrewSearch.BankAccountName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BankAccountName" id="z_BankAccountName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.BankAccountName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_BankAccountName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.BankAccountName.InputTextType)" name="x_BankAccountName" id="x_BankAccountName" data-table="MTCrew" data-field="x_BankAccountName" value="@Html.Raw(mtCrewSearch.BankAccountName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.BankAccountName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.BankAccountName.FormatPattern)"@Html.Raw(mtCrewSearch.BankAccountName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.BankAccountName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.BankAccountName.Visible (end) *@
+@if (mtCrewSearch.BankAccountNumber.Visible) { // mtCrewSearch.BankAccountNumber.Visible (begin)
+    <div id="r_BankAccountNumber" class="row" @Html.Raw(mtCrewSearch.BankAccountNumber.RowAttributes)>
+        <label for="x_BankAccountNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_BankAccountNumber">@Html.Raw(mtCrewSearch.BankAccountNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BankAccountNumber" id="z_BankAccountNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.BankAccountNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_BankAccountNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.BankAccountNumber.InputTextType)" name="x_BankAccountNumber" id="x_BankAccountNumber" data-table="MTCrew" data-field="x_BankAccountNumber" value="@Html.Raw(mtCrewSearch.BankAccountNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.BankAccountNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.BankAccountNumber.FormatPattern)"@Html.Raw(mtCrewSearch.BankAccountNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.BankAccountNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.BankAccountNumber.Visible (end) *@
+@if (mtCrewSearch.BankSortCode.Visible) { // mtCrewSearch.BankSortCode.Visible (begin)
+    <div id="r_BankSortCode" class="row" @Html.Raw(mtCrewSearch.BankSortCode.RowAttributes)>
+        <label for="x_BankSortCode" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_BankSortCode">@Html.Raw(mtCrewSearch.BankSortCode.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BankSortCode" id="z_BankSortCode" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.BankSortCode.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_BankSortCode" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.BankSortCode.InputTextType)" name="x_BankSortCode" id="x_BankSortCode" data-table="MTCrew" data-field="x_BankSortCode" value="@Html.Raw(mtCrewSearch.BankSortCode.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.BankSortCode.PlaceHolder))" data-format-pattern="@(mtCrewSearch.BankSortCode.FormatPattern)"@Html.Raw(mtCrewSearch.BankSortCode.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.BankSortCode.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.BankSortCode.Visible (end) *@
+@if (mtCrewSearch.MNOPF.Visible) { // mtCrewSearch.MNOPF.Visible (begin)
+    <div id="r_MNOPF" class="row" @Html.Raw(mtCrewSearch.MNOPF.RowAttributes)>
+        <label for="x_MNOPF" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_MNOPF">@Html.Raw(mtCrewSearch.MNOPF.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MNOPF" id="z_MNOPF" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.MNOPF.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_MNOPF" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.MNOPF.InputTextType)" name="x_MNOPF" id="x_MNOPF" data-table="MTCrew" data-field="x_MNOPF" value="@Html.Raw(mtCrewSearch.MNOPF.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.MNOPF.PlaceHolder))" data-format-pattern="@(mtCrewSearch.MNOPF.FormatPattern)"@Html.Raw(mtCrewSearch.MNOPF.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.MNOPF.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.MNOPF.Visible (end) *@
+@if (mtCrewSearch.MembershipNumber.Visible) { // mtCrewSearch.MembershipNumber.Visible (begin)
+    <div id="r_MembershipNumber" class="row" @Html.Raw(mtCrewSearch.MembershipNumber.RowAttributes)>
+        <label for="x_MembershipNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_MembershipNumber">@Html.Raw(mtCrewSearch.MembershipNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MembershipNumber" id="z_MembershipNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.MembershipNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_MembershipNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.MembershipNumber.InputTextType)" name="x_MembershipNumber" id="x_MembershipNumber" data-table="MTCrew" data-field="x_MembershipNumber" value="@Html.Raw(mtCrewSearch.MembershipNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.MembershipNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.MembershipNumber.FormatPattern)"@Html.Raw(mtCrewSearch.MembershipNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.MembershipNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.MembershipNumber.Visible (end) *@
+@if (mtCrewSearch.NationalInsuranceNumber.Visible) { // mtCrewSearch.NationalInsuranceNumber.Visible (begin)
+    <div id="r_NationalInsuranceNumber" class="row" @Html.Raw(mtCrewSearch.NationalInsuranceNumber.RowAttributes)>
+        <label for="x_NationalInsuranceNumber" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_NationalInsuranceNumber">@Html.Raw(mtCrewSearch.NationalInsuranceNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_NationalInsuranceNumber" id="z_NationalInsuranceNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.NationalInsuranceNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_NationalInsuranceNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.NationalInsuranceNumber.InputTextType)" name="x_NationalInsuranceNumber" id="x_NationalInsuranceNumber" data-table="MTCrew" data-field="x_NationalInsuranceNumber" value="@Html.Raw(mtCrewSearch.NationalInsuranceNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.NationalInsuranceNumber.PlaceHolder))" data-format-pattern="@(mtCrewSearch.NationalInsuranceNumber.FormatPattern)"@Html.Raw(mtCrewSearch.NationalInsuranceNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.NationalInsuranceNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.NationalInsuranceNumber.Visible (end) *@
+@if (mtCrewSearch.AVC.Visible) { // mtCrewSearch.AVC.Visible (begin)
+    <div id="r_AVC" class="row" @Html.Raw(mtCrewSearch.AVC.RowAttributes)>
+        <label for="x_AVC" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_AVC">@Html.Raw(mtCrewSearch.AVC.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AVC" id="z_AVC" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.AVC.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_AVC" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.AVC.InputTextType)" name="x_AVC" id="x_AVC" data-table="MTCrew" data-field="x_AVC" value="@Html.Raw(mtCrewSearch.AVC.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.AVC.PlaceHolder))" data-format-pattern="@(mtCrewSearch.AVC.FormatPattern)"@Html.Raw(mtCrewSearch.AVC.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.AVC.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.AVC.Visible (end) *@
+@if (mtCrewSearch.ForeignVisaHasBeenDenied.Visible) { // mtCrewSearch.ForeignVisaHasBeenDenied.Visible (begin)
+    <div id="r_ForeignVisaHasBeenDenied" class="row" @Html.Raw(mtCrewSearch.ForeignVisaHasBeenDenied.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ForeignVisaHasBeenDenied">@Html.Raw(mtCrewSearch.ForeignVisaHasBeenDenied.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ForeignVisaHasBeenDenied" id="z_ForeignVisaHasBeenDenied" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ForeignVisaHasBeenDenied.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ForeignVisaHasBeenDenied" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.ForeignVisaHasBeenDenied.IsInvalidClass)" data-table="MTCrew" data-field="x_ForeignVisaHasBeenDenied" data-boolean name="x_ForeignVisaHasBeenDenied" id="x_ForeignVisaHasBeenDenied" value="1" checked="@ConvertToBool(mtCrewSearch.ForeignVisaHasBeenDenied.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.ForeignVisaHasBeenDenied.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ForeignVisaHasBeenDenied.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ForeignVisaHasBeenDenied.Visible (end) *@
+@if (mtCrewSearch.ForeignVisaDenied_CountryID.Visible) { // mtCrewSearch.ForeignVisaDenied_CountryID.Visible (begin)
+    <div id="r_ForeignVisaDenied_CountryID" class="row" @Html.Raw(mtCrewSearch.ForeignVisaDenied_CountryID.RowAttributes)>
+        <label for="x_ForeignVisaDenied_CountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ForeignVisaDenied_CountryID">@Html.Raw(mtCrewSearch.ForeignVisaDenied_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ForeignVisaDenied_CountryID" id="z_ForeignVisaDenied_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ForeignVisaDenied_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ForeignVisaDenied_CountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_ForeignVisaDenied_CountryID"
+        name="x_ForeignVisaDenied_CountryID"
+        class="form-select ew-select@(mtCrewSearch.ForeignVisaDenied_CountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_ForeignVisaDenied_CountryID"
+        data-table="MTCrew"
+        data-field="x_ForeignVisaDenied_CountryID"
+        data-value-separator="@(mtCrewSearch.ForeignVisaDenied_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.ForeignVisaDenied_CountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.ForeignVisaDenied_CountryID.EditAttributes)>
+        @(mtCrewSearch.ForeignVisaDenied_CountryID.SelectOptionListHtml("x_ForeignVisaDenied_CountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.ForeignVisaDenied_CountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.ForeignVisaDenied_CountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_ForeignVisaDenied_CountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_ForeignVisaDenied_CountryID", selectId: "fMTCrewsearch_x_ForeignVisaDenied_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.ForeignVisaDenied_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_ForeignVisaDenied_CountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_ForeignVisaDenied_CountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.ForeignVisaDenied_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ForeignVisaDenied_CountryID.Visible (end) *@
+@if (mtCrewSearch.ForeignVisaDeniedReason.Visible) { // mtCrewSearch.ForeignVisaDeniedReason.Visible (begin)
+    <div id="r_ForeignVisaDeniedReason" class="row" @Html.Raw(mtCrewSearch.ForeignVisaDeniedReason.RowAttributes)>
+        <label for="x_ForeignVisaDeniedReason" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_ForeignVisaDeniedReason">@Html.Raw(mtCrewSearch.ForeignVisaDeniedReason.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_ForeignVisaDeniedReason" id="z_ForeignVisaDeniedReason" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.ForeignVisaDeniedReason.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_ForeignVisaDeniedReason" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.ForeignVisaDeniedReason.InputTextType)" name="x_ForeignVisaDeniedReason" id="x_ForeignVisaDeniedReason" data-table="MTCrew" data-field="x_ForeignVisaDeniedReason" value="@Html.Raw(mtCrewSearch.ForeignVisaDeniedReason.EditValue)" size="50" maxlength="500" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.ForeignVisaDeniedReason.PlaceHolder))" data-format-pattern="@(mtCrewSearch.ForeignVisaDeniedReason.FormatPattern)"@Html.Raw(mtCrewSearch.ForeignVisaDeniedReason.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.ForeignVisaDeniedReason.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.ForeignVisaDeniedReason.Visible (end) *@
+@if (mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.Visible) { // mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.Visible (begin)
+    <div id="r_HasMaritimeAccidentOrCourtOfEnquiry" class="row" @Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.RowAttributes)>
+        <label class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_HasMaritimeAccidentOrCourtOfEnquiry">@Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_HasMaritimeAccidentOrCourtOfEnquiry" id="z_HasMaritimeAccidentOrCourtOfEnquiry" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_HasMaritimeAccidentOrCourtOfEnquiry" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.IsInvalidClass)" data-table="MTCrew" data-field="x_HasMaritimeAccidentOrCourtOfEnquiry" data-boolean name="x_HasMaritimeAccidentOrCourtOfEnquiry" id="x_HasMaritimeAccidentOrCourtOfEnquiry" value="1" checked="@ConvertToBool(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiry.Visible (end) *@
+@if (mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.Visible) { // mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.Visible (begin)
+    <div id="r_HasMaritimeAccidentOrCourtOfEnquiryDetails" class="row" @Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.RowAttributes)>
+        <label for="x_HasMaritimeAccidentOrCourtOfEnquiryDetails" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_HasMaritimeAccidentOrCourtOfEnquiryDetails">@Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_HasMaritimeAccidentOrCourtOfEnquiryDetails" id="z_HasMaritimeAccidentOrCourtOfEnquiryDetails" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_HasMaritimeAccidentOrCourtOfEnquiryDetails" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.InputTextType)" name="x_HasMaritimeAccidentOrCourtOfEnquiryDetails" id="x_HasMaritimeAccidentOrCourtOfEnquiryDetails" data-table="MTCrew" data-field="x_HasMaritimeAccidentOrCourtOfEnquiryDetails" value="@Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.EditValue)" size="50" maxlength="500" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.PlaceHolder))" data-format-pattern="@(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.FormatPattern)"@Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.HasMaritimeAccidentOrCourtOfEnquiryDetails.Visible (end) *@
+@if (mtCrewSearch.Reference1CompanyName.Visible) { // mtCrewSearch.Reference1CompanyName.Visible (begin)
+    <div id="r_Reference1CompanyName" class="row" @Html.Raw(mtCrewSearch.Reference1CompanyName.RowAttributes)>
+        <label for="x_Reference1CompanyName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyName">@Html.Raw(mtCrewSearch.Reference1CompanyName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference1CompanyName" id="z_Reference1CompanyName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference1CompanyName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference1CompanyName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference1CompanyName.InputTextType)" name="x_Reference1CompanyName" id="x_Reference1CompanyName" data-table="MTCrew" data-field="x_Reference1CompanyName" value="@Html.Raw(mtCrewSearch.Reference1CompanyName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference1CompanyName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference1CompanyName.FormatPattern)"@Html.Raw(mtCrewSearch.Reference1CompanyName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference1CompanyName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference1CompanyName.Visible (end) *@
+@if (mtCrewSearch.Reference1ContactPersonName.Visible) { // mtCrewSearch.Reference1ContactPersonName.Visible (begin)
+    <div id="r_Reference1ContactPersonName" class="row" @Html.Raw(mtCrewSearch.Reference1ContactPersonName.RowAttributes)>
+        <label for="x_Reference1ContactPersonName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference1ContactPersonName">@Html.Raw(mtCrewSearch.Reference1ContactPersonName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference1ContactPersonName" id="z_Reference1ContactPersonName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference1ContactPersonName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference1ContactPersonName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference1ContactPersonName.InputTextType)" name="x_Reference1ContactPersonName" id="x_Reference1ContactPersonName" data-table="MTCrew" data-field="x_Reference1ContactPersonName" value="@Html.Raw(mtCrewSearch.Reference1ContactPersonName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference1ContactPersonName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference1ContactPersonName.FormatPattern)"@Html.Raw(mtCrewSearch.Reference1ContactPersonName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference1ContactPersonName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference1ContactPersonName.Visible (end) *@
+@if (mtCrewSearch.Reference1CompanyAddress.Visible) { // mtCrewSearch.Reference1CompanyAddress.Visible (begin)
+    <div id="r_Reference1CompanyAddress" class="row" @Html.Raw(mtCrewSearch.Reference1CompanyAddress.RowAttributes)>
+        <label for="x_Reference1CompanyAddress" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyAddress">@Html.Raw(mtCrewSearch.Reference1CompanyAddress.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference1CompanyAddress" id="z_Reference1CompanyAddress" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference1CompanyAddress.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference1CompanyAddress" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference1CompanyAddress.InputTextType)" name="x_Reference1CompanyAddress" id="x_Reference1CompanyAddress" data-table="MTCrew" data-field="x_Reference1CompanyAddress" value="@Html.Raw(mtCrewSearch.Reference1CompanyAddress.EditValue)" size="50" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference1CompanyAddress.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference1CompanyAddress.FormatPattern)"@Html.Raw(mtCrewSearch.Reference1CompanyAddress.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference1CompanyAddress.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference1CompanyAddress.Visible (end) *@
+@if (mtCrewSearch.Reference1CompanyCountryID.Visible) { // mtCrewSearch.Reference1CompanyCountryID.Visible (begin)
+    <div id="r_Reference1CompanyCountryID" class="row" @Html.Raw(mtCrewSearch.Reference1CompanyCountryID.RowAttributes)>
+        <label for="x_Reference1CompanyCountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyCountryID">@Html.Raw(mtCrewSearch.Reference1CompanyCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Reference1CompanyCountryID" id="z_Reference1CompanyCountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference1CompanyCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference1CompanyCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Reference1CompanyCountryID"
+        name="x_Reference1CompanyCountryID"
+        class="form-select ew-select@(mtCrewSearch.Reference1CompanyCountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_Reference1CompanyCountryID"
+        data-table="MTCrew"
+        data-field="x_Reference1CompanyCountryID"
+        data-value-separator="@(mtCrewSearch.Reference1CompanyCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.Reference1CompanyCountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.Reference1CompanyCountryID.EditAttributes)>
+        @(mtCrewSearch.Reference1CompanyCountryID.SelectOptionListHtml("x_Reference1CompanyCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference1CompanyCountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.Reference1CompanyCountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_Reference1CompanyCountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_Reference1CompanyCountryID", selectId: "fMTCrewsearch_x_Reference1CompanyCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.Reference1CompanyCountryID?.lookupOptions.length) {
+        options.data = { id: "x_Reference1CompanyCountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_Reference1CompanyCountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.Reference1CompanyCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference1CompanyCountryID.Visible (end) *@
+@if (mtCrewSearch.Reference1CompanyTelephone.Visible) { // mtCrewSearch.Reference1CompanyTelephone.Visible (begin)
+    <div id="r_Reference1CompanyTelephone" class="row" @Html.Raw(mtCrewSearch.Reference1CompanyTelephone.RowAttributes)>
+        <label for="x_Reference1CompanyTelephone" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyTelephone">@Html.Raw(mtCrewSearch.Reference1CompanyTelephone.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference1CompanyTelephone" id="z_Reference1CompanyTelephone" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference1CompanyTelephone.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference1CompanyTelephone" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference1CompanyTelephone.InputTextType)" name="x_Reference1CompanyTelephone" id="x_Reference1CompanyTelephone" data-table="MTCrew" data-field="x_Reference1CompanyTelephone" value="@Html.Raw(mtCrewSearch.Reference1CompanyTelephone.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference1CompanyTelephone.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference1CompanyTelephone.FormatPattern)"@Html.Raw(mtCrewSearch.Reference1CompanyTelephone.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference1CompanyTelephone.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference1CompanyTelephone.Visible (end) *@
+@if (mtCrewSearch.Reference2CompanyName.Visible) { // mtCrewSearch.Reference2CompanyName.Visible (begin)
+    <div id="r_Reference2CompanyName" class="row" @Html.Raw(mtCrewSearch.Reference2CompanyName.RowAttributes)>
+        <label for="x_Reference2CompanyName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyName">@Html.Raw(mtCrewSearch.Reference2CompanyName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference2CompanyName" id="z_Reference2CompanyName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference2CompanyName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference2CompanyName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference2CompanyName.InputTextType)" name="x_Reference2CompanyName" id="x_Reference2CompanyName" data-table="MTCrew" data-field="x_Reference2CompanyName" value="@Html.Raw(mtCrewSearch.Reference2CompanyName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference2CompanyName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference2CompanyName.FormatPattern)"@Html.Raw(mtCrewSearch.Reference2CompanyName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference2CompanyName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference2CompanyName.Visible (end) *@
+@if (mtCrewSearch.Reference2ContactPersonName.Visible) { // mtCrewSearch.Reference2ContactPersonName.Visible (begin)
+    <div id="r_Reference2ContactPersonName" class="row" @Html.Raw(mtCrewSearch.Reference2ContactPersonName.RowAttributes)>
+        <label for="x_Reference2ContactPersonName" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference2ContactPersonName">@Html.Raw(mtCrewSearch.Reference2ContactPersonName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference2ContactPersonName" id="z_Reference2ContactPersonName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference2ContactPersonName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference2ContactPersonName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference2ContactPersonName.InputTextType)" name="x_Reference2ContactPersonName" id="x_Reference2ContactPersonName" data-table="MTCrew" data-field="x_Reference2ContactPersonName" value="@Html.Raw(mtCrewSearch.Reference2ContactPersonName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference2ContactPersonName.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference2ContactPersonName.FormatPattern)"@Html.Raw(mtCrewSearch.Reference2ContactPersonName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference2ContactPersonName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference2ContactPersonName.Visible (end) *@
+@if (mtCrewSearch.Reference2CompanyAddress.Visible) { // mtCrewSearch.Reference2CompanyAddress.Visible (begin)
+    <div id="r_Reference2CompanyAddress" class="row" @Html.Raw(mtCrewSearch.Reference2CompanyAddress.RowAttributes)>
+        <label for="x_Reference2CompanyAddress" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyAddress">@Html.Raw(mtCrewSearch.Reference2CompanyAddress.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference2CompanyAddress" id="z_Reference2CompanyAddress" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference2CompanyAddress.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference2CompanyAddress" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference2CompanyAddress.InputTextType)" name="x_Reference2CompanyAddress" id="x_Reference2CompanyAddress" data-table="MTCrew" data-field="x_Reference2CompanyAddress" value="@Html.Raw(mtCrewSearch.Reference2CompanyAddress.EditValue)" size="50" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference2CompanyAddress.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference2CompanyAddress.FormatPattern)"@Html.Raw(mtCrewSearch.Reference2CompanyAddress.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference2CompanyAddress.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference2CompanyAddress.Visible (end) *@
+@if (mtCrewSearch.Reference2CompanyCountryID.Visible) { // mtCrewSearch.Reference2CompanyCountryID.Visible (begin)
+    <div id="r_Reference2CompanyCountryID" class="row" @Html.Raw(mtCrewSearch.Reference2CompanyCountryID.RowAttributes)>
+        <label for="x_Reference2CompanyCountryID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyCountryID">@Html.Raw(mtCrewSearch.Reference2CompanyCountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Reference2CompanyCountryID" id="z_Reference2CompanyCountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference2CompanyCountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference2CompanyCountryID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Reference2CompanyCountryID"
+        name="x_Reference2CompanyCountryID"
+        class="form-select ew-select@(mtCrewSearch.Reference2CompanyCountryID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_Reference2CompanyCountryID"
+        data-table="MTCrew"
+        data-field="x_Reference2CompanyCountryID"
+        data-value-separator="@(mtCrewSearch.Reference2CompanyCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.Reference2CompanyCountryID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.Reference2CompanyCountryID.EditAttributes)>
+        @(mtCrewSearch.Reference2CompanyCountryID.SelectOptionListHtml("x_Reference2CompanyCountryID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference2CompanyCountryID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.Reference2CompanyCountryID.Lookup.GetParamTag(mtCrewSearch, "p_x_Reference2CompanyCountryID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_Reference2CompanyCountryID", selectId: "fMTCrewsearch_x_Reference2CompanyCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.Reference2CompanyCountryID?.lookupOptions.length) {
+        options.data = { id: "x_Reference2CompanyCountryID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_Reference2CompanyCountryID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.Reference2CompanyCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference2CompanyCountryID.Visible (end) *@
+@if (mtCrewSearch.Reference2CompanyTelephone.Visible) { // mtCrewSearch.Reference2CompanyTelephone.Visible (begin)
+    <div id="r_Reference2CompanyTelephone" class="row" @Html.Raw(mtCrewSearch.Reference2CompanyTelephone.RowAttributes)>
+        <label for="x_Reference2CompanyTelephone" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyTelephone">@Html.Raw(mtCrewSearch.Reference2CompanyTelephone.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Reference2CompanyTelephone" id="z_Reference2CompanyTelephone" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.Reference2CompanyTelephone.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_Reference2CompanyTelephone" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.Reference2CompanyTelephone.InputTextType)" name="x_Reference2CompanyTelephone" id="x_Reference2CompanyTelephone" data-table="MTCrew" data-field="x_Reference2CompanyTelephone" value="@Html.Raw(mtCrewSearch.Reference2CompanyTelephone.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.Reference2CompanyTelephone.PlaceHolder))" data-format-pattern="@(mtCrewSearch.Reference2CompanyTelephone.FormatPattern)"@Html.Raw(mtCrewSearch.Reference2CompanyTelephone.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.Reference2CompanyTelephone.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.Reference2CompanyTelephone.Visible (end) *@
+@if (mtCrewSearch.EmployeeStatus.Visible) { // mtCrewSearch.EmployeeStatus.Visible (begin)
+    <div id="r_EmployeeStatus" class="row" @Html.Raw(mtCrewSearch.EmployeeStatus.RowAttributes)>
+        <label for="x_EmployeeStatus" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_EmployeeStatus">@Html.Raw(mtCrewSearch.EmployeeStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EmployeeStatus" id="z_EmployeeStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.EmployeeStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_EmployeeStatus" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.EmployeeStatus.InputTextType)" name="x_EmployeeStatus" id="x_EmployeeStatus" data-table="MTCrew" data-field="x_EmployeeStatus" value="@Html.Raw(mtCrewSearch.EmployeeStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.EmployeeStatus.PlaceHolder))" data-format-pattern="@(mtCrewSearch.EmployeeStatus.FormatPattern)"@Html.Raw(mtCrewSearch.EmployeeStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.EmployeeStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.EmployeeStatus.Visible (end) *@
+@if (mtCrewSearch.FormSubmittedDateTime.Visible) { // mtCrewSearch.FormSubmittedDateTime.Visible (begin)
+    <div id="r_FormSubmittedDateTime" class="row" @Html.Raw(mtCrewSearch.FormSubmittedDateTime.RowAttributes)>
+        <label for="x_FormSubmittedDateTime" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_FormSubmittedDateTime">@Html.Raw(mtCrewSearch.FormSubmittedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_FormSubmittedDateTime" id="z_FormSubmittedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.FormSubmittedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_FormSubmittedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.FormSubmittedDateTime.InputTextType)" name="x_FormSubmittedDateTime" id="x_FormSubmittedDateTime" data-table="MTCrew" data-field="x_FormSubmittedDateTime" value="@Html.Raw(mtCrewSearch.FormSubmittedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.FormSubmittedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewSearch.FormSubmittedDateTime.FormatPattern)"@Html.Raw(mtCrewSearch.FormSubmittedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.FormSubmittedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewSearch.FormSubmittedDateTime.ReadOnly && !mtCrewSearch.FormSubmittedDateTime.Disabled && !mtCrewSearch.FormSubmittedDateTime.EditAttrs.Is("readonly") && !mtCrewSearch.FormSubmittedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewsearch", "x_FormSubmittedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.FormSubmittedDateTime.Visible (end) *@
+@if (mtCrewSearch.CreatedByUserID.Visible) { // mtCrewSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_CreatedByUserID">@Html.Raw(mtCrewSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_CreatedByUserID"
+        data-table="MTCrew"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.CreatedByUserID.Lookup.GetParamTag(mtCrewSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewsearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewSearch.CreatedDateTime.Visible) { // mtCrewSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_CreatedDateTime">@Html.Raw(mtCrewSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrew" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewSearch.CreatedDateTime.ReadOnly && !mtCrewSearch.CreatedDateTime.Disabled && !mtCrewSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewSearch.LastUpdatedByUserID.Visible) { // mtCrewSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_LastUpdatedByUserID">@Html.Raw(mtCrewSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewsearch_x_LastUpdatedByUserID"
+        data-table="MTCrew"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewsearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewsearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewsearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewsearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrew.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewSearch.LastUpdatedDateTime.Visible) { // mtCrewSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_LastUpdatedDateTime">@Html.Raw(mtCrewSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrew" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewSearch.LastUpdatedDateTime.ReadOnly && !mtCrewSearch.LastUpdatedDateTime.Disabled && !mtCrewSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.LastUpdatedDateTime.Visible (end) *@
+@if (mtCrewSearch.RevisedReason.Visible) { // mtCrewSearch.RevisedReason.Visible (begin)
+    <div id="r_RevisedReason" class="row" @Html.Raw(mtCrewSearch.RevisedReason.RowAttributes)>
+        <label for="x_RevisedReason" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_RevisedReason">@Html.Raw(mtCrewSearch.RevisedReason.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RevisedReason" id="z_RevisedReason" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.RevisedReason.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_RevisedReason" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.RevisedReason.InputTextType)" name="x_RevisedReason" id="x_RevisedReason" data-table="MTCrew" data-field="x_RevisedReason" value="@Html.Raw(mtCrewSearch.RevisedReason.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.RevisedReason.PlaceHolder))" data-format-pattern="@(mtCrewSearch.RevisedReason.FormatPattern)"@Html.Raw(mtCrewSearch.RevisedReason.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.RevisedReason.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.RevisedReason.Visible (end) *@
+@if (mtCrewSearch.RevisedDateTime.Visible) { // mtCrewSearch.RevisedDateTime.Visible (begin)
+    <div id="r_RevisedDateTime" class="row" @Html.Raw(mtCrewSearch.RevisedDateTime.RowAttributes)>
+        <label for="x_RevisedDateTime" class="@(mtCrewSearch.LeftColumnClass)"><span id="elh_MTCrew_RevisedDateTime">@Html.Raw(mtCrewSearch.RevisedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_RevisedDateTime" id="z_RevisedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewSearch.RevisedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrew_RevisedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewSearch.RevisedDateTime.InputTextType)" name="x_RevisedDateTime" id="x_RevisedDateTime" data-table="MTCrew" data-field="x_RevisedDateTime" value="@Html.Raw(mtCrewSearch.RevisedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewSearch.RevisedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewSearch.RevisedDateTime.FormatPattern)"@Html.Raw(mtCrewSearch.RevisedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewSearch.RevisedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewSearch.RevisedDateTime.ReadOnly && !mtCrewSearch.RevisedDateTime.Disabled && !mtCrewSearch.RevisedDateTime.EditAttrs.Is("readonly") && !mtCrewSearch.RevisedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewsearch", "x_RevisedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewSearch.RevisedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrew");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

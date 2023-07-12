@@ -1,0 +1,871 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewFormalEducationList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewFormalEducationList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewFormalEducationList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewFormalEducationList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewFormalEducation: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtCrewFormalEducationList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtCrewFormalEducationList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtCrewFormalEducationList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtCrewFormalEducationList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewFormalEducationList.MTCrewID.ToClientList(mtCrewFormalEducationList)),
+            "EducationLevel": @Html.Raw(mtCrewFormalEducationList.EducationLevel.ToClientList(mtCrewFormalEducationList)),
+            "SchoolName": @Html.Raw(mtCrewFormalEducationList.SchoolName.ToClientList(mtCrewFormalEducationList)),
+            "City": @Html.Raw(mtCrewFormalEducationList.City.ToClientList(mtCrewFormalEducationList)),
+            "Attachment": @Html.Raw(mtCrewFormalEducationList.Attachment.ToClientList(mtCrewFormalEducationList)),
+            "StartDate": @Html.Raw(mtCrewFormalEducationList.StartDate.ToClientList(mtCrewFormalEducationList)),
+            "EndDate": @Html.Raw(mtCrewFormalEducationList.EndDate.ToClientList(mtCrewFormalEducationList)),
+            "CreatedByUserID": @Html.Raw(mtCrewFormalEducationList.CreatedByUserID.ToClientList(mtCrewFormalEducationList)),
+            "CreatedDateTime": @Html.Raw(mtCrewFormalEducationList.CreatedDateTime.ToClientList(mtCrewFormalEducationList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewFormalEducationList.LastUpdatedByUserID.ToClientList(mtCrewFormalEducationList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCrewFormalEducationList.LastUpdatedDateTime.ToClientList(mtCrewFormalEducationList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtCrewFormalEducationList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtCrewFormalEducationList.TotalRecords > 0 && mtCrewFormalEducationList.ExportOptions.Visible) {
+    mtCrewFormalEducationList.ExportOptions.Render("body");
+}
+@if (mtCrewFormalEducationList.ImportOptions.Visible) {
+    mtCrewFormalEducationList.ImportOptions.Render("body");
+}
+@if (mtCrewFormalEducationList.SearchOptions.Visible) {
+    mtCrewFormalEducationList.SearchOptions.Render("body");
+}
+@if (mtCrewFormalEducationList.FilterOptions.Visible) {
+    mtCrewFormalEducationList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtCrewFormalEducationList.ShowCurrentFilter) {
+    mtCrewFormalEducationList.ShowFilterList();
+}
+@if (!mtCrewFormalEducationList.IsModal) {
+<form name="fMTCrewFormalEducationsrch" id="fMTCrewFormalEducationsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTCrewFormalEducationsrch_search_panel" class="mb-2 mb-sm-0 @(mtCrewFormalEducationList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewFormalEducationList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewFormalEducation: currentTable } });
+var currentForm;
+var fMTCrewFormalEducationsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewFormalEducationsrch")
+        .setPageId("list")
+@if (mtCrewFormalEducationList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["EducationLevel", [], fields.EducationLevel.isInvalid],
+            ["SchoolName", [], fields.SchoolName.isInvalid],
+            ["City", [], fields.City.isInvalid],
+            ["Attachment", [], fields.Attachment.isInvalid],
+            ["StartDate", [], fields.StartDate.isInvalid],
+            ["EndDate", [], fields.EndDate.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewFormalEducationList.MTCrewID.ToClientList(mtCrewFormalEducationList)),
+            "EducationLevel": @Html.Raw(mtCrewFormalEducationList.EducationLevel.ToClientList(mtCrewFormalEducationList)),
+            "SchoolName": @Html.Raw(mtCrewFormalEducationList.SchoolName.ToClientList(mtCrewFormalEducationList)),
+            "City": @Html.Raw(mtCrewFormalEducationList.City.ToClientList(mtCrewFormalEducationList)),
+            "Attachment": @Html.Raw(mtCrewFormalEducationList.Attachment.ToClientList(mtCrewFormalEducationList)),
+            "StartDate": @Html.Raw(mtCrewFormalEducationList.StartDate.ToClientList(mtCrewFormalEducationList)),
+            "EndDate": @Html.Raw(mtCrewFormalEducationList.EndDate.ToClientList(mtCrewFormalEducationList)),
+            "CreatedByUserID": @Html.Raw(mtCrewFormalEducationList.CreatedByUserID.ToClientList(mtCrewFormalEducationList)),
+            "CreatedDateTime": @Html.Raw(mtCrewFormalEducationList.CreatedDateTime.ToClientList(mtCrewFormalEducationList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewFormalEducationList.LastUpdatedByUserID.ToClientList(mtCrewFormalEducationList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCrewFormalEducationList.LastUpdatedDateTime.ToClientList(mtCrewFormalEducationList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtCrewFormalEducationList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtCrewFormalEducationList.IsExport() && Empty(mtCrewFormalEducationList.CurrentAction) && mtCrewFormalEducationList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtCrewFormalEducationList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtCrewFormalEducationList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtCrewFormalEducationList.RowType = RowType.Search;
+    mtCrewFormalEducationList.ResetAttributes();
+    await mtCrewFormalEducationList.RenderRow();
+}
+@if (mtCrewFormalEducationList.MTCrewID.Visible) { // mtCrewFormalEducationList.MTCrewID.Visible (begin)
+    if (!mtCrewFormalEducationList.MTCrewID.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_MTCrewID"
+            data-table="MTCrewFormalEducation"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.MTCrewID.EditAttributes)>
+            @(mtCrewFormalEducationList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fMTCrewFormalEducationsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.MTCrewID.Visible (end) *@
+@if (mtCrewFormalEducationList.EducationLevel.Visible) { // mtCrewFormalEducationList.EducationLevel.Visible (begin)
+    if (!mtCrewFormalEducationList.EducationLevel.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_EducationLevel" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.EducationLevel.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EducationLevel"
+            name="x_EducationLevel[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.EducationLevel.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_EducationLevel"
+            data-table="MTCrewFormalEducation"
+            data-field="x_EducationLevel"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.EducationLevel.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.EducationLevel.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.EducationLevel.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.EducationLevel.EditAttributes)>
+            @(mtCrewFormalEducationList.EducationLevel.SelectOptionListHtml("x_EducationLevel", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.EducationLevel.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_EducationLevel",
+                selectId: "fMTCrewFormalEducationsrch_x_EducationLevel",
+                ajax: { id: "x_EducationLevel", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.EducationLevel.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.EducationLevel.Visible (end) *@
+@if (mtCrewFormalEducationList.SchoolName.Visible) { // mtCrewFormalEducationList.SchoolName.Visible (begin)
+    if (!mtCrewFormalEducationList.SchoolName.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_SchoolName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.SchoolName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_SchoolName"
+            name="x_SchoolName[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.SchoolName.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_SchoolName"
+            data-table="MTCrewFormalEducation"
+            data-field="x_SchoolName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.SchoolName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.SchoolName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.SchoolName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.SchoolName.EditAttributes)>
+            @(mtCrewFormalEducationList.SchoolName.SelectOptionListHtml("x_SchoolName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.SchoolName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_SchoolName",
+                selectId: "fMTCrewFormalEducationsrch_x_SchoolName",
+                ajax: { id: "x_SchoolName", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.SchoolName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.SchoolName.Visible (end) *@
+@if (mtCrewFormalEducationList.City.Visible) { // mtCrewFormalEducationList.City.Visible (begin)
+    if (!mtCrewFormalEducationList.City.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_City" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.City.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_City"
+            name="x_City[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.City.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_City"
+            data-table="MTCrewFormalEducation"
+            data-field="x_City"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.City.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.City.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.City.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.City.EditAttributes)>
+            @(mtCrewFormalEducationList.City.SelectOptionListHtml("x_City", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.City.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_City",
+                selectId: "fMTCrewFormalEducationsrch_x_City",
+                ajax: { id: "x_City", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.City.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.City.Visible (end) *@
+@if (mtCrewFormalEducationList.Attachment.Visible) { // mtCrewFormalEducationList.Attachment.Visible (begin)
+    if (!mtCrewFormalEducationList.Attachment.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_Attachment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.Attachment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Attachment"
+            name="x_Attachment[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.Attachment.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_Attachment"
+            data-table="MTCrewFormalEducation"
+            data-field="x_Attachment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.Attachment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.Attachment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.Attachment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.Attachment.EditAttributes)>
+            @(mtCrewFormalEducationList.Attachment.SelectOptionListHtml("x_Attachment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.Attachment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_Attachment",
+                selectId: "fMTCrewFormalEducationsrch_x_Attachment",
+                ajax: { id: "x_Attachment", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.Attachment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.Attachment.Visible (end) *@
+@if (mtCrewFormalEducationList.StartDate.Visible) { // mtCrewFormalEducationList.StartDate.Visible (begin)
+    if (!mtCrewFormalEducationList.StartDate.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_StartDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.StartDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_StartDate"
+            name="x_StartDate[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.StartDate.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_StartDate"
+            data-table="MTCrewFormalEducation"
+            data-field="x_StartDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.StartDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.StartDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.StartDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.StartDate.EditAttributes)>
+            @(mtCrewFormalEducationList.StartDate.SelectOptionListHtml("x_StartDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.StartDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_StartDate",
+                selectId: "fMTCrewFormalEducationsrch_x_StartDate",
+                ajax: { id: "x_StartDate", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.StartDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.StartDate.Visible (end) *@
+@if (mtCrewFormalEducationList.EndDate.Visible) { // mtCrewFormalEducationList.EndDate.Visible (begin)
+    if (!mtCrewFormalEducationList.EndDate.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_EndDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.EndDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EndDate"
+            name="x_EndDate[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.EndDate.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_EndDate"
+            data-table="MTCrewFormalEducation"
+            data-field="x_EndDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.EndDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.EndDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.EndDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.EndDate.EditAttributes)>
+            @(mtCrewFormalEducationList.EndDate.SelectOptionListHtml("x_EndDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.EndDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_EndDate",
+                selectId: "fMTCrewFormalEducationsrch_x_EndDate",
+                ajax: { id: "x_EndDate", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.EndDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.EndDate.Visible (end) *@
+@if (mtCrewFormalEducationList.CreatedByUserID.Visible) { // mtCrewFormalEducationList.CreatedByUserID.Visible (begin)
+    if (!mtCrewFormalEducationList.CreatedByUserID.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_CreatedByUserID"
+            data-table="MTCrewFormalEducation"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.CreatedByUserID.EditAttributes)>
+            @(mtCrewFormalEducationList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTCrewFormalEducationsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.CreatedByUserID.Visible (end) *@
+@if (mtCrewFormalEducationList.CreatedDateTime.Visible) { // mtCrewFormalEducationList.CreatedDateTime.Visible (begin)
+    if (!mtCrewFormalEducationList.CreatedDateTime.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_CreatedDateTime"
+            data-table="MTCrewFormalEducation"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.CreatedDateTime.EditAttributes)>
+            @(mtCrewFormalEducationList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTCrewFormalEducationsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.CreatedDateTime.Visible (end) *@
+@if (mtCrewFormalEducationList.LastUpdatedByUserID.Visible) { // mtCrewFormalEducationList.LastUpdatedByUserID.Visible (begin)
+    if (!mtCrewFormalEducationList.LastUpdatedByUserID.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_LastUpdatedByUserID"
+            data-table="MTCrewFormalEducation"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewFormalEducationList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTCrewFormalEducationsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewFormalEducationList.LastUpdatedDateTime.Visible) { // mtCrewFormalEducationList.LastUpdatedDateTime.Visible (begin)
+    if (!mtCrewFormalEducationList.LastUpdatedDateTime.UseFilter) {
+        mtCrewFormalEducationList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewFormalEducationList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtCrewFormalEducationList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCrewFormalEducationsrch_x_LastUpdatedDateTime"
+            data-table="MTCrewFormalEducation"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewFormalEducationList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewFormalEducationList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFormalEducationList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewFormalEducationList.LastUpdatedDateTime.EditAttributes)>
+            @(mtCrewFormalEducationList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFormalEducationList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewFormalEducationsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTCrewFormalEducationsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTCrewFormalEducationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewFormalEducation.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewFormalEducationList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtCrewFormalEducationList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtCrewFormalEducationList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtCrewFormalEducationList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtCrewFormalEducationList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTCrewFormalEducationsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtCrewFormalEducationList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTCrewFormalEducationsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtCrewFormalEducationList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTCrewFormalEducationsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtCrewFormalEducationList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTCrewFormalEducationsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtCrewFormalEducationList.ShowPageHeader()
+@mtCrewFormalEducationList.ShowMessages()
+<main class="list @(mtCrewFormalEducationList.TotalRecords == 0 && !mtCrewFormalEducationList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtCrewFormalEducationList.TotalRecords > 0 || !Empty(mtCrewFormalEducationList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCrewFormalEducationList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCrewFormalEducationList.TableGridClass)">
+<form name="@(mtCrewFormalEducationList.FormName)" id="@(mtCrewFormalEducationList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtCrewFormalEducationList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtCrewFormalEducationList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTCrewFormalEducation" class="card-body ew-grid-middle-panel @(mtCrewFormalEducationList.TableContainerClass)" style="@(mtCrewFormalEducationList.TableContainerStyle)">
+@if (mtCrewFormalEducationList.TotalRecords > 0 || mtCrewFormalEducationList.IsGridEdit || mtCrewFormalEducationList.IsMultiEdit) {
+<table id="tbl_MTCrewFormalEducationlist" class="@(mtCrewFormalEducationList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCrewFormalEducationList.RowType = RowType.Header;
+
+    // Render list options
+    await mtCrewFormalEducationList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCrewFormalEducationList.ListOptions.RenderHeader("left")
+@if (mtCrewFormalEducationList.MTCrewID.Visible) { // mtCrewFormalEducationList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtCrewFormalEducationList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_MTCrewID" class="MTCrewFormalEducation_MTCrewID">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.MTCrewID))</div></th>
+} @* mtCrewFormalEducationList.MTCrewID.Visible (end) *@
+@if (mtCrewFormalEducationList.EducationLevel.Visible) { // mtCrewFormalEducationList.EducationLevel.Visible (begin)
+        <th data-name="EducationLevel" class="@(mtCrewFormalEducationList.EducationLevel.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_EducationLevel" class="MTCrewFormalEducation_EducationLevel">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.EducationLevel))</div></th>
+} @* mtCrewFormalEducationList.EducationLevel.Visible (end) *@
+@if (mtCrewFormalEducationList.SchoolName.Visible) { // mtCrewFormalEducationList.SchoolName.Visible (begin)
+        <th data-name="SchoolName" class="@(mtCrewFormalEducationList.SchoolName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_SchoolName" class="MTCrewFormalEducation_SchoolName">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.SchoolName))</div></th>
+} @* mtCrewFormalEducationList.SchoolName.Visible (end) *@
+@if (mtCrewFormalEducationList.City.Visible) { // mtCrewFormalEducationList.City.Visible (begin)
+        <th data-name="City" class="@(mtCrewFormalEducationList.City.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_City" class="MTCrewFormalEducation_City">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.City))</div></th>
+} @* mtCrewFormalEducationList.City.Visible (end) *@
+@if (mtCrewFormalEducationList.Attachment.Visible) { // mtCrewFormalEducationList.Attachment.Visible (begin)
+        <th data-name="Attachment" class="@(mtCrewFormalEducationList.Attachment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_Attachment" class="MTCrewFormalEducation_Attachment">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.Attachment))</div></th>
+} @* mtCrewFormalEducationList.Attachment.Visible (end) *@
+@if (mtCrewFormalEducationList.StartDate.Visible) { // mtCrewFormalEducationList.StartDate.Visible (begin)
+        <th data-name="StartDate" class="@(mtCrewFormalEducationList.StartDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_StartDate" class="MTCrewFormalEducation_StartDate">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.StartDate))</div></th>
+} @* mtCrewFormalEducationList.StartDate.Visible (end) *@
+@if (mtCrewFormalEducationList.EndDate.Visible) { // mtCrewFormalEducationList.EndDate.Visible (begin)
+        <th data-name="EndDate" class="@(mtCrewFormalEducationList.EndDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_EndDate" class="MTCrewFormalEducation_EndDate">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.EndDate))</div></th>
+} @* mtCrewFormalEducationList.EndDate.Visible (end) *@
+@if (mtCrewFormalEducationList.CreatedByUserID.Visible) { // mtCrewFormalEducationList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCrewFormalEducationList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_CreatedByUserID" class="MTCrewFormalEducation_CreatedByUserID">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.CreatedByUserID))</div></th>
+} @* mtCrewFormalEducationList.CreatedByUserID.Visible (end) *@
+@if (mtCrewFormalEducationList.CreatedDateTime.Visible) { // mtCrewFormalEducationList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCrewFormalEducationList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_CreatedDateTime" class="MTCrewFormalEducation_CreatedDateTime">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.CreatedDateTime))</div></th>
+} @* mtCrewFormalEducationList.CreatedDateTime.Visible (end) *@
+@if (mtCrewFormalEducationList.LastUpdatedByUserID.Visible) { // mtCrewFormalEducationList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCrewFormalEducationList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_LastUpdatedByUserID" class="MTCrewFormalEducation_LastUpdatedByUserID">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.LastUpdatedByUserID))</div></th>
+} @* mtCrewFormalEducationList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewFormalEducationList.LastUpdatedDateTime.Visible) { // mtCrewFormalEducationList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCrewFormalEducationList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFormalEducation_LastUpdatedDateTime" class="MTCrewFormalEducation_LastUpdatedDateTime">@Html.Raw(mtCrewFormalEducationList.RenderFieldHeader(mtCrewFormalEducationList.LastUpdatedDateTime))</div></th>
+} @* mtCrewFormalEducationList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCrewFormalEducationList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCrewFormalEducationList.PageNumber)">
+@{
+    await mtCrewFormalEducationList.SetupGrid();
+    bool eof = mtCrewFormalEducationList.Recordset == null; // DN
+}
+@while (mtCrewFormalEducationList.RecordCount < mtCrewFormalEducationList.StopRecord || SameString(mtCrewFormalEducationList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCrewFormalEducationList.RowIndex, "$rowindex$") &&
+        (!mtCrewFormalEducationList.IsGridAdd || mtCrewFormalEducationList.CurrentMode == "copy") &&
+        (!((mtCrewFormalEducationList.IsCopy || mtCrewFormalEducationList.IsAdd) && mtCrewFormalEducationList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCrewFormalEducationList.Recordset.ReadAsync();
+    mtCrewFormalEducationList.RecordCount++;
+    if (mtCrewFormalEducationList.RecordCount >= mtCrewFormalEducationList.StartRecord) {
+        await mtCrewFormalEducationList.SetupRow();
+    <tr @Html.Raw(mtCrewFormalEducationList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCrewFormalEducationList.ListOptions.RenderBody("left", mtCrewFormalEducationList.RowCount)
+    @if (mtCrewFormalEducationList.MTCrewID.Visible) { // mtCrewFormalEducationList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtCrewFormalEducationList.MTCrewID.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_MTCrewID" class="el_MTCrewFormalEducation_MTCrewID">
+<span @Html.Raw(mtCrewFormalEducationList.MTCrewID.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.MTCrewID.Visible (end) *@
+    @if (mtCrewFormalEducationList.EducationLevel.Visible) { // mtCrewFormalEducationList.EducationLevel.Visible (begin)
+        <td data-name="EducationLevel" @Html.Raw(mtCrewFormalEducationList.EducationLevel.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_EducationLevel" class="el_MTCrewFormalEducation_EducationLevel">
+<span @Html.Raw(mtCrewFormalEducationList.EducationLevel.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.EducationLevel.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.EducationLevel.Visible (end) *@
+    @if (mtCrewFormalEducationList.SchoolName.Visible) { // mtCrewFormalEducationList.SchoolName.Visible (begin)
+        <td data-name="SchoolName" @Html.Raw(mtCrewFormalEducationList.SchoolName.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_SchoolName" class="el_MTCrewFormalEducation_SchoolName">
+<span @Html.Raw(mtCrewFormalEducationList.SchoolName.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.SchoolName.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.SchoolName.Visible (end) *@
+    @if (mtCrewFormalEducationList.City.Visible) { // mtCrewFormalEducationList.City.Visible (begin)
+        <td data-name="City" @Html.Raw(mtCrewFormalEducationList.City.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_City" class="el_MTCrewFormalEducation_City">
+<span @Html.Raw(mtCrewFormalEducationList.City.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.City.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.City.Visible (end) *@
+    @if (mtCrewFormalEducationList.Attachment.Visible) { // mtCrewFormalEducationList.Attachment.Visible (begin)
+        <td data-name="Attachment" @Html.Raw(mtCrewFormalEducationList.Attachment.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_Attachment" class="el_MTCrewFormalEducation_Attachment">
+<span @Html.Raw(mtCrewFormalEducationList.Attachment.ViewAttributes)>@{
+    var individualCodeNumber = ConvertToString(mtCrewFormalEducationList.Attachment.GetViewValue()).Split('-')[0];
+}
+<a href="uploads/@individualCodeNumber/@ConvertToString(mtCrewFormalEducationList.Attachment.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.Attachment.Visible (end) *@
+    @if (mtCrewFormalEducationList.StartDate.Visible) { // mtCrewFormalEducationList.StartDate.Visible (begin)
+        <td data-name="StartDate" @Html.Raw(mtCrewFormalEducationList.StartDate.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_StartDate" class="el_MTCrewFormalEducation_StartDate">
+<span @Html.Raw(mtCrewFormalEducationList.StartDate.ViewAttributes)>@{
+    DateTime startDate = DateTime.Parse(mtCrewFormalEducationList.StartDate.GetViewValue());
+    var formattedStartDateYear = startDate.ToString("yyyy");
+}
+<span>@Html.Raw(formattedStartDateYear)</span>
+</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.StartDate.Visible (end) *@
+    @if (mtCrewFormalEducationList.EndDate.Visible) { // mtCrewFormalEducationList.EndDate.Visible (begin)
+        <td data-name="EndDate" @Html.Raw(mtCrewFormalEducationList.EndDate.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_EndDate" class="el_MTCrewFormalEducation_EndDate">
+<span @Html.Raw(mtCrewFormalEducationList.EndDate.ViewAttributes)>@{
+    DateTime endDate = DateTime.Parse(mtCrewFormalEducationList.EndDate.GetViewValue());
+    var formattedEndDateYear = endDate.ToString("yyyy");
+}
+<span>@Html.Raw(formattedEndDateYear)</span>
+</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.EndDate.Visible (end) *@
+    @if (mtCrewFormalEducationList.CreatedByUserID.Visible) { // mtCrewFormalEducationList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewFormalEducationList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_CreatedByUserID" class="el_MTCrewFormalEducation_CreatedByUserID">
+<span @Html.Raw(mtCrewFormalEducationList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.CreatedByUserID.Visible (end) *@
+    @if (mtCrewFormalEducationList.CreatedDateTime.Visible) { // mtCrewFormalEducationList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewFormalEducationList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_CreatedDateTime" class="el_MTCrewFormalEducation_CreatedDateTime">
+<span @Html.Raw(mtCrewFormalEducationList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.CreatedDateTime.Visible (end) *@
+    @if (mtCrewFormalEducationList.LastUpdatedByUserID.Visible) { // mtCrewFormalEducationList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewFormalEducationList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_LastUpdatedByUserID" class="el_MTCrewFormalEducation_LastUpdatedByUserID">
+<span @Html.Raw(mtCrewFormalEducationList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCrewFormalEducationList.LastUpdatedDateTime.Visible) { // mtCrewFormalEducationList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewFormalEducationList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtCrewFormalEducationList.RowCount)_MTCrewFormalEducation_LastUpdatedDateTime" class="el_MTCrewFormalEducation_LastUpdatedDateTime">
+<span @Html.Raw(mtCrewFormalEducationList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewFormalEducationList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewFormalEducationList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCrewFormalEducationList.ListOptions.RenderBody("right", mtCrewFormalEducationList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCrewFormalEducationList.RowIndex, "$rowindex$"))
+        mtCrewFormalEducationList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCrewFormalEducationList.IsCopy || mtCrewFormalEducationList.IsAdd) && mtCrewFormalEducationList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCrewFormalEducationList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCrewFormalEducationList.CurrentAction) && !mtCrewFormalEducationList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtCrewFormalEducationList.CloseRecordset(); }
+@if (!mtCrewFormalEducationList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtCrewFormalEducationList.IsGridAdd && !(mtCrewFormalEducationList.IsGridEdit && mtCrewFormalEducationList.ModalGridEdit) && !mtCrewFormalEducationList.IsMultiEdit) {
+@Html.Raw(mtCrewFormalEducationList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtCrewFormalEducationList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCrewFormalEducationList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtCrewFormalEducationList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtCrewFormalEducationList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewFormalEducation");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

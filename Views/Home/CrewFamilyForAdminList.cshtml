@@ -1,0 +1,785 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewFamilyForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewFamilyForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewFamilyForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewFamilyForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewFamilyForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewFamilyForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewFamilyForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewFamilyForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewFamilyForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewFamilyForAdminList.MTCrewID.ToClientList(crewFamilyForAdminList)),
+            "Relationship": @Html.Raw(crewFamilyForAdminList.Relationship.ToClientList(crewFamilyForAdminList)),
+            "Gender": @Html.Raw(crewFamilyForAdminList.Gender.ToClientList(crewFamilyForAdminList)),
+            "DateOfBirth": @Html.Raw(crewFamilyForAdminList.DateOfBirth.ToClientList(crewFamilyForAdminList)),
+            "MobileNumberCode_CountryID": @Html.Raw(crewFamilyForAdminList.MobileNumberCode_CountryID.ToClientList(crewFamilyForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewFamilyForAdminList.CreatedByUserID.ToClientList(crewFamilyForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewFamilyForAdminList.CreatedDateTime.ToClientList(crewFamilyForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewFamilyForAdminList.LastUpdatedByUserID.ToClientList(crewFamilyForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewFamilyForAdminList.LastUpdatedDateTime.ToClientList(crewFamilyForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewFamilyForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewFamilyForAdminList.TotalRecords > 0 && crewFamilyForAdminList.ExportOptions.Visible) {
+    crewFamilyForAdminList.ExportOptions.Render("body");
+}
+@if (crewFamilyForAdminList.ImportOptions.Visible) {
+    crewFamilyForAdminList.ImportOptions.Render("body");
+}
+@if (crewFamilyForAdminList.SearchOptions.Visible) {
+    crewFamilyForAdminList.SearchOptions.Render("body");
+}
+@if (crewFamilyForAdminList.FilterOptions.Visible) {
+    crewFamilyForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewFamilyForAdminList.ShowCurrentFilter) {
+    crewFamilyForAdminList.ShowFilterList();
+}
+@if (!crewFamilyForAdminList.IsModal) {
+<form name="fCrewFamilyForAdminsrch" id="fCrewFamilyForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewFamilyForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewFamilyForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewFamilyForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewFamilyForAdmin: currentTable } });
+var currentForm;
+var fCrewFamilyForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewFamilyForAdminsrch")
+        .setPageId("list")
+@if (crewFamilyForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["Relationship", [], fields.Relationship.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["DateOfBirth", [], fields.DateOfBirth.isInvalid],
+            ["MobileNumberCode_CountryID", [], fields.MobileNumberCode_CountryID.isInvalid],
+            ["MobileNumber", [], fields.MobileNumber.isInvalid],
+            ["_Email", [], fields._Email.isInvalid],
+            ["SocialSecurityNumber", [], fields.SocialSecurityNumber.isInvalid],
+            ["FamilyRegisterNumber", [], fields.FamilyRegisterNumber.isInvalid],
+            ["Address", [], fields.Address.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewFamilyForAdminList.MTCrewID.ToClientList(crewFamilyForAdminList)),
+            "Relationship": @Html.Raw(crewFamilyForAdminList.Relationship.ToClientList(crewFamilyForAdminList)),
+            "Gender": @Html.Raw(crewFamilyForAdminList.Gender.ToClientList(crewFamilyForAdminList)),
+            "DateOfBirth": @Html.Raw(crewFamilyForAdminList.DateOfBirth.ToClientList(crewFamilyForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewFamilyForAdminList.CreatedByUserID.ToClientList(crewFamilyForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewFamilyForAdminList.CreatedDateTime.ToClientList(crewFamilyForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewFamilyForAdminList.LastUpdatedByUserID.ToClientList(crewFamilyForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewFamilyForAdminList.LastUpdatedDateTime.ToClientList(crewFamilyForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewFamilyForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewFamilyForAdminList.IsExport() && Empty(crewFamilyForAdminList.CurrentAction) && crewFamilyForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewFamilyForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewFamilyForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewFamilyForAdminList.RowType = RowType.Search;
+    crewFamilyForAdminList.ResetAttributes();
+    await crewFamilyForAdminList.RenderRow();
+}
+@if (crewFamilyForAdminList.MTCrewID.Visible) { // crewFamilyForAdminList.MTCrewID.Visible (begin)
+    if (!crewFamilyForAdminList.MTCrewID.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewFamilyForAdminList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_MTCrewID"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.MTCrewID.EditAttributes)>
+            @(crewFamilyForAdminList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewFamilyForAdminsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.MTCrewID.Visible (end) *@
+@if (crewFamilyForAdminList.Relationship.Visible) { // crewFamilyForAdminList.Relationship.Visible (begin)
+    if (!crewFamilyForAdminList.Relationship.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Relationship" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.Relationship.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Relationship"
+            name="x_Relationship[]"
+            class="form-control ew-select@(crewFamilyForAdminList.Relationship.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_Relationship"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_Relationship"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.Relationship.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.Relationship.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.Relationship.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.Relationship.EditAttributes)>
+            @(crewFamilyForAdminList.Relationship.SelectOptionListHtml("x_Relationship", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.Relationship.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_Relationship",
+                selectId: "fCrewFamilyForAdminsrch_x_Relationship",
+                ajax: { id: "x_Relationship", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.Relationship.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.Relationship.Visible (end) *@
+@if (crewFamilyForAdminList.Gender.Visible) { // crewFamilyForAdminList.Gender.Visible (begin)
+    if (!crewFamilyForAdminList.Gender.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Gender" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.Gender.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Gender"
+            name="x_Gender[]"
+            class="form-control ew-select@(crewFamilyForAdminList.Gender.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_Gender"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_Gender"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.Gender.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.Gender.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.Gender.EditAttributes)>
+            @(crewFamilyForAdminList.Gender.SelectOptionListHtml("x_Gender", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.Gender.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_Gender",
+                selectId: "fCrewFamilyForAdminsrch_x_Gender",
+                ajax: { id: "x_Gender", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.Gender.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.Gender.Visible (end) *@
+@if (crewFamilyForAdminList.DateOfBirth.Visible) { // crewFamilyForAdminList.DateOfBirth.Visible (begin)
+    if (!crewFamilyForAdminList.DateOfBirth.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfBirth" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.DateOfBirth.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfBirth"
+            name="x_DateOfBirth[]"
+            class="form-control ew-select@(crewFamilyForAdminList.DateOfBirth.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_DateOfBirth"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_DateOfBirth"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.DateOfBirth.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.DateOfBirth.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.DateOfBirth.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.DateOfBirth.EditAttributes)>
+            @(crewFamilyForAdminList.DateOfBirth.SelectOptionListHtml("x_DateOfBirth", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.DateOfBirth.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_DateOfBirth",
+                selectId: "fCrewFamilyForAdminsrch_x_DateOfBirth",
+                ajax: { id: "x_DateOfBirth", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.DateOfBirth.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.DateOfBirth.Visible (end) *@
+@if (crewFamilyForAdminList.CreatedByUserID.Visible) { // crewFamilyForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewFamilyForAdminList.CreatedByUserID.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewFamilyForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_CreatedByUserID"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewFamilyForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewFamilyForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewFamilyForAdminList.CreatedDateTime.Visible) { // crewFamilyForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewFamilyForAdminList.CreatedDateTime.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewFamilyForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_CreatedDateTime"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewFamilyForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewFamilyForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewFamilyForAdminList.LastUpdatedByUserID.Visible) { // crewFamilyForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewFamilyForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewFamilyForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewFamilyForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewFamilyForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewFamilyForAdminList.LastUpdatedDateTime.Visible) { // crewFamilyForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewFamilyForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewFamilyForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFamilyForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewFamilyForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewFamilyForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewFamilyForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFamilyForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFamilyForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFamilyForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFamilyForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewFamilyForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFamilyForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFamilyForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewFamilyForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewFamilyForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFamilyForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFamilyForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewFamilyForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewFamilyForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewFamilyForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewFamilyForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewFamilyForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewFamilyForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewFamilyForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewFamilyForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewFamilyForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewFamilyForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewFamilyForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewFamilyForAdminList.ShowPageHeader()
+@crewFamilyForAdminList.ShowMessages()
+<main class="list @(crewFamilyForAdminList.TotalRecords == 0 && !crewFamilyForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewFamilyForAdminList.TotalRecords > 0 || !Empty(crewFamilyForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewFamilyForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewFamilyForAdminList.TableGridClass)">
+<form name="@(crewFamilyForAdminList.FormName)" id="@(crewFamilyForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewFamilyForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewFamilyForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewFamilyForAdmin" class="card-body ew-grid-middle-panel @(crewFamilyForAdminList.TableContainerClass)" style="@(crewFamilyForAdminList.TableContainerStyle)">
+@if (crewFamilyForAdminList.TotalRecords > 0 || crewFamilyForAdminList.IsGridEdit || crewFamilyForAdminList.IsMultiEdit) {
+<table id="tbl_CrewFamilyForAdminlist" class="@(crewFamilyForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewFamilyForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewFamilyForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewFamilyForAdminList.ListOptions.RenderHeader("left")
+@if (crewFamilyForAdminList.MTCrewID.Visible) { // crewFamilyForAdminList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewFamilyForAdminList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_MTCrewID" class="CrewFamilyForAdmin_MTCrewID">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.MTCrewID))</div></th>
+} @* crewFamilyForAdminList.MTCrewID.Visible (end) *@
+@if (crewFamilyForAdminList.Relationship.Visible) { // crewFamilyForAdminList.Relationship.Visible (begin)
+        <th data-name="Relationship" class="@(crewFamilyForAdminList.Relationship.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_Relationship" class="CrewFamilyForAdmin_Relationship">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.Relationship))</div></th>
+} @* crewFamilyForAdminList.Relationship.Visible (end) *@
+@if (crewFamilyForAdminList.FullName.Visible) { // crewFamilyForAdminList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(crewFamilyForAdminList.FullName.HeaderCellClass)"><div id="elh_CrewFamilyForAdmin_FullName" class="CrewFamilyForAdmin_FullName">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.FullName))</div></th>
+} @* crewFamilyForAdminList.FullName.Visible (end) *@
+@if (crewFamilyForAdminList.Gender.Visible) { // crewFamilyForAdminList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(crewFamilyForAdminList.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_Gender" class="CrewFamilyForAdmin_Gender">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.Gender))</div></th>
+} @* crewFamilyForAdminList.Gender.Visible (end) *@
+@if (crewFamilyForAdminList.DateOfBirth.Visible) { // crewFamilyForAdminList.DateOfBirth.Visible (begin)
+        <th data-name="DateOfBirth" class="@(crewFamilyForAdminList.DateOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_DateOfBirth" class="CrewFamilyForAdmin_DateOfBirth">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.DateOfBirth))</div></th>
+} @* crewFamilyForAdminList.DateOfBirth.Visible (end) *@
+@if (crewFamilyForAdminList.MobileNumberCode_CountryID.Visible) { // crewFamilyForAdminList.MobileNumberCode_CountryID.Visible (begin)
+        <th data-name="MobileNumberCode_CountryID" class="@(crewFamilyForAdminList.MobileNumberCode_CountryID.HeaderCellClass)"><div id="elh_CrewFamilyForAdmin_MobileNumberCode_CountryID" class="CrewFamilyForAdmin_MobileNumberCode_CountryID">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.MobileNumberCode_CountryID))</div></th>
+} @* crewFamilyForAdminList.MobileNumberCode_CountryID.Visible (end) *@
+@if (crewFamilyForAdminList.MobileNumber.Visible) { // crewFamilyForAdminList.MobileNumber.Visible (begin)
+        <th data-name="MobileNumber" class="@(crewFamilyForAdminList.MobileNumber.HeaderCellClass)"><div id="elh_CrewFamilyForAdmin_MobileNumber" class="CrewFamilyForAdmin_MobileNumber">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.MobileNumber))</div></th>
+} @* crewFamilyForAdminList.MobileNumber.Visible (end) *@
+@if (crewFamilyForAdminList._Email.Visible) { // crewFamilyForAdminList._Email.Visible (begin)
+        <th data-name="_Email" class="@(crewFamilyForAdminList._Email.HeaderCellClass)"><div id="elh_CrewFamilyForAdmin__Email" class="CrewFamilyForAdmin__Email">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList._Email))</div></th>
+} @* crewFamilyForAdminList._Email.Visible (end) *@
+@if (crewFamilyForAdminList.SocialSecurityNumber.Visible) { // crewFamilyForAdminList.SocialSecurityNumber.Visible (begin)
+        <th data-name="SocialSecurityNumber" class="@(crewFamilyForAdminList.SocialSecurityNumber.HeaderCellClass)"><div id="elh_CrewFamilyForAdmin_SocialSecurityNumber" class="CrewFamilyForAdmin_SocialSecurityNumber">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.SocialSecurityNumber))</div></th>
+} @* crewFamilyForAdminList.SocialSecurityNumber.Visible (end) *@
+@if (crewFamilyForAdminList.FamilyRegisterNumber.Visible) { // crewFamilyForAdminList.FamilyRegisterNumber.Visible (begin)
+        <th data-name="FamilyRegisterNumber" class="@(crewFamilyForAdminList.FamilyRegisterNumber.HeaderCellClass)"><div id="elh_CrewFamilyForAdmin_FamilyRegisterNumber" class="CrewFamilyForAdmin_FamilyRegisterNumber">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.FamilyRegisterNumber))</div></th>
+} @* crewFamilyForAdminList.FamilyRegisterNumber.Visible (end) *@
+@if (crewFamilyForAdminList.Address.Visible) { // crewFamilyForAdminList.Address.Visible (begin)
+        <th data-name="Address" class="@(crewFamilyForAdminList.Address.HeaderCellClass)"><div id="elh_CrewFamilyForAdmin_Address" class="CrewFamilyForAdmin_Address">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.Address))</div></th>
+} @* crewFamilyForAdminList.Address.Visible (end) *@
+@if (crewFamilyForAdminList.CreatedByUserID.Visible) { // crewFamilyForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewFamilyForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_CreatedByUserID" class="CrewFamilyForAdmin_CreatedByUserID">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.CreatedByUserID))</div></th>
+} @* crewFamilyForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewFamilyForAdminList.CreatedDateTime.Visible) { // crewFamilyForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewFamilyForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_CreatedDateTime" class="CrewFamilyForAdmin_CreatedDateTime">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.CreatedDateTime))</div></th>
+} @* crewFamilyForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewFamilyForAdminList.LastUpdatedByUserID.Visible) { // crewFamilyForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewFamilyForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_LastUpdatedByUserID" class="CrewFamilyForAdmin_LastUpdatedByUserID">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewFamilyForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewFamilyForAdminList.LastUpdatedDateTime.Visible) { // crewFamilyForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewFamilyForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFamilyForAdmin_LastUpdatedDateTime" class="CrewFamilyForAdmin_LastUpdatedDateTime">@Html.Raw(crewFamilyForAdminList.RenderFieldHeader(crewFamilyForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewFamilyForAdminList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewFamilyForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewFamilyForAdminList.PageNumber)">
+@{
+    await crewFamilyForAdminList.SetupGrid();
+    bool eof = crewFamilyForAdminList.Recordset == null; // DN
+}
+@while (crewFamilyForAdminList.RecordCount < crewFamilyForAdminList.StopRecord || SameString(crewFamilyForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewFamilyForAdminList.RowIndex, "$rowindex$") &&
+        (!crewFamilyForAdminList.IsGridAdd || crewFamilyForAdminList.CurrentMode == "copy") &&
+        (!((crewFamilyForAdminList.IsCopy || crewFamilyForAdminList.IsAdd) && crewFamilyForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewFamilyForAdminList.Recordset.ReadAsync();
+    crewFamilyForAdminList.RecordCount++;
+    if (crewFamilyForAdminList.RecordCount >= crewFamilyForAdminList.StartRecord) {
+        await crewFamilyForAdminList.SetupRow();
+    <tr @Html.Raw(crewFamilyForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewFamilyForAdminList.ListOptions.RenderBody("left", crewFamilyForAdminList.RowCount)
+    @if (crewFamilyForAdminList.MTCrewID.Visible) { // crewFamilyForAdminList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewFamilyForAdminList.MTCrewID.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_MTCrewID" class="el_CrewFamilyForAdmin_MTCrewID">
+<span @Html.Raw(crewFamilyForAdminList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.MTCrewID.Visible (end) *@
+    @if (crewFamilyForAdminList.Relationship.Visible) { // crewFamilyForAdminList.Relationship.Visible (begin)
+        <td data-name="Relationship" @Html.Raw(crewFamilyForAdminList.Relationship.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_Relationship" class="el_CrewFamilyForAdmin_Relationship">
+<span @Html.Raw(crewFamilyForAdminList.Relationship.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.Relationship.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.Relationship.Visible (end) *@
+    @if (crewFamilyForAdminList.FullName.Visible) { // crewFamilyForAdminList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(crewFamilyForAdminList.FullName.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_FullName" class="el_CrewFamilyForAdmin_FullName">
+<span @Html.Raw(crewFamilyForAdminList.FullName.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.FullName.Visible (end) *@
+    @if (crewFamilyForAdminList.Gender.Visible) { // crewFamilyForAdminList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(crewFamilyForAdminList.Gender.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_Gender" class="el_CrewFamilyForAdmin_Gender">
+<span @Html.Raw(crewFamilyForAdminList.Gender.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.Gender.Visible (end) *@
+    @if (crewFamilyForAdminList.DateOfBirth.Visible) { // crewFamilyForAdminList.DateOfBirth.Visible (begin)
+        <td data-name="DateOfBirth" @Html.Raw(crewFamilyForAdminList.DateOfBirth.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_DateOfBirth" class="el_CrewFamilyForAdmin_DateOfBirth">
+<span @Html.Raw(crewFamilyForAdminList.DateOfBirth.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.DateOfBirth.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.DateOfBirth.Visible (end) *@
+    @if (crewFamilyForAdminList.MobileNumberCode_CountryID.Visible) { // crewFamilyForAdminList.MobileNumberCode_CountryID.Visible (begin)
+        <td data-name="MobileNumberCode_CountryID" @Html.Raw(crewFamilyForAdminList.MobileNumberCode_CountryID.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_MobileNumberCode_CountryID" class="el_CrewFamilyForAdmin_MobileNumberCode_CountryID">
+<span @Html.Raw(crewFamilyForAdminList.MobileNumberCode_CountryID.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.MobileNumberCode_CountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.MobileNumberCode_CountryID.Visible (end) *@
+    @if (crewFamilyForAdminList.MobileNumber.Visible) { // crewFamilyForAdminList.MobileNumber.Visible (begin)
+        <td data-name="MobileNumber" @Html.Raw(crewFamilyForAdminList.MobileNumber.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_MobileNumber" class="el_CrewFamilyForAdmin_MobileNumber">
+<span @Html.Raw(crewFamilyForAdminList.MobileNumber.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.MobileNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.MobileNumber.Visible (end) *@
+    @if (crewFamilyForAdminList._Email.Visible) { // crewFamilyForAdminList._Email.Visible (begin)
+        <td data-name="_Email" @Html.Raw(crewFamilyForAdminList._Email.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin__Email" class="el_CrewFamilyForAdmin__Email">
+<span @Html.Raw(crewFamilyForAdminList._Email.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList._Email.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList._Email.Visible (end) *@
+    @if (crewFamilyForAdminList.SocialSecurityNumber.Visible) { // crewFamilyForAdminList.SocialSecurityNumber.Visible (begin)
+        <td data-name="SocialSecurityNumber" @Html.Raw(crewFamilyForAdminList.SocialSecurityNumber.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_SocialSecurityNumber" class="el_CrewFamilyForAdmin_SocialSecurityNumber">
+<span @Html.Raw(crewFamilyForAdminList.SocialSecurityNumber.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.SocialSecurityNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.SocialSecurityNumber.Visible (end) *@
+    @if (crewFamilyForAdminList.FamilyRegisterNumber.Visible) { // crewFamilyForAdminList.FamilyRegisterNumber.Visible (begin)
+        <td data-name="FamilyRegisterNumber" @Html.Raw(crewFamilyForAdminList.FamilyRegisterNumber.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_FamilyRegisterNumber" class="el_CrewFamilyForAdmin_FamilyRegisterNumber">
+<span @Html.Raw(crewFamilyForAdminList.FamilyRegisterNumber.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.FamilyRegisterNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.FamilyRegisterNumber.Visible (end) *@
+    @if (crewFamilyForAdminList.Address.Visible) { // crewFamilyForAdminList.Address.Visible (begin)
+        <td data-name="Address" @Html.Raw(crewFamilyForAdminList.Address.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_Address" class="el_CrewFamilyForAdmin_Address">
+<span @Html.Raw(crewFamilyForAdminList.Address.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.Address.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.Address.Visible (end) *@
+    @if (crewFamilyForAdminList.CreatedByUserID.Visible) { // crewFamilyForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewFamilyForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_CreatedByUserID" class="el_CrewFamilyForAdmin_CreatedByUserID">
+<span @Html.Raw(crewFamilyForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewFamilyForAdminList.CreatedDateTime.Visible) { // crewFamilyForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewFamilyForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_CreatedDateTime" class="el_CrewFamilyForAdmin_CreatedDateTime">
+<span @Html.Raw(crewFamilyForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewFamilyForAdminList.LastUpdatedByUserID.Visible) { // crewFamilyForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewFamilyForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_LastUpdatedByUserID" class="el_CrewFamilyForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewFamilyForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewFamilyForAdminList.LastUpdatedDateTime.Visible) { // crewFamilyForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewFamilyForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewFamilyForAdminList.RowCount)_CrewFamilyForAdmin_LastUpdatedDateTime" class="el_CrewFamilyForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewFamilyForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewFamilyForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFamilyForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewFamilyForAdminList.ListOptions.RenderBody("right", crewFamilyForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewFamilyForAdminList.RowIndex, "$rowindex$"))
+        crewFamilyForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewFamilyForAdminList.IsCopy || crewFamilyForAdminList.IsAdd) && crewFamilyForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewFamilyForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewFamilyForAdminList.CurrentAction) && !crewFamilyForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewFamilyForAdminList.CloseRecordset(); }
+@if (!crewFamilyForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewFamilyForAdminList.IsGridAdd && !(crewFamilyForAdminList.IsGridEdit && crewFamilyForAdminList.ModalGridEdit) && !crewFamilyForAdminList.IsMultiEdit) {
+@Html.Raw(crewFamilyForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewFamilyForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewFamilyForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewFamilyForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewFamilyForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewFamilyForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

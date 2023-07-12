@@ -1,0 +1,349 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtRecruitmentStatusTrackingList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtRecruitmentStatusTrackingList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtRecruitmentStatusTrackingList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtRecruitmentStatusTrackingList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTRecruitmentStatusTracking: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtRecruitmentStatusTrackingList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtRecruitmentStatusTrackingList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtRecruitmentStatusTrackingList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtRecruitmentStatusTrackingList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtRecruitmentStatusTrackingList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtRecruitmentStatusTrackingList.TotalRecords > 0 && mtRecruitmentStatusTrackingList.ExportOptions.Visible) {
+    mtRecruitmentStatusTrackingList.ExportOptions.Render("body");
+}
+@if (mtRecruitmentStatusTrackingList.ImportOptions.Visible) {
+    mtRecruitmentStatusTrackingList.ImportOptions.Render("body");
+}
+@if (mtRecruitmentStatusTrackingList.SearchOptions.Visible) {
+    mtRecruitmentStatusTrackingList.SearchOptions.Render("body");
+}
+@if (mtRecruitmentStatusTrackingList.FilterOptions.Visible) {
+    mtRecruitmentStatusTrackingList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!mtRecruitmentStatusTrackingList.IsModal) {
+<form name="fMTRecruitmentStatusTrackingsrch" id="fMTRecruitmentStatusTrackingsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTRecruitmentStatusTrackingsrch_search_panel" class="mb-2 mb-sm-0 @(mtRecruitmentStatusTrackingList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtRecruitmentStatusTrackingList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTRecruitmentStatusTracking: currentTable } });
+var currentForm;
+var fMTRecruitmentStatusTrackingsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTRecruitmentStatusTrackingsrch")
+        .setPageId("list")
+@if (mtRecruitmentStatusTrackingList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtRecruitmentStatusTrackingList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtRecruitmentStatusTrackingList.IsExport() && Empty(mtRecruitmentStatusTrackingList.CurrentAction) && mtRecruitmentStatusTrackingList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtRecruitmentStatusTrackingList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtRecruitmentStatusTrackingList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtRecruitmentStatusTrackingList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtRecruitmentStatusTrackingList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTRecruitmentStatusTrackingsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtRecruitmentStatusTrackingList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTRecruitmentStatusTrackingsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtRecruitmentStatusTrackingList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTRecruitmentStatusTrackingsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtRecruitmentStatusTrackingList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTRecruitmentStatusTrackingsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtRecruitmentStatusTrackingList.ShowPageHeader()
+@mtRecruitmentStatusTrackingList.ShowMessages()
+<main class="list @(mtRecruitmentStatusTrackingList.TotalRecords == 0 && !mtRecruitmentStatusTrackingList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtRecruitmentStatusTrackingList.TotalRecords > 0 || !Empty(mtRecruitmentStatusTrackingList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtRecruitmentStatusTrackingList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtRecruitmentStatusTrackingList.TableGridClass)">
+<form name="@(mtRecruitmentStatusTrackingList.FormName)" id="@(mtRecruitmentStatusTrackingList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtRecruitmentStatusTrackingList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtRecruitmentStatusTrackingList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTRecruitmentStatusTracking" class="card-body ew-grid-middle-panel @(mtRecruitmentStatusTrackingList.TableContainerClass)" style="@(mtRecruitmentStatusTrackingList.TableContainerStyle)">
+@if (mtRecruitmentStatusTrackingList.TotalRecords > 0 || mtRecruitmentStatusTrackingList.IsGridEdit || mtRecruitmentStatusTrackingList.IsMultiEdit) {
+<table id="tbl_MTRecruitmentStatusTrackinglist" class="@(mtRecruitmentStatusTrackingList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtRecruitmentStatusTrackingList.RowType = RowType.Header;
+
+    // Render list options
+    await mtRecruitmentStatusTrackingList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtRecruitmentStatusTrackingList.ListOptions.RenderHeader("left")
+@if (mtRecruitmentStatusTrackingList.ID.Visible) { // mtRecruitmentStatusTrackingList.ID.Visible (begin)
+        <th data-name="ID" class="@(mtRecruitmentStatusTrackingList.ID.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_ID" class="MTRecruitmentStatusTracking_ID">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.ID))</div></th>
+} @* mtRecruitmentStatusTrackingList.ID.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.MTCrewID.Visible) { // mtRecruitmentStatusTrackingList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtRecruitmentStatusTrackingList.MTCrewID.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_MTCrewID" class="MTRecruitmentStatusTracking_MTCrewID">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.MTCrewID))</div></th>
+} @* mtRecruitmentStatusTrackingList.MTCrewID.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.Visible) { // mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.Visible (begin)
+        <th data-name="MTRecruitmentStatusID" class="@(mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_MTRecruitmentStatusID" class="MTRecruitmentStatusTracking_MTRecruitmentStatusID">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.MTRecruitmentStatusID))</div></th>
+} @* mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.Flag.Visible) { // mtRecruitmentStatusTrackingList.Flag.Visible (begin)
+        <th data-name="Flag" class="@(mtRecruitmentStatusTrackingList.Flag.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_Flag" class="MTRecruitmentStatusTracking_Flag">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.Flag))</div></th>
+} @* mtRecruitmentStatusTrackingList.Flag.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.FlagDescription.Visible) { // mtRecruitmentStatusTrackingList.FlagDescription.Visible (begin)
+        <th data-name="FlagDescription" class="@(mtRecruitmentStatusTrackingList.FlagDescription.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_FlagDescription" class="MTRecruitmentStatusTracking_FlagDescription">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.FlagDescription))</div></th>
+} @* mtRecruitmentStatusTrackingList.FlagDescription.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.CreatedByUserID.Visible) { // mtRecruitmentStatusTrackingList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtRecruitmentStatusTrackingList.CreatedByUserID.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_CreatedByUserID" class="MTRecruitmentStatusTracking_CreatedByUserID">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.CreatedByUserID))</div></th>
+} @* mtRecruitmentStatusTrackingList.CreatedByUserID.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.CreatedDateTime.Visible) { // mtRecruitmentStatusTrackingList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtRecruitmentStatusTrackingList.CreatedDateTime.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_CreatedDateTime" class="MTRecruitmentStatusTracking_CreatedDateTime">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.CreatedDateTime))</div></th>
+} @* mtRecruitmentStatusTrackingList.CreatedDateTime.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.LastUpdatedByUserID.Visible) { // mtRecruitmentStatusTrackingList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtRecruitmentStatusTrackingList.LastUpdatedByUserID.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_LastUpdatedByUserID" class="MTRecruitmentStatusTracking_LastUpdatedByUserID">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.LastUpdatedByUserID))</div></th>
+} @* mtRecruitmentStatusTrackingList.LastUpdatedByUserID.Visible (end) *@
+@if (mtRecruitmentStatusTrackingList.LastUpdatedDateTime.Visible) { // mtRecruitmentStatusTrackingList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtRecruitmentStatusTrackingList.LastUpdatedDateTime.HeaderCellClass)"><div id="elh_MTRecruitmentStatusTracking_LastUpdatedDateTime" class="MTRecruitmentStatusTracking_LastUpdatedDateTime">@Html.Raw(mtRecruitmentStatusTrackingList.RenderFieldHeader(mtRecruitmentStatusTrackingList.LastUpdatedDateTime))</div></th>
+} @* mtRecruitmentStatusTrackingList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtRecruitmentStatusTrackingList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtRecruitmentStatusTrackingList.PageNumber)">
+@{
+    await mtRecruitmentStatusTrackingList.SetupGrid();
+    bool eof = mtRecruitmentStatusTrackingList.Recordset == null; // DN
+}
+@while (mtRecruitmentStatusTrackingList.RecordCount < mtRecruitmentStatusTrackingList.StopRecord || SameString(mtRecruitmentStatusTrackingList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtRecruitmentStatusTrackingList.RowIndex, "$rowindex$") &&
+        (!mtRecruitmentStatusTrackingList.IsGridAdd || mtRecruitmentStatusTrackingList.CurrentMode == "copy") &&
+        (!((mtRecruitmentStatusTrackingList.IsCopy || mtRecruitmentStatusTrackingList.IsAdd) && mtRecruitmentStatusTrackingList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtRecruitmentStatusTrackingList.Recordset.ReadAsync();
+    mtRecruitmentStatusTrackingList.RecordCount++;
+    if (mtRecruitmentStatusTrackingList.RecordCount >= mtRecruitmentStatusTrackingList.StartRecord) {
+        await mtRecruitmentStatusTrackingList.SetupRow();
+    <tr @Html.Raw(mtRecruitmentStatusTrackingList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtRecruitmentStatusTrackingList.ListOptions.RenderBody("left", mtRecruitmentStatusTrackingList.RowCount)
+    @if (mtRecruitmentStatusTrackingList.ID.Visible) { // mtRecruitmentStatusTrackingList.ID.Visible (begin)
+        <td data-name="ID" @Html.Raw(mtRecruitmentStatusTrackingList.ID.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_ID" class="el_MTRecruitmentStatusTracking_ID">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.ID.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.ID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.ID.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.MTCrewID.Visible) { // mtRecruitmentStatusTrackingList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtRecruitmentStatusTrackingList.MTCrewID.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_MTCrewID" class="el_MTRecruitmentStatusTracking_MTCrewID">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.MTCrewID.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.MTCrewID.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.Visible) { // mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.Visible (begin)
+        <td data-name="MTRecruitmentStatusID" @Html.Raw(mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_MTRecruitmentStatusID" class="el_MTRecruitmentStatusTracking_MTRecruitmentStatusID">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.MTRecruitmentStatusID.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.Flag.Visible) { // mtRecruitmentStatusTrackingList.Flag.Visible (begin)
+        <td data-name="Flag" @Html.Raw(mtRecruitmentStatusTrackingList.Flag.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_Flag" class="el_MTRecruitmentStatusTracking_Flag">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.Flag.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.Flag.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.Flag.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.FlagDescription.Visible) { // mtRecruitmentStatusTrackingList.FlagDescription.Visible (begin)
+        <td data-name="FlagDescription" @Html.Raw(mtRecruitmentStatusTrackingList.FlagDescription.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_FlagDescription" class="el_MTRecruitmentStatusTracking_FlagDescription">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.FlagDescription.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.FlagDescription.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.FlagDescription.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.CreatedByUserID.Visible) { // mtRecruitmentStatusTrackingList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtRecruitmentStatusTrackingList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_CreatedByUserID" class="el_MTRecruitmentStatusTracking_CreatedByUserID">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.CreatedByUserID.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.CreatedDateTime.Visible) { // mtRecruitmentStatusTrackingList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtRecruitmentStatusTrackingList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_CreatedDateTime" class="el_MTRecruitmentStatusTracking_CreatedDateTime">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.CreatedDateTime.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.LastUpdatedByUserID.Visible) { // mtRecruitmentStatusTrackingList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtRecruitmentStatusTrackingList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_LastUpdatedByUserID" class="el_MTRecruitmentStatusTracking_LastUpdatedByUserID">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtRecruitmentStatusTrackingList.LastUpdatedDateTime.Visible) { // mtRecruitmentStatusTrackingList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtRecruitmentStatusTrackingList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtRecruitmentStatusTrackingList.RowCount)_MTRecruitmentStatusTracking_LastUpdatedDateTime" class="el_MTRecruitmentStatusTracking_LastUpdatedDateTime">
+<span @Html.Raw(mtRecruitmentStatusTrackingList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtRecruitmentStatusTrackingList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtRecruitmentStatusTrackingList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtRecruitmentStatusTrackingList.ListOptions.RenderBody("right", mtRecruitmentStatusTrackingList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtRecruitmentStatusTrackingList.RowIndex, "$rowindex$"))
+        mtRecruitmentStatusTrackingList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtRecruitmentStatusTrackingList.IsCopy || mtRecruitmentStatusTrackingList.IsAdd) && mtRecruitmentStatusTrackingList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtRecruitmentStatusTrackingList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtRecruitmentStatusTrackingList.CurrentAction) && !mtRecruitmentStatusTrackingList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtRecruitmentStatusTrackingList.CloseRecordset(); }
+@if (!mtRecruitmentStatusTrackingList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtRecruitmentStatusTrackingList.IsGridAdd && !(mtRecruitmentStatusTrackingList.IsGridEdit && mtRecruitmentStatusTrackingList.ModalGridEdit) && !mtRecruitmentStatusTrackingList.IsMultiEdit) {
+@Html.Raw(mtRecruitmentStatusTrackingList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtRecruitmentStatusTrackingList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtRecruitmentStatusTrackingList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtRecruitmentStatusTrackingList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtRecruitmentStatusTrackingList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTRecruitmentStatusTracking");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

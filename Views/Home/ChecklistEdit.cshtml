@@ -1,0 +1,1097 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (checklistEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!checklistEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@checklistEdit.ShowPageHeader()
+@checklistEdit.ShowMessages()
+<main class="edit">
+<form name="fChecklistedit" id="fChecklistedit" class="@(checklistEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(checklistEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Checklist: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fChecklistedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fChecklistedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [fields.MTCrewID.visible && fields.MTCrewID.required ? ew.Validators.required(fields.MTCrewID.caption) : null], fields.MTCrewID.isInvalid],
+            ["IndividualCodeNumber", [fields.IndividualCodeNumber.visible && fields.IndividualCodeNumber.required ? ew.Validators.required(fields.IndividualCodeNumber.caption) : null], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [fields.FullName.visible && fields.FullName.required ? ew.Validators.required(fields.FullName.caption) : null], fields.FullName.isInvalid],
+            ["RequiredPhoto", [fields.RequiredPhoto.visible && fields.RequiredPhoto.required ? ew.Validators.fileRequired(fields.RequiredPhoto.caption) : null], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [fields.VisaPhoto.visible && fields.VisaPhoto.required ? ew.Validators.fileRequired(fields.VisaPhoto.caption) : null], fields.VisaPhoto.isInvalid],
+            ["RankAppliedFor", [fields.RankAppliedFor.visible && fields.RankAppliedFor.required ? ew.Validators.required(fields.RankAppliedFor.caption) : null], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [fields.WillAcceptLowRank.visible && fields.WillAcceptLowRank.required ? ew.Validators.required(fields.WillAcceptLowRank.caption) : null], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [fields.AvailableFrom.visible && fields.AvailableFrom.required ? ew.Validators.required(fields.AvailableFrom.caption) : null, ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [fields.AvailableUntil.visible && fields.AvailableUntil.required ? ew.Validators.required(fields.AvailableUntil.caption) : null, ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["Activity10", [fields.Activity10.visible && fields.Activity10.required ? ew.Validators.required(fields.Activity10.caption) : null], fields.Activity10.isInvalid],
+            ["RemarkActivity10", [fields.RemarkActivity10.visible && fields.RemarkActivity10.required ? ew.Validators.required(fields.RemarkActivity10.caption) : null], fields.RemarkActivity10.isInvalid],
+            ["Activity11", [fields.Activity11.visible && fields.Activity11.required ? ew.Validators.required(fields.Activity11.caption) : null], fields.Activity11.isInvalid],
+            ["RemarkActivity11", [fields.RemarkActivity11.visible && fields.RemarkActivity11.required ? ew.Validators.required(fields.RemarkActivity11.caption) : null], fields.RemarkActivity11.isInvalid],
+            ["Activity12", [fields.Activity12.visible && fields.Activity12.required ? ew.Validators.required(fields.Activity12.caption) : null], fields.Activity12.isInvalid],
+            ["RemarkActivity12", [fields.RemarkActivity12.visible && fields.RemarkActivity12.required ? ew.Validators.required(fields.RemarkActivity12.caption) : null], fields.RemarkActivity12.isInvalid],
+            ["Activity13", [fields.Activity13.visible && fields.Activity13.required ? ew.Validators.required(fields.Activity13.caption) : null], fields.Activity13.isInvalid],
+            ["RemarkActivity13", [fields.RemarkActivity13.visible && fields.RemarkActivity13.required ? ew.Validators.required(fields.RemarkActivity13.caption) : null], fields.RemarkActivity13.isInvalid],
+            ["Activity14", [fields.Activity14.visible && fields.Activity14.required ? ew.Validators.required(fields.Activity14.caption) : null], fields.Activity14.isInvalid],
+            ["RemarkActivity14", [fields.RemarkActivity14.visible && fields.RemarkActivity14.required ? ew.Validators.required(fields.RemarkActivity14.caption) : null], fields.RemarkActivity14.isInvalid],
+            ["Activity14Attachment", [fields.Activity14Attachment.visible && fields.Activity14Attachment.required ? ew.Validators.required(fields.Activity14Attachment.caption) : null], fields.Activity14Attachment.isInvalid],
+            ["Activity20", [fields.Activity20.visible && fields.Activity20.required ? ew.Validators.required(fields.Activity20.caption) : null], fields.Activity20.isInvalid],
+            ["RemarkActivity20", [fields.RemarkActivity20.visible && fields.RemarkActivity20.required ? ew.Validators.required(fields.RemarkActivity20.caption) : null], fields.RemarkActivity20.isInvalid],
+            ["Activity20Attachment", [fields.Activity20Attachment.visible && fields.Activity20Attachment.required ? ew.Validators.required(fields.Activity20Attachment.caption) : null], fields.Activity20Attachment.isInvalid],
+            ["Activity30", [fields.Activity30.visible && fields.Activity30.required ? ew.Validators.required(fields.Activity30.caption) : null], fields.Activity30.isInvalid],
+            ["RemarkActivity30", [fields.RemarkActivity30.visible && fields.RemarkActivity30.required ? ew.Validators.required(fields.RemarkActivity30.caption) : null], fields.RemarkActivity30.isInvalid],
+            ["Activity30Attachment", [fields.Activity30Attachment.visible && fields.Activity30Attachment.required ? ew.Validators.required(fields.Activity30Attachment.caption) : null], fields.Activity30Attachment.isInvalid],
+            ["Activity40", [fields.Activity40.visible && fields.Activity40.required ? ew.Validators.required(fields.Activity40.caption) : null], fields.Activity40.isInvalid],
+            ["RemarkActivity40", [fields.RemarkActivity40.visible && fields.RemarkActivity40.required ? ew.Validators.required(fields.RemarkActivity40.caption) : null], fields.RemarkActivity40.isInvalid],
+            ["Activity50", [fields.Activity50.visible && fields.Activity50.required ? ew.Validators.required(fields.Activity50.caption) : null], fields.Activity50.isInvalid],
+            ["RemarkActivity50", [fields.RemarkActivity50.visible && fields.RemarkActivity50.required ? ew.Validators.required(fields.RemarkActivity50.caption) : null], fields.RemarkActivity50.isInvalid],
+            ["Activity50Attachment", [fields.Activity50Attachment.visible && fields.Activity50Attachment.required ? ew.Validators.required(fields.Activity50Attachment.caption) : null], fields.Activity50Attachment.isInvalid],
+            ["Activity60", [fields.Activity60.visible && fields.Activity60.required ? ew.Validators.required(fields.Activity60.caption) : null], fields.Activity60.isInvalid],
+            ["RemarkActivity60", [fields.RemarkActivity60.visible && fields.RemarkActivity60.required ? ew.Validators.required(fields.RemarkActivity60.caption) : null], fields.RemarkActivity60.isInvalid],
+            ["Activity70", [fields.Activity70.visible && fields.Activity70.required ? ew.Validators.required(fields.Activity70.caption) : null], fields.Activity70.isInvalid],
+            ["RemarkActivity70", [fields.RemarkActivity70.visible && fields.RemarkActivity70.required ? ew.Validators.required(fields.RemarkActivity70.caption) : null], fields.RemarkActivity70.isInvalid],
+            ["Activity70Attachment", [fields.Activity70Attachment.visible && fields.Activity70Attachment.required ? ew.Validators.required(fields.Activity70Attachment.caption) : null], fields.Activity70Attachment.isInvalid],
+            ["InterviewerComment", [fields.InterviewerComment.visible && fields.InterviewerComment.required ? ew.Validators.required(fields.InterviewerComment.caption) : null], fields.InterviewerComment.isInvalid],
+            ["InterviewDate", [fields.InterviewDate.visible && fields.InterviewDate.required ? ew.Validators.required(fields.InterviewDate.caption) : null, ew.Validators.datetime(fields.InterviewDate.clientFormatPattern)], fields.InterviewDate.isInvalid],
+            ["InterviewAttachment", [fields.InterviewAttachment.visible && fields.InterviewAttachment.required ? ew.Validators.required(fields.InterviewAttachment.caption) : null], fields.InterviewAttachment.isInvalid],
+            ["InterviewedByPersonOneName", [fields.InterviewedByPersonOneName.visible && fields.InterviewedByPersonOneName.required ? ew.Validators.required(fields.InterviewedByPersonOneName.caption) : null], fields.InterviewedByPersonOneName.isInvalid],
+            ["InterviewedByPersonOneRank", [fields.InterviewedByPersonOneRank.visible && fields.InterviewedByPersonOneRank.required ? ew.Validators.required(fields.InterviewedByPersonOneRank.caption) : null], fields.InterviewedByPersonOneRank.isInvalid],
+            ["InterviewedByPersonTwoName", [fields.InterviewedByPersonTwoName.visible && fields.InterviewedByPersonTwoName.required ? ew.Validators.required(fields.InterviewedByPersonTwoName.caption) : null], fields.InterviewedByPersonTwoName.isInvalid],
+            ["InterviewedByPersonTwoRank", [fields.InterviewedByPersonTwoRank.visible && fields.InterviewedByPersonTwoRank.required ? ew.Validators.required(fields.InterviewedByPersonTwoRank.caption) : null], fields.InterviewedByPersonTwoRank.isInvalid],
+            ["InterviewedByPersonThreeName", [fields.InterviewedByPersonThreeName.visible && fields.InterviewedByPersonThreeName.required ? ew.Validators.required(fields.InterviewedByPersonThreeName.caption) : null], fields.InterviewedByPersonThreeName.isInvalid],
+            ["InterviewedByPersonThreeRank", [fields.InterviewedByPersonThreeRank.visible && fields.InterviewedByPersonThreeRank.required ? ew.Validators.required(fields.InterviewedByPersonThreeRank.caption) : null], fields.InterviewedByPersonThreeRank.isInvalid],
+            ["FinalInterviewComment", [fields.FinalInterviewComment.visible && fields.FinalInterviewComment.required ? ew.Validators.required(fields.FinalInterviewComment.caption) : null], fields.FinalInterviewComment.isInvalid],
+            ["FinalInterviewAttachment", [fields.FinalInterviewAttachment.visible && fields.FinalInterviewAttachment.required ? ew.Validators.required(fields.FinalInterviewAttachment.caption) : null], fields.FinalInterviewAttachment.isInvalid],
+            ["JobKnowledge", [fields.JobKnowledge.visible && fields.JobKnowledge.required ? ew.Validators.required(fields.JobKnowledge.caption) : null], fields.JobKnowledge.isInvalid],
+            ["SafetyAwareness", [fields.SafetyAwareness.visible && fields.SafetyAwareness.required ? ew.Validators.required(fields.SafetyAwareness.caption) : null], fields.SafetyAwareness.isInvalid],
+            ["Personality", [fields.Personality.visible && fields.Personality.required ? ew.Validators.required(fields.Personality.caption) : null], fields.Personality.isInvalid],
+            ["EnglishProficiency", [fields.EnglishProficiency.visible && fields.EnglishProficiency.required ? ew.Validators.required(fields.EnglishProficiency.caption) : null], fields.EnglishProficiency.isInvalid],
+            ["PrincipalComment", [fields.PrincipalComment.visible && fields.PrincipalComment.required ? ew.Validators.required(fields.PrincipalComment.caption) : null], fields.PrincipalComment.isInvalid],
+            ["PrincipalCommentAttachment", [fields.PrincipalCommentAttachment.visible && fields.PrincipalCommentAttachment.required ? ew.Validators.required(fields.PrincipalCommentAttachment.caption) : null], fields.PrincipalCommentAttachment.isInvalid],
+            ["AssistantManagerPdeReviewed", [fields.AssistantManagerPdeReviewed.visible && fields.AssistantManagerPdeReviewed.required ? ew.Validators.required(fields.AssistantManagerPdeReviewed.caption) : null], fields.AssistantManagerPdeReviewed.isInvalid],
+            ["AssistantManagerPdeReviewedDate", [fields.AssistantManagerPdeReviewedDate.visible && fields.AssistantManagerPdeReviewedDate.required ? ew.Validators.required(fields.AssistantManagerPdeReviewedDate.caption) : null, ew.Validators.datetime(fields.AssistantManagerPdeReviewedDate.clientFormatPattern)], fields.AssistantManagerPdeReviewedDate.isInvalid],
+            ["CrewingManagerApproval", [fields.CrewingManagerApproval.visible && fields.CrewingManagerApproval.required ? ew.Validators.required(fields.CrewingManagerApproval.caption) : null], fields.CrewingManagerApproval.isInvalid],
+            ["CrewingManagerApprovalDate", [fields.CrewingManagerApprovalDate.visible && fields.CrewingManagerApprovalDate.required ? ew.Validators.required(fields.CrewingManagerApprovalDate.caption) : null, ew.Validators.datetime(fields.CrewingManagerApprovalDate.clientFormatPattern)], fields.CrewingManagerApprovalDate.isInvalid],
+            ["FormPrintoutAttachment", [fields.FormPrintoutAttachment.visible && fields.FormPrintoutAttachment.required ? ew.Validators.required(fields.FormPrintoutAttachment.caption) : null], fields.FormPrintoutAttachment.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "WillAcceptLowRank": @Html.Raw(checklistEdit.WillAcceptLowRank.ToClientList(checklistEdit)),
+            "Activity10": @Html.Raw(checklistEdit.Activity10.ToClientList(checklistEdit)),
+            "Activity11": @Html.Raw(checklistEdit.Activity11.ToClientList(checklistEdit)),
+            "Activity12": @Html.Raw(checklistEdit.Activity12.ToClientList(checklistEdit)),
+            "Activity13": @Html.Raw(checklistEdit.Activity13.ToClientList(checklistEdit)),
+            "Activity14": @Html.Raw(checklistEdit.Activity14.ToClientList(checklistEdit)),
+            "Activity20": @Html.Raw(checklistEdit.Activity20.ToClientList(checklistEdit)),
+            "Activity30": @Html.Raw(checklistEdit.Activity30.ToClientList(checklistEdit)),
+            "Activity40": @Html.Raw(checklistEdit.Activity40.ToClientList(checklistEdit)),
+            "Activity50": @Html.Raw(checklistEdit.Activity50.ToClientList(checklistEdit)),
+            "Activity60": @Html.Raw(checklistEdit.Activity60.ToClientList(checklistEdit)),
+            "Activity70": @Html.Raw(checklistEdit.Activity70.ToClientList(checklistEdit)),
+            "AssistantManagerPdeReviewed": @Html.Raw(checklistEdit.AssistantManagerPdeReviewed.ToClientList(checklistEdit)),
+            "CrewingManagerApproval": @Html.Raw(checklistEdit.CrewingManagerApproval.ToClientList(checklistEdit)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(checklistEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(checklistEdit.OldKeyName)" value="@Html.Raw(checklistEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (checklistEdit.MTCrewID.Visible) { // checklistEdit.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" @Html.Raw(checklistEdit.MTCrewID.RowAttributes)>
+        <label id="elh_Checklist_MTCrewID" for="x_MTCrewID" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.MTCrewID.Caption)@Html.Raw(checklistEdit.MTCrewID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.MTCrewID.CellAttributes)>
+<span id="el_Checklist_MTCrewID">
+<input type="@(checklistEdit.MTCrewID.InputTextType)" name="x_MTCrewID" id="x_MTCrewID" data-table="Checklist" data-field="x_MTCrewID" value="@Html.Raw(checklistEdit.MTCrewID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(checklistEdit.MTCrewID.PlaceHolder))" data-format-pattern="@(checklistEdit.MTCrewID.FormatPattern)"@Html.Raw(checklistEdit.MTCrewID.EditAttributes) aria-describedby="x_MTCrewID_help">
+@Html.Raw(checklistEdit.MTCrewID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.MTCrewID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.MTCrewID.Visible (end) *@
+@if (checklistEdit.IndividualCodeNumber.Visible) { // checklistEdit.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" @Html.Raw(checklistEdit.IndividualCodeNumber.RowAttributes)>
+        <label id="elh_Checklist_IndividualCodeNumber" for="x_IndividualCodeNumber" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.IndividualCodeNumber.Caption)@Html.Raw(checklistEdit.IndividualCodeNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.IndividualCodeNumber.CellAttributes)>
+<span id="el_Checklist_IndividualCodeNumber">
+<input type="@(checklistEdit.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="Checklist" data-field="x_IndividualCodeNumber" value="@Html.Raw(checklistEdit.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(checklistEdit.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(checklistEdit.IndividualCodeNumber.FormatPattern)"@Html.Raw(checklistEdit.IndividualCodeNumber.EditAttributes) aria-describedby="x_IndividualCodeNumber_help">
+@Html.Raw(checklistEdit.IndividualCodeNumber.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.IndividualCodeNumber.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.IndividualCodeNumber.Visible (end) *@
+@if (checklistEdit.FullName.Visible) { // checklistEdit.FullName.Visible (begin)
+    <div id="r_FullName" @Html.Raw(checklistEdit.FullName.RowAttributes)>
+        <label id="elh_Checklist_FullName" for="x_FullName" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.FullName.Caption)@Html.Raw(checklistEdit.FullName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.FullName.CellAttributes)>
+<span id="el_Checklist_FullName">
+<input type="@(checklistEdit.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="Checklist" data-field="x_FullName" value="@Html.Raw(checklistEdit.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(checklistEdit.FullName.PlaceHolder))" data-format-pattern="@(checklistEdit.FullName.FormatPattern)"@Html.Raw(checklistEdit.FullName.EditAttributes) aria-describedby="x_FullName_help">
+@Html.Raw(checklistEdit.FullName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.FullName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.FullName.Visible (end) *@
+@if (checklistEdit.RequiredPhoto.Visible) { // checklistEdit.RequiredPhoto.Visible (begin)
+    <div id="r_RequiredPhoto" @Html.Raw(checklistEdit.RequiredPhoto.RowAttributes)>
+        <label id="elh_Checklist_RequiredPhoto" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RequiredPhoto.Caption)@Html.Raw(checklistEdit.RequiredPhoto.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RequiredPhoto.CellAttributes)>
+<span id="el_Checklist_RequiredPhoto">
+<div id="fd_x_RequiredPhoto" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_RequiredPhoto"
+        name="x_RequiredPhoto"
+        class="form-control ew-file-input"
+        title="@(checklistEdit.RequiredPhoto.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="Checklist"
+        data-field="x_RequiredPhoto"
+        data-size="100"
+        data-accept-file-types="@(checklistEdit.RequiredPhoto.AcceptFileTypes)"
+        data-max-file-size="@(checklistEdit.RequiredPhoto.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(checklistEdit.RequiredPhoto.ImageCropper ? 0 : 1)"
+        aria-describedby="x_RequiredPhoto_help"
+        @Html.Raw((checklistEdit.RequiredPhoto.ReadOnly || checklistEdit.RequiredPhoto.Disabled) ? " disabled" : "")
+        @Html.Raw(checklistEdit.RequiredPhoto.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(checklistEdit.RequiredPhoto.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RequiredPhoto.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_RequiredPhoto" id= "fn_x_RequiredPhoto" value="@(checklistEdit.RequiredPhoto.Upload.FileName)">
+<input type="hidden" name="fa_x_RequiredPhoto" id= "fa_x_RequiredPhoto" value="@(Post("fa_x_RequiredPhoto") == "0" ? "0" : "1")">
+<table id="ft_x_RequiredPhoto" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RequiredPhoto.Visible (end) *@
+@if (checklistEdit.VisaPhoto.Visible) { // checklistEdit.VisaPhoto.Visible (begin)
+    <div id="r_VisaPhoto" @Html.Raw(checklistEdit.VisaPhoto.RowAttributes)>
+        <label id="elh_Checklist_VisaPhoto" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.VisaPhoto.Caption)@Html.Raw(checklistEdit.VisaPhoto.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.VisaPhoto.CellAttributes)>
+<span id="el_Checklist_VisaPhoto">
+<div id="fd_x_VisaPhoto" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_VisaPhoto"
+        name="x_VisaPhoto"
+        class="form-control ew-file-input"
+        title="@(checklistEdit.VisaPhoto.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="Checklist"
+        data-field="x_VisaPhoto"
+        data-size="100"
+        data-accept-file-types="@(checklistEdit.VisaPhoto.AcceptFileTypes)"
+        data-max-file-size="@(checklistEdit.VisaPhoto.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(checklistEdit.VisaPhoto.ImageCropper ? 0 : 1)"
+        aria-describedby="x_VisaPhoto_help"
+        @Html.Raw((checklistEdit.VisaPhoto.ReadOnly || checklistEdit.VisaPhoto.Disabled) ? " disabled" : "")
+        @Html.Raw(checklistEdit.VisaPhoto.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(checklistEdit.VisaPhoto.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.VisaPhoto.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_VisaPhoto" id= "fn_x_VisaPhoto" value="@(checklistEdit.VisaPhoto.Upload.FileName)">
+<input type="hidden" name="fa_x_VisaPhoto" id= "fa_x_VisaPhoto" value="@(Post("fa_x_VisaPhoto") == "0" ? "0" : "1")">
+<table id="ft_x_VisaPhoto" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.VisaPhoto.Visible (end) *@
+@if (checklistEdit.RankAppliedFor.Visible) { // checklistEdit.RankAppliedFor.Visible (begin)
+    <div id="r_RankAppliedFor" @Html.Raw(checklistEdit.RankAppliedFor.RowAttributes)>
+        <label id="elh_Checklist_RankAppliedFor" for="x_RankAppliedFor" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RankAppliedFor.Caption)@Html.Raw(checklistEdit.RankAppliedFor.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RankAppliedFor.CellAttributes)>
+<span id="el_Checklist_RankAppliedFor">
+<input type="@(checklistEdit.RankAppliedFor.InputTextType)" name="x_RankAppliedFor" id="x_RankAppliedFor" data-table="Checklist" data-field="x_RankAppliedFor" value="@Html.Raw(checklistEdit.RankAppliedFor.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RankAppliedFor.PlaceHolder))" data-format-pattern="@(checklistEdit.RankAppliedFor.FormatPattern)"@Html.Raw(checklistEdit.RankAppliedFor.EditAttributes) aria-describedby="x_RankAppliedFor_help">
+@Html.Raw(checklistEdit.RankAppliedFor.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RankAppliedFor.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RankAppliedFor.Visible (end) *@
+@if (checklistEdit.WillAcceptLowRank.Visible) { // checklistEdit.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" @Html.Raw(checklistEdit.WillAcceptLowRank.RowAttributes)>
+        <label id="elh_Checklist_WillAcceptLowRank" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.WillAcceptLowRank.Caption)@Html.Raw(checklistEdit.WillAcceptLowRank.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.WillAcceptLowRank.CellAttributes)>
+<span id="el_Checklist_WillAcceptLowRank">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.WillAcceptLowRank.IsInvalidClass)" data-table="Checklist" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(checklistEdit.WillAcceptLowRank.CurrentValue)" @Html.Raw(checklistEdit.WillAcceptLowRank.EditAttributes) aria-describedby="x_WillAcceptLowRank_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.WillAcceptLowRank.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.WillAcceptLowRank.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.WillAcceptLowRank.Visible (end) *@
+@if (checklistEdit.AvailableFrom.Visible) { // checklistEdit.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" @Html.Raw(checklistEdit.AvailableFrom.RowAttributes)>
+        <label id="elh_Checklist_AvailableFrom" for="x_AvailableFrom" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.AvailableFrom.Caption)@Html.Raw(checklistEdit.AvailableFrom.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.AvailableFrom.CellAttributes)>
+<span id="el_Checklist_AvailableFrom">
+<input type="@(checklistEdit.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="Checklist" data-field="x_AvailableFrom" value="@Html.Raw(checklistEdit.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistEdit.AvailableFrom.PlaceHolder))" data-format-pattern="@(checklistEdit.AvailableFrom.FormatPattern)"@Html.Raw(checklistEdit.AvailableFrom.EditAttributes) aria-describedby="x_AvailableFrom_help">
+@Html.Raw(checklistEdit.AvailableFrom.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.AvailableFrom.GetErrorMessage())</div>
+@if (!checklistEdit.AvailableFrom.ReadOnly && !checklistEdit.AvailableFrom.Disabled && !checklistEdit.AvailableFrom.EditAttrs.Is("readonly") && !checklistEdit.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistedit", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.AvailableFrom.Visible (end) *@
+@if (checklistEdit.AvailableUntil.Visible) { // checklistEdit.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" @Html.Raw(checklistEdit.AvailableUntil.RowAttributes)>
+        <label id="elh_Checklist_AvailableUntil" for="x_AvailableUntil" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.AvailableUntil.Caption)@Html.Raw(checklistEdit.AvailableUntil.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.AvailableUntil.CellAttributes)>
+<span id="el_Checklist_AvailableUntil">
+<input type="@(checklistEdit.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="Checklist" data-field="x_AvailableUntil" value="@Html.Raw(checklistEdit.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistEdit.AvailableUntil.PlaceHolder))" data-format-pattern="@(checklistEdit.AvailableUntil.FormatPattern)"@Html.Raw(checklistEdit.AvailableUntil.EditAttributes) aria-describedby="x_AvailableUntil_help">
+@Html.Raw(checklistEdit.AvailableUntil.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.AvailableUntil.GetErrorMessage())</div>
+@if (!checklistEdit.AvailableUntil.ReadOnly && !checklistEdit.AvailableUntil.Disabled && !checklistEdit.AvailableUntil.EditAttrs.Is("readonly") && !checklistEdit.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistedit", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.AvailableUntil.Visible (end) *@
+@if (checklistEdit.Activity10.Visible) { // checklistEdit.Activity10.Visible (begin)
+    <div id="r_Activity10" @Html.Raw(checklistEdit.Activity10.RowAttributes)>
+        <label id="elh_Checklist_Activity10" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity10.Caption)@Html.Raw(checklistEdit.Activity10.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity10.CellAttributes)>
+<span id="el_Checklist_Activity10">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity10.IsInvalidClass)" data-table="Checklist" data-field="x_Activity10" data-boolean name="x_Activity10" id="x_Activity10" value="1" checked="@ConvertToBool(checklistEdit.Activity10.CurrentValue)" @Html.Raw(checklistEdit.Activity10.EditAttributes) aria-describedby="x_Activity10_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity10.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity10.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity10.Visible (end) *@
+@if (checklistEdit.RemarkActivity10.Visible) { // checklistEdit.RemarkActivity10.Visible (begin)
+    <div id="r_RemarkActivity10" @Html.Raw(checklistEdit.RemarkActivity10.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity10" for="x_RemarkActivity10" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity10.Caption)@Html.Raw(checklistEdit.RemarkActivity10.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity10.CellAttributes)>
+<span id="el_Checklist_RemarkActivity10">
+<textarea data-table="Checklist" data-field="x_RemarkActivity10" name="x_RemarkActivity10" id="x_RemarkActivity10" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity10.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity10.EditAttributes) aria-describedby="x_RemarkActivity10_help">@(checklistEdit.RemarkActivity10.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity10.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity10.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity10.Visible (end) *@
+@if (checklistEdit.Activity11.Visible) { // checklistEdit.Activity11.Visible (begin)
+    <div id="r_Activity11" @Html.Raw(checklistEdit.Activity11.RowAttributes)>
+        <label id="elh_Checklist_Activity11" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity11.Caption)@Html.Raw(checklistEdit.Activity11.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity11.CellAttributes)>
+<span id="el_Checklist_Activity11">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity11.IsInvalidClass)" data-table="Checklist" data-field="x_Activity11" data-boolean name="x_Activity11" id="x_Activity11" value="1" checked="@ConvertToBool(checklistEdit.Activity11.CurrentValue)" @Html.Raw(checklistEdit.Activity11.EditAttributes) aria-describedby="x_Activity11_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity11.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity11.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity11.Visible (end) *@
+@if (checklistEdit.RemarkActivity11.Visible) { // checklistEdit.RemarkActivity11.Visible (begin)
+    <div id="r_RemarkActivity11" @Html.Raw(checklistEdit.RemarkActivity11.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity11" for="x_RemarkActivity11" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity11.Caption)@Html.Raw(checklistEdit.RemarkActivity11.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity11.CellAttributes)>
+<span id="el_Checklist_RemarkActivity11">
+<textarea data-table="Checklist" data-field="x_RemarkActivity11" name="x_RemarkActivity11" id="x_RemarkActivity11" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity11.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity11.EditAttributes) aria-describedby="x_RemarkActivity11_help">@(checklistEdit.RemarkActivity11.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity11.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity11.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity11.Visible (end) *@
+@if (checklistEdit.Activity12.Visible) { // checklistEdit.Activity12.Visible (begin)
+    <div id="r_Activity12" @Html.Raw(checklistEdit.Activity12.RowAttributes)>
+        <label id="elh_Checklist_Activity12" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity12.Caption)@Html.Raw(checklistEdit.Activity12.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity12.CellAttributes)>
+<span id="el_Checklist_Activity12">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity12.IsInvalidClass)" data-table="Checklist" data-field="x_Activity12" data-boolean name="x_Activity12" id="x_Activity12" value="1" checked="@ConvertToBool(checklistEdit.Activity12.CurrentValue)" @Html.Raw(checklistEdit.Activity12.EditAttributes) aria-describedby="x_Activity12_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity12.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity12.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity12.Visible (end) *@
+@if (checklistEdit.RemarkActivity12.Visible) { // checklistEdit.RemarkActivity12.Visible (begin)
+    <div id="r_RemarkActivity12" @Html.Raw(checklistEdit.RemarkActivity12.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity12" for="x_RemarkActivity12" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity12.Caption)@Html.Raw(checklistEdit.RemarkActivity12.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity12.CellAttributes)>
+<span id="el_Checklist_RemarkActivity12">
+<textarea data-table="Checklist" data-field="x_RemarkActivity12" name="x_RemarkActivity12" id="x_RemarkActivity12" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity12.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity12.EditAttributes) aria-describedby="x_RemarkActivity12_help">@(checklistEdit.RemarkActivity12.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity12.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity12.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity12.Visible (end) *@
+@if (checklistEdit.Activity13.Visible) { // checklistEdit.Activity13.Visible (begin)
+    <div id="r_Activity13" @Html.Raw(checklistEdit.Activity13.RowAttributes)>
+        <label id="elh_Checklist_Activity13" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity13.Caption)@Html.Raw(checklistEdit.Activity13.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity13.CellAttributes)>
+<span id="el_Checklist_Activity13">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity13.IsInvalidClass)" data-table="Checklist" data-field="x_Activity13" data-boolean name="x_Activity13" id="x_Activity13" value="1" checked="@ConvertToBool(checklistEdit.Activity13.CurrentValue)" @Html.Raw(checklistEdit.Activity13.EditAttributes) aria-describedby="x_Activity13_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity13.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity13.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity13.Visible (end) *@
+@if (checklistEdit.RemarkActivity13.Visible) { // checklistEdit.RemarkActivity13.Visible (begin)
+    <div id="r_RemarkActivity13" @Html.Raw(checklistEdit.RemarkActivity13.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity13" for="x_RemarkActivity13" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity13.Caption)@Html.Raw(checklistEdit.RemarkActivity13.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity13.CellAttributes)>
+<span id="el_Checklist_RemarkActivity13">
+<textarea data-table="Checklist" data-field="x_RemarkActivity13" name="x_RemarkActivity13" id="x_RemarkActivity13" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity13.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity13.EditAttributes) aria-describedby="x_RemarkActivity13_help">@(checklistEdit.RemarkActivity13.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity13.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity13.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity13.Visible (end) *@
+@if (checklistEdit.Activity14.Visible) { // checklistEdit.Activity14.Visible (begin)
+    <div id="r_Activity14" @Html.Raw(checklistEdit.Activity14.RowAttributes)>
+        <label id="elh_Checklist_Activity14" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity14.Caption)@Html.Raw(checklistEdit.Activity14.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity14.CellAttributes)>
+<span id="el_Checklist_Activity14">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity14.IsInvalidClass)" data-table="Checklist" data-field="x_Activity14" data-boolean name="x_Activity14" id="x_Activity14" value="1" checked="@ConvertToBool(checklistEdit.Activity14.CurrentValue)" @Html.Raw(checklistEdit.Activity14.EditAttributes) aria-describedby="x_Activity14_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity14.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity14.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity14.Visible (end) *@
+@if (checklistEdit.RemarkActivity14.Visible) { // checklistEdit.RemarkActivity14.Visible (begin)
+    <div id="r_RemarkActivity14" @Html.Raw(checklistEdit.RemarkActivity14.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity14" for="x_RemarkActivity14" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity14.Caption)@Html.Raw(checklistEdit.RemarkActivity14.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity14.CellAttributes)>
+<span id="el_Checklist_RemarkActivity14">
+<textarea data-table="Checklist" data-field="x_RemarkActivity14" name="x_RemarkActivity14" id="x_RemarkActivity14" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity14.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity14.EditAttributes) aria-describedby="x_RemarkActivity14_help">@(checklistEdit.RemarkActivity14.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity14.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity14.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity14.Visible (end) *@
+@if (checklistEdit.Activity14Attachment.Visible) { // checklistEdit.Activity14Attachment.Visible (begin)
+    <div id="r_Activity14Attachment" @Html.Raw(checklistEdit.Activity14Attachment.RowAttributes)>
+        <label id="elh_Checklist_Activity14Attachment" for="x_Activity14Attachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity14Attachment.Caption)@Html.Raw(checklistEdit.Activity14Attachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity14Attachment.CellAttributes)>
+<span id="el_Checklist_Activity14Attachment">
+<input type="@(checklistEdit.Activity14Attachment.InputTextType)" name="x_Activity14Attachment" id="x_Activity14Attachment" data-table="Checklist" data-field="x_Activity14Attachment" value="@Html.Raw(checklistEdit.Activity14Attachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.Activity14Attachment.PlaceHolder))" data-format-pattern="@(checklistEdit.Activity14Attachment.FormatPattern)"@Html.Raw(checklistEdit.Activity14Attachment.EditAttributes) aria-describedby="x_Activity14Attachment_help">
+@Html.Raw(checklistEdit.Activity14Attachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.Activity14Attachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity14Attachment.Visible (end) *@
+@if (checklistEdit.Activity20.Visible) { // checklistEdit.Activity20.Visible (begin)
+    <div id="r_Activity20" @Html.Raw(checklistEdit.Activity20.RowAttributes)>
+        <label id="elh_Checklist_Activity20" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity20.Caption)@Html.Raw(checklistEdit.Activity20.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity20.CellAttributes)>
+<span id="el_Checklist_Activity20">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity20.IsInvalidClass)" data-table="Checklist" data-field="x_Activity20" data-boolean name="x_Activity20" id="x_Activity20" value="1" checked="@ConvertToBool(checklistEdit.Activity20.CurrentValue)" @Html.Raw(checklistEdit.Activity20.EditAttributes) aria-describedby="x_Activity20_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity20.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity20.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity20.Visible (end) *@
+@if (checklistEdit.RemarkActivity20.Visible) { // checklistEdit.RemarkActivity20.Visible (begin)
+    <div id="r_RemarkActivity20" @Html.Raw(checklistEdit.RemarkActivity20.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity20" for="x_RemarkActivity20" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity20.Caption)@Html.Raw(checklistEdit.RemarkActivity20.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity20.CellAttributes)>
+<span id="el_Checklist_RemarkActivity20">
+<textarea data-table="Checklist" data-field="x_RemarkActivity20" name="x_RemarkActivity20" id="x_RemarkActivity20" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity20.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity20.EditAttributes) aria-describedby="x_RemarkActivity20_help">@(checklistEdit.RemarkActivity20.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity20.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity20.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity20.Visible (end) *@
+@if (checklistEdit.Activity20Attachment.Visible) { // checklistEdit.Activity20Attachment.Visible (begin)
+    <div id="r_Activity20Attachment" @Html.Raw(checklistEdit.Activity20Attachment.RowAttributes)>
+        <label id="elh_Checklist_Activity20Attachment" for="x_Activity20Attachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity20Attachment.Caption)@Html.Raw(checklistEdit.Activity20Attachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity20Attachment.CellAttributes)>
+<span id="el_Checklist_Activity20Attachment">
+<input type="@(checklistEdit.Activity20Attachment.InputTextType)" name="x_Activity20Attachment" id="x_Activity20Attachment" data-table="Checklist" data-field="x_Activity20Attachment" value="@Html.Raw(checklistEdit.Activity20Attachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.Activity20Attachment.PlaceHolder))" data-format-pattern="@(checklistEdit.Activity20Attachment.FormatPattern)"@Html.Raw(checklistEdit.Activity20Attachment.EditAttributes) aria-describedby="x_Activity20Attachment_help">
+@Html.Raw(checklistEdit.Activity20Attachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.Activity20Attachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity20Attachment.Visible (end) *@
+@if (checklistEdit.Activity30.Visible) { // checklistEdit.Activity30.Visible (begin)
+    <div id="r_Activity30" @Html.Raw(checklistEdit.Activity30.RowAttributes)>
+        <label id="elh_Checklist_Activity30" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity30.Caption)@Html.Raw(checklistEdit.Activity30.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity30.CellAttributes)>
+<span id="el_Checklist_Activity30">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity30.IsInvalidClass)" data-table="Checklist" data-field="x_Activity30" data-boolean name="x_Activity30" id="x_Activity30" value="1" checked="@ConvertToBool(checklistEdit.Activity30.CurrentValue)" @Html.Raw(checklistEdit.Activity30.EditAttributes) aria-describedby="x_Activity30_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity30.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity30.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity30.Visible (end) *@
+@if (checklistEdit.RemarkActivity30.Visible) { // checklistEdit.RemarkActivity30.Visible (begin)
+    <div id="r_RemarkActivity30" @Html.Raw(checklistEdit.RemarkActivity30.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity30" for="x_RemarkActivity30" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity30.Caption)@Html.Raw(checklistEdit.RemarkActivity30.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity30.CellAttributes)>
+<span id="el_Checklist_RemarkActivity30">
+<textarea data-table="Checklist" data-field="x_RemarkActivity30" name="x_RemarkActivity30" id="x_RemarkActivity30" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity30.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity30.EditAttributes) aria-describedby="x_RemarkActivity30_help">@(checklistEdit.RemarkActivity30.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity30.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity30.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity30.Visible (end) *@
+@if (checklistEdit.Activity30Attachment.Visible) { // checklistEdit.Activity30Attachment.Visible (begin)
+    <div id="r_Activity30Attachment" @Html.Raw(checklistEdit.Activity30Attachment.RowAttributes)>
+        <label id="elh_Checklist_Activity30Attachment" for="x_Activity30Attachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity30Attachment.Caption)@Html.Raw(checklistEdit.Activity30Attachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity30Attachment.CellAttributes)>
+<span id="el_Checklist_Activity30Attachment">
+<input type="@(checklistEdit.Activity30Attachment.InputTextType)" name="x_Activity30Attachment" id="x_Activity30Attachment" data-table="Checklist" data-field="x_Activity30Attachment" value="@Html.Raw(checklistEdit.Activity30Attachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.Activity30Attachment.PlaceHolder))" data-format-pattern="@(checklistEdit.Activity30Attachment.FormatPattern)"@Html.Raw(checklistEdit.Activity30Attachment.EditAttributes) aria-describedby="x_Activity30Attachment_help">
+@Html.Raw(checklistEdit.Activity30Attachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.Activity30Attachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity30Attachment.Visible (end) *@
+@if (checklistEdit.Activity40.Visible) { // checklistEdit.Activity40.Visible (begin)
+    <div id="r_Activity40" @Html.Raw(checklistEdit.Activity40.RowAttributes)>
+        <label id="elh_Checklist_Activity40" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity40.Caption)@Html.Raw(checklistEdit.Activity40.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity40.CellAttributes)>
+<span id="el_Checklist_Activity40">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity40.IsInvalidClass)" data-table="Checklist" data-field="x_Activity40" data-boolean name="x_Activity40" id="x_Activity40" value="1" checked="@ConvertToBool(checklistEdit.Activity40.CurrentValue)" @Html.Raw(checklistEdit.Activity40.EditAttributes) aria-describedby="x_Activity40_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity40.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity40.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity40.Visible (end) *@
+@if (checklistEdit.RemarkActivity40.Visible) { // checklistEdit.RemarkActivity40.Visible (begin)
+    <div id="r_RemarkActivity40" @Html.Raw(checklistEdit.RemarkActivity40.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity40" for="x_RemarkActivity40" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity40.Caption)@Html.Raw(checklistEdit.RemarkActivity40.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity40.CellAttributes)>
+<span id="el_Checklist_RemarkActivity40">
+<textarea data-table="Checklist" data-field="x_RemarkActivity40" name="x_RemarkActivity40" id="x_RemarkActivity40" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity40.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity40.EditAttributes) aria-describedby="x_RemarkActivity40_help">@(checklistEdit.RemarkActivity40.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity40.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity40.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity40.Visible (end) *@
+@if (checklistEdit.Activity50.Visible) { // checklistEdit.Activity50.Visible (begin)
+    <div id="r_Activity50" @Html.Raw(checklistEdit.Activity50.RowAttributes)>
+        <label id="elh_Checklist_Activity50" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity50.Caption)@Html.Raw(checklistEdit.Activity50.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity50.CellAttributes)>
+<span id="el_Checklist_Activity50">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity50.IsInvalidClass)" data-table="Checklist" data-field="x_Activity50" data-boolean name="x_Activity50" id="x_Activity50" value="1" checked="@ConvertToBool(checklistEdit.Activity50.CurrentValue)" @Html.Raw(checklistEdit.Activity50.EditAttributes) aria-describedby="x_Activity50_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity50.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity50.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity50.Visible (end) *@
+@if (checklistEdit.RemarkActivity50.Visible) { // checklistEdit.RemarkActivity50.Visible (begin)
+    <div id="r_RemarkActivity50" @Html.Raw(checklistEdit.RemarkActivity50.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity50" for="x_RemarkActivity50" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity50.Caption)@Html.Raw(checklistEdit.RemarkActivity50.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity50.CellAttributes)>
+<span id="el_Checklist_RemarkActivity50">
+<textarea data-table="Checklist" data-field="x_RemarkActivity50" name="x_RemarkActivity50" id="x_RemarkActivity50" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity50.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity50.EditAttributes) aria-describedby="x_RemarkActivity50_help">@(checklistEdit.RemarkActivity50.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity50.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity50.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity50.Visible (end) *@
+@if (checklistEdit.Activity50Attachment.Visible) { // checklistEdit.Activity50Attachment.Visible (begin)
+    <div id="r_Activity50Attachment" @Html.Raw(checklistEdit.Activity50Attachment.RowAttributes)>
+        <label id="elh_Checklist_Activity50Attachment" for="x_Activity50Attachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity50Attachment.Caption)@Html.Raw(checklistEdit.Activity50Attachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity50Attachment.CellAttributes)>
+<span id="el_Checklist_Activity50Attachment">
+<input type="@(checklistEdit.Activity50Attachment.InputTextType)" name="x_Activity50Attachment" id="x_Activity50Attachment" data-table="Checklist" data-field="x_Activity50Attachment" value="@Html.Raw(checklistEdit.Activity50Attachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.Activity50Attachment.PlaceHolder))" data-format-pattern="@(checklistEdit.Activity50Attachment.FormatPattern)"@Html.Raw(checklistEdit.Activity50Attachment.EditAttributes) aria-describedby="x_Activity50Attachment_help">
+@Html.Raw(checklistEdit.Activity50Attachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.Activity50Attachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity50Attachment.Visible (end) *@
+@if (checklistEdit.Activity60.Visible) { // checklistEdit.Activity60.Visible (begin)
+    <div id="r_Activity60" @Html.Raw(checklistEdit.Activity60.RowAttributes)>
+        <label id="elh_Checklist_Activity60" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity60.Caption)@Html.Raw(checklistEdit.Activity60.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity60.CellAttributes)>
+<span id="el_Checklist_Activity60">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity60.IsInvalidClass)" data-table="Checklist" data-field="x_Activity60" data-boolean name="x_Activity60" id="x_Activity60" value="1" checked="@ConvertToBool(checklistEdit.Activity60.CurrentValue)" @Html.Raw(checklistEdit.Activity60.EditAttributes) aria-describedby="x_Activity60_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity60.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity60.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity60.Visible (end) *@
+@if (checklistEdit.RemarkActivity60.Visible) { // checklistEdit.RemarkActivity60.Visible (begin)
+    <div id="r_RemarkActivity60" @Html.Raw(checklistEdit.RemarkActivity60.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity60" for="x_RemarkActivity60" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity60.Caption)@Html.Raw(checklistEdit.RemarkActivity60.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity60.CellAttributes)>
+<span id="el_Checklist_RemarkActivity60">
+<textarea data-table="Checklist" data-field="x_RemarkActivity60" name="x_RemarkActivity60" id="x_RemarkActivity60" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity60.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity60.EditAttributes) aria-describedby="x_RemarkActivity60_help">@(checklistEdit.RemarkActivity60.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity60.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity60.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity60.Visible (end) *@
+@if (checklistEdit.Activity70.Visible) { // checklistEdit.Activity70.Visible (begin)
+    <div id="r_Activity70" @Html.Raw(checklistEdit.Activity70.RowAttributes)>
+        <label id="elh_Checklist_Activity70" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity70.Caption)@Html.Raw(checklistEdit.Activity70.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity70.CellAttributes)>
+<span id="el_Checklist_Activity70">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.Activity70.IsInvalidClass)" data-table="Checklist" data-field="x_Activity70" data-boolean name="x_Activity70" id="x_Activity70" value="1" checked="@ConvertToBool(checklistEdit.Activity70.CurrentValue)" @Html.Raw(checklistEdit.Activity70.EditAttributes) aria-describedby="x_Activity70_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.Activity70.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.Activity70.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity70.Visible (end) *@
+@if (checklistEdit.RemarkActivity70.Visible) { // checklistEdit.RemarkActivity70.Visible (begin)
+    <div id="r_RemarkActivity70" @Html.Raw(checklistEdit.RemarkActivity70.RowAttributes)>
+        <label id="elh_Checklist_RemarkActivity70" for="x_RemarkActivity70" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.RemarkActivity70.Caption)@Html.Raw(checklistEdit.RemarkActivity70.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.RemarkActivity70.CellAttributes)>
+<span id="el_Checklist_RemarkActivity70">
+<textarea data-table="Checklist" data-field="x_RemarkActivity70" name="x_RemarkActivity70" id="x_RemarkActivity70" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(checklistEdit.RemarkActivity70.PlaceHolder))"@Html.Raw(checklistEdit.RemarkActivity70.EditAttributes) aria-describedby="x_RemarkActivity70_help">@(checklistEdit.RemarkActivity70.EditValue)</textarea>
+@Html.Raw(checklistEdit.RemarkActivity70.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.RemarkActivity70.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.RemarkActivity70.Visible (end) *@
+@if (checklistEdit.Activity70Attachment.Visible) { // checklistEdit.Activity70Attachment.Visible (begin)
+    <div id="r_Activity70Attachment" @Html.Raw(checklistEdit.Activity70Attachment.RowAttributes)>
+        <label id="elh_Checklist_Activity70Attachment" for="x_Activity70Attachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Activity70Attachment.Caption)@Html.Raw(checklistEdit.Activity70Attachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Activity70Attachment.CellAttributes)>
+<span id="el_Checklist_Activity70Attachment">
+<input type="@(checklistEdit.Activity70Attachment.InputTextType)" name="x_Activity70Attachment" id="x_Activity70Attachment" data-table="Checklist" data-field="x_Activity70Attachment" value="@Html.Raw(checklistEdit.Activity70Attachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.Activity70Attachment.PlaceHolder))" data-format-pattern="@(checklistEdit.Activity70Attachment.FormatPattern)"@Html.Raw(checklistEdit.Activity70Attachment.EditAttributes) aria-describedby="x_Activity70Attachment_help">
+@Html.Raw(checklistEdit.Activity70Attachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.Activity70Attachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Activity70Attachment.Visible (end) *@
+@if (checklistEdit.InterviewerComment.Visible) { // checklistEdit.InterviewerComment.Visible (begin)
+    <div id="r_InterviewerComment" @Html.Raw(checklistEdit.InterviewerComment.RowAttributes)>
+        <label id="elh_Checklist_InterviewerComment" for="x_InterviewerComment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewerComment.Caption)@Html.Raw(checklistEdit.InterviewerComment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewerComment.CellAttributes)>
+<span id="el_Checklist_InterviewerComment">
+<input type="@(checklistEdit.InterviewerComment.InputTextType)" name="x_InterviewerComment" id="x_InterviewerComment" data-table="Checklist" data-field="x_InterviewerComment" value="@Html.Raw(checklistEdit.InterviewerComment.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewerComment.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewerComment.FormatPattern)"@Html.Raw(checklistEdit.InterviewerComment.EditAttributes) aria-describedby="x_InterviewerComment_help">
+@Html.Raw(checklistEdit.InterviewerComment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewerComment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewerComment.Visible (end) *@
+@if (checklistEdit.InterviewDate.Visible) { // checklistEdit.InterviewDate.Visible (begin)
+    <div id="r_InterviewDate" @Html.Raw(checklistEdit.InterviewDate.RowAttributes)>
+        <label id="elh_Checklist_InterviewDate" for="x_InterviewDate" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewDate.Caption)@Html.Raw(checklistEdit.InterviewDate.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewDate.CellAttributes)>
+<span id="el_Checklist_InterviewDate">
+<input type="@(checklistEdit.InterviewDate.InputTextType)" name="x_InterviewDate" id="x_InterviewDate" data-table="Checklist" data-field="x_InterviewDate" value="@Html.Raw(checklistEdit.InterviewDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewDate.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewDate.FormatPattern)"@Html.Raw(checklistEdit.InterviewDate.EditAttributes) aria-describedby="x_InterviewDate_help">
+@Html.Raw(checklistEdit.InterviewDate.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewDate.GetErrorMessage())</div>
+@if (!checklistEdit.InterviewDate.ReadOnly && !checklistEdit.InterviewDate.Disabled && !checklistEdit.InterviewDate.EditAttrs.Is("readonly") && !checklistEdit.InterviewDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistedit", "x_InterviewDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewDate.Visible (end) *@
+@if (checklistEdit.InterviewAttachment.Visible) { // checklistEdit.InterviewAttachment.Visible (begin)
+    <div id="r_InterviewAttachment" @Html.Raw(checklistEdit.InterviewAttachment.RowAttributes)>
+        <label id="elh_Checklist_InterviewAttachment" for="x_InterviewAttachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewAttachment.Caption)@Html.Raw(checklistEdit.InterviewAttachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewAttachment.CellAttributes)>
+<span id="el_Checklist_InterviewAttachment">
+<input type="@(checklistEdit.InterviewAttachment.InputTextType)" name="x_InterviewAttachment" id="x_InterviewAttachment" data-table="Checklist" data-field="x_InterviewAttachment" value="@Html.Raw(checklistEdit.InterviewAttachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewAttachment.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewAttachment.FormatPattern)"@Html.Raw(checklistEdit.InterviewAttachment.EditAttributes) aria-describedby="x_InterviewAttachment_help">
+@Html.Raw(checklistEdit.InterviewAttachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewAttachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewAttachment.Visible (end) *@
+@if (checklistEdit.InterviewedByPersonOneName.Visible) { // checklistEdit.InterviewedByPersonOneName.Visible (begin)
+    <div id="r_InterviewedByPersonOneName" @Html.Raw(checklistEdit.InterviewedByPersonOneName.RowAttributes)>
+        <label id="elh_Checklist_InterviewedByPersonOneName" for="x_InterviewedByPersonOneName" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewedByPersonOneName.Caption)@Html.Raw(checklistEdit.InterviewedByPersonOneName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewedByPersonOneName.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonOneName">
+<input type="@(checklistEdit.InterviewedByPersonOneName.InputTextType)" name="x_InterviewedByPersonOneName" id="x_InterviewedByPersonOneName" data-table="Checklist" data-field="x_InterviewedByPersonOneName" value="@Html.Raw(checklistEdit.InterviewedByPersonOneName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewedByPersonOneName.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewedByPersonOneName.FormatPattern)"@Html.Raw(checklistEdit.InterviewedByPersonOneName.EditAttributes) aria-describedby="x_InterviewedByPersonOneName_help">
+@Html.Raw(checklistEdit.InterviewedByPersonOneName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewedByPersonOneName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewedByPersonOneName.Visible (end) *@
+@if (checklistEdit.InterviewedByPersonOneRank.Visible) { // checklistEdit.InterviewedByPersonOneRank.Visible (begin)
+    <div id="r_InterviewedByPersonOneRank" @Html.Raw(checklistEdit.InterviewedByPersonOneRank.RowAttributes)>
+        <label id="elh_Checklist_InterviewedByPersonOneRank" for="x_InterviewedByPersonOneRank" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewedByPersonOneRank.Caption)@Html.Raw(checklistEdit.InterviewedByPersonOneRank.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewedByPersonOneRank.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonOneRank">
+<input type="@(checklistEdit.InterviewedByPersonOneRank.InputTextType)" name="x_InterviewedByPersonOneRank" id="x_InterviewedByPersonOneRank" data-table="Checklist" data-field="x_InterviewedByPersonOneRank" value="@Html.Raw(checklistEdit.InterviewedByPersonOneRank.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewedByPersonOneRank.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewedByPersonOneRank.FormatPattern)"@Html.Raw(checklistEdit.InterviewedByPersonOneRank.EditAttributes) aria-describedby="x_InterviewedByPersonOneRank_help">
+@Html.Raw(checklistEdit.InterviewedByPersonOneRank.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewedByPersonOneRank.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewedByPersonOneRank.Visible (end) *@
+@if (checklistEdit.InterviewedByPersonTwoName.Visible) { // checklistEdit.InterviewedByPersonTwoName.Visible (begin)
+    <div id="r_InterviewedByPersonTwoName" @Html.Raw(checklistEdit.InterviewedByPersonTwoName.RowAttributes)>
+        <label id="elh_Checklist_InterviewedByPersonTwoName" for="x_InterviewedByPersonTwoName" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewedByPersonTwoName.Caption)@Html.Raw(checklistEdit.InterviewedByPersonTwoName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewedByPersonTwoName.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonTwoName">
+<input type="@(checklistEdit.InterviewedByPersonTwoName.InputTextType)" name="x_InterviewedByPersonTwoName" id="x_InterviewedByPersonTwoName" data-table="Checklist" data-field="x_InterviewedByPersonTwoName" value="@Html.Raw(checklistEdit.InterviewedByPersonTwoName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewedByPersonTwoName.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewedByPersonTwoName.FormatPattern)"@Html.Raw(checklistEdit.InterviewedByPersonTwoName.EditAttributes) aria-describedby="x_InterviewedByPersonTwoName_help">
+@Html.Raw(checklistEdit.InterviewedByPersonTwoName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewedByPersonTwoName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewedByPersonTwoName.Visible (end) *@
+@if (checklistEdit.InterviewedByPersonTwoRank.Visible) { // checklistEdit.InterviewedByPersonTwoRank.Visible (begin)
+    <div id="r_InterviewedByPersonTwoRank" @Html.Raw(checklistEdit.InterviewedByPersonTwoRank.RowAttributes)>
+        <label id="elh_Checklist_InterviewedByPersonTwoRank" for="x_InterviewedByPersonTwoRank" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewedByPersonTwoRank.Caption)@Html.Raw(checklistEdit.InterviewedByPersonTwoRank.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewedByPersonTwoRank.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonTwoRank">
+<input type="@(checklistEdit.InterviewedByPersonTwoRank.InputTextType)" name="x_InterviewedByPersonTwoRank" id="x_InterviewedByPersonTwoRank" data-table="Checklist" data-field="x_InterviewedByPersonTwoRank" value="@Html.Raw(checklistEdit.InterviewedByPersonTwoRank.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewedByPersonTwoRank.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewedByPersonTwoRank.FormatPattern)"@Html.Raw(checklistEdit.InterviewedByPersonTwoRank.EditAttributes) aria-describedby="x_InterviewedByPersonTwoRank_help">
+@Html.Raw(checklistEdit.InterviewedByPersonTwoRank.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewedByPersonTwoRank.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewedByPersonTwoRank.Visible (end) *@
+@if (checklistEdit.InterviewedByPersonThreeName.Visible) { // checklistEdit.InterviewedByPersonThreeName.Visible (begin)
+    <div id="r_InterviewedByPersonThreeName" @Html.Raw(checklistEdit.InterviewedByPersonThreeName.RowAttributes)>
+        <label id="elh_Checklist_InterviewedByPersonThreeName" for="x_InterviewedByPersonThreeName" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewedByPersonThreeName.Caption)@Html.Raw(checklistEdit.InterviewedByPersonThreeName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewedByPersonThreeName.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonThreeName">
+<input type="@(checklistEdit.InterviewedByPersonThreeName.InputTextType)" name="x_InterviewedByPersonThreeName" id="x_InterviewedByPersonThreeName" data-table="Checklist" data-field="x_InterviewedByPersonThreeName" value="@Html.Raw(checklistEdit.InterviewedByPersonThreeName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewedByPersonThreeName.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewedByPersonThreeName.FormatPattern)"@Html.Raw(checklistEdit.InterviewedByPersonThreeName.EditAttributes) aria-describedby="x_InterviewedByPersonThreeName_help">
+@Html.Raw(checklistEdit.InterviewedByPersonThreeName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewedByPersonThreeName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewedByPersonThreeName.Visible (end) *@
+@if (checklistEdit.InterviewedByPersonThreeRank.Visible) { // checklistEdit.InterviewedByPersonThreeRank.Visible (begin)
+    <div id="r_InterviewedByPersonThreeRank" @Html.Raw(checklistEdit.InterviewedByPersonThreeRank.RowAttributes)>
+        <label id="elh_Checklist_InterviewedByPersonThreeRank" for="x_InterviewedByPersonThreeRank" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.InterviewedByPersonThreeRank.Caption)@Html.Raw(checklistEdit.InterviewedByPersonThreeRank.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.InterviewedByPersonThreeRank.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonThreeRank">
+<input type="@(checklistEdit.InterviewedByPersonThreeRank.InputTextType)" name="x_InterviewedByPersonThreeRank" id="x_InterviewedByPersonThreeRank" data-table="Checklist" data-field="x_InterviewedByPersonThreeRank" value="@Html.Raw(checklistEdit.InterviewedByPersonThreeRank.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.InterviewedByPersonThreeRank.PlaceHolder))" data-format-pattern="@(checklistEdit.InterviewedByPersonThreeRank.FormatPattern)"@Html.Raw(checklistEdit.InterviewedByPersonThreeRank.EditAttributes) aria-describedby="x_InterviewedByPersonThreeRank_help">
+@Html.Raw(checklistEdit.InterviewedByPersonThreeRank.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.InterviewedByPersonThreeRank.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.InterviewedByPersonThreeRank.Visible (end) *@
+@if (checklistEdit.FinalInterviewComment.Visible) { // checklistEdit.FinalInterviewComment.Visible (begin)
+    <div id="r_FinalInterviewComment" @Html.Raw(checklistEdit.FinalInterviewComment.RowAttributes)>
+        <label id="elh_Checklist_FinalInterviewComment" for="x_FinalInterviewComment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.FinalInterviewComment.Caption)@Html.Raw(checklistEdit.FinalInterviewComment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.FinalInterviewComment.CellAttributes)>
+<span id="el_Checklist_FinalInterviewComment">
+<input type="@(checklistEdit.FinalInterviewComment.InputTextType)" name="x_FinalInterviewComment" id="x_FinalInterviewComment" data-table="Checklist" data-field="x_FinalInterviewComment" value="@Html.Raw(checklistEdit.FinalInterviewComment.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(checklistEdit.FinalInterviewComment.PlaceHolder))" data-format-pattern="@(checklistEdit.FinalInterviewComment.FormatPattern)"@Html.Raw(checklistEdit.FinalInterviewComment.EditAttributes) aria-describedby="x_FinalInterviewComment_help">
+@Html.Raw(checklistEdit.FinalInterviewComment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.FinalInterviewComment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.FinalInterviewComment.Visible (end) *@
+@if (checklistEdit.FinalInterviewAttachment.Visible) { // checklistEdit.FinalInterviewAttachment.Visible (begin)
+    <div id="r_FinalInterviewAttachment" @Html.Raw(checklistEdit.FinalInterviewAttachment.RowAttributes)>
+        <label id="elh_Checklist_FinalInterviewAttachment" for="x_FinalInterviewAttachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.FinalInterviewAttachment.Caption)@Html.Raw(checklistEdit.FinalInterviewAttachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.FinalInterviewAttachment.CellAttributes)>
+<span id="el_Checklist_FinalInterviewAttachment">
+<input type="@(checklistEdit.FinalInterviewAttachment.InputTextType)" name="x_FinalInterviewAttachment" id="x_FinalInterviewAttachment" data-table="Checklist" data-field="x_FinalInterviewAttachment" value="@Html.Raw(checklistEdit.FinalInterviewAttachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.FinalInterviewAttachment.PlaceHolder))" data-format-pattern="@(checklistEdit.FinalInterviewAttachment.FormatPattern)"@Html.Raw(checklistEdit.FinalInterviewAttachment.EditAttributes) aria-describedby="x_FinalInterviewAttachment_help">
+@Html.Raw(checklistEdit.FinalInterviewAttachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.FinalInterviewAttachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.FinalInterviewAttachment.Visible (end) *@
+@if (checklistEdit.JobKnowledge.Visible) { // checklistEdit.JobKnowledge.Visible (begin)
+    <div id="r_JobKnowledge" @Html.Raw(checklistEdit.JobKnowledge.RowAttributes)>
+        <label id="elh_Checklist_JobKnowledge" for="x_JobKnowledge" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.JobKnowledge.Caption)@Html.Raw(checklistEdit.JobKnowledge.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.JobKnowledge.CellAttributes)>
+<span id="el_Checklist_JobKnowledge">
+<input type="@(checklistEdit.JobKnowledge.InputTextType)" name="x_JobKnowledge" id="x_JobKnowledge" data-table="Checklist" data-field="x_JobKnowledge" value="@Html.Raw(checklistEdit.JobKnowledge.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(checklistEdit.JobKnowledge.PlaceHolder))" data-format-pattern="@(checklistEdit.JobKnowledge.FormatPattern)"@Html.Raw(checklistEdit.JobKnowledge.EditAttributes) aria-describedby="x_JobKnowledge_help">
+@Html.Raw(checklistEdit.JobKnowledge.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.JobKnowledge.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.JobKnowledge.Visible (end) *@
+@if (checklistEdit.SafetyAwareness.Visible) { // checklistEdit.SafetyAwareness.Visible (begin)
+    <div id="r_SafetyAwareness" @Html.Raw(checklistEdit.SafetyAwareness.RowAttributes)>
+        <label id="elh_Checklist_SafetyAwareness" for="x_SafetyAwareness" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.SafetyAwareness.Caption)@Html.Raw(checklistEdit.SafetyAwareness.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.SafetyAwareness.CellAttributes)>
+<span id="el_Checklist_SafetyAwareness">
+<input type="@(checklistEdit.SafetyAwareness.InputTextType)" name="x_SafetyAwareness" id="x_SafetyAwareness" data-table="Checklist" data-field="x_SafetyAwareness" value="@Html.Raw(checklistEdit.SafetyAwareness.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(checklistEdit.SafetyAwareness.PlaceHolder))" data-format-pattern="@(checklistEdit.SafetyAwareness.FormatPattern)"@Html.Raw(checklistEdit.SafetyAwareness.EditAttributes) aria-describedby="x_SafetyAwareness_help">
+@Html.Raw(checklistEdit.SafetyAwareness.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.SafetyAwareness.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.SafetyAwareness.Visible (end) *@
+@if (checklistEdit.Personality.Visible) { // checklistEdit.Personality.Visible (begin)
+    <div id="r_Personality" @Html.Raw(checklistEdit.Personality.RowAttributes)>
+        <label id="elh_Checklist_Personality" for="x_Personality" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.Personality.Caption)@Html.Raw(checklistEdit.Personality.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.Personality.CellAttributes)>
+<span id="el_Checklist_Personality">
+<input type="@(checklistEdit.Personality.InputTextType)" name="x_Personality" id="x_Personality" data-table="Checklist" data-field="x_Personality" value="@Html.Raw(checklistEdit.Personality.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(checklistEdit.Personality.PlaceHolder))" data-format-pattern="@(checklistEdit.Personality.FormatPattern)"@Html.Raw(checklistEdit.Personality.EditAttributes) aria-describedby="x_Personality_help">
+@Html.Raw(checklistEdit.Personality.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.Personality.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.Personality.Visible (end) *@
+@if (checklistEdit.EnglishProficiency.Visible) { // checklistEdit.EnglishProficiency.Visible (begin)
+    <div id="r_EnglishProficiency" @Html.Raw(checklistEdit.EnglishProficiency.RowAttributes)>
+        <label id="elh_Checklist_EnglishProficiency" for="x_EnglishProficiency" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.EnglishProficiency.Caption)@Html.Raw(checklistEdit.EnglishProficiency.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.EnglishProficiency.CellAttributes)>
+<span id="el_Checklist_EnglishProficiency">
+<input type="@(checklistEdit.EnglishProficiency.InputTextType)" name="x_EnglishProficiency" id="x_EnglishProficiency" data-table="Checklist" data-field="x_EnglishProficiency" value="@Html.Raw(checklistEdit.EnglishProficiency.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(checklistEdit.EnglishProficiency.PlaceHolder))" data-format-pattern="@(checklistEdit.EnglishProficiency.FormatPattern)"@Html.Raw(checklistEdit.EnglishProficiency.EditAttributes) aria-describedby="x_EnglishProficiency_help">
+@Html.Raw(checklistEdit.EnglishProficiency.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.EnglishProficiency.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.EnglishProficiency.Visible (end) *@
+@if (checklistEdit.PrincipalComment.Visible) { // checklistEdit.PrincipalComment.Visible (begin)
+    <div id="r_PrincipalComment" @Html.Raw(checklistEdit.PrincipalComment.RowAttributes)>
+        <label id="elh_Checklist_PrincipalComment" for="x_PrincipalComment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.PrincipalComment.Caption)@Html.Raw(checklistEdit.PrincipalComment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.PrincipalComment.CellAttributes)>
+<span id="el_Checklist_PrincipalComment">
+<input type="@(checklistEdit.PrincipalComment.InputTextType)" name="x_PrincipalComment" id="x_PrincipalComment" data-table="Checklist" data-field="x_PrincipalComment" value="@Html.Raw(checklistEdit.PrincipalComment.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(checklistEdit.PrincipalComment.PlaceHolder))" data-format-pattern="@(checklistEdit.PrincipalComment.FormatPattern)"@Html.Raw(checklistEdit.PrincipalComment.EditAttributes) aria-describedby="x_PrincipalComment_help">
+@Html.Raw(checklistEdit.PrincipalComment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.PrincipalComment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.PrincipalComment.Visible (end) *@
+@if (checklistEdit.PrincipalCommentAttachment.Visible) { // checklistEdit.PrincipalCommentAttachment.Visible (begin)
+    <div id="r_PrincipalCommentAttachment" @Html.Raw(checklistEdit.PrincipalCommentAttachment.RowAttributes)>
+        <label id="elh_Checklist_PrincipalCommentAttachment" for="x_PrincipalCommentAttachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.PrincipalCommentAttachment.Caption)@Html.Raw(checklistEdit.PrincipalCommentAttachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.PrincipalCommentAttachment.CellAttributes)>
+<span id="el_Checklist_PrincipalCommentAttachment">
+<input type="@(checklistEdit.PrincipalCommentAttachment.InputTextType)" name="x_PrincipalCommentAttachment" id="x_PrincipalCommentAttachment" data-table="Checklist" data-field="x_PrincipalCommentAttachment" value="@Html.Raw(checklistEdit.PrincipalCommentAttachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.PrincipalCommentAttachment.PlaceHolder))" data-format-pattern="@(checklistEdit.PrincipalCommentAttachment.FormatPattern)"@Html.Raw(checklistEdit.PrincipalCommentAttachment.EditAttributes) aria-describedby="x_PrincipalCommentAttachment_help">
+@Html.Raw(checklistEdit.PrincipalCommentAttachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.PrincipalCommentAttachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.PrincipalCommentAttachment.Visible (end) *@
+@if (checklistEdit.AssistantManagerPdeReviewed.Visible) { // checklistEdit.AssistantManagerPdeReviewed.Visible (begin)
+    <div id="r_AssistantManagerPdeReviewed" @Html.Raw(checklistEdit.AssistantManagerPdeReviewed.RowAttributes)>
+        <label id="elh_Checklist_AssistantManagerPdeReviewed" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.AssistantManagerPdeReviewed.Caption)@Html.Raw(checklistEdit.AssistantManagerPdeReviewed.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.AssistantManagerPdeReviewed.CellAttributes)>
+<span id="el_Checklist_AssistantManagerPdeReviewed">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.AssistantManagerPdeReviewed.IsInvalidClass)" data-table="Checklist" data-field="x_AssistantManagerPdeReviewed" data-boolean name="x_AssistantManagerPdeReviewed" id="x_AssistantManagerPdeReviewed" value="1" checked="@ConvertToBool(checklistEdit.AssistantManagerPdeReviewed.CurrentValue)" @Html.Raw(checklistEdit.AssistantManagerPdeReviewed.EditAttributes) aria-describedby="x_AssistantManagerPdeReviewed_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.AssistantManagerPdeReviewed.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.AssistantManagerPdeReviewed.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.AssistantManagerPdeReviewed.Visible (end) *@
+@if (checklistEdit.AssistantManagerPdeReviewedDate.Visible) { // checklistEdit.AssistantManagerPdeReviewedDate.Visible (begin)
+    <div id="r_AssistantManagerPdeReviewedDate" @Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.RowAttributes)>
+        <label id="elh_Checklist_AssistantManagerPdeReviewedDate" for="x_AssistantManagerPdeReviewedDate" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.Caption)@Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.CellAttributes)>
+<span id="el_Checklist_AssistantManagerPdeReviewedDate">
+<input type="@(checklistEdit.AssistantManagerPdeReviewedDate.InputTextType)" name="x_AssistantManagerPdeReviewedDate" id="x_AssistantManagerPdeReviewedDate" data-table="Checklist" data-field="x_AssistantManagerPdeReviewedDate" value="@Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistEdit.AssistantManagerPdeReviewedDate.PlaceHolder))" data-format-pattern="@(checklistEdit.AssistantManagerPdeReviewedDate.FormatPattern)"@Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.EditAttributes) aria-describedby="x_AssistantManagerPdeReviewedDate_help">
+@Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.AssistantManagerPdeReviewedDate.GetErrorMessage())</div>
+@if (!checklistEdit.AssistantManagerPdeReviewedDate.ReadOnly && !checklistEdit.AssistantManagerPdeReviewedDate.Disabled && !checklistEdit.AssistantManagerPdeReviewedDate.EditAttrs.Is("readonly") && !checklistEdit.AssistantManagerPdeReviewedDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistedit", "x_AssistantManagerPdeReviewedDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.AssistantManagerPdeReviewedDate.Visible (end) *@
+@if (checklistEdit.CrewingManagerApproval.Visible) { // checklistEdit.CrewingManagerApproval.Visible (begin)
+    <div id="r_CrewingManagerApproval" @Html.Raw(checklistEdit.CrewingManagerApproval.RowAttributes)>
+        <label id="elh_Checklist_CrewingManagerApproval" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.CrewingManagerApproval.Caption)@Html.Raw(checklistEdit.CrewingManagerApproval.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.CrewingManagerApproval.CellAttributes)>
+<span id="el_Checklist_CrewingManagerApproval">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistEdit.CrewingManagerApproval.IsInvalidClass)" data-table="Checklist" data-field="x_CrewingManagerApproval" data-boolean name="x_CrewingManagerApproval" id="x_CrewingManagerApproval" value="1" checked="@ConvertToBool(checklistEdit.CrewingManagerApproval.CurrentValue)" @Html.Raw(checklistEdit.CrewingManagerApproval.EditAttributes) aria-describedby="x_CrewingManagerApproval_help">
+    <div class="invalid-feedback">@Html.Raw(checklistEdit.CrewingManagerApproval.GetErrorMessage())</div>
+</div>
+@Html.Raw(checklistEdit.CrewingManagerApproval.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.CrewingManagerApproval.Visible (end) *@
+@if (checklistEdit.CrewingManagerApprovalDate.Visible) { // checklistEdit.CrewingManagerApprovalDate.Visible (begin)
+    <div id="r_CrewingManagerApprovalDate" @Html.Raw(checklistEdit.CrewingManagerApprovalDate.RowAttributes)>
+        <label id="elh_Checklist_CrewingManagerApprovalDate" for="x_CrewingManagerApprovalDate" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.CrewingManagerApprovalDate.Caption)@Html.Raw(checklistEdit.CrewingManagerApprovalDate.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.CrewingManagerApprovalDate.CellAttributes)>
+<span id="el_Checklist_CrewingManagerApprovalDate">
+<input type="@(checklistEdit.CrewingManagerApprovalDate.InputTextType)" name="x_CrewingManagerApprovalDate" id="x_CrewingManagerApprovalDate" data-table="Checklist" data-field="x_CrewingManagerApprovalDate" value="@Html.Raw(checklistEdit.CrewingManagerApprovalDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistEdit.CrewingManagerApprovalDate.PlaceHolder))" data-format-pattern="@(checklistEdit.CrewingManagerApprovalDate.FormatPattern)"@Html.Raw(checklistEdit.CrewingManagerApprovalDate.EditAttributes) aria-describedby="x_CrewingManagerApprovalDate_help">
+@Html.Raw(checklistEdit.CrewingManagerApprovalDate.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.CrewingManagerApprovalDate.GetErrorMessage())</div>
+@if (!checklistEdit.CrewingManagerApprovalDate.ReadOnly && !checklistEdit.CrewingManagerApprovalDate.Disabled && !checklistEdit.CrewingManagerApprovalDate.EditAttrs.Is("readonly") && !checklistEdit.CrewingManagerApprovalDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistedit", "x_CrewingManagerApprovalDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.CrewingManagerApprovalDate.Visible (end) *@
+@if (checklistEdit.FormPrintoutAttachment.Visible) { // checklistEdit.FormPrintoutAttachment.Visible (begin)
+    <div id="r_FormPrintoutAttachment" @Html.Raw(checklistEdit.FormPrintoutAttachment.RowAttributes)>
+        <label id="elh_Checklist_FormPrintoutAttachment" for="x_FormPrintoutAttachment" class="@(checklistEdit.LeftColumnClass)">@Html.Raw(checklistEdit.FormPrintoutAttachment.Caption)@Html.Raw(checklistEdit.FormPrintoutAttachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(checklistEdit.RightColumnClass)"><div @Html.Raw(checklistEdit.FormPrintoutAttachment.CellAttributes)>
+<span id="el_Checklist_FormPrintoutAttachment">
+<input type="@(checklistEdit.FormPrintoutAttachment.InputTextType)" name="x_FormPrintoutAttachment" id="x_FormPrintoutAttachment" data-table="Checklist" data-field="x_FormPrintoutAttachment" value="@Html.Raw(checklistEdit.FormPrintoutAttachment.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistEdit.FormPrintoutAttachment.PlaceHolder))" data-format-pattern="@(checklistEdit.FormPrintoutAttachment.FormatPattern)"@Html.Raw(checklistEdit.FormPrintoutAttachment.EditAttributes) aria-describedby="x_FormPrintoutAttachment_help">
+@Html.Raw(checklistEdit.FormPrintoutAttachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(checklistEdit.FormPrintoutAttachment.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* checklistEdit.FormPrintoutAttachment.Visible (end) *@
+</div><!-- /page* -->
+    <input type="hidden" data-table="Checklist" data-field="x_ID" data-hidden="1" name="x_ID" id="x_ID" value="@Html.Raw(HtmlEncode(checklistEdit.ID.CurrentValue))">
+@{ checklistEdit.CloseRecordset(); }
+@Html.Raw(checklistEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(checklistEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fChecklistedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fChecklistedit" data-href="@AppPath(checklistEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(checklistEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+</main>
+@checklistEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Checklist");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

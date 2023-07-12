@@ -1,0 +1,535 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mcuResultEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mcuResultEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mcuResultEdit.ShowPageHeader()
+@mcuResultEdit.ShowMessages()
+<main class="edit">
+<form name="fMcuResultedit" id="fMcuResultedit" class="@(mcuResultEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mcuResultEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { McuResult: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fMcuResultedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMcuResultedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrew_ID", [fields.MTCrew_ID.visible && fields.MTCrew_ID.required ? ew.Validators.required(fields.MTCrew_ID.caption) : null], fields.MTCrew_ID.isInvalid],
+            ["IndividualCodeNumber", [fields.IndividualCodeNumber.visible && fields.IndividualCodeNumber.required ? ew.Validators.required(fields.IndividualCodeNumber.caption) : null], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [fields.FullName.visible && fields.FullName.required ? ew.Validators.required(fields.FullName.caption) : null], fields.FullName.isInvalid],
+            ["RequiredPhoto", [fields.RequiredPhoto.visible && fields.RequiredPhoto.required ? ew.Validators.fileRequired(fields.RequiredPhoto.caption) : null], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [fields.VisaPhoto.visible && fields.VisaPhoto.required ? ew.Validators.fileRequired(fields.VisaPhoto.caption) : null], fields.VisaPhoto.isInvalid],
+            ["RankAppliedFor", [fields.RankAppliedFor.visible && fields.RankAppliedFor.required ? ew.Validators.required(fields.RankAppliedFor.caption) : null], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [fields.WillAcceptLowRank.visible && fields.WillAcceptLowRank.required ? ew.Validators.required(fields.WillAcceptLowRank.caption) : null], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [fields.AvailableFrom.visible && fields.AvailableFrom.required ? ew.Validators.required(fields.AvailableFrom.caption) : null, ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [fields.AvailableUntil.visible && fields.AvailableUntil.required ? ew.Validators.required(fields.AvailableUntil.caption) : null, ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["McuScheduleDate", [fields.McuScheduleDate.visible && fields.McuScheduleDate.required ? ew.Validators.required(fields.McuScheduleDate.caption) : null, ew.Validators.datetime(fields.McuScheduleDate.clientFormatPattern)], fields.McuScheduleDate.isInvalid],
+            ["McuDate", [fields.McuDate.visible && fields.McuDate.required ? ew.Validators.required(fields.McuDate.caption) : null, ew.Validators.datetime(fields.McuDate.clientFormatPattern)], fields.McuDate.isInvalid],
+            ["McuExpirationDate", [fields.McuExpirationDate.visible && fields.McuExpirationDate.required ? ew.Validators.required(fields.McuExpirationDate.caption) : null, ew.Validators.datetime(fields.McuExpirationDate.clientFormatPattern)], fields.McuExpirationDate.isInvalid],
+            ["HealthStatus", [fields.HealthStatus.visible && fields.HealthStatus.required ? ew.Validators.required(fields.HealthStatus.caption) : null], fields.HealthStatus.isInvalid],
+            ["McuLocation", [fields.McuLocation.visible && fields.McuLocation.required ? ew.Validators.required(fields.McuLocation.caption) : null], fields.McuLocation.isInvalid],
+            ["McuAttachment", [fields.McuAttachment.visible && fields.McuAttachment.required ? ew.Validators.fileRequired(fields.McuAttachment.caption) : null], fields.McuAttachment.isInvalid],
+            ["McuRemark", [fields.McuRemark.visible && fields.McuRemark.required ? ew.Validators.required(fields.McuRemark.caption) : null], fields.McuRemark.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "WillAcceptLowRank": @Html.Raw(mcuResultEdit.WillAcceptLowRank.ToClientList(mcuResultEdit)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(mcuResultEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(mcuResultEdit.OldKeyName)" value="@Html.Raw(mcuResultEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (mcuResultEdit.MTCrew_ID.Visible) { // mcuResultEdit.MTCrew_ID.Visible (begin)
+    <div id="r_MTCrew_ID" @Html.Raw(mcuResultEdit.MTCrew_ID.RowAttributes)>
+        <label id="elh_McuResult_MTCrew_ID" for="x_MTCrew_ID" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.MTCrew_ID.Caption)@Html.Raw(mcuResultEdit.MTCrew_ID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.MTCrew_ID.CellAttributes)>
+<span id="el_McuResult_MTCrew_ID">
+<input type="@(mcuResultEdit.MTCrew_ID.InputTextType)" name="x_MTCrew_ID" id="x_MTCrew_ID" data-table="McuResult" data-field="x_MTCrew_ID" value="@Html.Raw(mcuResultEdit.MTCrew_ID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.MTCrew_ID.PlaceHolder))" data-format-pattern="@(mcuResultEdit.MTCrew_ID.FormatPattern)"@Html.Raw(mcuResultEdit.MTCrew_ID.EditAttributes) aria-describedby="x_MTCrew_ID_help">
+@Html.Raw(mcuResultEdit.MTCrew_ID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.MTCrew_ID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.MTCrew_ID.Visible (end) *@
+@if (mcuResultEdit.IndividualCodeNumber.Visible) { // mcuResultEdit.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" @Html.Raw(mcuResultEdit.IndividualCodeNumber.RowAttributes)>
+        <label id="elh_McuResult_IndividualCodeNumber" for="x_IndividualCodeNumber" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.IndividualCodeNumber.Caption)@Html.Raw(mcuResultEdit.IndividualCodeNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.IndividualCodeNumber.CellAttributes)>
+<span id="el_McuResult_IndividualCodeNumber">
+<input type="@(mcuResultEdit.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="McuResult" data-field="x_IndividualCodeNumber" value="@Html.Raw(mcuResultEdit.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(mcuResultEdit.IndividualCodeNumber.FormatPattern)"@Html.Raw(mcuResultEdit.IndividualCodeNumber.EditAttributes) aria-describedby="x_IndividualCodeNumber_help">
+@Html.Raw(mcuResultEdit.IndividualCodeNumber.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.IndividualCodeNumber.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.IndividualCodeNumber.Visible (end) *@
+@if (mcuResultEdit.FullName.Visible) { // mcuResultEdit.FullName.Visible (begin)
+    <div id="r_FullName" @Html.Raw(mcuResultEdit.FullName.RowAttributes)>
+        <label id="elh_McuResult_FullName" for="x_FullName" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.FullName.Caption)@Html.Raw(mcuResultEdit.FullName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.FullName.CellAttributes)>
+<span id="el_McuResult_FullName">
+<input type="@(mcuResultEdit.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="McuResult" data-field="x_FullName" value="@Html.Raw(mcuResultEdit.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.FullName.PlaceHolder))" data-format-pattern="@(mcuResultEdit.FullName.FormatPattern)"@Html.Raw(mcuResultEdit.FullName.EditAttributes) aria-describedby="x_FullName_help">
+@Html.Raw(mcuResultEdit.FullName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.FullName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.FullName.Visible (end) *@
+@if (mcuResultEdit.RequiredPhoto.Visible) { // mcuResultEdit.RequiredPhoto.Visible (begin)
+    <div id="r_RequiredPhoto" @Html.Raw(mcuResultEdit.RequiredPhoto.RowAttributes)>
+        <label id="elh_McuResult_RequiredPhoto" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.RequiredPhoto.Caption)@Html.Raw(mcuResultEdit.RequiredPhoto.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.RequiredPhoto.CellAttributes)>
+<span id="el_McuResult_RequiredPhoto">
+<div id="fd_x_RequiredPhoto" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_RequiredPhoto"
+        name="x_RequiredPhoto"
+        class="form-control ew-file-input"
+        title="@(mcuResultEdit.RequiredPhoto.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="McuResult"
+        data-field="x_RequiredPhoto"
+        data-size="100"
+        data-accept-file-types="@(mcuResultEdit.RequiredPhoto.AcceptFileTypes)"
+        data-max-file-size="@(mcuResultEdit.RequiredPhoto.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(mcuResultEdit.RequiredPhoto.ImageCropper ? 0 : 1)"
+        aria-describedby="x_RequiredPhoto_help"
+        @Html.Raw((mcuResultEdit.RequiredPhoto.ReadOnly || mcuResultEdit.RequiredPhoto.Disabled) ? " disabled" : "")
+        @Html.Raw(mcuResultEdit.RequiredPhoto.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(mcuResultEdit.RequiredPhoto.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.RequiredPhoto.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_RequiredPhoto" id= "fn_x_RequiredPhoto" value="@(mcuResultEdit.RequiredPhoto.Upload.FileName)">
+<input type="hidden" name="fa_x_RequiredPhoto" id= "fa_x_RequiredPhoto" value="@(Post("fa_x_RequiredPhoto") == "0" ? "0" : "1")">
+<table id="ft_x_RequiredPhoto" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.RequiredPhoto.Visible (end) *@
+@if (mcuResultEdit.VisaPhoto.Visible) { // mcuResultEdit.VisaPhoto.Visible (begin)
+    <div id="r_VisaPhoto" @Html.Raw(mcuResultEdit.VisaPhoto.RowAttributes)>
+        <label id="elh_McuResult_VisaPhoto" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.VisaPhoto.Caption)@Html.Raw(mcuResultEdit.VisaPhoto.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.VisaPhoto.CellAttributes)>
+<span id="el_McuResult_VisaPhoto">
+<div id="fd_x_VisaPhoto" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_VisaPhoto"
+        name="x_VisaPhoto"
+        class="form-control ew-file-input"
+        title="@(mcuResultEdit.VisaPhoto.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="McuResult"
+        data-field="x_VisaPhoto"
+        data-size="100"
+        data-accept-file-types="@(mcuResultEdit.VisaPhoto.AcceptFileTypes)"
+        data-max-file-size="@(mcuResultEdit.VisaPhoto.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(mcuResultEdit.VisaPhoto.ImageCropper ? 0 : 1)"
+        aria-describedby="x_VisaPhoto_help"
+        @Html.Raw((mcuResultEdit.VisaPhoto.ReadOnly || mcuResultEdit.VisaPhoto.Disabled) ? " disabled" : "")
+        @Html.Raw(mcuResultEdit.VisaPhoto.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(mcuResultEdit.VisaPhoto.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.VisaPhoto.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_VisaPhoto" id= "fn_x_VisaPhoto" value="@(mcuResultEdit.VisaPhoto.Upload.FileName)">
+<input type="hidden" name="fa_x_VisaPhoto" id= "fa_x_VisaPhoto" value="@(Post("fa_x_VisaPhoto") == "0" ? "0" : "1")">
+<table id="ft_x_VisaPhoto" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.VisaPhoto.Visible (end) *@
+@if (mcuResultEdit.RankAppliedFor.Visible) { // mcuResultEdit.RankAppliedFor.Visible (begin)
+    <div id="r_RankAppliedFor" @Html.Raw(mcuResultEdit.RankAppliedFor.RowAttributes)>
+        <label id="elh_McuResult_RankAppliedFor" for="x_RankAppliedFor" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.RankAppliedFor.Caption)@Html.Raw(mcuResultEdit.RankAppliedFor.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.RankAppliedFor.CellAttributes)>
+<span id="el_McuResult_RankAppliedFor">
+<input type="@(mcuResultEdit.RankAppliedFor.InputTextType)" name="x_RankAppliedFor" id="x_RankAppliedFor" data-table="McuResult" data-field="x_RankAppliedFor" value="@Html.Raw(mcuResultEdit.RankAppliedFor.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.RankAppliedFor.PlaceHolder))" data-format-pattern="@(mcuResultEdit.RankAppliedFor.FormatPattern)"@Html.Raw(mcuResultEdit.RankAppliedFor.EditAttributes) aria-describedby="x_RankAppliedFor_help">
+@Html.Raw(mcuResultEdit.RankAppliedFor.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.RankAppliedFor.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.RankAppliedFor.Visible (end) *@
+@if (mcuResultEdit.WillAcceptLowRank.Visible) { // mcuResultEdit.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" @Html.Raw(mcuResultEdit.WillAcceptLowRank.RowAttributes)>
+        <label id="elh_McuResult_WillAcceptLowRank" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.WillAcceptLowRank.Caption)@Html.Raw(mcuResultEdit.WillAcceptLowRank.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.WillAcceptLowRank.CellAttributes)>
+<span id="el_McuResult_WillAcceptLowRank">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mcuResultEdit.WillAcceptLowRank.IsInvalidClass)" data-table="McuResult" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(mcuResultEdit.WillAcceptLowRank.CurrentValue)" @Html.Raw(mcuResultEdit.WillAcceptLowRank.EditAttributes) aria-describedby="x_WillAcceptLowRank_help">
+    <div class="invalid-feedback">@Html.Raw(mcuResultEdit.WillAcceptLowRank.GetErrorMessage())</div>
+</div>
+@Html.Raw(mcuResultEdit.WillAcceptLowRank.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.WillAcceptLowRank.Visible (end) *@
+@if (mcuResultEdit.AvailableFrom.Visible) { // mcuResultEdit.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" @Html.Raw(mcuResultEdit.AvailableFrom.RowAttributes)>
+        <label id="elh_McuResult_AvailableFrom" for="x_AvailableFrom" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.AvailableFrom.Caption)@Html.Raw(mcuResultEdit.AvailableFrom.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.AvailableFrom.CellAttributes)>
+<span id="el_McuResult_AvailableFrom">
+<input type="@(mcuResultEdit.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="McuResult" data-field="x_AvailableFrom" value="@Html.Raw(mcuResultEdit.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.AvailableFrom.PlaceHolder))" data-format-pattern="@(mcuResultEdit.AvailableFrom.FormatPattern)"@Html.Raw(mcuResultEdit.AvailableFrom.EditAttributes) aria-describedby="x_AvailableFrom_help">
+@Html.Raw(mcuResultEdit.AvailableFrom.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.AvailableFrom.GetErrorMessage())</div>
+@if (!mcuResultEdit.AvailableFrom.ReadOnly && !mcuResultEdit.AvailableFrom.Disabled && !mcuResultEdit.AvailableFrom.EditAttrs.Is("readonly") && !mcuResultEdit.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultedit", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.AvailableFrom.Visible (end) *@
+@if (mcuResultEdit.AvailableUntil.Visible) { // mcuResultEdit.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" @Html.Raw(mcuResultEdit.AvailableUntil.RowAttributes)>
+        <label id="elh_McuResult_AvailableUntil" for="x_AvailableUntil" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.AvailableUntil.Caption)@Html.Raw(mcuResultEdit.AvailableUntil.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.AvailableUntil.CellAttributes)>
+<span id="el_McuResult_AvailableUntil">
+<input type="@(mcuResultEdit.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="McuResult" data-field="x_AvailableUntil" value="@Html.Raw(mcuResultEdit.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.AvailableUntil.PlaceHolder))" data-format-pattern="@(mcuResultEdit.AvailableUntil.FormatPattern)"@Html.Raw(mcuResultEdit.AvailableUntil.EditAttributes) aria-describedby="x_AvailableUntil_help">
+@Html.Raw(mcuResultEdit.AvailableUntil.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.AvailableUntil.GetErrorMessage())</div>
+@if (!mcuResultEdit.AvailableUntil.ReadOnly && !mcuResultEdit.AvailableUntil.Disabled && !mcuResultEdit.AvailableUntil.EditAttrs.Is("readonly") && !mcuResultEdit.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultedit", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.AvailableUntil.Visible (end) *@
+@if (mcuResultEdit.McuScheduleDate.Visible) { // mcuResultEdit.McuScheduleDate.Visible (begin)
+    <div id="r_McuScheduleDate" @Html.Raw(mcuResultEdit.McuScheduleDate.RowAttributes)>
+        <label id="elh_McuResult_McuScheduleDate" for="x_McuScheduleDate" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.McuScheduleDate.Caption)@Html.Raw(mcuResultEdit.McuScheduleDate.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.McuScheduleDate.CellAttributes)>
+<span id="el_McuResult_McuScheduleDate">
+<input type="@(mcuResultEdit.McuScheduleDate.InputTextType)" name="x_McuScheduleDate" id="x_McuScheduleDate" data-table="McuResult" data-field="x_McuScheduleDate" value="@Html.Raw(mcuResultEdit.McuScheduleDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.McuScheduleDate.PlaceHolder))" data-format-pattern="@(mcuResultEdit.McuScheduleDate.FormatPattern)"@Html.Raw(mcuResultEdit.McuScheduleDate.EditAttributes) aria-describedby="x_McuScheduleDate_help">
+@Html.Raw(mcuResultEdit.McuScheduleDate.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.McuScheduleDate.GetErrorMessage())</div>
+@if (!mcuResultEdit.McuScheduleDate.ReadOnly && !mcuResultEdit.McuScheduleDate.Disabled && !mcuResultEdit.McuScheduleDate.EditAttrs.Is("readonly") && !mcuResultEdit.McuScheduleDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultedit", "x_McuScheduleDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.McuScheduleDate.Visible (end) *@
+@if (mcuResultEdit.McuDate.Visible) { // mcuResultEdit.McuDate.Visible (begin)
+    <div id="r_McuDate" @Html.Raw(mcuResultEdit.McuDate.RowAttributes)>
+        <label id="elh_McuResult_McuDate" for="x_McuDate" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.McuDate.Caption)@Html.Raw(mcuResultEdit.McuDate.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.McuDate.CellAttributes)>
+<span id="el_McuResult_McuDate">
+<input type="@(mcuResultEdit.McuDate.InputTextType)" name="x_McuDate" id="x_McuDate" data-table="McuResult" data-field="x_McuDate" value="@Html.Raw(mcuResultEdit.McuDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.McuDate.PlaceHolder))" data-format-pattern="@(mcuResultEdit.McuDate.FormatPattern)"@Html.Raw(mcuResultEdit.McuDate.EditAttributes) aria-describedby="x_McuDate_help">
+@Html.Raw(mcuResultEdit.McuDate.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.McuDate.GetErrorMessage())</div>
+@if (!mcuResultEdit.McuDate.ReadOnly && !mcuResultEdit.McuDate.Disabled && !mcuResultEdit.McuDate.EditAttrs.Is("readonly") && !mcuResultEdit.McuDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultedit", "x_McuDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.McuDate.Visible (end) *@
+@if (mcuResultEdit.McuExpirationDate.Visible) { // mcuResultEdit.McuExpirationDate.Visible (begin)
+    <div id="r_McuExpirationDate" @Html.Raw(mcuResultEdit.McuExpirationDate.RowAttributes)>
+        <label id="elh_McuResult_McuExpirationDate" for="x_McuExpirationDate" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.McuExpirationDate.Caption)@Html.Raw(mcuResultEdit.McuExpirationDate.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.McuExpirationDate.CellAttributes)>
+<span id="el_McuResult_McuExpirationDate">
+<input type="@(mcuResultEdit.McuExpirationDate.InputTextType)" name="x_McuExpirationDate" id="x_McuExpirationDate" data-table="McuResult" data-field="x_McuExpirationDate" value="@Html.Raw(mcuResultEdit.McuExpirationDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.McuExpirationDate.PlaceHolder))" data-format-pattern="@(mcuResultEdit.McuExpirationDate.FormatPattern)"@Html.Raw(mcuResultEdit.McuExpirationDate.EditAttributes) aria-describedby="x_McuExpirationDate_help">
+@Html.Raw(mcuResultEdit.McuExpirationDate.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.McuExpirationDate.GetErrorMessage())</div>
+@if (!mcuResultEdit.McuExpirationDate.ReadOnly && !mcuResultEdit.McuExpirationDate.Disabled && !mcuResultEdit.McuExpirationDate.EditAttrs.Is("readonly") && !mcuResultEdit.McuExpirationDate.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMcuResultedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMcuResultedit", "x_McuExpirationDate", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.McuExpirationDate.Visible (end) *@
+@if (mcuResultEdit.HealthStatus.Visible) { // mcuResultEdit.HealthStatus.Visible (begin)
+    <div id="r_HealthStatus" @Html.Raw(mcuResultEdit.HealthStatus.RowAttributes)>
+        <label id="elh_McuResult_HealthStatus" for="x_HealthStatus" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.HealthStatus.Caption)@Html.Raw(mcuResultEdit.HealthStatus.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.HealthStatus.CellAttributes)>
+<span id="el_McuResult_HealthStatus">
+<input type="@(mcuResultEdit.HealthStatus.InputTextType)" name="x_HealthStatus" id="x_HealthStatus" data-table="McuResult" data-field="x_HealthStatus" value="@Html.Raw(mcuResultEdit.HealthStatus.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.HealthStatus.PlaceHolder))" data-format-pattern="@(mcuResultEdit.HealthStatus.FormatPattern)"@Html.Raw(mcuResultEdit.HealthStatus.EditAttributes) aria-describedby="x_HealthStatus_help">
+@Html.Raw(mcuResultEdit.HealthStatus.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.HealthStatus.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.HealthStatus.Visible (end) *@
+@if (mcuResultEdit.McuLocation.Visible) { // mcuResultEdit.McuLocation.Visible (begin)
+    <div id="r_McuLocation" @Html.Raw(mcuResultEdit.McuLocation.RowAttributes)>
+        <label id="elh_McuResult_McuLocation" for="x_McuLocation" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.McuLocation.Caption)@Html.Raw(mcuResultEdit.McuLocation.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.McuLocation.CellAttributes)>
+<span id="el_McuResult_McuLocation">
+<input type="@(mcuResultEdit.McuLocation.InputTextType)" name="x_McuLocation" id="x_McuLocation" data-table="McuResult" data-field="x_McuLocation" value="@Html.Raw(mcuResultEdit.McuLocation.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.McuLocation.PlaceHolder))" data-format-pattern="@(mcuResultEdit.McuLocation.FormatPattern)"@Html.Raw(mcuResultEdit.McuLocation.EditAttributes) aria-describedby="x_McuLocation_help">
+@Html.Raw(mcuResultEdit.McuLocation.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.McuLocation.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.McuLocation.Visible (end) *@
+@if (mcuResultEdit.McuAttachment.Visible) { // mcuResultEdit.McuAttachment.Visible (begin)
+    <div id="r_McuAttachment" @Html.Raw(mcuResultEdit.McuAttachment.RowAttributes)>
+        <label id="elh_McuResult_McuAttachment" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.McuAttachment.Caption)@Html.Raw(mcuResultEdit.McuAttachment.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.McuAttachment.CellAttributes)>
+<span id="el_McuResult_McuAttachment">
+<div id="fd_x_McuAttachment" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_McuAttachment"
+        name="x_McuAttachment"
+        class="form-control ew-file-input"
+        title="@(mcuResultEdit.McuAttachment.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="McuResult"
+        data-field="x_McuAttachment"
+        data-size="50"
+        data-accept-file-types="@(mcuResultEdit.McuAttachment.AcceptFileTypes)"
+        data-max-file-size="@(mcuResultEdit.McuAttachment.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(mcuResultEdit.McuAttachment.ImageCropper ? 0 : 1)"
+        aria-describedby="x_McuAttachment_help"
+        @Html.Raw((mcuResultEdit.McuAttachment.ReadOnly || mcuResultEdit.McuAttachment.Disabled) ? " disabled" : "")
+        @Html.Raw(mcuResultEdit.McuAttachment.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(mcuResultEdit.McuAttachment.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.McuAttachment.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_McuAttachment" id= "fn_x_McuAttachment" value="@(mcuResultEdit.McuAttachment.Upload.FileName)">
+<input type="hidden" name="fa_x_McuAttachment" id= "fa_x_McuAttachment" value="@(Post("fa_x_McuAttachment") == "0" ? "0" : "1")">
+<table id="ft_x_McuAttachment" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.McuAttachment.Visible (end) *@
+@if (mcuResultEdit.McuRemark.Visible) { // mcuResultEdit.McuRemark.Visible (begin)
+    <div id="r_McuRemark" @Html.Raw(mcuResultEdit.McuRemark.RowAttributes)>
+        <label id="elh_McuResult_McuRemark" for="x_McuRemark" class="@(mcuResultEdit.LeftColumnClass)">@Html.Raw(mcuResultEdit.McuRemark.Caption)@Html.Raw(mcuResultEdit.McuRemark.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(mcuResultEdit.RightColumnClass)"><div @Html.Raw(mcuResultEdit.McuRemark.CellAttributes)>
+<span id="el_McuResult_McuRemark">
+<input type="@(mcuResultEdit.McuRemark.InputTextType)" name="x_McuRemark" id="x_McuRemark" data-table="McuResult" data-field="x_McuRemark" value="@Html.Raw(mcuResultEdit.McuRemark.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mcuResultEdit.McuRemark.PlaceHolder))" data-format-pattern="@(mcuResultEdit.McuRemark.FormatPattern)"@Html.Raw(mcuResultEdit.McuRemark.EditAttributes) aria-describedby="x_McuRemark_help">
+@Html.Raw(mcuResultEdit.McuRemark.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(mcuResultEdit.McuRemark.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* mcuResultEdit.McuRemark.Visible (end) *@
+</div><!-- /page* -->
+    <input type="hidden" data-table="McuResult" data-field="x_McuResult_ID" data-hidden="1" name="x_McuResult_ID" id="x_McuResult_ID" value="@Html.Raw(HtmlEncode(mcuResultEdit.McuResult_ID.CurrentValue))">
+@{ mcuResultEdit.CloseRecordset(); }
+@Html.Raw(mcuResultEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(mcuResultEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMcuResultedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMcuResultedit" data-href="@AppPath(mcuResultEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mcuResultEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+</main>
+@mcuResultEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("McuResult");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

@@ -1,0 +1,305 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtUserSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtUserSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtUserSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTUser: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTUsersearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTUsersearch")
+        .setPageId("search")
+@if (mtUserSearch.IsModal && mtUserSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Email", [], fields._Email.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["MTUserLevelID", [], fields.MTUserLevelID.isInvalid],
+            ["SeafarerID", [], fields.SeafarerID.isInvalid],
+            ["CrewAgency", [], fields.CrewAgency.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTUserLevelID": @Html.Raw(mtUserSearch.MTUserLevelID.ToClientList(mtUserSearch)),
+            "CrewAgency": @Html.Raw(mtUserSearch.CrewAgency.ToClientList(mtUserSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtUserSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtUserSearch.ShowPageHeader()
+@mtUserSearch.ShowMessages()
+<form name="fMTUsersearch" id="fMTUsersearch" class="@(mtUserSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtUserSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtUserSearch._Email.Visible) { // mtUserSearch._Email.Visible (begin)
+    <div id="r__Email" class="row" @Html.Raw(mtUserSearch._Email.RowAttributes)>
+        <label for="x__Email" class="@(mtUserSearch.LeftColumnClass)"><span id="elh_MTUser__Email">@Html.Raw(mtUserSearch._Email.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Email" id="z__Email" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtUserSearch.RightColumnClass)">
+            <div @Html.Raw(mtUserSearch._Email.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTUser__Email" class="ew-search-field ew-search-field-single">
+<input type="@(mtUserSearch._Email.InputTextType)" name="x__Email" id="x__Email" data-table="MTUser" data-field="x__Email" value="@Html.Raw(mtUserSearch._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtUserSearch._Email.PlaceHolder))" data-format-pattern="@(mtUserSearch._Email.FormatPattern)"@Html.Raw(mtUserSearch._Email.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtUserSearch._Email.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtUserSearch._Email.Visible (end) *@
+@if (mtUserSearch.FullName.Visible) { // mtUserSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(mtUserSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(mtUserSearch.LeftColumnClass)"><span id="elh_MTUser_FullName">@Html.Raw(mtUserSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtUserSearch.RightColumnClass)">
+            <div @Html.Raw(mtUserSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTUser_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(mtUserSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="MTUser" data-field="x_FullName" value="@Html.Raw(mtUserSearch.FullName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtUserSearch.FullName.PlaceHolder))" data-format-pattern="@(mtUserSearch.FullName.FormatPattern)"@Html.Raw(mtUserSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtUserSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtUserSearch.FullName.Visible (end) *@
+@if (mtUserSearch.MTUserLevelID.Visible) { // mtUserSearch.MTUserLevelID.Visible (begin)
+    <div id="r_MTUserLevelID" class="row" @Html.Raw(mtUserSearch.MTUserLevelID.RowAttributes)>
+        <label for="x_MTUserLevelID" class="@(mtUserSearch.LeftColumnClass)"><span id="elh_MTUser_MTUserLevelID">@Html.Raw(mtUserSearch.MTUserLevelID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTUserLevelID" id="z_MTUserLevelID" value="=">
+</span>
+        </label>
+        <div class="@(mtUserSearch.RightColumnClass)">
+            <div @Html.Raw(mtUserSearch.MTUserLevelID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTUser_MTUserLevelID" class="ew-search-field ew-search-field-single">
+@if (!Security.IsAdmin && Security.IsLoggedIn) { // Non system admin
+<span class="form-control-plaintext">@Html.Raw(mtUserSearch.MTUserLevelID.DisplayValue(mtUserSearch.MTUserLevelID.EditValue))</span>
+} else {
+    <select
+        id="x_MTUserLevelID"
+        name="x_MTUserLevelID"
+        class="form-select ew-select@(mtUserSearch.MTUserLevelID.IsInvalidClass)"
+        data-select2-id="fMTUsersearch_x_MTUserLevelID"
+        data-table="MTUser"
+        data-field="x_MTUserLevelID"
+        data-value-separator="@(mtUserSearch.MTUserLevelID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtUserSearch.MTUserLevelID.PlaceHolder))"
+        @Html.Raw(mtUserSearch.MTUserLevelID.EditAttributes)>
+        @(mtUserSearch.MTUserLevelID.SelectOptionListHtml("x_MTUserLevelID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtUserSearch.MTUserLevelID.GetErrorMessage(false))</div>
+@Html.Raw(mtUserSearch.MTUserLevelID.Lookup.GetParamTag(mtUserSearch, "p_x_MTUserLevelID"))
+<script>
+loadjs.ready("fMTUsersearch", function() {
+    var options = { name: "x_MTUserLevelID", selectId: "fMTUsersearch_x_MTUserLevelID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTUsersearch.lists.MTUserLevelID?.lookupOptions.length) {
+        options.data = { id: "x_MTUserLevelID", form: "fMTUsersearch" };
+    } else {
+        options.ajax = { id: "x_MTUserLevelID", form: "fMTUsersearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTUser.fields.MTUserLevelID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtUserSearch.MTUserLevelID.Visible (end) *@
+@if (mtUserSearch.SeafarerID.Visible) { // mtUserSearch.SeafarerID.Visible (begin)
+    <div id="r_SeafarerID" class="row" @Html.Raw(mtUserSearch.SeafarerID.RowAttributes)>
+        <label for="x_SeafarerID" class="@(mtUserSearch.LeftColumnClass)"><span id="elh_MTUser_SeafarerID">@Html.Raw(mtUserSearch.SeafarerID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_SeafarerID" id="z_SeafarerID" value="=">
+</span>
+        </label>
+        <div class="@(mtUserSearch.RightColumnClass)">
+            <div @Html.Raw(mtUserSearch.SeafarerID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTUser_SeafarerID" class="ew-search-field ew-search-field-single">
+<input type="@(mtUserSearch.SeafarerID.InputTextType)" name="x_SeafarerID" id="x_SeafarerID" data-table="MTUser" data-field="x_SeafarerID" value="@Html.Raw(mtUserSearch.SeafarerID.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtUserSearch.SeafarerID.PlaceHolder))" data-format-pattern="@(mtUserSearch.SeafarerID.FormatPattern)"@Html.Raw(mtUserSearch.SeafarerID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtUserSearch.SeafarerID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtUserSearch.SeafarerID.Visible (end) *@
+@if (mtUserSearch.CrewAgency.Visible) { // mtUserSearch.CrewAgency.Visible (begin)
+    <div id="r_CrewAgency" class="row" @Html.Raw(mtUserSearch.CrewAgency.RowAttributes)>
+        <label for="x_CrewAgency" class="@(mtUserSearch.LeftColumnClass)"><span id="elh_MTUser_CrewAgency">@Html.Raw(mtUserSearch.CrewAgency.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CrewAgency" id="z_CrewAgency" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtUserSearch.RightColumnClass)">
+            <div @Html.Raw(mtUserSearch.CrewAgency.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTUser_CrewAgency" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CrewAgency"
+        name="x_CrewAgency"
+        class="form-select ew-select@(mtUserSearch.CrewAgency.IsInvalidClass)"
+        data-select2-id="fMTUsersearch_x_CrewAgency"
+        data-table="MTUser"
+        data-field="x_CrewAgency"
+        data-value-separator="@(mtUserSearch.CrewAgency.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtUserSearch.CrewAgency.PlaceHolder))"
+        @Html.Raw(mtUserSearch.CrewAgency.EditAttributes)>
+        @(mtUserSearch.CrewAgency.SelectOptionListHtml("x_CrewAgency"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtUserSearch.CrewAgency.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTUsersearch", function() {
+    var options = { name: "x_CrewAgency", selectId: "fMTUsersearch_x_CrewAgency" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTUsersearch.lists.CrewAgency?.lookupOptions.length) {
+        options.data = { id: "x_CrewAgency", form: "fMTUsersearch" };
+    } else {
+        options.ajax = { id: "x_CrewAgency", form: "fMTUsersearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTUser.fields.CrewAgency.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtUserSearch.CrewAgency.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtUserSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtUserSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTUsersearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtUserSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTUsersearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTUsersearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtUserSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtUserSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTUser");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

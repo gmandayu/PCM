@@ -1,0 +1,1029 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewAppraisalList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewAppraisalList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewAppraisalList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewAppraisalList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewAppraisal: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtCrewAppraisalList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtCrewAppraisalList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtCrewAppraisalList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtCrewAppraisalList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewAppraisalList.MTCrewID.ToClientList(mtCrewAppraisalList)),
+            "VesselName": @Html.Raw(mtCrewAppraisalList.VesselName.ToClientList(mtCrewAppraisalList)),
+            "MTRankID": @Html.Raw(mtCrewAppraisalList.MTRankID.ToClientList(mtCrewAppraisalList)),
+            "Questionnaire": @Html.Raw(mtCrewAppraisalList.Questionnaire.ToClientList(mtCrewAppraisalList)),
+            "Approved": @Html.Raw(mtCrewAppraisalList.Approved.ToClientList(mtCrewAppraisalList)),
+            "AverageRating": @Html.Raw(mtCrewAppraisalList.AverageRating.ToClientList(mtCrewAppraisalList)),
+            "Rehire": @Html.Raw(mtCrewAppraisalList.Rehire.ToClientList(mtCrewAppraisalList)),
+            "Promote": @Html.Raw(mtCrewAppraisalList.Promote.ToClientList(mtCrewAppraisalList)),
+            "Appraiser": @Html.Raw(mtCrewAppraisalList.Appraiser.ToClientList(mtCrewAppraisalList)),
+            "DateInput": @Html.Raw(mtCrewAppraisalList.DateInput.ToClientList(mtCrewAppraisalList)),
+            "CreatedByUserID": @Html.Raw(mtCrewAppraisalList.CreatedByUserID.ToClientList(mtCrewAppraisalList)),
+            "CreatedDateTime": @Html.Raw(mtCrewAppraisalList.CreatedDateTime.ToClientList(mtCrewAppraisalList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewAppraisalList.LastUpdatedByUserID.ToClientList(mtCrewAppraisalList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCrewAppraisalList.LastUpdatedDateTime.ToClientList(mtCrewAppraisalList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtCrewAppraisalList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtCrewAppraisalList.TotalRecords > 0 && mtCrewAppraisalList.ExportOptions.Visible) {
+    mtCrewAppraisalList.ExportOptions.Render("body");
+}
+@if (mtCrewAppraisalList.ImportOptions.Visible) {
+    mtCrewAppraisalList.ImportOptions.Render("body");
+}
+@if (mtCrewAppraisalList.SearchOptions.Visible) {
+    mtCrewAppraisalList.SearchOptions.Render("body");
+}
+@if (mtCrewAppraisalList.FilterOptions.Visible) {
+    mtCrewAppraisalList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtCrewAppraisalList.ShowCurrentFilter) {
+    mtCrewAppraisalList.ShowFilterList();
+}
+@if (!mtCrewAppraisalList.IsModal) {
+<form name="fMTCrewAppraisalsrch" id="fMTCrewAppraisalsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTCrewAppraisalsrch_search_panel" class="mb-2 mb-sm-0 @(mtCrewAppraisalList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewAppraisalList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewAppraisal: currentTable } });
+var currentForm;
+var fMTCrewAppraisalsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewAppraisalsrch")
+        .setPageId("list")
+@if (mtCrewAppraisalList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["MTRankID", [], fields.MTRankID.isInvalid],
+            ["Questionnaire", [], fields.Questionnaire.isInvalid],
+            ["Approved", [], fields.Approved.isInvalid],
+            ["AverageRating", [], fields.AverageRating.isInvalid],
+            ["Rehire", [], fields.Rehire.isInvalid],
+            ["Promote", [], fields.Promote.isInvalid],
+            ["Appraiser", [], fields.Appraiser.isInvalid],
+            ["DateInput", [], fields.DateInput.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewAppraisalList.MTCrewID.ToClientList(mtCrewAppraisalList)),
+            "VesselName": @Html.Raw(mtCrewAppraisalList.VesselName.ToClientList(mtCrewAppraisalList)),
+            "MTRankID": @Html.Raw(mtCrewAppraisalList.MTRankID.ToClientList(mtCrewAppraisalList)),
+            "Questionnaire": @Html.Raw(mtCrewAppraisalList.Questionnaire.ToClientList(mtCrewAppraisalList)),
+            "Approved": @Html.Raw(mtCrewAppraisalList.Approved.ToClientList(mtCrewAppraisalList)),
+            "AverageRating": @Html.Raw(mtCrewAppraisalList.AverageRating.ToClientList(mtCrewAppraisalList)),
+            "Rehire": @Html.Raw(mtCrewAppraisalList.Rehire.ToClientList(mtCrewAppraisalList)),
+            "Promote": @Html.Raw(mtCrewAppraisalList.Promote.ToClientList(mtCrewAppraisalList)),
+            "Appraiser": @Html.Raw(mtCrewAppraisalList.Appraiser.ToClientList(mtCrewAppraisalList)),
+            "DateInput": @Html.Raw(mtCrewAppraisalList.DateInput.ToClientList(mtCrewAppraisalList)),
+            "CreatedByUserID": @Html.Raw(mtCrewAppraisalList.CreatedByUserID.ToClientList(mtCrewAppraisalList)),
+            "CreatedDateTime": @Html.Raw(mtCrewAppraisalList.CreatedDateTime.ToClientList(mtCrewAppraisalList)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewAppraisalList.LastUpdatedByUserID.ToClientList(mtCrewAppraisalList)),
+            "LastUpdatedDateTime": @Html.Raw(mtCrewAppraisalList.LastUpdatedDateTime.ToClientList(mtCrewAppraisalList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtCrewAppraisalList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtCrewAppraisalList.IsExport() && Empty(mtCrewAppraisalList.CurrentAction) && mtCrewAppraisalList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtCrewAppraisalList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtCrewAppraisalList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtCrewAppraisalList.RowType = RowType.Search;
+    mtCrewAppraisalList.ResetAttributes();
+    await mtCrewAppraisalList.RenderRow();
+}
+@if (mtCrewAppraisalList.MTCrewID.Visible) { // mtCrewAppraisalList.MTCrewID.Visible (begin)
+    if (!mtCrewAppraisalList.MTCrewID.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(mtCrewAppraisalList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_MTCrewID"
+            data-table="MTCrewAppraisal"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.MTCrewID.EditAttributes)>
+            @(mtCrewAppraisalList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fMTCrewAppraisalsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.MTCrewID.Visible (end) *@
+@if (mtCrewAppraisalList.VesselName.Visible) { // mtCrewAppraisalList.VesselName.Visible (begin)
+    if (!mtCrewAppraisalList.VesselName.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_VesselName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.VesselName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VesselName"
+            name="x_VesselName[]"
+            class="form-control ew-select@(mtCrewAppraisalList.VesselName.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_VesselName"
+            data-table="MTCrewAppraisal"
+            data-field="x_VesselName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.VesselName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.VesselName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.VesselName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.VesselName.EditAttributes)>
+            @(mtCrewAppraisalList.VesselName.SelectOptionListHtml("x_VesselName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.VesselName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_VesselName",
+                selectId: "fMTCrewAppraisalsrch_x_VesselName",
+                ajax: { id: "x_VesselName", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.VesselName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.VesselName.Visible (end) *@
+@if (mtCrewAppraisalList.MTRankID.Visible) { // mtCrewAppraisalList.MTRankID.Visible (begin)
+    if (!mtCrewAppraisalList.MTRankID.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_MTRankID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.MTRankID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTRankID"
+            name="x_MTRankID[]"
+            class="form-control ew-select@(mtCrewAppraisalList.MTRankID.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_MTRankID"
+            data-table="MTCrewAppraisal"
+            data-field="x_MTRankID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.MTRankID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.MTRankID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.MTRankID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.MTRankID.EditAttributes)>
+            @(mtCrewAppraisalList.MTRankID.SelectOptionListHtml("x_MTRankID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.MTRankID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_MTRankID",
+                selectId: "fMTCrewAppraisalsrch_x_MTRankID",
+                ajax: { id: "x_MTRankID", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.MTRankID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.MTRankID.Visible (end) *@
+@if (mtCrewAppraisalList.Questionnaire.Visible) { // mtCrewAppraisalList.Questionnaire.Visible (begin)
+    if (!mtCrewAppraisalList.Questionnaire.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_Questionnaire" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.Questionnaire.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Questionnaire"
+            name="x_Questionnaire[]"
+            class="form-control ew-select@(mtCrewAppraisalList.Questionnaire.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_Questionnaire"
+            data-table="MTCrewAppraisal"
+            data-field="x_Questionnaire"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.Questionnaire.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.Questionnaire.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.Questionnaire.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.Questionnaire.EditAttributes)>
+            @(mtCrewAppraisalList.Questionnaire.SelectOptionListHtml("x_Questionnaire", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.Questionnaire.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_Questionnaire",
+                selectId: "fMTCrewAppraisalsrch_x_Questionnaire",
+                ajax: { id: "x_Questionnaire", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.Questionnaire.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.Questionnaire.Visible (end) *@
+@if (mtCrewAppraisalList.Approved.Visible) { // mtCrewAppraisalList.Approved.Visible (begin)
+    if (!mtCrewAppraisalList.Approved.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_Approved" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.Approved.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Approved"
+            name="x_Approved[]"
+            class="form-control ew-select@(mtCrewAppraisalList.Approved.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_Approved"
+            data-table="MTCrewAppraisal"
+            data-field="x_Approved"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.Approved.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.Approved.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.Approved.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.Approved.EditAttributes)>
+            @(mtCrewAppraisalList.Approved.SelectOptionListHtml("x_Approved", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.Approved.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_Approved",
+                selectId: "fMTCrewAppraisalsrch_x_Approved",
+                ajax: { id: "x_Approved", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.Approved.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.Approved.Visible (end) *@
+@if (mtCrewAppraisalList.AverageRating.Visible) { // mtCrewAppraisalList.AverageRating.Visible (begin)
+    if (!mtCrewAppraisalList.AverageRating.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_AverageRating" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.AverageRating.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AverageRating"
+            name="x_AverageRating[]"
+            class="form-control ew-select@(mtCrewAppraisalList.AverageRating.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_AverageRating"
+            data-table="MTCrewAppraisal"
+            data-field="x_AverageRating"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.AverageRating.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.AverageRating.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.AverageRating.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.AverageRating.EditAttributes)>
+            @(mtCrewAppraisalList.AverageRating.SelectOptionListHtml("x_AverageRating", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.AverageRating.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_AverageRating",
+                selectId: "fMTCrewAppraisalsrch_x_AverageRating",
+                ajax: { id: "x_AverageRating", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.AverageRating.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.AverageRating.Visible (end) *@
+@if (mtCrewAppraisalList.Rehire.Visible) { // mtCrewAppraisalList.Rehire.Visible (begin)
+    if (!mtCrewAppraisalList.Rehire.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_Rehire" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.Rehire.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Rehire"
+            name="x_Rehire[]"
+            class="form-control ew-select@(mtCrewAppraisalList.Rehire.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_Rehire"
+            data-table="MTCrewAppraisal"
+            data-field="x_Rehire"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.Rehire.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.Rehire.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.Rehire.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.Rehire.EditAttributes)>
+            @(mtCrewAppraisalList.Rehire.SelectOptionListHtml("x_Rehire", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.Rehire.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_Rehire",
+                selectId: "fMTCrewAppraisalsrch_x_Rehire",
+                ajax: { id: "x_Rehire", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.Rehire.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.Rehire.Visible (end) *@
+@if (mtCrewAppraisalList.Promote.Visible) { // mtCrewAppraisalList.Promote.Visible (begin)
+    if (!mtCrewAppraisalList.Promote.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_Promote" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.Promote.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Promote"
+            name="x_Promote[]"
+            class="form-control ew-select@(mtCrewAppraisalList.Promote.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_Promote"
+            data-table="MTCrewAppraisal"
+            data-field="x_Promote"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.Promote.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.Promote.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.Promote.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.Promote.EditAttributes)>
+            @(mtCrewAppraisalList.Promote.SelectOptionListHtml("x_Promote", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.Promote.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_Promote",
+                selectId: "fMTCrewAppraisalsrch_x_Promote",
+                ajax: { id: "x_Promote", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.Promote.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.Promote.Visible (end) *@
+@if (mtCrewAppraisalList.Appraiser.Visible) { // mtCrewAppraisalList.Appraiser.Visible (begin)
+    if (!mtCrewAppraisalList.Appraiser.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_Appraiser" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.Appraiser.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Appraiser"
+            name="x_Appraiser[]"
+            class="form-control ew-select@(mtCrewAppraisalList.Appraiser.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_Appraiser"
+            data-table="MTCrewAppraisal"
+            data-field="x_Appraiser"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.Appraiser.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.Appraiser.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.Appraiser.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.Appraiser.EditAttributes)>
+            @(mtCrewAppraisalList.Appraiser.SelectOptionListHtml("x_Appraiser", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.Appraiser.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_Appraiser",
+                selectId: "fMTCrewAppraisalsrch_x_Appraiser",
+                ajax: { id: "x_Appraiser", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.Appraiser.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.Appraiser.Visible (end) *@
+@if (mtCrewAppraisalList.DateInput.Visible) { // mtCrewAppraisalList.DateInput.Visible (begin)
+    if (!mtCrewAppraisalList.DateInput.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_DateInput" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.DateInput.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateInput"
+            name="x_DateInput[]"
+            class="form-control ew-select@(mtCrewAppraisalList.DateInput.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_DateInput"
+            data-table="MTCrewAppraisal"
+            data-field="x_DateInput"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.DateInput.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.DateInput.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.DateInput.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.DateInput.EditAttributes)>
+            @(mtCrewAppraisalList.DateInput.SelectOptionListHtml("x_DateInput", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.DateInput.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_DateInput",
+                selectId: "fMTCrewAppraisalsrch_x_DateInput",
+                ajax: { id: "x_DateInput", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.DateInput.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.DateInput.Visible (end) *@
+@if (mtCrewAppraisalList.CreatedByUserID.Visible) { // mtCrewAppraisalList.CreatedByUserID.Visible (begin)
+    if (!mtCrewAppraisalList.CreatedByUserID.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtCrewAppraisalList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_CreatedByUserID"
+            data-table="MTCrewAppraisal"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.CreatedByUserID.EditAttributes)>
+            @(mtCrewAppraisalList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTCrewAppraisalsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.CreatedByUserID.Visible (end) *@
+@if (mtCrewAppraisalList.CreatedDateTime.Visible) { // mtCrewAppraisalList.CreatedDateTime.Visible (begin)
+    if (!mtCrewAppraisalList.CreatedDateTime.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtCrewAppraisalList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_CreatedDateTime"
+            data-table="MTCrewAppraisal"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.CreatedDateTime.EditAttributes)>
+            @(mtCrewAppraisalList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTCrewAppraisalsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.CreatedDateTime.Visible (end) *@
+@if (mtCrewAppraisalList.LastUpdatedByUserID.Visible) { // mtCrewAppraisalList.LastUpdatedByUserID.Visible (begin)
+    if (!mtCrewAppraisalList.LastUpdatedByUserID.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtCrewAppraisalList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_LastUpdatedByUserID"
+            data-table="MTCrewAppraisal"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewAppraisalList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTCrewAppraisalsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewAppraisalList.LastUpdatedDateTime.Visible) { // mtCrewAppraisalList.LastUpdatedDateTime.Visible (begin)
+    if (!mtCrewAppraisalList.LastUpdatedDateTime.UseFilter) {
+        mtCrewAppraisalList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtCrewAppraisalList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtCrewAppraisalList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTCrewAppraisalsrch_x_LastUpdatedDateTime"
+            data-table="MTCrewAppraisal"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtCrewAppraisalList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtCrewAppraisalList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewAppraisalList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtCrewAppraisalList.LastUpdatedDateTime.EditAttributes)>
+            @(mtCrewAppraisalList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewAppraisalList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTCrewAppraisalsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTCrewAppraisalsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTCrewAppraisalsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTCrewAppraisal.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtCrewAppraisalList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtCrewAppraisalList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtCrewAppraisalList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtCrewAppraisalList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtCrewAppraisalList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTCrewAppraisalsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtCrewAppraisalList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTCrewAppraisalsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtCrewAppraisalList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTCrewAppraisalsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtCrewAppraisalList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTCrewAppraisalsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtCrewAppraisalList.ShowPageHeader()
+@mtCrewAppraisalList.ShowMessages()
+<main class="list @(mtCrewAppraisalList.TotalRecords == 0 && !mtCrewAppraisalList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtCrewAppraisalList.TotalRecords > 0 || !Empty(mtCrewAppraisalList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCrewAppraisalList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCrewAppraisalList.TableGridClass)">
+<form name="@(mtCrewAppraisalList.FormName)" id="@(mtCrewAppraisalList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtCrewAppraisalList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtCrewAppraisalList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTCrewAppraisal" class="card-body ew-grid-middle-panel @(mtCrewAppraisalList.TableContainerClass)" style="@(mtCrewAppraisalList.TableContainerStyle)">
+@if (mtCrewAppraisalList.TotalRecords > 0 || mtCrewAppraisalList.IsGridEdit || mtCrewAppraisalList.IsMultiEdit) {
+<table id="tbl_MTCrewAppraisallist" class="@(mtCrewAppraisalList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCrewAppraisalList.RowType = RowType.Header;
+
+    // Render list options
+    await mtCrewAppraisalList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCrewAppraisalList.ListOptions.RenderHeader("left")
+@if (mtCrewAppraisalList.MTCrewID.Visible) { // mtCrewAppraisalList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtCrewAppraisalList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_MTCrewID" class="MTCrewAppraisal_MTCrewID">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.MTCrewID))</div></th>
+} @* mtCrewAppraisalList.MTCrewID.Visible (end) *@
+@if (mtCrewAppraisalList.VesselName.Visible) { // mtCrewAppraisalList.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(mtCrewAppraisalList.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_VesselName" class="MTCrewAppraisal_VesselName">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.VesselName))</div></th>
+} @* mtCrewAppraisalList.VesselName.Visible (end) *@
+@if (mtCrewAppraisalList.MTRankID.Visible) { // mtCrewAppraisalList.MTRankID.Visible (begin)
+        <th data-name="MTRankID" class="@(mtCrewAppraisalList.MTRankID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_MTRankID" class="MTCrewAppraisal_MTRankID">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.MTRankID))</div></th>
+} @* mtCrewAppraisalList.MTRankID.Visible (end) *@
+@if (mtCrewAppraisalList.Questionnaire.Visible) { // mtCrewAppraisalList.Questionnaire.Visible (begin)
+        <th data-name="Questionnaire" class="@(mtCrewAppraisalList.Questionnaire.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_Questionnaire" class="MTCrewAppraisal_Questionnaire">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.Questionnaire))</div></th>
+} @* mtCrewAppraisalList.Questionnaire.Visible (end) *@
+@if (mtCrewAppraisalList.Approved.Visible) { // mtCrewAppraisalList.Approved.Visible (begin)
+        <th data-name="Approved" class="@(mtCrewAppraisalList.Approved.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_Approved" class="MTCrewAppraisal_Approved">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.Approved))</div></th>
+} @* mtCrewAppraisalList.Approved.Visible (end) *@
+@if (mtCrewAppraisalList.AverageRating.Visible) { // mtCrewAppraisalList.AverageRating.Visible (begin)
+        <th data-name="AverageRating" class="@(mtCrewAppraisalList.AverageRating.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_AverageRating" class="MTCrewAppraisal_AverageRating">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.AverageRating))</div></th>
+} @* mtCrewAppraisalList.AverageRating.Visible (end) *@
+@if (mtCrewAppraisalList.Rehire.Visible) { // mtCrewAppraisalList.Rehire.Visible (begin)
+        <th data-name="Rehire" class="@(mtCrewAppraisalList.Rehire.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_Rehire" class="MTCrewAppraisal_Rehire">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.Rehire))</div></th>
+} @* mtCrewAppraisalList.Rehire.Visible (end) *@
+@if (mtCrewAppraisalList.Promote.Visible) { // mtCrewAppraisalList.Promote.Visible (begin)
+        <th data-name="Promote" class="@(mtCrewAppraisalList.Promote.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_Promote" class="MTCrewAppraisal_Promote">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.Promote))</div></th>
+} @* mtCrewAppraisalList.Promote.Visible (end) *@
+@if (mtCrewAppraisalList.Appraiser.Visible) { // mtCrewAppraisalList.Appraiser.Visible (begin)
+        <th data-name="Appraiser" class="@(mtCrewAppraisalList.Appraiser.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_Appraiser" class="MTCrewAppraisal_Appraiser">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.Appraiser))</div></th>
+} @* mtCrewAppraisalList.Appraiser.Visible (end) *@
+@if (mtCrewAppraisalList.DateInput.Visible) { // mtCrewAppraisalList.DateInput.Visible (begin)
+        <th data-name="DateInput" class="@(mtCrewAppraisalList.DateInput.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_DateInput" class="MTCrewAppraisal_DateInput">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.DateInput))</div></th>
+} @* mtCrewAppraisalList.DateInput.Visible (end) *@
+@if (mtCrewAppraisalList.CreatedByUserID.Visible) { // mtCrewAppraisalList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCrewAppraisalList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_CreatedByUserID" class="MTCrewAppraisal_CreatedByUserID">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.CreatedByUserID))</div></th>
+} @* mtCrewAppraisalList.CreatedByUserID.Visible (end) *@
+@if (mtCrewAppraisalList.CreatedDateTime.Visible) { // mtCrewAppraisalList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCrewAppraisalList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_CreatedDateTime" class="MTCrewAppraisal_CreatedDateTime">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.CreatedDateTime))</div></th>
+} @* mtCrewAppraisalList.CreatedDateTime.Visible (end) *@
+@if (mtCrewAppraisalList.LastUpdatedByUserID.Visible) { // mtCrewAppraisalList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCrewAppraisalList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_LastUpdatedByUserID" class="MTCrewAppraisal_LastUpdatedByUserID">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.LastUpdatedByUserID))</div></th>
+} @* mtCrewAppraisalList.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewAppraisalList.LastUpdatedDateTime.Visible) { // mtCrewAppraisalList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCrewAppraisalList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewAppraisal_LastUpdatedDateTime" class="MTCrewAppraisal_LastUpdatedDateTime">@Html.Raw(mtCrewAppraisalList.RenderFieldHeader(mtCrewAppraisalList.LastUpdatedDateTime))</div></th>
+} @* mtCrewAppraisalList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCrewAppraisalList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCrewAppraisalList.PageNumber)">
+@{
+    await mtCrewAppraisalList.SetupGrid();
+    bool eof = mtCrewAppraisalList.Recordset == null; // DN
+}
+@while (mtCrewAppraisalList.RecordCount < mtCrewAppraisalList.StopRecord || SameString(mtCrewAppraisalList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCrewAppraisalList.RowIndex, "$rowindex$") &&
+        (!mtCrewAppraisalList.IsGridAdd || mtCrewAppraisalList.CurrentMode == "copy") &&
+        (!((mtCrewAppraisalList.IsCopy || mtCrewAppraisalList.IsAdd) && mtCrewAppraisalList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCrewAppraisalList.Recordset.ReadAsync();
+    mtCrewAppraisalList.RecordCount++;
+    if (mtCrewAppraisalList.RecordCount >= mtCrewAppraisalList.StartRecord) {
+        await mtCrewAppraisalList.SetupRow();
+    <tr @Html.Raw(mtCrewAppraisalList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCrewAppraisalList.ListOptions.RenderBody("left", mtCrewAppraisalList.RowCount)
+    @if (mtCrewAppraisalList.MTCrewID.Visible) { // mtCrewAppraisalList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtCrewAppraisalList.MTCrewID.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_MTCrewID" class="el_MTCrewAppraisal_MTCrewID">
+<span @Html.Raw(mtCrewAppraisalList.MTCrewID.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.MTCrewID.Visible (end) *@
+    @if (mtCrewAppraisalList.VesselName.Visible) { // mtCrewAppraisalList.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(mtCrewAppraisalList.VesselName.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_VesselName" class="el_MTCrewAppraisal_VesselName">
+<span @Html.Raw(mtCrewAppraisalList.VesselName.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.VesselName.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.VesselName.Visible (end) *@
+    @if (mtCrewAppraisalList.MTRankID.Visible) { // mtCrewAppraisalList.MTRankID.Visible (begin)
+        <td data-name="MTRankID" @Html.Raw(mtCrewAppraisalList.MTRankID.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_MTRankID" class="el_MTCrewAppraisal_MTRankID">
+<span @Html.Raw(mtCrewAppraisalList.MTRankID.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.MTRankID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.MTRankID.Visible (end) *@
+    @if (mtCrewAppraisalList.Questionnaire.Visible) { // mtCrewAppraisalList.Questionnaire.Visible (begin)
+        <td data-name="Questionnaire" @Html.Raw(mtCrewAppraisalList.Questionnaire.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_Questionnaire" class="el_MTCrewAppraisal_Questionnaire">
+<span @Html.Raw(mtCrewAppraisalList.Questionnaire.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.Questionnaire.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.Questionnaire.Visible (end) *@
+    @if (mtCrewAppraisalList.Approved.Visible) { // mtCrewAppraisalList.Approved.Visible (begin)
+        <td data-name="Approved" @Html.Raw(mtCrewAppraisalList.Approved.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_Approved" class="el_MTCrewAppraisal_Approved">
+<span @Html.Raw(mtCrewAppraisalList.Approved.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Approved_@(mtCrewAppraisalList.RowCount)" class="form-check-input" value="@(mtCrewAppraisalList.Approved.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewAppraisalList.Approved.CurrentValue))">
+    <label class="form-check-label" for="x_Approved_@(mtCrewAppraisalList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.Approved.Visible (end) *@
+    @if (mtCrewAppraisalList.AverageRating.Visible) { // mtCrewAppraisalList.AverageRating.Visible (begin)
+        <td data-name="AverageRating" @Html.Raw(mtCrewAppraisalList.AverageRating.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_AverageRating" class="el_MTCrewAppraisal_AverageRating">
+<span @Html.Raw(mtCrewAppraisalList.AverageRating.ViewAttributes)>@{
+    decimal averageRating;
+    string formattedAverageRating = "";
+    if (decimal.TryParse(mtCrewAppraisalList.AverageRating.GetViewValue(), out averageRating))
+    {
+        var culture = (System.Globalization.CultureInfo)System.Globalization.CultureInfo.InvariantCulture.Clone();
+        culture.NumberFormat.NumberDecimalSeparator = ",";
+        formattedAverageRating = averageRating.ToString("N", culture);
+    }
+}
+<span>@Html.Raw(formattedAverageRating)</span>
+</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.AverageRating.Visible (end) *@
+    @if (mtCrewAppraisalList.Rehire.Visible) { // mtCrewAppraisalList.Rehire.Visible (begin)
+        <td data-name="Rehire" @Html.Raw(mtCrewAppraisalList.Rehire.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_Rehire" class="el_MTCrewAppraisal_Rehire">
+<span @Html.Raw(mtCrewAppraisalList.Rehire.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Rehire_@(mtCrewAppraisalList.RowCount)" class="form-check-input" value="@(mtCrewAppraisalList.Rehire.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewAppraisalList.Rehire.CurrentValue))">
+    <label class="form-check-label" for="x_Rehire_@(mtCrewAppraisalList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.Rehire.Visible (end) *@
+    @if (mtCrewAppraisalList.Promote.Visible) { // mtCrewAppraisalList.Promote.Visible (begin)
+        <td data-name="Promote" @Html.Raw(mtCrewAppraisalList.Promote.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_Promote" class="el_MTCrewAppraisal_Promote">
+<span @Html.Raw(mtCrewAppraisalList.Promote.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Promote_@(mtCrewAppraisalList.RowCount)" class="form-check-input" value="@(mtCrewAppraisalList.Promote.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewAppraisalList.Promote.CurrentValue))">
+    <label class="form-check-label" for="x_Promote_@(mtCrewAppraisalList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.Promote.Visible (end) *@
+    @if (mtCrewAppraisalList.Appraiser.Visible) { // mtCrewAppraisalList.Appraiser.Visible (begin)
+        <td data-name="Appraiser" @Html.Raw(mtCrewAppraisalList.Appraiser.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_Appraiser" class="el_MTCrewAppraisal_Appraiser">
+<span @Html.Raw(mtCrewAppraisalList.Appraiser.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.Appraiser.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.Appraiser.Visible (end) *@
+    @if (mtCrewAppraisalList.DateInput.Visible) { // mtCrewAppraisalList.DateInput.Visible (begin)
+        <td data-name="DateInput" @Html.Raw(mtCrewAppraisalList.DateInput.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_DateInput" class="el_MTCrewAppraisal_DateInput">
+<span @Html.Raw(mtCrewAppraisalList.DateInput.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.DateInput.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.DateInput.Visible (end) *@
+    @if (mtCrewAppraisalList.CreatedByUserID.Visible) { // mtCrewAppraisalList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewAppraisalList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_CreatedByUserID" class="el_MTCrewAppraisal_CreatedByUserID">
+<span @Html.Raw(mtCrewAppraisalList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.CreatedByUserID.Visible (end) *@
+    @if (mtCrewAppraisalList.CreatedDateTime.Visible) { // mtCrewAppraisalList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewAppraisalList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_CreatedDateTime" class="el_MTCrewAppraisal_CreatedDateTime">
+<span @Html.Raw(mtCrewAppraisalList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.CreatedDateTime.Visible (end) *@
+    @if (mtCrewAppraisalList.LastUpdatedByUserID.Visible) { // mtCrewAppraisalList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewAppraisalList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_LastUpdatedByUserID" class="el_MTCrewAppraisal_LastUpdatedByUserID">
+<span @Html.Raw(mtCrewAppraisalList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCrewAppraisalList.LastUpdatedDateTime.Visible) { // mtCrewAppraisalList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewAppraisalList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtCrewAppraisalList.RowCount)_MTCrewAppraisal_LastUpdatedDateTime" class="el_MTCrewAppraisal_LastUpdatedDateTime">
+<span @Html.Raw(mtCrewAppraisalList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewAppraisalList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtCrewAppraisalList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCrewAppraisalList.ListOptions.RenderBody("right", mtCrewAppraisalList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCrewAppraisalList.RowIndex, "$rowindex$"))
+        mtCrewAppraisalList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCrewAppraisalList.IsCopy || mtCrewAppraisalList.IsAdd) && mtCrewAppraisalList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCrewAppraisalList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCrewAppraisalList.CurrentAction) && !mtCrewAppraisalList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtCrewAppraisalList.CloseRecordset(); }
+@if (!mtCrewAppraisalList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtCrewAppraisalList.IsGridAdd && !(mtCrewAppraisalList.IsGridEdit && mtCrewAppraisalList.ModalGridEdit) && !mtCrewAppraisalList.IsMultiEdit) {
+@Html.Raw(mtCrewAppraisalList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtCrewAppraisalList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCrewAppraisalList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtCrewAppraisalList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtCrewAppraisalList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewAppraisal");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

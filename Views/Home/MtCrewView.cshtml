@@ -1,0 +1,1268 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtCrewView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @mtCrewView.ExportOptions.RenderBody()
+    @mtCrewView.OtherOptions.RenderBody()
+</div>
+}
+@mtCrewView.ShowPageHeader()
+@mtCrewView.ShowMessages()
+<main class="view">
+<form name="fMTCrewview" id="fMTCrewview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (!mtCrewView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrew: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fMTCrewview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(mtCrewView.IsModal)">
+<table class="@(mtCrewView.TableClass)">
+@if (mtCrewView.IndividualCodeNumber.Visible) { // mtCrewView.IndividualCodeNumber.Visible (begin)
+    <tr id="r_IndividualCodeNumber" @Html.Raw(mtCrewView.IndividualCodeNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_IndividualCodeNumber">@Html.Raw(mtCrewView.IndividualCodeNumber.Caption)</span></td>
+        <td data-name="IndividualCodeNumber" @Html.Raw(mtCrewView.IndividualCodeNumber.CellAttributes)>
+<span id="el_MTCrew_IndividualCodeNumber">
+<span @Html.Raw(mtCrewView.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.IndividualCodeNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.IndividualCodeNumber.Visible (end) *@
+@if (mtCrewView.FullName.Visible) { // mtCrewView.FullName.Visible (begin)
+    <tr id="r_FullName" @Html.Raw(mtCrewView.FullName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_FullName">@Html.Raw(mtCrewView.FullName.Caption)</span></td>
+        <td data-name="FullName" @Html.Raw(mtCrewView.FullName.CellAttributes)>
+<span id="el_MTCrew_FullName">
+<span @Html.Raw(mtCrewView.FullName.ViewAttributes)>
+@Html.Raw(mtCrewView.FullName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.FullName.Visible (end) *@
+@if (mtCrewView.RequiredPhoto.Visible) { // mtCrewView.RequiredPhoto.Visible (begin)
+    <tr id="r_RequiredPhoto" @Html.Raw(mtCrewView.RequiredPhoto.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_RequiredPhoto">@Html.Raw(mtCrewView.RequiredPhoto.Caption)</span></td>
+        <td data-name="RequiredPhoto" @Html.Raw(mtCrewView.RequiredPhoto.CellAttributes)>
+<span id="el_MTCrew_RequiredPhoto">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)mtCrewView.RequiredPhoto, ConvertToString(mtCrewView.RequiredPhoto.GetViewValue()), false))
+</span>
+</span></td>
+    </tr>
+} @* mtCrewView.RequiredPhoto.Visible (end) *@
+@if (mtCrewView.VisaPhoto.Visible) { // mtCrewView.VisaPhoto.Visible (begin)
+    <tr id="r_VisaPhoto" @Html.Raw(mtCrewView.VisaPhoto.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_VisaPhoto">@Html.Raw(mtCrewView.VisaPhoto.Caption)</span></td>
+        <td data-name="VisaPhoto" @Html.Raw(mtCrewView.VisaPhoto.CellAttributes)>
+<span id="el_MTCrew_VisaPhoto">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)mtCrewView.VisaPhoto, ConvertToString(mtCrewView.VisaPhoto.GetViewValue()), false))
+</span>
+</span></td>
+    </tr>
+} @* mtCrewView.VisaPhoto.Visible (end) *@
+@if (mtCrewView.Nationality_CountryID.Visible) { // mtCrewView.Nationality_CountryID.Visible (begin)
+    <tr id="r_Nationality_CountryID" @Html.Raw(mtCrewView.Nationality_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Nationality_CountryID">@Html.Raw(mtCrewView.Nationality_CountryID.Caption)</span></td>
+        <td data-name="Nationality_CountryID" @Html.Raw(mtCrewView.Nationality_CountryID.CellAttributes)>
+<span id="el_MTCrew_Nationality_CountryID">
+<span @Html.Raw(mtCrewView.Nationality_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.Nationality_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Nationality_CountryID.Visible (end) *@
+@if (mtCrewView.CountryOfOrigin_CountryID.Visible) { // mtCrewView.CountryOfOrigin_CountryID.Visible (begin)
+    <tr id="r_CountryOfOrigin_CountryID" @Html.Raw(mtCrewView.CountryOfOrigin_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_CountryOfOrigin_CountryID">@Html.Raw(mtCrewView.CountryOfOrigin_CountryID.Caption)</span></td>
+        <td data-name="CountryOfOrigin_CountryID" @Html.Raw(mtCrewView.CountryOfOrigin_CountryID.CellAttributes)>
+<span id="el_MTCrew_CountryOfOrigin_CountryID">
+<span @Html.Raw(mtCrewView.CountryOfOrigin_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.CountryOfOrigin_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.CountryOfOrigin_CountryID.Visible (end) *@
+@if (mtCrewView.DateOfBirth.Visible) { // mtCrewView.DateOfBirth.Visible (begin)
+    <tr id="r_DateOfBirth" @Html.Raw(mtCrewView.DateOfBirth.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_DateOfBirth">@Html.Raw(mtCrewView.DateOfBirth.Caption)</span></td>
+        <td data-name="DateOfBirth" @Html.Raw(mtCrewView.DateOfBirth.CellAttributes)>
+<span id="el_MTCrew_DateOfBirth">
+<span @Html.Raw(mtCrewView.DateOfBirth.ViewAttributes)>
+@Html.Raw(mtCrewView.DateOfBirth.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.DateOfBirth.Visible (end) *@
+@if (mtCrewView.CityOfBirth.Visible) { // mtCrewView.CityOfBirth.Visible (begin)
+    <tr id="r_CityOfBirth" @Html.Raw(mtCrewView.CityOfBirth.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_CityOfBirth">@Html.Raw(mtCrewView.CityOfBirth.Caption)</span></td>
+        <td data-name="CityOfBirth" @Html.Raw(mtCrewView.CityOfBirth.CellAttributes)>
+<span id="el_MTCrew_CityOfBirth">
+<span @Html.Raw(mtCrewView.CityOfBirth.ViewAttributes)>
+@Html.Raw(mtCrewView.CityOfBirth.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.CityOfBirth.Visible (end) *@
+@if (mtCrewView.MaritalStatus.Visible) { // mtCrewView.MaritalStatus.Visible (begin)
+    <tr id="r_MaritalStatus" @Html.Raw(mtCrewView.MaritalStatus.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_MaritalStatus">@Html.Raw(mtCrewView.MaritalStatus.Caption)</span></td>
+        <td data-name="MaritalStatus" @Html.Raw(mtCrewView.MaritalStatus.CellAttributes)>
+<span id="el_MTCrew_MaritalStatus">
+<span @Html.Raw(mtCrewView.MaritalStatus.ViewAttributes)>
+@Html.Raw(mtCrewView.MaritalStatus.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.MaritalStatus.Visible (end) *@
+@if (mtCrewView.Gender.Visible) { // mtCrewView.Gender.Visible (begin)
+    <tr id="r_Gender" @Html.Raw(mtCrewView.Gender.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Gender">@Html.Raw(mtCrewView.Gender.Caption)</span></td>
+        <td data-name="Gender" @Html.Raw(mtCrewView.Gender.CellAttributes)>
+<span id="el_MTCrew_Gender">
+<span @Html.Raw(mtCrewView.Gender.ViewAttributes)>
+@Html.Raw(mtCrewView.Gender.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Gender.Visible (end) *@
+@if (mtCrewView.ReligionID.Visible) { // mtCrewView.ReligionID.Visible (begin)
+    <tr id="r_ReligionID" @Html.Raw(mtCrewView.ReligionID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ReligionID">@Html.Raw(mtCrewView.ReligionID.Caption)</span></td>
+        <td data-name="ReligionID" @Html.Raw(mtCrewView.ReligionID.CellAttributes)>
+<span id="el_MTCrew_ReligionID">
+<span @Html.Raw(mtCrewView.ReligionID.ViewAttributes)>
+@Html.Raw(mtCrewView.ReligionID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.ReligionID.Visible (end) *@
+@if (mtCrewView.BloodType.Visible) { // mtCrewView.BloodType.Visible (begin)
+    <tr id="r_BloodType" @Html.Raw(mtCrewView.BloodType.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_BloodType">@Html.Raw(mtCrewView.BloodType.Caption)</span></td>
+        <td data-name="BloodType" @Html.Raw(mtCrewView.BloodType.CellAttributes)>
+<span id="el_MTCrew_BloodType">
+<span @Html.Raw(mtCrewView.BloodType.ViewAttributes)>
+@Html.Raw(mtCrewView.BloodType.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.BloodType.Visible (end) *@
+@if (mtCrewView.RankAppliedFor_RankID.Visible) { // mtCrewView.RankAppliedFor_RankID.Visible (begin)
+    <tr id="r_RankAppliedFor_RankID" @Html.Raw(mtCrewView.RankAppliedFor_RankID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_RankAppliedFor_RankID">@Html.Raw(mtCrewView.RankAppliedFor_RankID.Caption)</span></td>
+        <td data-name="RankAppliedFor_RankID" @Html.Raw(mtCrewView.RankAppliedFor_RankID.CellAttributes)>
+<span id="el_MTCrew_RankAppliedFor_RankID">
+<span @Html.Raw(mtCrewView.RankAppliedFor_RankID.ViewAttributes)>
+@Html.Raw(mtCrewView.RankAppliedFor_RankID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.RankAppliedFor_RankID.Visible (end) *@
+@if (mtCrewView.WillAcceptLowRank.Visible) { // mtCrewView.WillAcceptLowRank.Visible (begin)
+    <tr id="r_WillAcceptLowRank" @Html.Raw(mtCrewView.WillAcceptLowRank.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_WillAcceptLowRank">@Html.Raw(mtCrewView.WillAcceptLowRank.Caption)</span></td>
+        <td data-name="WillAcceptLowRank" @Html.Raw(mtCrewView.WillAcceptLowRank.CellAttributes)>
+<span id="el_MTCrew_WillAcceptLowRank">
+<span @Html.Raw(mtCrewView.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.WillAcceptLowRank.Visible (end) *@
+@if (mtCrewView.AvailableFrom.Visible) { // mtCrewView.AvailableFrom.Visible (begin)
+    <tr id="r_AvailableFrom" @Html.Raw(mtCrewView.AvailableFrom.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AvailableFrom">@Html.Raw(mtCrewView.AvailableFrom.Caption)</span></td>
+        <td data-name="AvailableFrom" @Html.Raw(mtCrewView.AvailableFrom.CellAttributes)>
+<span id="el_MTCrew_AvailableFrom">
+<span @Html.Raw(mtCrewView.AvailableFrom.ViewAttributes)>
+@Html.Raw(mtCrewView.AvailableFrom.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AvailableFrom.Visible (end) *@
+@if (mtCrewView.AvailableUntil.Visible) { // mtCrewView.AvailableUntil.Visible (begin)
+    <tr id="r_AvailableUntil" @Html.Raw(mtCrewView.AvailableUntil.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AvailableUntil">@Html.Raw(mtCrewView.AvailableUntil.Caption)</span></td>
+        <td data-name="AvailableUntil" @Html.Raw(mtCrewView.AvailableUntil.CellAttributes)>
+<span id="el_MTCrew_AvailableUntil">
+<span @Html.Raw(mtCrewView.AvailableUntil.ViewAttributes)>
+@Html.Raw(mtCrewView.AvailableUntil.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AvailableUntil.Visible (end) *@
+@if (mtCrewView.PrimaryAddressDetail.Visible) { // mtCrewView.PrimaryAddressDetail.Visible (begin)
+    <tr id="r_PrimaryAddressDetail" @Html.Raw(mtCrewView.PrimaryAddressDetail.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressDetail">@Html.Raw(mtCrewView.PrimaryAddressDetail.Caption)</span></td>
+        <td data-name="PrimaryAddressDetail" @Html.Raw(mtCrewView.PrimaryAddressDetail.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressDetail">
+<span @Html.Raw(mtCrewView.PrimaryAddressDetail.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressDetail.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressDetail.Visible (end) *@
+@if (mtCrewView.PrimaryAddressCity.Visible) { // mtCrewView.PrimaryAddressCity.Visible (begin)
+    <tr id="r_PrimaryAddressCity" @Html.Raw(mtCrewView.PrimaryAddressCity.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressCity">@Html.Raw(mtCrewView.PrimaryAddressCity.Caption)</span></td>
+        <td data-name="PrimaryAddressCity" @Html.Raw(mtCrewView.PrimaryAddressCity.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressCity">
+<span @Html.Raw(mtCrewView.PrimaryAddressCity.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressCity.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressCity.Visible (end) *@
+@if (mtCrewView.PrimaryAddressState.Visible) { // mtCrewView.PrimaryAddressState.Visible (begin)
+    <tr id="r_PrimaryAddressState" @Html.Raw(mtCrewView.PrimaryAddressState.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressState">@Html.Raw(mtCrewView.PrimaryAddressState.Caption)</span></td>
+        <td data-name="PrimaryAddressState" @Html.Raw(mtCrewView.PrimaryAddressState.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressState">
+<span @Html.Raw(mtCrewView.PrimaryAddressState.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressState.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressState.Visible (end) *@
+@if (mtCrewView.PrimaryAddressNearestAirport.Visible) { // mtCrewView.PrimaryAddressNearestAirport.Visible (begin)
+    <tr id="r_PrimaryAddressNearestAirport" @Html.Raw(mtCrewView.PrimaryAddressNearestAirport.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressNearestAirport">@Html.Raw(mtCrewView.PrimaryAddressNearestAirport.Caption)</span></td>
+        <td data-name="PrimaryAddressNearestAirport" @Html.Raw(mtCrewView.PrimaryAddressNearestAirport.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressNearestAirport">
+<span @Html.Raw(mtCrewView.PrimaryAddressNearestAirport.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressNearestAirport.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressNearestAirport.Visible (end) *@
+@if (mtCrewView.PrimaryAddressPostCode.Visible) { // mtCrewView.PrimaryAddressPostCode.Visible (begin)
+    <tr id="r_PrimaryAddressPostCode" @Html.Raw(mtCrewView.PrimaryAddressPostCode.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressPostCode">@Html.Raw(mtCrewView.PrimaryAddressPostCode.Caption)</span></td>
+        <td data-name="PrimaryAddressPostCode" @Html.Raw(mtCrewView.PrimaryAddressPostCode.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressPostCode">
+<span @Html.Raw(mtCrewView.PrimaryAddressPostCode.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressPostCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressPostCode.Visible (end) *@
+@if (mtCrewView.PrimaryAddressCountryID.Visible) { // mtCrewView.PrimaryAddressCountryID.Visible (begin)
+    <tr id="r_PrimaryAddressCountryID" @Html.Raw(mtCrewView.PrimaryAddressCountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressCountryID">@Html.Raw(mtCrewView.PrimaryAddressCountryID.Caption)</span></td>
+        <td data-name="PrimaryAddressCountryID" @Html.Raw(mtCrewView.PrimaryAddressCountryID.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressCountryID">
+<span @Html.Raw(mtCrewView.PrimaryAddressCountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressCountryID.Visible (end) *@
+@if (mtCrewView.PrimaryAddressHomeTel.Visible) { // mtCrewView.PrimaryAddressHomeTel.Visible (begin)
+    <tr id="r_PrimaryAddressHomeTel" @Html.Raw(mtCrewView.PrimaryAddressHomeTel.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressHomeTel">@Html.Raw(mtCrewView.PrimaryAddressHomeTel.Caption)</span></td>
+        <td data-name="PrimaryAddressHomeTel" @Html.Raw(mtCrewView.PrimaryAddressHomeTel.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressHomeTel">
+<span @Html.Raw(mtCrewView.PrimaryAddressHomeTel.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressHomeTel.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressHomeTel.Visible (end) *@
+@if (mtCrewView.PrimaryAddressFax.Visible) { // mtCrewView.PrimaryAddressFax.Visible (begin)
+    <tr id="r_PrimaryAddressFax" @Html.Raw(mtCrewView.PrimaryAddressFax.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressFax">@Html.Raw(mtCrewView.PrimaryAddressFax.Caption)</span></td>
+        <td data-name="PrimaryAddressFax" @Html.Raw(mtCrewView.PrimaryAddressFax.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressFax">
+<span @Html.Raw(mtCrewView.PrimaryAddressFax.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressFax.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressFax.Visible (end) *@
+@if (mtCrewView.AlternativeAddressDetail.Visible) { // mtCrewView.AlternativeAddressDetail.Visible (begin)
+    <tr id="r_AlternativeAddressDetail" @Html.Raw(mtCrewView.AlternativeAddressDetail.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressDetail">@Html.Raw(mtCrewView.AlternativeAddressDetail.Caption)</span></td>
+        <td data-name="AlternativeAddressDetail" @Html.Raw(mtCrewView.AlternativeAddressDetail.CellAttributes)>
+<span id="el_MTCrew_AlternativeAddressDetail">
+<span @Html.Raw(mtCrewView.AlternativeAddressDetail.ViewAttributes)>
+@Html.Raw(mtCrewView.AlternativeAddressDetail.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AlternativeAddressDetail.Visible (end) *@
+@if (mtCrewView.AlternativeAddressCity.Visible) { // mtCrewView.AlternativeAddressCity.Visible (begin)
+    <tr id="r_AlternativeAddressCity" @Html.Raw(mtCrewView.AlternativeAddressCity.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressCity">@Html.Raw(mtCrewView.AlternativeAddressCity.Caption)</span></td>
+        <td data-name="AlternativeAddressCity" @Html.Raw(mtCrewView.AlternativeAddressCity.CellAttributes)>
+<span id="el_MTCrew_AlternativeAddressCity">
+<span @Html.Raw(mtCrewView.AlternativeAddressCity.ViewAttributes)>
+@Html.Raw(mtCrewView.AlternativeAddressCity.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AlternativeAddressCity.Visible (end) *@
+@if (mtCrewView.AlternativeAddressState.Visible) { // mtCrewView.AlternativeAddressState.Visible (begin)
+    <tr id="r_AlternativeAddressState" @Html.Raw(mtCrewView.AlternativeAddressState.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressState">@Html.Raw(mtCrewView.AlternativeAddressState.Caption)</span></td>
+        <td data-name="AlternativeAddressState" @Html.Raw(mtCrewView.AlternativeAddressState.CellAttributes)>
+<span id="el_MTCrew_AlternativeAddressState">
+<span @Html.Raw(mtCrewView.AlternativeAddressState.ViewAttributes)>
+@Html.Raw(mtCrewView.AlternativeAddressState.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AlternativeAddressState.Visible (end) *@
+@if (mtCrewView.AlternativeAddressHomeTel.Visible) { // mtCrewView.AlternativeAddressHomeTel.Visible (begin)
+    <tr id="r_AlternativeAddressHomeTel" @Html.Raw(mtCrewView.AlternativeAddressHomeTel.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressHomeTel">@Html.Raw(mtCrewView.AlternativeAddressHomeTel.Caption)</span></td>
+        <td data-name="AlternativeAddressHomeTel" @Html.Raw(mtCrewView.AlternativeAddressHomeTel.CellAttributes)>
+<span id="el_MTCrew_AlternativeAddressHomeTel">
+<span @Html.Raw(mtCrewView.AlternativeAddressHomeTel.ViewAttributes)>
+@Html.Raw(mtCrewView.AlternativeAddressHomeTel.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AlternativeAddressHomeTel.Visible (end) *@
+@if (mtCrewView.AlternativeAddressPostCode.Visible) { // mtCrewView.AlternativeAddressPostCode.Visible (begin)
+    <tr id="r_AlternativeAddressPostCode" @Html.Raw(mtCrewView.AlternativeAddressPostCode.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressPostCode">@Html.Raw(mtCrewView.AlternativeAddressPostCode.Caption)</span></td>
+        <td data-name="AlternativeAddressPostCode" @Html.Raw(mtCrewView.AlternativeAddressPostCode.CellAttributes)>
+<span id="el_MTCrew_AlternativeAddressPostCode">
+<span @Html.Raw(mtCrewView.AlternativeAddressPostCode.ViewAttributes)>
+@Html.Raw(mtCrewView.AlternativeAddressPostCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AlternativeAddressPostCode.Visible (end) *@
+@if (mtCrewView.AlternativeAddressCountryID.Visible) { // mtCrewView.AlternativeAddressCountryID.Visible (begin)
+    <tr id="r_AlternativeAddressCountryID" @Html.Raw(mtCrewView.AlternativeAddressCountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressCountryID">@Html.Raw(mtCrewView.AlternativeAddressCountryID.Caption)</span></td>
+        <td data-name="AlternativeAddressCountryID" @Html.Raw(mtCrewView.AlternativeAddressCountryID.CellAttributes)>
+<span id="el_MTCrew_AlternativeAddressCountryID">
+<span @Html.Raw(mtCrewView.AlternativeAddressCountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.AlternativeAddressCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AlternativeAddressCountryID.Visible (end) *@
+@if (mtCrewView.MobileNumber.Visible) { // mtCrewView.MobileNumber.Visible (begin)
+    <tr id="r_MobileNumber" @Html.Raw(mtCrewView.MobileNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_MobileNumber">@Html.Raw(mtCrewView.MobileNumber.Caption)</span></td>
+        <td data-name="MobileNumber" @Html.Raw(mtCrewView.MobileNumber.CellAttributes)>
+<span id="el_MTCrew_MobileNumber">
+<span @Html.Raw(mtCrewView.MobileNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.MobileNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.MobileNumber.Visible (end) *@
+@if (mtCrewView._Email.Visible) { // mtCrewView._Email.Visible (begin)
+    <tr id="r__Email" @Html.Raw(mtCrewView._Email.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew__Email">@Html.Raw(mtCrewView._Email.Caption)</span></td>
+        <td data-name="_Email" @Html.Raw(mtCrewView._Email.CellAttributes)>
+<span id="el_MTCrew__Email">
+<span @Html.Raw(mtCrewView._Email.ViewAttributes)>
+@Html.Raw(mtCrewView._Email.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView._Email.Visible (end) *@
+@if (mtCrewView.ContactMethodEmail.Visible) { // mtCrewView.ContactMethodEmail.Visible (begin)
+    <tr id="r_ContactMethodEmail" @Html.Raw(mtCrewView.ContactMethodEmail.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ContactMethodEmail">@Html.Raw(mtCrewView.ContactMethodEmail.Caption)</span></td>
+        <td data-name="ContactMethodEmail" @Html.Raw(mtCrewView.ContactMethodEmail.CellAttributes)>
+<span id="el_MTCrew_ContactMethodEmail">
+<span @Html.Raw(mtCrewView.ContactMethodEmail.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_ContactMethodEmail_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.ContactMethodEmail.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.ContactMethodEmail.CurrentValue))">
+    <label class="form-check-label" for="x_ContactMethodEmail_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.ContactMethodEmail.Visible (end) *@
+@if (mtCrewView.ContactMethodFax.Visible) { // mtCrewView.ContactMethodFax.Visible (begin)
+    <tr id="r_ContactMethodFax" @Html.Raw(mtCrewView.ContactMethodFax.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ContactMethodFax">@Html.Raw(mtCrewView.ContactMethodFax.Caption)</span></td>
+        <td data-name="ContactMethodFax" @Html.Raw(mtCrewView.ContactMethodFax.CellAttributes)>
+<span id="el_MTCrew_ContactMethodFax">
+<span @Html.Raw(mtCrewView.ContactMethodFax.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_ContactMethodFax_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.ContactMethodFax.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.ContactMethodFax.CurrentValue))">
+    <label class="form-check-label" for="x_ContactMethodFax_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.ContactMethodFax.Visible (end) *@
+@if (mtCrewView.ContactMethodMobilePhone.Visible) { // mtCrewView.ContactMethodMobilePhone.Visible (begin)
+    <tr id="r_ContactMethodMobilePhone" @Html.Raw(mtCrewView.ContactMethodMobilePhone.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ContactMethodMobilePhone">@Html.Raw(mtCrewView.ContactMethodMobilePhone.Caption)</span></td>
+        <td data-name="ContactMethodMobilePhone" @Html.Raw(mtCrewView.ContactMethodMobilePhone.CellAttributes)>
+<span id="el_MTCrew_ContactMethodMobilePhone">
+<span @Html.Raw(mtCrewView.ContactMethodMobilePhone.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_ContactMethodMobilePhone_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.ContactMethodMobilePhone.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.ContactMethodMobilePhone.CurrentValue))">
+    <label class="form-check-label" for="x_ContactMethodMobilePhone_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.ContactMethodMobilePhone.Visible (end) *@
+@if (mtCrewView.ContactMethodHomePhone.Visible) { // mtCrewView.ContactMethodHomePhone.Visible (begin)
+    <tr id="r_ContactMethodHomePhone" @Html.Raw(mtCrewView.ContactMethodHomePhone.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ContactMethodHomePhone">@Html.Raw(mtCrewView.ContactMethodHomePhone.Caption)</span></td>
+        <td data-name="ContactMethodHomePhone" @Html.Raw(mtCrewView.ContactMethodHomePhone.CellAttributes)>
+<span id="el_MTCrew_ContactMethodHomePhone">
+<span @Html.Raw(mtCrewView.ContactMethodHomePhone.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_ContactMethodHomePhone_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.ContactMethodHomePhone.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.ContactMethodHomePhone.CurrentValue))">
+    <label class="form-check-label" for="x_ContactMethodHomePhone_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.ContactMethodHomePhone.Visible (end) *@
+@if (mtCrewView.ContactMethodPost.Visible) { // mtCrewView.ContactMethodPost.Visible (begin)
+    <tr id="r_ContactMethodPost" @Html.Raw(mtCrewView.ContactMethodPost.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ContactMethodPost">@Html.Raw(mtCrewView.ContactMethodPost.Caption)</span></td>
+        <td data-name="ContactMethodPost" @Html.Raw(mtCrewView.ContactMethodPost.CellAttributes)>
+<span id="el_MTCrew_ContactMethodPost">
+<span @Html.Raw(mtCrewView.ContactMethodPost.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_ContactMethodPost_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.ContactMethodPost.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.ContactMethodPost.CurrentValue))">
+    <label class="form-check-label" for="x_ContactMethodPost_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.ContactMethodPost.Visible (end) *@
+@if (mtCrewView.CollarSize.Visible) { // mtCrewView.CollarSize.Visible (begin)
+    <tr id="r_CollarSize" @Html.Raw(mtCrewView.CollarSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_CollarSize">@Html.Raw(mtCrewView.CollarSize.Caption)</span></td>
+        <td data-name="CollarSize" @Html.Raw(mtCrewView.CollarSize.CellAttributes)>
+<span id="el_MTCrew_CollarSize">
+<span @Html.Raw(mtCrewView.CollarSize.ViewAttributes)>
+@Html.Raw(mtCrewView.CollarSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.CollarSize.Visible (end) *@
+@if (mtCrewView.ChestSize.Visible) { // mtCrewView.ChestSize.Visible (begin)
+    <tr id="r_ChestSize" @Html.Raw(mtCrewView.ChestSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ChestSize">@Html.Raw(mtCrewView.ChestSize.Caption)</span></td>
+        <td data-name="ChestSize" @Html.Raw(mtCrewView.ChestSize.CellAttributes)>
+<span id="el_MTCrew_ChestSize">
+<span @Html.Raw(mtCrewView.ChestSize.ViewAttributes)>
+@Html.Raw(mtCrewView.ChestSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.ChestSize.Visible (end) *@
+@if (mtCrewView.WaistSize.Visible) { // mtCrewView.WaistSize.Visible (begin)
+    <tr id="r_WaistSize" @Html.Raw(mtCrewView.WaistSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_WaistSize">@Html.Raw(mtCrewView.WaistSize.Caption)</span></td>
+        <td data-name="WaistSize" @Html.Raw(mtCrewView.WaistSize.CellAttributes)>
+<span id="el_MTCrew_WaistSize">
+<span @Html.Raw(mtCrewView.WaistSize.ViewAttributes)>
+@Html.Raw(mtCrewView.WaistSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.WaistSize.Visible (end) *@
+@if (mtCrewView.InsideLegSize.Visible) { // mtCrewView.InsideLegSize.Visible (begin)
+    <tr id="r_InsideLegSize" @Html.Raw(mtCrewView.InsideLegSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_InsideLegSize">@Html.Raw(mtCrewView.InsideLegSize.Caption)</span></td>
+        <td data-name="InsideLegSize" @Html.Raw(mtCrewView.InsideLegSize.CellAttributes)>
+<span id="el_MTCrew_InsideLegSize">
+<span @Html.Raw(mtCrewView.InsideLegSize.ViewAttributes)>
+@Html.Raw(mtCrewView.InsideLegSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.InsideLegSize.Visible (end) *@
+@if (mtCrewView.CapSize.Visible) { // mtCrewView.CapSize.Visible (begin)
+    <tr id="r_CapSize" @Html.Raw(mtCrewView.CapSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_CapSize">@Html.Raw(mtCrewView.CapSize.Caption)</span></td>
+        <td data-name="CapSize" @Html.Raw(mtCrewView.CapSize.CellAttributes)>
+<span id="el_MTCrew_CapSize">
+<span @Html.Raw(mtCrewView.CapSize.ViewAttributes)>
+@Html.Raw(mtCrewView.CapSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.CapSize.Visible (end) *@
+@if (mtCrewView.SweaterSize_ClothesSizeID.Visible) { // mtCrewView.SweaterSize_ClothesSizeID.Visible (begin)
+    <tr id="r_SweaterSize_ClothesSizeID" @Html.Raw(mtCrewView.SweaterSize_ClothesSizeID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_SweaterSize_ClothesSizeID">@Html.Raw(mtCrewView.SweaterSize_ClothesSizeID.Caption)</span></td>
+        <td data-name="SweaterSize_ClothesSizeID" @Html.Raw(mtCrewView.SweaterSize_ClothesSizeID.CellAttributes)>
+<span id="el_MTCrew_SweaterSize_ClothesSizeID">
+<span @Html.Raw(mtCrewView.SweaterSize_ClothesSizeID.ViewAttributes)>
+@Html.Raw(mtCrewView.SweaterSize_ClothesSizeID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.SweaterSize_ClothesSizeID.Visible (end) *@
+@if (mtCrewView.BoilersuitSize_ClothesSizeID.Visible) { // mtCrewView.BoilersuitSize_ClothesSizeID.Visible (begin)
+    <tr id="r_BoilersuitSize_ClothesSizeID" @Html.Raw(mtCrewView.BoilersuitSize_ClothesSizeID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_BoilersuitSize_ClothesSizeID">@Html.Raw(mtCrewView.BoilersuitSize_ClothesSizeID.Caption)</span></td>
+        <td data-name="BoilersuitSize_ClothesSizeID" @Html.Raw(mtCrewView.BoilersuitSize_ClothesSizeID.CellAttributes)>
+<span id="el_MTCrew_BoilersuitSize_ClothesSizeID">
+<span @Html.Raw(mtCrewView.BoilersuitSize_ClothesSizeID.ViewAttributes)>
+@Html.Raw(mtCrewView.BoilersuitSize_ClothesSizeID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.BoilersuitSize_ClothesSizeID.Visible (end) *@
+@if (mtCrewView.SocialSecurityNumber.Visible) { // mtCrewView.SocialSecurityNumber.Visible (begin)
+    <tr id="r_SocialSecurityNumber" @Html.Raw(mtCrewView.SocialSecurityNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_SocialSecurityNumber">@Html.Raw(mtCrewView.SocialSecurityNumber.Caption)</span></td>
+        <td data-name="SocialSecurityNumber" @Html.Raw(mtCrewView.SocialSecurityNumber.CellAttributes)>
+<span id="el_MTCrew_SocialSecurityNumber">
+<span @Html.Raw(mtCrewView.SocialSecurityNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.SocialSecurityNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.SocialSecurityNumber.Visible (end) *@
+@if (mtCrewView.SocialSecurityIssuingCountryID.Visible) { // mtCrewView.SocialSecurityIssuingCountryID.Visible (begin)
+    <tr id="r_SocialSecurityIssuingCountryID" @Html.Raw(mtCrewView.SocialSecurityIssuingCountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_SocialSecurityIssuingCountryID">@Html.Raw(mtCrewView.SocialSecurityIssuingCountryID.Caption)</span></td>
+        <td data-name="SocialSecurityIssuingCountryID" @Html.Raw(mtCrewView.SocialSecurityIssuingCountryID.CellAttributes)>
+<span id="el_MTCrew_SocialSecurityIssuingCountryID">
+<span @Html.Raw(mtCrewView.SocialSecurityIssuingCountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.SocialSecurityIssuingCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.SocialSecurityIssuingCountryID.Visible (end) *@
+@if (mtCrewView.SocialSecurityImage.Visible) { // mtCrewView.SocialSecurityImage.Visible (begin)
+    <tr id="r_SocialSecurityImage" @Html.Raw(mtCrewView.SocialSecurityImage.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_SocialSecurityImage">@Html.Raw(mtCrewView.SocialSecurityImage.Caption)</span></td>
+        <td data-name="SocialSecurityImage" @Html.Raw(mtCrewView.SocialSecurityImage.CellAttributes)>
+<span id="el_MTCrew_SocialSecurityImage">
+<span @Html.Raw(mtCrewView.SocialSecurityImage.ViewAttributes)>
+@Html.Raw(await GetFileViewTag((DbField)mtCrewView.SocialSecurityImage, ConvertToString(mtCrewView.SocialSecurityImage.GetViewValue()), false))
+</span>
+</span></td>
+    </tr>
+} @* mtCrewView.SocialSecurityImage.Visible (end) *@
+@if (mtCrewView.PersonalTaxNumber.Visible) { // mtCrewView.PersonalTaxNumber.Visible (begin)
+    <tr id="r_PersonalTaxNumber" @Html.Raw(mtCrewView.PersonalTaxNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PersonalTaxNumber">@Html.Raw(mtCrewView.PersonalTaxNumber.Caption)</span></td>
+        <td data-name="PersonalTaxNumber" @Html.Raw(mtCrewView.PersonalTaxNumber.CellAttributes)>
+<span id="el_MTCrew_PersonalTaxNumber">
+<span @Html.Raw(mtCrewView.PersonalTaxNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.PersonalTaxNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PersonalTaxNumber.Visible (end) *@
+@if (mtCrewView.PersonalTaxIssuingCountryID.Visible) { // mtCrewView.PersonalTaxIssuingCountryID.Visible (begin)
+    <tr id="r_PersonalTaxIssuingCountryID" @Html.Raw(mtCrewView.PersonalTaxIssuingCountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PersonalTaxIssuingCountryID">@Html.Raw(mtCrewView.PersonalTaxIssuingCountryID.Caption)</span></td>
+        <td data-name="PersonalTaxIssuingCountryID" @Html.Raw(mtCrewView.PersonalTaxIssuingCountryID.CellAttributes)>
+<span id="el_MTCrew_PersonalTaxIssuingCountryID">
+<span @Html.Raw(mtCrewView.PersonalTaxIssuingCountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.PersonalTaxIssuingCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PersonalTaxIssuingCountryID.Visible (end) *@
+@if (mtCrewView.PersonalTaxImage.Visible) { // mtCrewView.PersonalTaxImage.Visible (begin)
+    <tr id="r_PersonalTaxImage" @Html.Raw(mtCrewView.PersonalTaxImage.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PersonalTaxImage">@Html.Raw(mtCrewView.PersonalTaxImage.Caption)</span></td>
+        <td data-name="PersonalTaxImage" @Html.Raw(mtCrewView.PersonalTaxImage.CellAttributes)>
+<span id="el_MTCrew_PersonalTaxImage">
+<span @Html.Raw(mtCrewView.PersonalTaxImage.ViewAttributes)>
+@Html.Raw(await GetFileViewTag((DbField)mtCrewView.PersonalTaxImage, ConvertToString(mtCrewView.PersonalTaxImage.GetViewValue()), false))
+</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PersonalTaxImage.Visible (end) *@
+@if (mtCrewView.NomineeFullName.Visible) { // mtCrewView.NomineeFullName.Visible (begin)
+    <tr id="r_NomineeFullName" @Html.Raw(mtCrewView.NomineeFullName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeFullName">@Html.Raw(mtCrewView.NomineeFullName.Caption)</span></td>
+        <td data-name="NomineeFullName" @Html.Raw(mtCrewView.NomineeFullName.CellAttributes)>
+<span id="el_MTCrew_NomineeFullName">
+<span @Html.Raw(mtCrewView.NomineeFullName.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeFullName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeFullName.Visible (end) *@
+@if (mtCrewView.NomineeRelationship.Visible) { // mtCrewView.NomineeRelationship.Visible (begin)
+    <tr id="r_NomineeRelationship" @Html.Raw(mtCrewView.NomineeRelationship.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeRelationship">@Html.Raw(mtCrewView.NomineeRelationship.Caption)</span></td>
+        <td data-name="NomineeRelationship" @Html.Raw(mtCrewView.NomineeRelationship.CellAttributes)>
+<span id="el_MTCrew_NomineeRelationship">
+<span @Html.Raw(mtCrewView.NomineeRelationship.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeRelationship.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeRelationship.Visible (end) *@
+@if (mtCrewView.NomineeGender.Visible) { // mtCrewView.NomineeGender.Visible (begin)
+    <tr id="r_NomineeGender" @Html.Raw(mtCrewView.NomineeGender.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeGender">@Html.Raw(mtCrewView.NomineeGender.Caption)</span></td>
+        <td data-name="NomineeGender" @Html.Raw(mtCrewView.NomineeGender.CellAttributes)>
+<span id="el_MTCrew_NomineeGender">
+<span @Html.Raw(mtCrewView.NomineeGender.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeGender.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeGender.Visible (end) *@
+@if (mtCrewView.NomineeNationality_CountryID.Visible) { // mtCrewView.NomineeNationality_CountryID.Visible (begin)
+    <tr id="r_NomineeNationality_CountryID" @Html.Raw(mtCrewView.NomineeNationality_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeNationality_CountryID">@Html.Raw(mtCrewView.NomineeNationality_CountryID.Caption)</span></td>
+        <td data-name="NomineeNationality_CountryID" @Html.Raw(mtCrewView.NomineeNationality_CountryID.CellAttributes)>
+<span id="el_MTCrew_NomineeNationality_CountryID">
+<span @Html.Raw(mtCrewView.NomineeNationality_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeNationality_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeNationality_CountryID.Visible (end) *@
+@if (mtCrewView.NomineeAddressDetail.Visible) { // mtCrewView.NomineeAddressDetail.Visible (begin)
+    <tr id="r_NomineeAddressDetail" @Html.Raw(mtCrewView.NomineeAddressDetail.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeAddressDetail">@Html.Raw(mtCrewView.NomineeAddressDetail.Caption)</span></td>
+        <td data-name="NomineeAddressDetail" @Html.Raw(mtCrewView.NomineeAddressDetail.CellAttributes)>
+<span id="el_MTCrew_NomineeAddressDetail">
+<span @Html.Raw(mtCrewView.NomineeAddressDetail.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeAddressDetail.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeAddressDetail.Visible (end) *@
+@if (mtCrewView.NomineeAddressCity.Visible) { // mtCrewView.NomineeAddressCity.Visible (begin)
+    <tr id="r_NomineeAddressCity" @Html.Raw(mtCrewView.NomineeAddressCity.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeAddressCity">@Html.Raw(mtCrewView.NomineeAddressCity.Caption)</span></td>
+        <td data-name="NomineeAddressCity" @Html.Raw(mtCrewView.NomineeAddressCity.CellAttributes)>
+<span id="el_MTCrew_NomineeAddressCity">
+<span @Html.Raw(mtCrewView.NomineeAddressCity.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeAddressCity.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeAddressCity.Visible (end) *@
+@if (mtCrewView.NomineeAddressPostCode.Visible) { // mtCrewView.NomineeAddressPostCode.Visible (begin)
+    <tr id="r_NomineeAddressPostCode" @Html.Raw(mtCrewView.NomineeAddressPostCode.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeAddressPostCode">@Html.Raw(mtCrewView.NomineeAddressPostCode.Caption)</span></td>
+        <td data-name="NomineeAddressPostCode" @Html.Raw(mtCrewView.NomineeAddressPostCode.CellAttributes)>
+<span id="el_MTCrew_NomineeAddressPostCode">
+<span @Html.Raw(mtCrewView.NomineeAddressPostCode.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeAddressPostCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeAddressPostCode.Visible (end) *@
+@if (mtCrewView.NomineeAddressCountryID.Visible) { // mtCrewView.NomineeAddressCountryID.Visible (begin)
+    <tr id="r_NomineeAddressCountryID" @Html.Raw(mtCrewView.NomineeAddressCountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeAddressCountryID">@Html.Raw(mtCrewView.NomineeAddressCountryID.Caption)</span></td>
+        <td data-name="NomineeAddressCountryID" @Html.Raw(mtCrewView.NomineeAddressCountryID.CellAttributes)>
+<span id="el_MTCrew_NomineeAddressCountryID">
+<span @Html.Raw(mtCrewView.NomineeAddressCountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeAddressCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeAddressCountryID.Visible (end) *@
+@if (mtCrewView.NomineeAddressHomeTel.Visible) { // mtCrewView.NomineeAddressHomeTel.Visible (begin)
+    <tr id="r_NomineeAddressHomeTel" @Html.Raw(mtCrewView.NomineeAddressHomeTel.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeAddressHomeTel">@Html.Raw(mtCrewView.NomineeAddressHomeTel.Caption)</span></td>
+        <td data-name="NomineeAddressHomeTel" @Html.Raw(mtCrewView.NomineeAddressHomeTel.CellAttributes)>
+<span id="el_MTCrew_NomineeAddressHomeTel">
+<span @Html.Raw(mtCrewView.NomineeAddressHomeTel.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeAddressHomeTel.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeAddressHomeTel.Visible (end) *@
+@if (mtCrewView.NomineeEmail.Visible) { // mtCrewView.NomineeEmail.Visible (begin)
+    <tr id="r_NomineeEmail" @Html.Raw(mtCrewView.NomineeEmail.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeEmail">@Html.Raw(mtCrewView.NomineeEmail.Caption)</span></td>
+        <td data-name="NomineeEmail" @Html.Raw(mtCrewView.NomineeEmail.CellAttributes)>
+<span id="el_MTCrew_NomineeEmail">
+<span @Html.Raw(mtCrewView.NomineeEmail.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeEmail.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeEmail.Visible (end) *@
+@if (mtCrewView.NomineeMobileNumber.Visible) { // mtCrewView.NomineeMobileNumber.Visible (begin)
+    <tr id="r_NomineeMobileNumber" @Html.Raw(mtCrewView.NomineeMobileNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeMobileNumber">@Html.Raw(mtCrewView.NomineeMobileNumber.Caption)</span></td>
+        <td data-name="NomineeMobileNumber" @Html.Raw(mtCrewView.NomineeMobileNumber.CellAttributes)>
+<span id="el_MTCrew_NomineeMobileNumber">
+<span @Html.Raw(mtCrewView.NomineeMobileNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeMobileNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeMobileNumber.Visible (end) *@
+@if (mtCrewView.NomineeValidVisa.Visible) { // mtCrewView.NomineeValidVisa.Visible (begin)
+    <tr id="r_NomineeValidVisa" @Html.Raw(mtCrewView.NomineeValidVisa.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeValidVisa">@Html.Raw(mtCrewView.NomineeValidVisa.Caption)</span></td>
+        <td data-name="NomineeValidVisa" @Html.Raw(mtCrewView.NomineeValidVisa.CellAttributes)>
+<span id="el_MTCrew_NomineeValidVisa">
+<span @Html.Raw(mtCrewView.NomineeValidVisa.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeValidVisa.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeValidVisa.Visible (end) *@
+@if (mtCrewView.BankName.Visible) { // mtCrewView.BankName.Visible (begin)
+    <tr id="r_BankName" @Html.Raw(mtCrewView.BankName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_BankName">@Html.Raw(mtCrewView.BankName.Caption)</span></td>
+        <td data-name="BankName" @Html.Raw(mtCrewView.BankName.CellAttributes)>
+<span id="el_MTCrew_BankName">
+<span @Html.Raw(mtCrewView.BankName.ViewAttributes)>
+@Html.Raw(mtCrewView.BankName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.BankName.Visible (end) *@
+@if (mtCrewView.BankAddress.Visible) { // mtCrewView.BankAddress.Visible (begin)
+    <tr id="r_BankAddress" @Html.Raw(mtCrewView.BankAddress.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_BankAddress">@Html.Raw(mtCrewView.BankAddress.Caption)</span></td>
+        <td data-name="BankAddress" @Html.Raw(mtCrewView.BankAddress.CellAttributes)>
+<span id="el_MTCrew_BankAddress">
+<span @Html.Raw(mtCrewView.BankAddress.ViewAttributes)>
+@Html.Raw(mtCrewView.BankAddress.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.BankAddress.Visible (end) *@
+@if (mtCrewView.BankAccountName.Visible) { // mtCrewView.BankAccountName.Visible (begin)
+    <tr id="r_BankAccountName" @Html.Raw(mtCrewView.BankAccountName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_BankAccountName">@Html.Raw(mtCrewView.BankAccountName.Caption)</span></td>
+        <td data-name="BankAccountName" @Html.Raw(mtCrewView.BankAccountName.CellAttributes)>
+<span id="el_MTCrew_BankAccountName">
+<span @Html.Raw(mtCrewView.BankAccountName.ViewAttributes)>
+@Html.Raw(mtCrewView.BankAccountName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.BankAccountName.Visible (end) *@
+@if (mtCrewView.BankAccountNumber.Visible) { // mtCrewView.BankAccountNumber.Visible (begin)
+    <tr id="r_BankAccountNumber" @Html.Raw(mtCrewView.BankAccountNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_BankAccountNumber">@Html.Raw(mtCrewView.BankAccountNumber.Caption)</span></td>
+        <td data-name="BankAccountNumber" @Html.Raw(mtCrewView.BankAccountNumber.CellAttributes)>
+<span id="el_MTCrew_BankAccountNumber">
+<span @Html.Raw(mtCrewView.BankAccountNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.BankAccountNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.BankAccountNumber.Visible (end) *@
+@if (mtCrewView.BankSortCode.Visible) { // mtCrewView.BankSortCode.Visible (begin)
+    <tr id="r_BankSortCode" @Html.Raw(mtCrewView.BankSortCode.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_BankSortCode">@Html.Raw(mtCrewView.BankSortCode.Caption)</span></td>
+        <td data-name="BankSortCode" @Html.Raw(mtCrewView.BankSortCode.CellAttributes)>
+<span id="el_MTCrew_BankSortCode">
+<span @Html.Raw(mtCrewView.BankSortCode.ViewAttributes)>
+@Html.Raw(mtCrewView.BankSortCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.BankSortCode.Visible (end) *@
+@if (mtCrewView.MNOPF.Visible) { // mtCrewView.MNOPF.Visible (begin)
+    <tr id="r_MNOPF" @Html.Raw(mtCrewView.MNOPF.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_MNOPF">@Html.Raw(mtCrewView.MNOPF.Caption)</span></td>
+        <td data-name="MNOPF" @Html.Raw(mtCrewView.MNOPF.CellAttributes)>
+<span id="el_MTCrew_MNOPF">
+<span @Html.Raw(mtCrewView.MNOPF.ViewAttributes)>
+@Html.Raw(mtCrewView.MNOPF.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.MNOPF.Visible (end) *@
+@if (mtCrewView.MembershipNumber.Visible) { // mtCrewView.MembershipNumber.Visible (begin)
+    <tr id="r_MembershipNumber" @Html.Raw(mtCrewView.MembershipNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_MembershipNumber">@Html.Raw(mtCrewView.MembershipNumber.Caption)</span></td>
+        <td data-name="MembershipNumber" @Html.Raw(mtCrewView.MembershipNumber.CellAttributes)>
+<span id="el_MTCrew_MembershipNumber">
+<span @Html.Raw(mtCrewView.MembershipNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.MembershipNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.MembershipNumber.Visible (end) *@
+@if (mtCrewView.NationalInsuranceNumber.Visible) { // mtCrewView.NationalInsuranceNumber.Visible (begin)
+    <tr id="r_NationalInsuranceNumber" @Html.Raw(mtCrewView.NationalInsuranceNumber.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NationalInsuranceNumber">@Html.Raw(mtCrewView.NationalInsuranceNumber.Caption)</span></td>
+        <td data-name="NationalInsuranceNumber" @Html.Raw(mtCrewView.NationalInsuranceNumber.CellAttributes)>
+<span id="el_MTCrew_NationalInsuranceNumber">
+<span @Html.Raw(mtCrewView.NationalInsuranceNumber.ViewAttributes)>
+@Html.Raw(mtCrewView.NationalInsuranceNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NationalInsuranceNumber.Visible (end) *@
+@if (mtCrewView.AVC.Visible) { // mtCrewView.AVC.Visible (begin)
+    <tr id="r_AVC" @Html.Raw(mtCrewView.AVC.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AVC">@Html.Raw(mtCrewView.AVC.Caption)</span></td>
+        <td data-name="AVC" @Html.Raw(mtCrewView.AVC.CellAttributes)>
+<span id="el_MTCrew_AVC">
+<span @Html.Raw(mtCrewView.AVC.ViewAttributes)>
+@Html.Raw(mtCrewView.AVC.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AVC.Visible (end) *@
+@if (mtCrewView.ForeignVisaHasBeenDenied.Visible) { // mtCrewView.ForeignVisaHasBeenDenied.Visible (begin)
+    <tr id="r_ForeignVisaHasBeenDenied" @Html.Raw(mtCrewView.ForeignVisaHasBeenDenied.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ForeignVisaHasBeenDenied">@Html.Raw(mtCrewView.ForeignVisaHasBeenDenied.Caption)</span></td>
+        <td data-name="ForeignVisaHasBeenDenied" @Html.Raw(mtCrewView.ForeignVisaHasBeenDenied.CellAttributes)>
+<span id="el_MTCrew_ForeignVisaHasBeenDenied">
+<span @Html.Raw(mtCrewView.ForeignVisaHasBeenDenied.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_ForeignVisaHasBeenDenied_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.ForeignVisaHasBeenDenied.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.ForeignVisaHasBeenDenied.CurrentValue))">
+    <label class="form-check-label" for="x_ForeignVisaHasBeenDenied_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.ForeignVisaHasBeenDenied.Visible (end) *@
+@if (mtCrewView.ForeignVisaDenied_CountryID.Visible) { // mtCrewView.ForeignVisaDenied_CountryID.Visible (begin)
+    <tr id="r_ForeignVisaDenied_CountryID" @Html.Raw(mtCrewView.ForeignVisaDenied_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ForeignVisaDenied_CountryID">@Html.Raw(mtCrewView.ForeignVisaDenied_CountryID.Caption)</span></td>
+        <td data-name="ForeignVisaDenied_CountryID" @Html.Raw(mtCrewView.ForeignVisaDenied_CountryID.CellAttributes)>
+<span id="el_MTCrew_ForeignVisaDenied_CountryID">
+<span @Html.Raw(mtCrewView.ForeignVisaDenied_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.ForeignVisaDenied_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.ForeignVisaDenied_CountryID.Visible (end) *@
+@if (mtCrewView.ForeignVisaDeniedReason.Visible) { // mtCrewView.ForeignVisaDeniedReason.Visible (begin)
+    <tr id="r_ForeignVisaDeniedReason" @Html.Raw(mtCrewView.ForeignVisaDeniedReason.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ForeignVisaDeniedReason">@Html.Raw(mtCrewView.ForeignVisaDeniedReason.Caption)</span></td>
+        <td data-name="ForeignVisaDeniedReason" @Html.Raw(mtCrewView.ForeignVisaDeniedReason.CellAttributes)>
+<span id="el_MTCrew_ForeignVisaDeniedReason">
+<span @Html.Raw(mtCrewView.ForeignVisaDeniedReason.ViewAttributes)>
+@Html.Raw(mtCrewView.ForeignVisaDeniedReason.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.ForeignVisaDeniedReason.Visible (end) *@
+@if (mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.Visible) { // mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.Visible (begin)
+    <tr id="r_HasMaritimeAccidentOrCourtOfEnquiry" @Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_HasMaritimeAccidentOrCourtOfEnquiry">@Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.Caption)</span></td>
+        <td data-name="HasMaritimeAccidentOrCourtOfEnquiry" @Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.CellAttributes)>
+<span id="el_MTCrew_HasMaritimeAccidentOrCourtOfEnquiry">
+<span @Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_HasMaritimeAccidentOrCourtOfEnquiry_@(mtCrewView.RowCount)" class="form-check-input" value="@(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.GetViewValue())" disabled checked="@(ConvertToBool(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.CurrentValue))">
+    <label class="form-check-label" for="x_HasMaritimeAccidentOrCourtOfEnquiry_@(mtCrewView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mtCrewView.HasMaritimeAccidentOrCourtOfEnquiry.Visible (end) *@
+@if (mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.Visible) { // mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.Visible (begin)
+    <tr id="r_HasMaritimeAccidentOrCourtOfEnquiryDetails" @Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_HasMaritimeAccidentOrCourtOfEnquiryDetails">@Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.Caption)</span></td>
+        <td data-name="HasMaritimeAccidentOrCourtOfEnquiryDetails" @Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.CellAttributes)>
+<span id="el_MTCrew_HasMaritimeAccidentOrCourtOfEnquiryDetails">
+<span @Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.ViewAttributes)>
+@Html.Raw(mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.HasMaritimeAccidentOrCourtOfEnquiryDetails.Visible (end) *@
+@if (mtCrewView.Reference1CompanyName.Visible) { // mtCrewView.Reference1CompanyName.Visible (begin)
+    <tr id="r_Reference1CompanyName" @Html.Raw(mtCrewView.Reference1CompanyName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyName">@Html.Raw(mtCrewView.Reference1CompanyName.Caption)</span></td>
+        <td data-name="Reference1CompanyName" @Html.Raw(mtCrewView.Reference1CompanyName.CellAttributes)>
+<span id="el_MTCrew_Reference1CompanyName">
+<span @Html.Raw(mtCrewView.Reference1CompanyName.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference1CompanyName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference1CompanyName.Visible (end) *@
+@if (mtCrewView.Reference1ContactPersonName.Visible) { // mtCrewView.Reference1ContactPersonName.Visible (begin)
+    <tr id="r_Reference1ContactPersonName" @Html.Raw(mtCrewView.Reference1ContactPersonName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference1ContactPersonName">@Html.Raw(mtCrewView.Reference1ContactPersonName.Caption)</span></td>
+        <td data-name="Reference1ContactPersonName" @Html.Raw(mtCrewView.Reference1ContactPersonName.CellAttributes)>
+<span id="el_MTCrew_Reference1ContactPersonName">
+<span @Html.Raw(mtCrewView.Reference1ContactPersonName.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference1ContactPersonName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference1ContactPersonName.Visible (end) *@
+@if (mtCrewView.Reference1CompanyAddress.Visible) { // mtCrewView.Reference1CompanyAddress.Visible (begin)
+    <tr id="r_Reference1CompanyAddress" @Html.Raw(mtCrewView.Reference1CompanyAddress.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyAddress">@Html.Raw(mtCrewView.Reference1CompanyAddress.Caption)</span></td>
+        <td data-name="Reference1CompanyAddress" @Html.Raw(mtCrewView.Reference1CompanyAddress.CellAttributes)>
+<span id="el_MTCrew_Reference1CompanyAddress">
+<span @Html.Raw(mtCrewView.Reference1CompanyAddress.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference1CompanyAddress.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference1CompanyAddress.Visible (end) *@
+@if (mtCrewView.Reference1CompanyCountryID.Visible) { // mtCrewView.Reference1CompanyCountryID.Visible (begin)
+    <tr id="r_Reference1CompanyCountryID" @Html.Raw(mtCrewView.Reference1CompanyCountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyCountryID">@Html.Raw(mtCrewView.Reference1CompanyCountryID.Caption)</span></td>
+        <td data-name="Reference1CompanyCountryID" @Html.Raw(mtCrewView.Reference1CompanyCountryID.CellAttributes)>
+<span id="el_MTCrew_Reference1CompanyCountryID">
+<span @Html.Raw(mtCrewView.Reference1CompanyCountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference1CompanyCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference1CompanyCountryID.Visible (end) *@
+@if (mtCrewView.Reference1CompanyTelephone.Visible) { // mtCrewView.Reference1CompanyTelephone.Visible (begin)
+    <tr id="r_Reference1CompanyTelephone" @Html.Raw(mtCrewView.Reference1CompanyTelephone.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyTelephone">@Html.Raw(mtCrewView.Reference1CompanyTelephone.Caption)</span></td>
+        <td data-name="Reference1CompanyTelephone" @Html.Raw(mtCrewView.Reference1CompanyTelephone.CellAttributes)>
+<span id="el_MTCrew_Reference1CompanyTelephone">
+<span @Html.Raw(mtCrewView.Reference1CompanyTelephone.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference1CompanyTelephone.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference1CompanyTelephone.Visible (end) *@
+@if (mtCrewView.Reference2CompanyName.Visible) { // mtCrewView.Reference2CompanyName.Visible (begin)
+    <tr id="r_Reference2CompanyName" @Html.Raw(mtCrewView.Reference2CompanyName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyName">@Html.Raw(mtCrewView.Reference2CompanyName.Caption)</span></td>
+        <td data-name="Reference2CompanyName" @Html.Raw(mtCrewView.Reference2CompanyName.CellAttributes)>
+<span id="el_MTCrew_Reference2CompanyName">
+<span @Html.Raw(mtCrewView.Reference2CompanyName.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference2CompanyName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference2CompanyName.Visible (end) *@
+@if (mtCrewView.Reference2ContactPersonName.Visible) { // mtCrewView.Reference2ContactPersonName.Visible (begin)
+    <tr id="r_Reference2ContactPersonName" @Html.Raw(mtCrewView.Reference2ContactPersonName.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference2ContactPersonName">@Html.Raw(mtCrewView.Reference2ContactPersonName.Caption)</span></td>
+        <td data-name="Reference2ContactPersonName" @Html.Raw(mtCrewView.Reference2ContactPersonName.CellAttributes)>
+<span id="el_MTCrew_Reference2ContactPersonName">
+<span @Html.Raw(mtCrewView.Reference2ContactPersonName.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference2ContactPersonName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference2ContactPersonName.Visible (end) *@
+@if (mtCrewView.Reference2CompanyAddress.Visible) { // mtCrewView.Reference2CompanyAddress.Visible (begin)
+    <tr id="r_Reference2CompanyAddress" @Html.Raw(mtCrewView.Reference2CompanyAddress.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyAddress">@Html.Raw(mtCrewView.Reference2CompanyAddress.Caption)</span></td>
+        <td data-name="Reference2CompanyAddress" @Html.Raw(mtCrewView.Reference2CompanyAddress.CellAttributes)>
+<span id="el_MTCrew_Reference2CompanyAddress">
+<span @Html.Raw(mtCrewView.Reference2CompanyAddress.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference2CompanyAddress.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference2CompanyAddress.Visible (end) *@
+@if (mtCrewView.Reference2CompanyCountryID.Visible) { // mtCrewView.Reference2CompanyCountryID.Visible (begin)
+    <tr id="r_Reference2CompanyCountryID" @Html.Raw(mtCrewView.Reference2CompanyCountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyCountryID">@Html.Raw(mtCrewView.Reference2CompanyCountryID.Caption)</span></td>
+        <td data-name="Reference2CompanyCountryID" @Html.Raw(mtCrewView.Reference2CompanyCountryID.CellAttributes)>
+<span id="el_MTCrew_Reference2CompanyCountryID">
+<span @Html.Raw(mtCrewView.Reference2CompanyCountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference2CompanyCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference2CompanyCountryID.Visible (end) *@
+@if (mtCrewView.Reference2CompanyTelephone.Visible) { // mtCrewView.Reference2CompanyTelephone.Visible (begin)
+    <tr id="r_Reference2CompanyTelephone" @Html.Raw(mtCrewView.Reference2CompanyTelephone.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyTelephone">@Html.Raw(mtCrewView.Reference2CompanyTelephone.Caption)</span></td>
+        <td data-name="Reference2CompanyTelephone" @Html.Raw(mtCrewView.Reference2CompanyTelephone.CellAttributes)>
+<span id="el_MTCrew_Reference2CompanyTelephone">
+<span @Html.Raw(mtCrewView.Reference2CompanyTelephone.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference2CompanyTelephone.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference2CompanyTelephone.Visible (end) *@
+@if (mtCrewView.EmployeeStatus.Visible) { // mtCrewView.EmployeeStatus.Visible (begin)
+    <tr id="r_EmployeeStatus" @Html.Raw(mtCrewView.EmployeeStatus.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_EmployeeStatus">@Html.Raw(mtCrewView.EmployeeStatus.Caption)</span></td>
+        <td data-name="EmployeeStatus" @Html.Raw(mtCrewView.EmployeeStatus.CellAttributes)>
+<span id="el_MTCrew_EmployeeStatus">
+<span @Html.Raw(mtCrewView.EmployeeStatus.ViewAttributes)>
+@Html.Raw(mtCrewView.EmployeeStatus.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.EmployeeStatus.Visible (end) *@
+@if (mtCrewView.FormSubmittedDateTime.Visible) { // mtCrewView.FormSubmittedDateTime.Visible (begin)
+    <tr id="r_FormSubmittedDateTime" @Html.Raw(mtCrewView.FormSubmittedDateTime.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_FormSubmittedDateTime">@Html.Raw(mtCrewView.FormSubmittedDateTime.Caption)</span></td>
+        <td data-name="FormSubmittedDateTime" @Html.Raw(mtCrewView.FormSubmittedDateTime.CellAttributes)>
+<span id="el_MTCrew_FormSubmittedDateTime">
+<span @Html.Raw(mtCrewView.FormSubmittedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewView.FormSubmittedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.FormSubmittedDateTime.Visible (end) *@
+@if (mtCrewView.CreatedByUserID.Visible) { // mtCrewView.CreatedByUserID.Visible (begin)
+    <tr id="r_CreatedByUserID" @Html.Raw(mtCrewView.CreatedByUserID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_CreatedByUserID">@Html.Raw(mtCrewView.CreatedByUserID.Caption)</span></td>
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewView.CreatedByUserID.CellAttributes)>
+<span id="el_MTCrew_CreatedByUserID">
+<span @Html.Raw(mtCrewView.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewView.CreatedByUserID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.CreatedByUserID.Visible (end) *@
+@if (mtCrewView.CreatedDateTime.Visible) { // mtCrewView.CreatedDateTime.Visible (begin)
+    <tr id="r_CreatedDateTime" @Html.Raw(mtCrewView.CreatedDateTime.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_CreatedDateTime">@Html.Raw(mtCrewView.CreatedDateTime.Caption)</span></td>
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewView.CreatedDateTime.CellAttributes)>
+<span id="el_MTCrew_CreatedDateTime">
+<span @Html.Raw(mtCrewView.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewView.CreatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.CreatedDateTime.Visible (end) *@
+@if (mtCrewView.LastUpdatedByUserID.Visible) { // mtCrewView.LastUpdatedByUserID.Visible (begin)
+    <tr id="r_LastUpdatedByUserID" @Html.Raw(mtCrewView.LastUpdatedByUserID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_LastUpdatedByUserID">@Html.Raw(mtCrewView.LastUpdatedByUserID.Caption)</span></td>
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewView.LastUpdatedByUserID.CellAttributes)>
+<span id="el_MTCrew_LastUpdatedByUserID">
+<span @Html.Raw(mtCrewView.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewView.LastUpdatedByUserID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewView.LastUpdatedDateTime.Visible) { // mtCrewView.LastUpdatedDateTime.Visible (begin)
+    <tr id="r_LastUpdatedDateTime" @Html.Raw(mtCrewView.LastUpdatedDateTime.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_LastUpdatedDateTime">@Html.Raw(mtCrewView.LastUpdatedDateTime.Caption)</span></td>
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewView.LastUpdatedDateTime.CellAttributes)>
+<span id="el_MTCrew_LastUpdatedDateTime">
+<span @Html.Raw(mtCrewView.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewView.LastUpdatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.LastUpdatedDateTime.Visible (end) *@
+@if (mtCrewView.Status.Visible) { // mtCrewView.Status.Visible (begin)
+    <tr id="r_Status" @Html.Raw(mtCrewView.Status.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Status">@Html.Raw(mtCrewView.Status.Caption)</span></td>
+        <td data-name="Status" @Html.Raw(mtCrewView.Status.CellAttributes)>
+<span id="el_MTCrew_Status">
+<span @Html.Raw(mtCrewView.Status.ViewAttributes)>
+@Html.Raw(mtCrewView.Status.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Status.Visible (end) *@
+@if (mtCrewView.Reason.Visible) { // mtCrewView.Reason.Visible (begin)
+    <tr id="r_Reason" @Html.Raw(mtCrewView.Reason.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reason">@Html.Raw(mtCrewView.Reason.Caption)</span></td>
+        <td data-name="Reason" @Html.Raw(mtCrewView.Reason.CellAttributes)>
+<span id="el_MTCrew_Reason">
+<span @Html.Raw(mtCrewView.Reason.ViewAttributes)>
+@Html.Raw(mtCrewView.Reason.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reason.Visible (end) *@
+@if (mtCrewView.Weight.Visible) { // mtCrewView.Weight.Visible (begin)
+    <tr id="r_Weight" @Html.Raw(mtCrewView.Weight.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Weight">@Html.Raw(mtCrewView.Weight.Caption)</span></td>
+        <td data-name="Weight" @Html.Raw(mtCrewView.Weight.CellAttributes)>
+<span id="el_MTCrew_Weight">
+<span @Html.Raw(mtCrewView.Weight.ViewAttributes)>
+@Html.Raw(mtCrewView.Weight.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Weight.Visible (end) *@
+@if (mtCrewView.Height.Visible) { // mtCrewView.Height.Visible (begin)
+    <tr id="r_Height" @Html.Raw(mtCrewView.Height.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Height">@Html.Raw(mtCrewView.Height.Caption)</span></td>
+        <td data-name="Height" @Html.Raw(mtCrewView.Height.CellAttributes)>
+<span id="el_MTCrew_Height">
+<span @Html.Raw(mtCrewView.Height.ViewAttributes)>
+@Html.Raw(mtCrewView.Height.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Height.Visible (end) *@
+@if (mtCrewView.CoverallSize.Visible) { // mtCrewView.CoverallSize.Visible (begin)
+    <tr id="r_CoverallSize" @Html.Raw(mtCrewView.CoverallSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_CoverallSize">@Html.Raw(mtCrewView.CoverallSize.Caption)</span></td>
+        <td data-name="CoverallSize" @Html.Raw(mtCrewView.CoverallSize.CellAttributes)>
+<span id="el_MTCrew_CoverallSize">
+<span @Html.Raw(mtCrewView.CoverallSize.ViewAttributes)>
+@Html.Raw(mtCrewView.CoverallSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.CoverallSize.Visible (end) *@
+@if (mtCrewView.SafetyShoesSize.Visible) { // mtCrewView.SafetyShoesSize.Visible (begin)
+    <tr id="r_SafetyShoesSize" @Html.Raw(mtCrewView.SafetyShoesSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_SafetyShoesSize">@Html.Raw(mtCrewView.SafetyShoesSize.Caption)</span></td>
+        <td data-name="SafetyShoesSize" @Html.Raw(mtCrewView.SafetyShoesSize.CellAttributes)>
+<span id="el_MTCrew_SafetyShoesSize">
+<span @Html.Raw(mtCrewView.SafetyShoesSize.ViewAttributes)>
+@Html.Raw(mtCrewView.SafetyShoesSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.SafetyShoesSize.Visible (end) *@
+@if (mtCrewView.ShirtSize.Visible) { // mtCrewView.ShirtSize.Visible (begin)
+    <tr id="r_ShirtSize" @Html.Raw(mtCrewView.ShirtSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_ShirtSize">@Html.Raw(mtCrewView.ShirtSize.Caption)</span></td>
+        <td data-name="ShirtSize" @Html.Raw(mtCrewView.ShirtSize.CellAttributes)>
+<span id="el_MTCrew_ShirtSize">
+<span @Html.Raw(mtCrewView.ShirtSize.ViewAttributes)>
+@Html.Raw(mtCrewView.ShirtSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.ShirtSize.Visible (end) *@
+@if (mtCrewView.TrousersSize.Visible) { // mtCrewView.TrousersSize.Visible (begin)
+    <tr id="r_TrousersSize" @Html.Raw(mtCrewView.TrousersSize.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_TrousersSize">@Html.Raw(mtCrewView.TrousersSize.Caption)</span></td>
+        <td data-name="TrousersSize" @Html.Raw(mtCrewView.TrousersSize.CellAttributes)>
+<span id="el_MTCrew_TrousersSize">
+<span @Html.Raw(mtCrewView.TrousersSize.ViewAttributes)>
+@Html.Raw(mtCrewView.TrousersSize.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.TrousersSize.Visible (end) *@
+@if (mtCrewView.NSSF_Health_Number.Visible) { // mtCrewView.NSSF_Health_Number.Visible (begin)
+    <tr id="r_NSSF_Health_Number" @Html.Raw(mtCrewView.NSSF_Health_Number.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NSSF_Health_Number">@Html.Raw(mtCrewView.NSSF_Health_Number.Caption)</span></td>
+        <td data-name="NSSF_Health_Number" @Html.Raw(mtCrewView.NSSF_Health_Number.CellAttributes)>
+<span id="el_MTCrew_NSSF_Health_Number">
+<span @Html.Raw(mtCrewView.NSSF_Health_Number.ViewAttributes)>
+@Html.Raw(mtCrewView.NSSF_Health_Number.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NSSF_Health_Number.Visible (end) *@
+@if (mtCrewView.NSSF_Occupation_Number.Visible) { // mtCrewView.NSSF_Occupation_Number.Visible (begin)
+    <tr id="r_NSSF_Occupation_Number" @Html.Raw(mtCrewView.NSSF_Occupation_Number.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NSSF_Occupation_Number">@Html.Raw(mtCrewView.NSSF_Occupation_Number.Caption)</span></td>
+        <td data-name="NSSF_Occupation_Number" @Html.Raw(mtCrewView.NSSF_Occupation_Number.CellAttributes)>
+<span id="el_MTCrew_NSSF_Occupation_Number">
+<span @Html.Raw(mtCrewView.NSSF_Occupation_Number.ViewAttributes)>
+@Html.Raw(mtCrewView.NSSF_Occupation_Number.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NSSF_Occupation_Number.Visible (end) *@
+@if (mtCrewView.FinalAcceptedDate.Visible) { // mtCrewView.FinalAcceptedDate.Visible (begin)
+    <tr id="r_FinalAcceptedDate" @Html.Raw(mtCrewView.FinalAcceptedDate.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_FinalAcceptedDate">@Html.Raw(mtCrewView.FinalAcceptedDate.Caption)</span></td>
+        <td data-name="FinalAcceptedDate" @Html.Raw(mtCrewView.FinalAcceptedDate.CellAttributes)>
+<span id="el_MTCrew_FinalAcceptedDate">
+<span @Html.Raw(mtCrewView.FinalAcceptedDate.ViewAttributes)>
+@Html.Raw(mtCrewView.FinalAcceptedDate.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.FinalAcceptedDate.Visible (end) *@
+@if (mtCrewView.Reference1CompanyTelephoneCode_CountryID.Visible) { // mtCrewView.Reference1CompanyTelephoneCode_CountryID.Visible (begin)
+    <tr id="r_Reference1CompanyTelephoneCode_CountryID" @Html.Raw(mtCrewView.Reference1CompanyTelephoneCode_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference1CompanyTelephoneCode_CountryID">@Html.Raw(mtCrewView.Reference1CompanyTelephoneCode_CountryID.Caption)</span></td>
+        <td data-name="Reference1CompanyTelephoneCode_CountryID" @Html.Raw(mtCrewView.Reference1CompanyTelephoneCode_CountryID.CellAttributes)>
+<span id="el_MTCrew_Reference1CompanyTelephoneCode_CountryID">
+<span @Html.Raw(mtCrewView.Reference1CompanyTelephoneCode_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference1CompanyTelephoneCode_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference1CompanyTelephoneCode_CountryID.Visible (end) *@
+@if (mtCrewView.Reference2CompanyTelephoneCode_CountryID.Visible) { // mtCrewView.Reference2CompanyTelephoneCode_CountryID.Visible (begin)
+    <tr id="r_Reference2CompanyTelephoneCode_CountryID" @Html.Raw(mtCrewView.Reference2CompanyTelephoneCode_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_Reference2CompanyTelephoneCode_CountryID">@Html.Raw(mtCrewView.Reference2CompanyTelephoneCode_CountryID.Caption)</span></td>
+        <td data-name="Reference2CompanyTelephoneCode_CountryID" @Html.Raw(mtCrewView.Reference2CompanyTelephoneCode_CountryID.CellAttributes)>
+<span id="el_MTCrew_Reference2CompanyTelephoneCode_CountryID">
+<span @Html.Raw(mtCrewView.Reference2CompanyTelephoneCode_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.Reference2CompanyTelephoneCode_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.Reference2CompanyTelephoneCode_CountryID.Visible (end) *@
+@if (mtCrewView.MobileNumberCode_CountryID.Visible) { // mtCrewView.MobileNumberCode_CountryID.Visible (begin)
+    <tr id="r_MobileNumberCode_CountryID" @Html.Raw(mtCrewView.MobileNumberCode_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_MobileNumberCode_CountryID">@Html.Raw(mtCrewView.MobileNumberCode_CountryID.Caption)</span></td>
+        <td data-name="MobileNumberCode_CountryID" @Html.Raw(mtCrewView.MobileNumberCode_CountryID.CellAttributes)>
+<span id="el_MTCrew_MobileNumberCode_CountryID">
+<span @Html.Raw(mtCrewView.MobileNumberCode_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.MobileNumberCode_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.MobileNumberCode_CountryID.Visible (end) *@
+@if (mtCrewView.PrimaryAddressHomeTelCode_CountryID.Visible) { // mtCrewView.PrimaryAddressHomeTelCode_CountryID.Visible (begin)
+    <tr id="r_PrimaryAddressHomeTelCode_CountryID" @Html.Raw(mtCrewView.PrimaryAddressHomeTelCode_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_PrimaryAddressHomeTelCode_CountryID">@Html.Raw(mtCrewView.PrimaryAddressHomeTelCode_CountryID.Caption)</span></td>
+        <td data-name="PrimaryAddressHomeTelCode_CountryID" @Html.Raw(mtCrewView.PrimaryAddressHomeTelCode_CountryID.CellAttributes)>
+<span id="el_MTCrew_PrimaryAddressHomeTelCode_CountryID">
+<span @Html.Raw(mtCrewView.PrimaryAddressHomeTelCode_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.PrimaryAddressHomeTelCode_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.PrimaryAddressHomeTelCode_CountryID.Visible (end) *@
+@if (mtCrewView.AlternativeAddressHomeTelCode_CountryID.Visible) { // mtCrewView.AlternativeAddressHomeTelCode_CountryID.Visible (begin)
+    <tr id="r_AlternativeAddressHomeTelCode_CountryID" @Html.Raw(mtCrewView.AlternativeAddressHomeTelCode_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_AlternativeAddressHomeTelCode_CountryID">@Html.Raw(mtCrewView.AlternativeAddressHomeTelCode_CountryID.Caption)</span></td>
+        <td data-name="AlternativeAddressHomeTelCode_CountryID" @Html.Raw(mtCrewView.AlternativeAddressHomeTelCode_CountryID.CellAttributes)>
+<span id="el_MTCrew_AlternativeAddressHomeTelCode_CountryID">
+<span @Html.Raw(mtCrewView.AlternativeAddressHomeTelCode_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.AlternativeAddressHomeTelCode_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.AlternativeAddressHomeTelCode_CountryID.Visible (end) *@
+@if (mtCrewView.NomineeAddressHomeTelCode_CountryID.Visible) { // mtCrewView.NomineeAddressHomeTelCode_CountryID.Visible (begin)
+    <tr id="r_NomineeAddressHomeTelCode_CountryID" @Html.Raw(mtCrewView.NomineeAddressHomeTelCode_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeAddressHomeTelCode_CountryID">@Html.Raw(mtCrewView.NomineeAddressHomeTelCode_CountryID.Caption)</span></td>
+        <td data-name="NomineeAddressHomeTelCode_CountryID" @Html.Raw(mtCrewView.NomineeAddressHomeTelCode_CountryID.CellAttributes)>
+<span id="el_MTCrew_NomineeAddressHomeTelCode_CountryID">
+<span @Html.Raw(mtCrewView.NomineeAddressHomeTelCode_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeAddressHomeTelCode_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeAddressHomeTelCode_CountryID.Visible (end) *@
+@if (mtCrewView.NomineeMobileNumberCode_CountryID.Visible) { // mtCrewView.NomineeMobileNumberCode_CountryID.Visible (begin)
+    <tr id="r_NomineeMobileNumberCode_CountryID" @Html.Raw(mtCrewView.NomineeMobileNumberCode_CountryID.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_NomineeMobileNumberCode_CountryID">@Html.Raw(mtCrewView.NomineeMobileNumberCode_CountryID.Caption)</span></td>
+        <td data-name="NomineeMobileNumberCode_CountryID" @Html.Raw(mtCrewView.NomineeMobileNumberCode_CountryID.CellAttributes)>
+<span id="el_MTCrew_NomineeMobileNumberCode_CountryID">
+<span @Html.Raw(mtCrewView.NomineeMobileNumberCode_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewView.NomineeMobileNumberCode_CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.NomineeMobileNumberCode_CountryID.Visible (end) *@
+@if (mtCrewView.RevisedReason.Visible) { // mtCrewView.RevisedReason.Visible (begin)
+    <tr id="r_RevisedReason" @Html.Raw(mtCrewView.RevisedReason.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_RevisedReason">@Html.Raw(mtCrewView.RevisedReason.Caption)</span></td>
+        <td data-name="RevisedReason" @Html.Raw(mtCrewView.RevisedReason.CellAttributes)>
+<span id="el_MTCrew_RevisedReason">
+<span @Html.Raw(mtCrewView.RevisedReason.ViewAttributes)>
+@Html.Raw(mtCrewView.RevisedReason.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.RevisedReason.Visible (end) *@
+@if (mtCrewView.RevisedDateTime.Visible) { // mtCrewView.RevisedDateTime.Visible (begin)
+    <tr id="r_RevisedDateTime" @Html.Raw(mtCrewView.RevisedDateTime.RowAttributes)>
+        <td class="@(mtCrewView.TableLeftColumnClass)"><span id="elh_MTCrew_RevisedDateTime">@Html.Raw(mtCrewView.RevisedDateTime.Caption)</span></td>
+        <td data-name="RevisedDateTime" @Html.Raw(mtCrewView.RevisedDateTime.CellAttributes)>
+<span id="el_MTCrew_RevisedDateTime">
+<span @Html.Raw(mtCrewView.RevisedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewView.RevisedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mtCrewView.RevisedDateTime.Visible (end) *@
+</table>
+@{ mtCrewView.CloseRecordset(); }
+@if (mtCrewView.CurrentDetailTables.Contains("MTCrewCertificate") && mtCrewCertificate.DetailView) {
+    if (!Empty(mtCrewView.CurrentDetailTable)) {
+<h4 class="ew-detail-caption">@Html.Raw(Language.TablePhrase("MTCrewCertificate", "TblCaption"))</h4>
+    }
+        @await Html.PartialAsync("MtCrewCertificateGrid")
+    View = this;
+}
+@if (mtCrewView.CurrentDetailTables.Contains("MTCrewDocument") && mtCrewDocument.DetailView) {
+    if (!Empty(mtCrewView.CurrentDetailTable)) {
+<h4 class="ew-detail-caption">@Html.Raw(Language.TablePhrase("MTCrewDocument", "TblCaption"))</h4>
+    }
+        @await Html.PartialAsync("MtCrewDocumentGrid")
+    View = this;
+}
+@if (mtCrewView.CurrentDetailTables.Contains("MTCrewExperience") && mtCrewExperience.DetailView) {
+    if (!Empty(mtCrewView.CurrentDetailTable)) {
+<h4 class="ew-detail-caption">@Html.Raw(Language.TablePhrase("MTCrewExperience", "TblCaption"))</h4>
+    }
+        @await Html.PartialAsync("MtCrewExperienceGrid")
+    View = this;
+}
+@if (mtCrewView.CurrentDetailTables.Contains("MTCrewFamily") && mtCrewFamily.DetailView) {
+    if (!Empty(mtCrewView.CurrentDetailTable)) {
+<h4 class="ew-detail-caption">@Html.Raw(Language.TablePhrase("MTCrewFamily", "TblCaption"))</h4>
+    }
+        @await Html.PartialAsync("MtCrewFamilyGrid")
+    View = this;
+}
+@if (mtCrewView.CurrentDetailTables.Contains("MTCrewMedicalHistory") && mtCrewMedicalHistory.DetailView) {
+    if (!Empty(mtCrewView.CurrentDetailTable)) {
+<h4 class="ew-detail-caption">@Html.Raw(Language.TablePhrase("MTCrewMedicalHistory", "TblCaption"))</h4>
+    }
+        @await Html.PartialAsync("MtCrewMedicalHistoryGrid")
+    View = this;
+}
+</form>
+</main>
+@mtCrewView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtCrewView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

@@ -1,0 +1,550 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trEmployeeStatusList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!trEmployeeStatusList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!trEmployeeStatusList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trEmployeeStatusList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TREmployeeStatus: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(trEmployeeStatusList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(trEmployeeStatusList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(trEmployeeStatusList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(trEmployeeStatusList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(trEmployeeStatusList.MTCrewID.ToClientList(trEmployeeStatusList)),
+            "MTUserID": @Html.Raw(trEmployeeStatusList.MTUserID.ToClientList(trEmployeeStatusList)),
+            "PreviousStatus": @Html.Raw(trEmployeeStatusList.PreviousStatus.ToClientList(trEmployeeStatusList)),
+            "CurrentStatus": @Html.Raw(trEmployeeStatusList.CurrentStatus.ToClientList(trEmployeeStatusList)),
+            "ChangedDateTime": @Html.Raw(trEmployeeStatusList.ChangedDateTime.ToClientList(trEmployeeStatusList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!trEmployeeStatusList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (trEmployeeStatusList.TotalRecords > 0 && trEmployeeStatusList.ExportOptions.Visible) {
+    trEmployeeStatusList.ExportOptions.Render("body");
+}
+@if (trEmployeeStatusList.ImportOptions.Visible) {
+    trEmployeeStatusList.ImportOptions.Render("body");
+}
+@if (trEmployeeStatusList.SearchOptions.Visible) {
+    trEmployeeStatusList.SearchOptions.Render("body");
+}
+@if (trEmployeeStatusList.FilterOptions.Visible) {
+    trEmployeeStatusList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (trEmployeeStatusList.ShowCurrentFilter) {
+    trEmployeeStatusList.ShowFilterList();
+}
+@if (!trEmployeeStatusList.IsModal) {
+<form name="fTREmployeeStatussrch" id="fTREmployeeStatussrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fTREmployeeStatussrch_search_panel" class="mb-2 mb-sm-0 @(trEmployeeStatusList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trEmployeeStatusList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TREmployeeStatus: currentTable } });
+var currentForm;
+var fTREmployeeStatussrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fTREmployeeStatussrch")
+        .setPageId("list")
+@if (trEmployeeStatusList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["MTUserID", [], fields.MTUserID.isInvalid],
+            ["PreviousStatus", [], fields.PreviousStatus.isInvalid],
+            ["CurrentStatus", [], fields.CurrentStatus.isInvalid],
+            ["ChangedDateTime", [], fields.ChangedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(trEmployeeStatusList.MTCrewID.ToClientList(trEmployeeStatusList)),
+            "MTUserID": @Html.Raw(trEmployeeStatusList.MTUserID.ToClientList(trEmployeeStatusList)),
+            "PreviousStatus": @Html.Raw(trEmployeeStatusList.PreviousStatus.ToClientList(trEmployeeStatusList)),
+            "CurrentStatus": @Html.Raw(trEmployeeStatusList.CurrentStatus.ToClientList(trEmployeeStatusList)),
+            "ChangedDateTime": @Html.Raw(trEmployeeStatusList.ChangedDateTime.ToClientList(trEmployeeStatusList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await trEmployeeStatusList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!trEmployeeStatusList.IsExport() && Empty(trEmployeeStatusList.CurrentAction) && trEmployeeStatusList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(trEmployeeStatusList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + trEmployeeStatusList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    trEmployeeStatusList.RowType = RowType.Search;
+    trEmployeeStatusList.ResetAttributes();
+    await trEmployeeStatusList.RenderRow();
+}
+@if (trEmployeeStatusList.MTCrewID.Visible) { // trEmployeeStatusList.MTCrewID.Visible (begin)
+    if (!trEmployeeStatusList.MTCrewID.UseFilter) {
+        trEmployeeStatusList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trEmployeeStatusList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(trEmployeeStatusList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fTREmployeeStatussrch_x_MTCrewID"
+            data-table="TREmployeeStatus"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trEmployeeStatusList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trEmployeeStatusList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trEmployeeStatusList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trEmployeeStatusList.MTCrewID.EditAttributes)>
+            @(trEmployeeStatusList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trEmployeeStatusList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTREmployeeStatussrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fTREmployeeStatussrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fTREmployeeStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TREmployeeStatus.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trEmployeeStatusList.MTCrewID.Visible (end) *@
+@if (trEmployeeStatusList.MTUserID.Visible) { // trEmployeeStatusList.MTUserID.Visible (begin)
+    if (!trEmployeeStatusList.MTUserID.UseFilter) {
+        trEmployeeStatusList.SearchColumnCount++;
+    }
+    <div id="xs_MTUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trEmployeeStatusList.MTUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTUserID"
+            name="x_MTUserID[]"
+            class="form-control ew-select@(trEmployeeStatusList.MTUserID.IsInvalidClass)"
+            data-select2-id="fTREmployeeStatussrch_x_MTUserID"
+            data-table="TREmployeeStatus"
+            data-field="x_MTUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trEmployeeStatusList.MTUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trEmployeeStatusList.MTUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trEmployeeStatusList.MTUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trEmployeeStatusList.MTUserID.EditAttributes)>
+            @(trEmployeeStatusList.MTUserID.SelectOptionListHtml("x_MTUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trEmployeeStatusList.MTUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTREmployeeStatussrch", function() {
+            var options = {
+                name: "x_MTUserID",
+                selectId: "fTREmployeeStatussrch_x_MTUserID",
+                ajax: { id: "x_MTUserID", form: "fTREmployeeStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TREmployeeStatus.fields.MTUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trEmployeeStatusList.MTUserID.Visible (end) *@
+@if (trEmployeeStatusList.PreviousStatus.Visible) { // trEmployeeStatusList.PreviousStatus.Visible (begin)
+    if (!trEmployeeStatusList.PreviousStatus.UseFilter) {
+        trEmployeeStatusList.SearchColumnCount++;
+    }
+    <div id="xs_PreviousStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trEmployeeStatusList.PreviousStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PreviousStatus"
+            name="x_PreviousStatus[]"
+            class="form-control ew-select@(trEmployeeStatusList.PreviousStatus.IsInvalidClass)"
+            data-select2-id="fTREmployeeStatussrch_x_PreviousStatus"
+            data-table="TREmployeeStatus"
+            data-field="x_PreviousStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trEmployeeStatusList.PreviousStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trEmployeeStatusList.PreviousStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trEmployeeStatusList.PreviousStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trEmployeeStatusList.PreviousStatus.EditAttributes)>
+            @(trEmployeeStatusList.PreviousStatus.SelectOptionListHtml("x_PreviousStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trEmployeeStatusList.PreviousStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTREmployeeStatussrch", function() {
+            var options = {
+                name: "x_PreviousStatus",
+                selectId: "fTREmployeeStatussrch_x_PreviousStatus",
+                ajax: { id: "x_PreviousStatus", form: "fTREmployeeStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TREmployeeStatus.fields.PreviousStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trEmployeeStatusList.PreviousStatus.Visible (end) *@
+@if (trEmployeeStatusList.CurrentStatus.Visible) { // trEmployeeStatusList.CurrentStatus.Visible (begin)
+    if (!trEmployeeStatusList.CurrentStatus.UseFilter) {
+        trEmployeeStatusList.SearchColumnCount++;
+    }
+    <div id="xs_CurrentStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trEmployeeStatusList.CurrentStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CurrentStatus"
+            name="x_CurrentStatus[]"
+            class="form-control ew-select@(trEmployeeStatusList.CurrentStatus.IsInvalidClass)"
+            data-select2-id="fTREmployeeStatussrch_x_CurrentStatus"
+            data-table="TREmployeeStatus"
+            data-field="x_CurrentStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trEmployeeStatusList.CurrentStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trEmployeeStatusList.CurrentStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trEmployeeStatusList.CurrentStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trEmployeeStatusList.CurrentStatus.EditAttributes)>
+            @(trEmployeeStatusList.CurrentStatus.SelectOptionListHtml("x_CurrentStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trEmployeeStatusList.CurrentStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTREmployeeStatussrch", function() {
+            var options = {
+                name: "x_CurrentStatus",
+                selectId: "fTREmployeeStatussrch_x_CurrentStatus",
+                ajax: { id: "x_CurrentStatus", form: "fTREmployeeStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TREmployeeStatus.fields.CurrentStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trEmployeeStatusList.CurrentStatus.Visible (end) *@
+@if (trEmployeeStatusList.ChangedDateTime.Visible) { // trEmployeeStatusList.ChangedDateTime.Visible (begin)
+    if (!trEmployeeStatusList.ChangedDateTime.UseFilter) {
+        trEmployeeStatusList.SearchColumnCount++;
+    }
+    <div id="xs_ChangedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(trEmployeeStatusList.ChangedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ChangedDateTime"
+            name="x_ChangedDateTime[]"
+            class="form-control ew-select@(trEmployeeStatusList.ChangedDateTime.IsInvalidClass)"
+            data-select2-id="fTREmployeeStatussrch_x_ChangedDateTime"
+            data-table="TREmployeeStatus"
+            data-field="x_ChangedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(trEmployeeStatusList.ChangedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(trEmployeeStatusList.ChangedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(trEmployeeStatusList.ChangedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(trEmployeeStatusList.ChangedDateTime.EditAttributes)>
+            @(trEmployeeStatusList.ChangedDateTime.SelectOptionListHtml("x_ChangedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(trEmployeeStatusList.ChangedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fTREmployeeStatussrch", function() {
+            var options = {
+                name: "x_ChangedDateTime",
+                selectId: "fTREmployeeStatussrch_x_ChangedDateTime",
+                ajax: { id: "x_ChangedDateTime", form: "fTREmployeeStatussrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.TREmployeeStatus.fields.ChangedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* trEmployeeStatusList.ChangedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(trEmployeeStatusList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(trEmployeeStatusList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(trEmployeeStatusList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(trEmployeeStatusList.BasicSearch.SessionType == "" ? " active" : "")" form="fTREmployeeStatussrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(trEmployeeStatusList.BasicSearch.SessionType == "=" ? " active" : "")" form="fTREmployeeStatussrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(trEmployeeStatusList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fTREmployeeStatussrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(trEmployeeStatusList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fTREmployeeStatussrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@trEmployeeStatusList.ShowPageHeader()
+@trEmployeeStatusList.ShowMessages()
+<main class="list @(trEmployeeStatusList.TotalRecords == 0 && !trEmployeeStatusList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (trEmployeeStatusList.TotalRecords > 0 || !Empty(trEmployeeStatusList.CurrentAction)) {
+<div class="card ew-card ew-grid@(trEmployeeStatusList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(trEmployeeStatusList.TableGridClass)">
+<form name="@(trEmployeeStatusList.FormName)" id="@(trEmployeeStatusList.FormName)" class="ew-form ew-list-form" action="@AppPath(trEmployeeStatusList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (trEmployeeStatusList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_TREmployeeStatus" class="card-body ew-grid-middle-panel @(trEmployeeStatusList.TableContainerClass)" style="@(trEmployeeStatusList.TableContainerStyle)">
+@if (trEmployeeStatusList.TotalRecords > 0 || trEmployeeStatusList.IsGridEdit || trEmployeeStatusList.IsMultiEdit) {
+<table id="tbl_TREmployeeStatuslist" class="@(trEmployeeStatusList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    trEmployeeStatusList.RowType = RowType.Header;
+
+    // Render list options
+    await trEmployeeStatusList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@trEmployeeStatusList.ListOptions.RenderHeader("left")
+@if (trEmployeeStatusList.MTCrewID.Visible) { // trEmployeeStatusList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(trEmployeeStatusList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TREmployeeStatus_MTCrewID" class="TREmployeeStatus_MTCrewID">@Html.Raw(trEmployeeStatusList.RenderFieldHeader(trEmployeeStatusList.MTCrewID))</div></th>
+} @* trEmployeeStatusList.MTCrewID.Visible (end) *@
+@if (trEmployeeStatusList.MTUserID.Visible) { // trEmployeeStatusList.MTUserID.Visible (begin)
+        <th data-name="MTUserID" class="@(trEmployeeStatusList.MTUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TREmployeeStatus_MTUserID" class="TREmployeeStatus_MTUserID">@Html.Raw(trEmployeeStatusList.RenderFieldHeader(trEmployeeStatusList.MTUserID))</div></th>
+} @* trEmployeeStatusList.MTUserID.Visible (end) *@
+@if (trEmployeeStatusList.PreviousStatus.Visible) { // trEmployeeStatusList.PreviousStatus.Visible (begin)
+        <th data-name="PreviousStatus" class="@(trEmployeeStatusList.PreviousStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TREmployeeStatus_PreviousStatus" class="TREmployeeStatus_PreviousStatus">@Html.Raw(trEmployeeStatusList.RenderFieldHeader(trEmployeeStatusList.PreviousStatus))</div></th>
+} @* trEmployeeStatusList.PreviousStatus.Visible (end) *@
+@if (trEmployeeStatusList.CurrentStatus.Visible) { // trEmployeeStatusList.CurrentStatus.Visible (begin)
+        <th data-name="CurrentStatus" class="@(trEmployeeStatusList.CurrentStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TREmployeeStatus_CurrentStatus" class="TREmployeeStatus_CurrentStatus">@Html.Raw(trEmployeeStatusList.RenderFieldHeader(trEmployeeStatusList.CurrentStatus))</div></th>
+} @* trEmployeeStatusList.CurrentStatus.Visible (end) *@
+@if (trEmployeeStatusList.ChangedDateTime.Visible) { // trEmployeeStatusList.ChangedDateTime.Visible (begin)
+        <th data-name="ChangedDateTime" class="@(trEmployeeStatusList.ChangedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_TREmployeeStatus_ChangedDateTime" class="TREmployeeStatus_ChangedDateTime">@Html.Raw(trEmployeeStatusList.RenderFieldHeader(trEmployeeStatusList.ChangedDateTime))</div></th>
+} @* trEmployeeStatusList.ChangedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@trEmployeeStatusList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(trEmployeeStatusList.PageNumber)">
+@{
+    await trEmployeeStatusList.SetupGrid();
+    bool eof = trEmployeeStatusList.Recordset == null; // DN
+}
+@while (trEmployeeStatusList.RecordCount < trEmployeeStatusList.StopRecord || SameString(trEmployeeStatusList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(trEmployeeStatusList.RowIndex, "$rowindex$") &&
+        (!trEmployeeStatusList.IsGridAdd || trEmployeeStatusList.CurrentMode == "copy") &&
+        (!((trEmployeeStatusList.IsCopy || trEmployeeStatusList.IsAdd) && trEmployeeStatusList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await trEmployeeStatusList.Recordset.ReadAsync();
+    trEmployeeStatusList.RecordCount++;
+    if (trEmployeeStatusList.RecordCount >= trEmployeeStatusList.StartRecord) {
+        await trEmployeeStatusList.SetupRow();
+    <tr @Html.Raw(trEmployeeStatusList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @trEmployeeStatusList.ListOptions.RenderBody("left", trEmployeeStatusList.RowCount)
+    @if (trEmployeeStatusList.MTCrewID.Visible) { // trEmployeeStatusList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(trEmployeeStatusList.MTCrewID.CellAttributes)>
+<span id="el@(trEmployeeStatusList.RowCount)_TREmployeeStatus_MTCrewID" class="el_TREmployeeStatus_MTCrewID">
+<span @Html.Raw(trEmployeeStatusList.MTCrewID.ViewAttributes)>
+@Html.Raw(trEmployeeStatusList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* trEmployeeStatusList.MTCrewID.Visible (end) *@
+    @if (trEmployeeStatusList.MTUserID.Visible) { // trEmployeeStatusList.MTUserID.Visible (begin)
+        <td data-name="MTUserID" @Html.Raw(trEmployeeStatusList.MTUserID.CellAttributes)>
+<span id="el@(trEmployeeStatusList.RowCount)_TREmployeeStatus_MTUserID" class="el_TREmployeeStatus_MTUserID">
+<span @Html.Raw(trEmployeeStatusList.MTUserID.ViewAttributes)>
+@Html.Raw(trEmployeeStatusList.MTUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* trEmployeeStatusList.MTUserID.Visible (end) *@
+    @if (trEmployeeStatusList.PreviousStatus.Visible) { // trEmployeeStatusList.PreviousStatus.Visible (begin)
+        <td data-name="PreviousStatus" @Html.Raw(trEmployeeStatusList.PreviousStatus.CellAttributes)>
+<span id="el@(trEmployeeStatusList.RowCount)_TREmployeeStatus_PreviousStatus" class="el_TREmployeeStatus_PreviousStatus">
+<span @Html.Raw(trEmployeeStatusList.PreviousStatus.ViewAttributes)>
+@Html.Raw(trEmployeeStatusList.PreviousStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* trEmployeeStatusList.PreviousStatus.Visible (end) *@
+    @if (trEmployeeStatusList.CurrentStatus.Visible) { // trEmployeeStatusList.CurrentStatus.Visible (begin)
+        <td data-name="CurrentStatus" @Html.Raw(trEmployeeStatusList.CurrentStatus.CellAttributes)>
+<span id="el@(trEmployeeStatusList.RowCount)_TREmployeeStatus_CurrentStatus" class="el_TREmployeeStatus_CurrentStatus">
+<span @Html.Raw(trEmployeeStatusList.CurrentStatus.ViewAttributes)>
+@Html.Raw(trEmployeeStatusList.CurrentStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* trEmployeeStatusList.CurrentStatus.Visible (end) *@
+    @if (trEmployeeStatusList.ChangedDateTime.Visible) { // trEmployeeStatusList.ChangedDateTime.Visible (begin)
+        <td data-name="ChangedDateTime" @Html.Raw(trEmployeeStatusList.ChangedDateTime.CellAttributes)>
+<span id="el@(trEmployeeStatusList.RowCount)_TREmployeeStatus_ChangedDateTime" class="el_TREmployeeStatus_ChangedDateTime">
+<span @Html.Raw(trEmployeeStatusList.ChangedDateTime.ViewAttributes)>
+@Html.Raw(trEmployeeStatusList.ChangedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* trEmployeeStatusList.ChangedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @trEmployeeStatusList.ListOptions.RenderBody("right", trEmployeeStatusList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(trEmployeeStatusList.RowIndex, "$rowindex$"))
+        trEmployeeStatusList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((trEmployeeStatusList.IsCopy || trEmployeeStatusList.IsAdd) && trEmployeeStatusList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        trEmployeeStatusList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(trEmployeeStatusList.CurrentAction) && !trEmployeeStatusList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ trEmployeeStatusList.CloseRecordset(); }
+@if (!trEmployeeStatusList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!trEmployeeStatusList.IsGridAdd && !(trEmployeeStatusList.IsGridEdit && trEmployeeStatusList.ModalGridEdit) && !trEmployeeStatusList.IsMultiEdit) {
+@Html.Raw(trEmployeeStatusList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@trEmployeeStatusList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@trEmployeeStatusList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@trEmployeeStatusList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!trEmployeeStatusList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TREmployeeStatus");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

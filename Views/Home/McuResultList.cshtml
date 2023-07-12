@@ -1,0 +1,1318 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mcuResultList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mcuResultList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mcuResultList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mcuResultList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { McuResult: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mcuResultList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mcuResultList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mcuResultList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mcuResultList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(mcuResultList.IndividualCodeNumber.ToClientList(mcuResultList)),
+            "FullName": @Html.Raw(mcuResultList.FullName.ToClientList(mcuResultList)),
+            "RequiredPhoto": @Html.Raw(mcuResultList.RequiredPhoto.ToClientList(mcuResultList)),
+            "VisaPhoto": @Html.Raw(mcuResultList.VisaPhoto.ToClientList(mcuResultList)),
+            "Gender": @Html.Raw(mcuResultList.Gender.ToClientList(mcuResultList)),
+            "RankAppliedFor": @Html.Raw(mcuResultList.RankAppliedFor.ToClientList(mcuResultList)),
+            "WillAcceptLowRank": @Html.Raw(mcuResultList.WillAcceptLowRank.ToClientList(mcuResultList)),
+            "AvailableFrom": @Html.Raw(mcuResultList.AvailableFrom.ToClientList(mcuResultList)),
+            "AvailableUntil": @Html.Raw(mcuResultList.AvailableUntil.ToClientList(mcuResultList)),
+            "EmployeeStatus": @Html.Raw(mcuResultList.EmployeeStatus.ToClientList(mcuResultList)),
+            "McuScheduleDate": @Html.Raw(mcuResultList.McuScheduleDate.ToClientList(mcuResultList)),
+            "McuDate": @Html.Raw(mcuResultList.McuDate.ToClientList(mcuResultList)),
+            "McuExpirationDate": @Html.Raw(mcuResultList.McuExpirationDate.ToClientList(mcuResultList)),
+            "HealthStatus": @Html.Raw(mcuResultList.HealthStatus.ToClientList(mcuResultList)),
+            "McuLocation": @Html.Raw(mcuResultList.McuLocation.ToClientList(mcuResultList)),
+            "McuAttachment": @Html.Raw(mcuResultList.McuAttachment.ToClientList(mcuResultList)),
+            "CreatedBy": @Html.Raw(mcuResultList.CreatedBy.ToClientList(mcuResultList)),
+            "CreatedDateTime": @Html.Raw(mcuResultList.CreatedDateTime.ToClientList(mcuResultList)),
+            "LastUpdatedBy": @Html.Raw(mcuResultList.LastUpdatedBy.ToClientList(mcuResultList)),
+            "LastUpdatedDateTime": @Html.Raw(mcuResultList.LastUpdatedDateTime.ToClientList(mcuResultList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mcuResultList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mcuResultList.TotalRecords > 0 && mcuResultList.ExportOptions.Visible) {
+    mcuResultList.ExportOptions.Render("body");
+}
+@if (mcuResultList.ImportOptions.Visible) {
+    mcuResultList.ImportOptions.Render("body");
+}
+@if (mcuResultList.SearchOptions.Visible) {
+    mcuResultList.SearchOptions.Render("body");
+}
+@if (mcuResultList.FilterOptions.Visible) {
+    mcuResultList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mcuResultList.ShowCurrentFilter) {
+    mcuResultList.ShowFilterList();
+}
+@if (!mcuResultList.IsModal) {
+<form name="fMcuResultsrch" id="fMcuResultsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMcuResultsrch_search_panel" class="mb-2 mb-sm-0 @(mcuResultList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mcuResultList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { McuResult: currentTable } });
+var currentForm;
+var fMcuResultsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMcuResultsrch")
+        .setPageId("list")
+@if (mcuResultList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [], fields.AvailableUntil.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["McuScheduleDate", [], fields.McuScheduleDate.isInvalid],
+            ["McuDate", [], fields.McuDate.isInvalid],
+            ["McuExpirationDate", [], fields.McuExpirationDate.isInvalid],
+            ["HealthStatus", [], fields.HealthStatus.isInvalid],
+            ["McuLocation", [], fields.McuLocation.isInvalid],
+            ["McuAttachment", [], fields.McuAttachment.isInvalid],
+            ["McuRemark", [], fields.McuRemark.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedBy", [], fields.LastUpdatedBy.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(mcuResultList.IndividualCodeNumber.ToClientList(mcuResultList)),
+            "FullName": @Html.Raw(mcuResultList.FullName.ToClientList(mcuResultList)),
+            "RequiredPhoto": @Html.Raw(mcuResultList.RequiredPhoto.ToClientList(mcuResultList)),
+            "VisaPhoto": @Html.Raw(mcuResultList.VisaPhoto.ToClientList(mcuResultList)),
+            "RankAppliedFor": @Html.Raw(mcuResultList.RankAppliedFor.ToClientList(mcuResultList)),
+            "WillAcceptLowRank": @Html.Raw(mcuResultList.WillAcceptLowRank.ToClientList(mcuResultList)),
+            "AvailableFrom": @Html.Raw(mcuResultList.AvailableFrom.ToClientList(mcuResultList)),
+            "AvailableUntil": @Html.Raw(mcuResultList.AvailableUntil.ToClientList(mcuResultList)),
+            "EmployeeStatus": @Html.Raw(mcuResultList.EmployeeStatus.ToClientList(mcuResultList)),
+            "McuScheduleDate": @Html.Raw(mcuResultList.McuScheduleDate.ToClientList(mcuResultList)),
+            "McuDate": @Html.Raw(mcuResultList.McuDate.ToClientList(mcuResultList)),
+            "McuExpirationDate": @Html.Raw(mcuResultList.McuExpirationDate.ToClientList(mcuResultList)),
+            "HealthStatus": @Html.Raw(mcuResultList.HealthStatus.ToClientList(mcuResultList)),
+            "McuLocation": @Html.Raw(mcuResultList.McuLocation.ToClientList(mcuResultList)),
+            "McuAttachment": @Html.Raw(mcuResultList.McuAttachment.ToClientList(mcuResultList)),
+            "CreatedBy": @Html.Raw(mcuResultList.CreatedBy.ToClientList(mcuResultList)),
+            "CreatedDateTime": @Html.Raw(mcuResultList.CreatedDateTime.ToClientList(mcuResultList)),
+            "LastUpdatedBy": @Html.Raw(mcuResultList.LastUpdatedBy.ToClientList(mcuResultList)),
+            "LastUpdatedDateTime": @Html.Raw(mcuResultList.LastUpdatedDateTime.ToClientList(mcuResultList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mcuResultList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mcuResultList.IsExport() && Empty(mcuResultList.CurrentAction) && mcuResultList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mcuResultList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mcuResultList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mcuResultList.RowType = RowType.Search;
+    mcuResultList.ResetAttributes();
+    await mcuResultList.RenderRow();
+}
+@if (mcuResultList.IndividualCodeNumber.Visible) { // mcuResultList.IndividualCodeNumber.Visible (begin)
+    if (!mcuResultList.IndividualCodeNumber.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_IndividualCodeNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.IndividualCodeNumber.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IndividualCodeNumber"
+            name="x_IndividualCodeNumber[]"
+            class="form-control ew-select@(mcuResultList.IndividualCodeNumber.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_IndividualCodeNumber"
+            data-table="McuResult"
+            data-field="x_IndividualCodeNumber"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.IndividualCodeNumber.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.IndividualCodeNumber.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.IndividualCodeNumber.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.IndividualCodeNumber.EditAttributes)>
+            @(mcuResultList.IndividualCodeNumber.SelectOptionListHtml("x_IndividualCodeNumber", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.IndividualCodeNumber.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_IndividualCodeNumber",
+                selectId: "fMcuResultsrch_x_IndividualCodeNumber",
+                ajax: { id: "x_IndividualCodeNumber", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.IndividualCodeNumber.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.IndividualCodeNumber.Visible (end) *@
+@if (mcuResultList.FullName.Visible) { // mcuResultList.FullName.Visible (begin)
+    if (!mcuResultList.FullName.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FullName"
+            name="x_FullName[]"
+            class="form-control ew-select@(mcuResultList.FullName.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_FullName"
+            data-table="McuResult"
+            data-field="x_FullName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.FullName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.FullName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.FullName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.FullName.EditAttributes)>
+            @(mcuResultList.FullName.SelectOptionListHtml("x_FullName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.FullName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_FullName",
+                selectId: "fMcuResultsrch_x_FullName",
+                ajax: { id: "x_FullName", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.FullName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.FullName.Visible (end) *@
+@if (mcuResultList.RequiredPhoto.Visible) { // mcuResultList.RequiredPhoto.Visible (begin)
+    if (!mcuResultList.RequiredPhoto.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_RequiredPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.RequiredPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RequiredPhoto"
+            name="x_RequiredPhoto[]"
+            class="form-control ew-select@(mcuResultList.RequiredPhoto.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_RequiredPhoto"
+            data-table="McuResult"
+            data-field="x_RequiredPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.RequiredPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.RequiredPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.RequiredPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.RequiredPhoto.EditAttributes)>
+            @(mcuResultList.RequiredPhoto.SelectOptionListHtml("x_RequiredPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.RequiredPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_RequiredPhoto",
+                selectId: "fMcuResultsrch_x_RequiredPhoto",
+                ajax: { id: "x_RequiredPhoto", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.RequiredPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.RequiredPhoto.Visible (end) *@
+@if (mcuResultList.VisaPhoto.Visible) { // mcuResultList.VisaPhoto.Visible (begin)
+    if (!mcuResultList.VisaPhoto.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_VisaPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.VisaPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VisaPhoto"
+            name="x_VisaPhoto[]"
+            class="form-control ew-select@(mcuResultList.VisaPhoto.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_VisaPhoto"
+            data-table="McuResult"
+            data-field="x_VisaPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.VisaPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.VisaPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.VisaPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.VisaPhoto.EditAttributes)>
+            @(mcuResultList.VisaPhoto.SelectOptionListHtml("x_VisaPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.VisaPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_VisaPhoto",
+                selectId: "fMcuResultsrch_x_VisaPhoto",
+                ajax: { id: "x_VisaPhoto", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.VisaPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.VisaPhoto.Visible (end) *@
+@if (mcuResultList.RankAppliedFor.Visible) { // mcuResultList.RankAppliedFor.Visible (begin)
+    if (!mcuResultList.RankAppliedFor.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_RankAppliedFor" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.RankAppliedFor.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RankAppliedFor"
+            name="x_RankAppliedFor[]"
+            class="form-control ew-select@(mcuResultList.RankAppliedFor.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_RankAppliedFor"
+            data-table="McuResult"
+            data-field="x_RankAppliedFor"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.RankAppliedFor.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.RankAppliedFor.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.RankAppliedFor.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.RankAppliedFor.EditAttributes)>
+            @(mcuResultList.RankAppliedFor.SelectOptionListHtml("x_RankAppliedFor", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.RankAppliedFor.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_RankAppliedFor",
+                selectId: "fMcuResultsrch_x_RankAppliedFor",
+                ajax: { id: "x_RankAppliedFor", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.RankAppliedFor.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.RankAppliedFor.Visible (end) *@
+@if (mcuResultList.WillAcceptLowRank.Visible) { // mcuResultList.WillAcceptLowRank.Visible (begin)
+    if (!mcuResultList.WillAcceptLowRank.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_WillAcceptLowRank" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.WillAcceptLowRank.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_WillAcceptLowRank"
+            name="x_WillAcceptLowRank[]"
+            class="form-control ew-select@(mcuResultList.WillAcceptLowRank.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_WillAcceptLowRank"
+            data-table="McuResult"
+            data-field="x_WillAcceptLowRank"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.WillAcceptLowRank.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.WillAcceptLowRank.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.WillAcceptLowRank.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.WillAcceptLowRank.EditAttributes)>
+            @(mcuResultList.WillAcceptLowRank.SelectOptionListHtml("x_WillAcceptLowRank", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.WillAcceptLowRank.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_WillAcceptLowRank",
+                selectId: "fMcuResultsrch_x_WillAcceptLowRank",
+                ajax: { id: "x_WillAcceptLowRank", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.WillAcceptLowRank.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.WillAcceptLowRank.Visible (end) *@
+@if (mcuResultList.AvailableFrom.Visible) { // mcuResultList.AvailableFrom.Visible (begin)
+    if (!mcuResultList.AvailableFrom.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableFrom" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.AvailableFrom.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableFrom"
+            name="x_AvailableFrom[]"
+            class="form-control ew-select@(mcuResultList.AvailableFrom.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_AvailableFrom"
+            data-table="McuResult"
+            data-field="x_AvailableFrom"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.AvailableFrom.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.AvailableFrom.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.AvailableFrom.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.AvailableFrom.EditAttributes)>
+            @(mcuResultList.AvailableFrom.SelectOptionListHtml("x_AvailableFrom", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.AvailableFrom.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_AvailableFrom",
+                selectId: "fMcuResultsrch_x_AvailableFrom",
+                ajax: { id: "x_AvailableFrom", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.AvailableFrom.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.AvailableFrom.Visible (end) *@
+@if (mcuResultList.AvailableUntil.Visible) { // mcuResultList.AvailableUntil.Visible (begin)
+    if (!mcuResultList.AvailableUntil.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableUntil" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.AvailableUntil.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableUntil"
+            name="x_AvailableUntil[]"
+            class="form-control ew-select@(mcuResultList.AvailableUntil.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_AvailableUntil"
+            data-table="McuResult"
+            data-field="x_AvailableUntil"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.AvailableUntil.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.AvailableUntil.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.AvailableUntil.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.AvailableUntil.EditAttributes)>
+            @(mcuResultList.AvailableUntil.SelectOptionListHtml("x_AvailableUntil", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.AvailableUntil.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_AvailableUntil",
+                selectId: "fMcuResultsrch_x_AvailableUntil",
+                ajax: { id: "x_AvailableUntil", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.AvailableUntil.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.AvailableUntil.Visible (end) *@
+@if (mcuResultList.EmployeeStatus.Visible) { // mcuResultList.EmployeeStatus.Visible (begin)
+    if (!mcuResultList.EmployeeStatus.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_EmployeeStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.EmployeeStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EmployeeStatus"
+            name="x_EmployeeStatus[]"
+            class="form-control ew-select@(mcuResultList.EmployeeStatus.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_EmployeeStatus"
+            data-table="McuResult"
+            data-field="x_EmployeeStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.EmployeeStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.EmployeeStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.EmployeeStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.EmployeeStatus.EditAttributes)>
+            @(mcuResultList.EmployeeStatus.SelectOptionListHtml("x_EmployeeStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.EmployeeStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_EmployeeStatus",
+                selectId: "fMcuResultsrch_x_EmployeeStatus",
+                ajax: { id: "x_EmployeeStatus", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.EmployeeStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.EmployeeStatus.Visible (end) *@
+@if (mcuResultList.McuScheduleDate.Visible) { // mcuResultList.McuScheduleDate.Visible (begin)
+    if (!mcuResultList.McuScheduleDate.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuScheduleDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.McuScheduleDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuScheduleDate"
+            name="x_McuScheduleDate[]"
+            class="form-control ew-select@(mcuResultList.McuScheduleDate.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_McuScheduleDate"
+            data-table="McuResult"
+            data-field="x_McuScheduleDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.McuScheduleDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.McuScheduleDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.McuScheduleDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.McuScheduleDate.EditAttributes)>
+            @(mcuResultList.McuScheduleDate.SelectOptionListHtml("x_McuScheduleDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.McuScheduleDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_McuScheduleDate",
+                selectId: "fMcuResultsrch_x_McuScheduleDate",
+                ajax: { id: "x_McuScheduleDate", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.McuScheduleDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.McuScheduleDate.Visible (end) *@
+@if (mcuResultList.McuDate.Visible) { // mcuResultList.McuDate.Visible (begin)
+    if (!mcuResultList.McuDate.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.McuDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuDate"
+            name="x_McuDate[]"
+            class="form-control ew-select@(mcuResultList.McuDate.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_McuDate"
+            data-table="McuResult"
+            data-field="x_McuDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.McuDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.McuDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.McuDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.McuDate.EditAttributes)>
+            @(mcuResultList.McuDate.SelectOptionListHtml("x_McuDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.McuDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_McuDate",
+                selectId: "fMcuResultsrch_x_McuDate",
+                ajax: { id: "x_McuDate", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.McuDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.McuDate.Visible (end) *@
+@if (mcuResultList.McuExpirationDate.Visible) { // mcuResultList.McuExpirationDate.Visible (begin)
+    if (!mcuResultList.McuExpirationDate.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuExpirationDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.McuExpirationDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuExpirationDate"
+            name="x_McuExpirationDate[]"
+            class="form-control ew-select@(mcuResultList.McuExpirationDate.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_McuExpirationDate"
+            data-table="McuResult"
+            data-field="x_McuExpirationDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.McuExpirationDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.McuExpirationDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.McuExpirationDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.McuExpirationDate.EditAttributes)>
+            @(mcuResultList.McuExpirationDate.SelectOptionListHtml("x_McuExpirationDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.McuExpirationDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_McuExpirationDate",
+                selectId: "fMcuResultsrch_x_McuExpirationDate",
+                ajax: { id: "x_McuExpirationDate", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.McuExpirationDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.McuExpirationDate.Visible (end) *@
+@if (mcuResultList.HealthStatus.Visible) { // mcuResultList.HealthStatus.Visible (begin)
+    if (!mcuResultList.HealthStatus.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_HealthStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.HealthStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_HealthStatus"
+            name="x_HealthStatus[]"
+            class="form-control ew-select@(mcuResultList.HealthStatus.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_HealthStatus"
+            data-table="McuResult"
+            data-field="x_HealthStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.HealthStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.HealthStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.HealthStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.HealthStatus.EditAttributes)>
+            @(mcuResultList.HealthStatus.SelectOptionListHtml("x_HealthStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.HealthStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_HealthStatus",
+                selectId: "fMcuResultsrch_x_HealthStatus",
+                ajax: { id: "x_HealthStatus", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.HealthStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.HealthStatus.Visible (end) *@
+@if (mcuResultList.McuLocation.Visible) { // mcuResultList.McuLocation.Visible (begin)
+    if (!mcuResultList.McuLocation.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuLocation" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.McuLocation.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuLocation"
+            name="x_McuLocation[]"
+            class="form-control ew-select@(mcuResultList.McuLocation.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_McuLocation"
+            data-table="McuResult"
+            data-field="x_McuLocation"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.McuLocation.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.McuLocation.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.McuLocation.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.McuLocation.EditAttributes)>
+            @(mcuResultList.McuLocation.SelectOptionListHtml("x_McuLocation", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.McuLocation.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_McuLocation",
+                selectId: "fMcuResultsrch_x_McuLocation",
+                ajax: { id: "x_McuLocation", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.McuLocation.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.McuLocation.Visible (end) *@
+@if (mcuResultList.McuAttachment.Visible) { // mcuResultList.McuAttachment.Visible (begin)
+    if (!mcuResultList.McuAttachment.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_McuAttachment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.McuAttachment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuAttachment"
+            name="x_McuAttachment[]"
+            class="form-control ew-select@(mcuResultList.McuAttachment.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_McuAttachment"
+            data-table="McuResult"
+            data-field="x_McuAttachment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.McuAttachment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.McuAttachment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.McuAttachment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.McuAttachment.EditAttributes)>
+            @(mcuResultList.McuAttachment.SelectOptionListHtml("x_McuAttachment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.McuAttachment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_McuAttachment",
+                selectId: "fMcuResultsrch_x_McuAttachment",
+                ajax: { id: "x_McuAttachment", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.McuAttachment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.McuAttachment.Visible (end) *@
+@if (mcuResultList.CreatedBy.Visible) { // mcuResultList.CreatedBy.Visible (begin)
+    if (!mcuResultList.CreatedBy.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.CreatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedBy"
+            name="x_CreatedBy[]"
+            class="form-control ew-select@(mcuResultList.CreatedBy.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_CreatedBy"
+            data-table="McuResult"
+            data-field="x_CreatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.CreatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.CreatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.CreatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.CreatedBy.EditAttributes)>
+            @(mcuResultList.CreatedBy.SelectOptionListHtml("x_CreatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.CreatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_CreatedBy",
+                selectId: "fMcuResultsrch_x_CreatedBy",
+                ajax: { id: "x_CreatedBy", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.CreatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.CreatedBy.Visible (end) *@
+@if (mcuResultList.CreatedDateTime.Visible) { // mcuResultList.CreatedDateTime.Visible (begin)
+    if (!mcuResultList.CreatedDateTime.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mcuResultList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_CreatedDateTime"
+            data-table="McuResult"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.CreatedDateTime.EditAttributes)>
+            @(mcuResultList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMcuResultsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.CreatedDateTime.Visible (end) *@
+@if (mcuResultList.LastUpdatedBy.Visible) { // mcuResultList.LastUpdatedBy.Visible (begin)
+    if (!mcuResultList.LastUpdatedBy.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.LastUpdatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedBy"
+            name="x_LastUpdatedBy[]"
+            class="form-control ew-select@(mcuResultList.LastUpdatedBy.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_LastUpdatedBy"
+            data-table="McuResult"
+            data-field="x_LastUpdatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.LastUpdatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.LastUpdatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.LastUpdatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.LastUpdatedBy.EditAttributes)>
+            @(mcuResultList.LastUpdatedBy.SelectOptionListHtml("x_LastUpdatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.LastUpdatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_LastUpdatedBy",
+                selectId: "fMcuResultsrch_x_LastUpdatedBy",
+                ajax: { id: "x_LastUpdatedBy", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.LastUpdatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.LastUpdatedBy.Visible (end) *@
+@if (mcuResultList.LastUpdatedDateTime.Visible) { // mcuResultList.LastUpdatedDateTime.Visible (begin)
+    if (!mcuResultList.LastUpdatedDateTime.UseFilter) {
+        mcuResultList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mcuResultList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mcuResultList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMcuResultsrch_x_LastUpdatedDateTime"
+            data-table="McuResult"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mcuResultList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mcuResultList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mcuResultList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mcuResultList.LastUpdatedDateTime.EditAttributes)>
+            @(mcuResultList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mcuResultList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMcuResultsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMcuResultsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMcuResultsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.McuResult.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mcuResultList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mcuResultList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mcuResultList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mcuResultList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mcuResultList.BasicSearch.SessionType == "" ? " active" : "")" form="fMcuResultsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mcuResultList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMcuResultsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mcuResultList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMcuResultsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mcuResultList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMcuResultsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mcuResultList.ShowPageHeader()
+@mcuResultList.ShowMessages()
+<main class="list @(mcuResultList.TotalRecords == 0 && !mcuResultList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mcuResultList.TotalRecords > 0 || !Empty(mcuResultList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mcuResultList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mcuResultList.TableGridClass)">
+<form name="@(mcuResultList.FormName)" id="@(mcuResultList.FormName)" class="ew-form ew-list-form" action="@AppPath(mcuResultList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mcuResultList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_McuResult" class="card-body ew-grid-middle-panel @(mcuResultList.TableContainerClass)" style="@(mcuResultList.TableContainerStyle)">
+@if (mcuResultList.TotalRecords > 0 || mcuResultList.IsGridEdit || mcuResultList.IsMultiEdit) {
+<table id="tbl_McuResultlist" class="@(mcuResultList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mcuResultList.RowType = RowType.Header;
+
+    // Render list options
+    await mcuResultList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mcuResultList.ListOptions.RenderHeader("left")
+@if (mcuResultList.IndividualCodeNumber.Visible) { // mcuResultList.IndividualCodeNumber.Visible (begin)
+        <th data-name="IndividualCodeNumber" class="@(mcuResultList.IndividualCodeNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_IndividualCodeNumber" class="McuResult_IndividualCodeNumber">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.IndividualCodeNumber))</div></th>
+} @* mcuResultList.IndividualCodeNumber.Visible (end) *@
+@if (mcuResultList.FullName.Visible) { // mcuResultList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(mcuResultList.FullName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_FullName" class="McuResult_FullName">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.FullName))</div></th>
+} @* mcuResultList.FullName.Visible (end) *@
+@if (mcuResultList.RequiredPhoto.Visible) { // mcuResultList.RequiredPhoto.Visible (begin)
+        <th data-name="RequiredPhoto" class="@(mcuResultList.RequiredPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_RequiredPhoto" class="McuResult_RequiredPhoto">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.RequiredPhoto))</div></th>
+} @* mcuResultList.RequiredPhoto.Visible (end) *@
+@if (mcuResultList.VisaPhoto.Visible) { // mcuResultList.VisaPhoto.Visible (begin)
+        <th data-name="VisaPhoto" class="@(mcuResultList.VisaPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_VisaPhoto" class="McuResult_VisaPhoto">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.VisaPhoto))</div></th>
+} @* mcuResultList.VisaPhoto.Visible (end) *@
+@if (mcuResultList.Gender.Visible) { // mcuResultList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(mcuResultList.Gender.HeaderCellClass)"><div id="elh_McuResult_Gender" class="McuResult_Gender">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.Gender))</div></th>
+} @* mcuResultList.Gender.Visible (end) *@
+@if (mcuResultList.RankAppliedFor.Visible) { // mcuResultList.RankAppliedFor.Visible (begin)
+        <th data-name="RankAppliedFor" class="@(mcuResultList.RankAppliedFor.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_RankAppliedFor" class="McuResult_RankAppliedFor">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.RankAppliedFor))</div></th>
+} @* mcuResultList.RankAppliedFor.Visible (end) *@
+@if (mcuResultList.WillAcceptLowRank.Visible) { // mcuResultList.WillAcceptLowRank.Visible (begin)
+        <th data-name="WillAcceptLowRank" class="@(mcuResultList.WillAcceptLowRank.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_WillAcceptLowRank" class="McuResult_WillAcceptLowRank">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.WillAcceptLowRank))</div></th>
+} @* mcuResultList.WillAcceptLowRank.Visible (end) *@
+@if (mcuResultList.AvailableFrom.Visible) { // mcuResultList.AvailableFrom.Visible (begin)
+        <th data-name="AvailableFrom" class="@(mcuResultList.AvailableFrom.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_AvailableFrom" class="McuResult_AvailableFrom">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.AvailableFrom))</div></th>
+} @* mcuResultList.AvailableFrom.Visible (end) *@
+@if (mcuResultList.AvailableUntil.Visible) { // mcuResultList.AvailableUntil.Visible (begin)
+        <th data-name="AvailableUntil" class="@(mcuResultList.AvailableUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_AvailableUntil" class="McuResult_AvailableUntil">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.AvailableUntil))</div></th>
+} @* mcuResultList.AvailableUntil.Visible (end) *@
+@if (mcuResultList.EmployeeStatus.Visible) { // mcuResultList.EmployeeStatus.Visible (begin)
+        <th data-name="EmployeeStatus" class="@(mcuResultList.EmployeeStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_EmployeeStatus" class="McuResult_EmployeeStatus">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.EmployeeStatus))</div></th>
+} @* mcuResultList.EmployeeStatus.Visible (end) *@
+@if (mcuResultList.McuScheduleDate.Visible) { // mcuResultList.McuScheduleDate.Visible (begin)
+        <th data-name="McuScheduleDate" class="@(mcuResultList.McuScheduleDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_McuScheduleDate" class="McuResult_McuScheduleDate">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.McuScheduleDate))</div></th>
+} @* mcuResultList.McuScheduleDate.Visible (end) *@
+@if (mcuResultList.McuDate.Visible) { // mcuResultList.McuDate.Visible (begin)
+        <th data-name="McuDate" class="@(mcuResultList.McuDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_McuDate" class="McuResult_McuDate">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.McuDate))</div></th>
+} @* mcuResultList.McuDate.Visible (end) *@
+@if (mcuResultList.McuExpirationDate.Visible) { // mcuResultList.McuExpirationDate.Visible (begin)
+        <th data-name="McuExpirationDate" class="@(mcuResultList.McuExpirationDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_McuExpirationDate" class="McuResult_McuExpirationDate">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.McuExpirationDate))</div></th>
+} @* mcuResultList.McuExpirationDate.Visible (end) *@
+@if (mcuResultList.HealthStatus.Visible) { // mcuResultList.HealthStatus.Visible (begin)
+        <th data-name="HealthStatus" class="@(mcuResultList.HealthStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_HealthStatus" class="McuResult_HealthStatus">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.HealthStatus))</div></th>
+} @* mcuResultList.HealthStatus.Visible (end) *@
+@if (mcuResultList.McuLocation.Visible) { // mcuResultList.McuLocation.Visible (begin)
+        <th data-name="McuLocation" class="@(mcuResultList.McuLocation.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_McuLocation" class="McuResult_McuLocation">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.McuLocation))</div></th>
+} @* mcuResultList.McuLocation.Visible (end) *@
+@if (mcuResultList.McuAttachment.Visible) { // mcuResultList.McuAttachment.Visible (begin)
+        <th data-name="McuAttachment" class="@(mcuResultList.McuAttachment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_McuAttachment" class="McuResult_McuAttachment">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.McuAttachment))</div></th>
+} @* mcuResultList.McuAttachment.Visible (end) *@
+@if (mcuResultList.McuRemark.Visible) { // mcuResultList.McuRemark.Visible (begin)
+        <th data-name="McuRemark" class="@(mcuResultList.McuRemark.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_McuRemark" class="McuResult_McuRemark">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.McuRemark))</div></th>
+} @* mcuResultList.McuRemark.Visible (end) *@
+@if (mcuResultList.CreatedBy.Visible) { // mcuResultList.CreatedBy.Visible (begin)
+        <th data-name="CreatedBy" class="@(mcuResultList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_CreatedBy" class="McuResult_CreatedBy">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.CreatedBy))</div></th>
+} @* mcuResultList.CreatedBy.Visible (end) *@
+@if (mcuResultList.CreatedDateTime.Visible) { // mcuResultList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mcuResultList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_CreatedDateTime" class="McuResult_CreatedDateTime">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.CreatedDateTime))</div></th>
+} @* mcuResultList.CreatedDateTime.Visible (end) *@
+@if (mcuResultList.LastUpdatedBy.Visible) { // mcuResultList.LastUpdatedBy.Visible (begin)
+        <th data-name="LastUpdatedBy" class="@(mcuResultList.LastUpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_LastUpdatedBy" class="McuResult_LastUpdatedBy">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.LastUpdatedBy))</div></th>
+} @* mcuResultList.LastUpdatedBy.Visible (end) *@
+@if (mcuResultList.LastUpdatedDateTime.Visible) { // mcuResultList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mcuResultList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_McuResult_LastUpdatedDateTime" class="McuResult_LastUpdatedDateTime">@Html.Raw(mcuResultList.RenderFieldHeader(mcuResultList.LastUpdatedDateTime))</div></th>
+} @* mcuResultList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mcuResultList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mcuResultList.PageNumber)">
+@{
+    await mcuResultList.SetupGrid();
+    bool eof = mcuResultList.Recordset == null; // DN
+}
+@while (mcuResultList.RecordCount < mcuResultList.StopRecord || SameString(mcuResultList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mcuResultList.RowIndex, "$rowindex$") &&
+        (!mcuResultList.IsGridAdd || mcuResultList.CurrentMode == "copy") &&
+        (!((mcuResultList.IsCopy || mcuResultList.IsAdd) && mcuResultList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mcuResultList.Recordset.ReadAsync();
+    mcuResultList.RecordCount++;
+    if (mcuResultList.RecordCount >= mcuResultList.StartRecord) {
+        await mcuResultList.SetupRow();
+    <tr @Html.Raw(mcuResultList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mcuResultList.ListOptions.RenderBody("left", mcuResultList.RowCount)
+    @if (mcuResultList.IndividualCodeNumber.Visible) { // mcuResultList.IndividualCodeNumber.Visible (begin)
+        <td data-name="IndividualCodeNumber" @Html.Raw(mcuResultList.IndividualCodeNumber.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_IndividualCodeNumber" class="el_McuResult_IndividualCodeNumber">
+<span @Html.Raw(mcuResultList.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(mcuResultList.IndividualCodeNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.IndividualCodeNumber.Visible (end) *@
+    @if (mcuResultList.FullName.Visible) { // mcuResultList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(mcuResultList.FullName.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_FullName" class="el_McuResult_FullName">
+<span @Html.Raw(mcuResultList.FullName.ViewAttributes)>
+@Html.Raw(mcuResultList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.FullName.Visible (end) *@
+    @if (mcuResultList.RequiredPhoto.Visible) { // mcuResultList.RequiredPhoto.Visible (begin)
+        <td data-name="RequiredPhoto" @Html.Raw(mcuResultList.RequiredPhoto.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_RequiredPhoto" class="el_McuResult_RequiredPhoto">
+<span @Html.Raw(mcuResultList.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(mcuResultList.IndividualCodeNumber.GetViewValue())/@ConvertToString(mcuResultList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* mcuResultList.RequiredPhoto.Visible (end) *@
+    @if (mcuResultList.VisaPhoto.Visible) { // mcuResultList.VisaPhoto.Visible (begin)
+        <td data-name="VisaPhoto" @Html.Raw(mcuResultList.VisaPhoto.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_VisaPhoto" class="el_McuResult_VisaPhoto">
+<span @Html.Raw(mcuResultList.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(mcuResultList.IndividualCodeNumber.GetViewValue())/@ConvertToString(mcuResultList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* mcuResultList.VisaPhoto.Visible (end) *@
+    @if (mcuResultList.Gender.Visible) { // mcuResultList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(mcuResultList.Gender.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_Gender" class="el_McuResult_Gender">
+<span @Html.Raw(mcuResultList.Gender.ViewAttributes)>
+@Html.Raw(mcuResultList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.Gender.Visible (end) *@
+    @if (mcuResultList.RankAppliedFor.Visible) { // mcuResultList.RankAppliedFor.Visible (begin)
+        <td data-name="RankAppliedFor" @Html.Raw(mcuResultList.RankAppliedFor.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_RankAppliedFor" class="el_McuResult_RankAppliedFor">
+<span @Html.Raw(mcuResultList.RankAppliedFor.ViewAttributes)>
+@Html.Raw(mcuResultList.RankAppliedFor.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.RankAppliedFor.Visible (end) *@
+    @if (mcuResultList.WillAcceptLowRank.Visible) { // mcuResultList.WillAcceptLowRank.Visible (begin)
+        <td data-name="WillAcceptLowRank" @Html.Raw(mcuResultList.WillAcceptLowRank.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_WillAcceptLowRank" class="el_McuResult_WillAcceptLowRank">
+<span @Html.Raw(mcuResultList.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(mcuResultList.RowCount)" class="form-check-input" value="@(mcuResultList.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(mcuResultList.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(mcuResultList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* mcuResultList.WillAcceptLowRank.Visible (end) *@
+    @if (mcuResultList.AvailableFrom.Visible) { // mcuResultList.AvailableFrom.Visible (begin)
+        <td data-name="AvailableFrom" @Html.Raw(mcuResultList.AvailableFrom.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_AvailableFrom" class="el_McuResult_AvailableFrom">
+<span @Html.Raw(mcuResultList.AvailableFrom.ViewAttributes)>
+@Html.Raw(mcuResultList.AvailableFrom.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.AvailableFrom.Visible (end) *@
+    @if (mcuResultList.AvailableUntil.Visible) { // mcuResultList.AvailableUntil.Visible (begin)
+        <td data-name="AvailableUntil" @Html.Raw(mcuResultList.AvailableUntil.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_AvailableUntil" class="el_McuResult_AvailableUntil">
+<span @Html.Raw(mcuResultList.AvailableUntil.ViewAttributes)>
+@Html.Raw(mcuResultList.AvailableUntil.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.AvailableUntil.Visible (end) *@
+    @if (mcuResultList.EmployeeStatus.Visible) { // mcuResultList.EmployeeStatus.Visible (begin)
+        <td data-name="EmployeeStatus" @Html.Raw(mcuResultList.EmployeeStatus.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_EmployeeStatus" class="el_McuResult_EmployeeStatus">
+<span @Html.Raw(mcuResultList.EmployeeStatus.ViewAttributes)>
+@Html.Raw(mcuResultList.EmployeeStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.EmployeeStatus.Visible (end) *@
+    @if (mcuResultList.McuScheduleDate.Visible) { // mcuResultList.McuScheduleDate.Visible (begin)
+        <td data-name="McuScheduleDate" @Html.Raw(mcuResultList.McuScheduleDate.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_McuScheduleDate" class="el_McuResult_McuScheduleDate">
+<span @Html.Raw(mcuResultList.McuScheduleDate.ViewAttributes)>
+@Html.Raw(mcuResultList.McuScheduleDate.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.McuScheduleDate.Visible (end) *@
+    @if (mcuResultList.McuDate.Visible) { // mcuResultList.McuDate.Visible (begin)
+        <td data-name="McuDate" @Html.Raw(mcuResultList.McuDate.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_McuDate" class="el_McuResult_McuDate">
+<span @Html.Raw(mcuResultList.McuDate.ViewAttributes)>
+@Html.Raw(mcuResultList.McuDate.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.McuDate.Visible (end) *@
+    @if (mcuResultList.McuExpirationDate.Visible) { // mcuResultList.McuExpirationDate.Visible (begin)
+        <td data-name="McuExpirationDate" @Html.Raw(mcuResultList.McuExpirationDate.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_McuExpirationDate" class="el_McuResult_McuExpirationDate">
+<span @Html.Raw(mcuResultList.McuExpirationDate.ViewAttributes)>
+@Html.Raw(mcuResultList.McuExpirationDate.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.McuExpirationDate.Visible (end) *@
+    @if (mcuResultList.HealthStatus.Visible) { // mcuResultList.HealthStatus.Visible (begin)
+        <td data-name="HealthStatus" @Html.Raw(mcuResultList.HealthStatus.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_HealthStatus" class="el_McuResult_HealthStatus">
+<span @Html.Raw(mcuResultList.HealthStatus.ViewAttributes)>
+@Html.Raw(mcuResultList.HealthStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.HealthStatus.Visible (end) *@
+    @if (mcuResultList.McuLocation.Visible) { // mcuResultList.McuLocation.Visible (begin)
+        <td data-name="McuLocation" @Html.Raw(mcuResultList.McuLocation.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_McuLocation" class="el_McuResult_McuLocation">
+<span @Html.Raw(mcuResultList.McuLocation.ViewAttributes)>
+@Html.Raw(mcuResultList.McuLocation.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.McuLocation.Visible (end) *@
+    @if (mcuResultList.McuAttachment.Visible) { // mcuResultList.McuAttachment.Visible (begin)
+        <td data-name="McuAttachment" @Html.Raw(mcuResultList.McuAttachment.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_McuAttachment" class="el_McuResult_McuAttachment">
+<span @Html.Raw(mcuResultList.McuAttachment.ViewAttributes)><a href="uploads/@ConvertToString(mcuResultList.IndividualCodeNumber.GetViewValue())/@ConvertToString(mcuResultList.McuAttachment.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* mcuResultList.McuAttachment.Visible (end) *@
+    @if (mcuResultList.McuRemark.Visible) { // mcuResultList.McuRemark.Visible (begin)
+        <td data-name="McuRemark" @Html.Raw(mcuResultList.McuRemark.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_McuRemark" class="el_McuResult_McuRemark">
+<span @Html.Raw(mcuResultList.McuRemark.ViewAttributes)>
+@Html.Raw(mcuResultList.McuRemark.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.McuRemark.Visible (end) *@
+    @if (mcuResultList.CreatedBy.Visible) { // mcuResultList.CreatedBy.Visible (begin)
+        <td data-name="CreatedBy" @Html.Raw(mcuResultList.CreatedBy.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_CreatedBy" class="el_McuResult_CreatedBy">
+<span @Html.Raw(mcuResultList.CreatedBy.ViewAttributes)>
+@Html.Raw(mcuResultList.CreatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.CreatedBy.Visible (end) *@
+    @if (mcuResultList.CreatedDateTime.Visible) { // mcuResultList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mcuResultList.CreatedDateTime.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_CreatedDateTime" class="el_McuResult_CreatedDateTime">
+<span @Html.Raw(mcuResultList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mcuResultList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.CreatedDateTime.Visible (end) *@
+    @if (mcuResultList.LastUpdatedBy.Visible) { // mcuResultList.LastUpdatedBy.Visible (begin)
+        <td data-name="LastUpdatedBy" @Html.Raw(mcuResultList.LastUpdatedBy.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_LastUpdatedBy" class="el_McuResult_LastUpdatedBy">
+<span @Html.Raw(mcuResultList.LastUpdatedBy.ViewAttributes)>
+@Html.Raw(mcuResultList.LastUpdatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.LastUpdatedBy.Visible (end) *@
+    @if (mcuResultList.LastUpdatedDateTime.Visible) { // mcuResultList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mcuResultList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mcuResultList.RowCount)_McuResult_LastUpdatedDateTime" class="el_McuResult_LastUpdatedDateTime">
+<span @Html.Raw(mcuResultList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mcuResultList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mcuResultList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mcuResultList.ListOptions.RenderBody("right", mcuResultList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mcuResultList.RowIndex, "$rowindex$"))
+        mcuResultList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mcuResultList.IsCopy || mcuResultList.IsAdd) && mcuResultList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mcuResultList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mcuResultList.CurrentAction) && !mcuResultList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mcuResultList.CloseRecordset(); }
+@if (!mcuResultList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mcuResultList.IsGridAdd && !(mcuResultList.IsGridEdit && mcuResultList.ModalGridEdit) && !mcuResultList.IsMultiEdit) {
+@Html.Raw(mcuResultList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mcuResultList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mcuResultList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mcuResultList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mcuResultList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("McuResult");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+
+    // GET CURRENT URL.
+    const currentUrlObject = new URL(window.location.href);
+    const uploadFolderName = "uploads";
+    const baseUrl = currentUrlObject.origin + ew.PATH_BASE;
+
+    // Create a new UrlSearchParams object based the current URL's search parameters.
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    $('table#tbl_McuResultlist tbody tr td.ew-list-option-body.w-1 div.btn-group ul.ew-list-options li a.ew-row-link').each(function() {
+        const dataCaptionAttrValue = $(this).attr('data-caption');
+        if (dataCaptionAttrValue === ew.language.phrase("ViewLink")) {
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+            const newHref = `${ew.PATH_BASE}CrewMcuResultForAdminView/${id}TRMCUResult`;
+            $(this).attr('href', newHref);
+        } else if (dataCaptionAttrValue === ew.language.phrase("EditLink")) {
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+            const newHref = `${ew.PATH_BASE}CrewMcuResultForAdminEdit/${id}?showdetail=TRMCUResult`;
+            $(this).attr('href', newHref);
+        }
+    });
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+    const successMessage = urlQueryParams.get('successMessage');
+    if (successMessage !== null) {
+        const decodedSuccessMessage = decodeURIComponent(successMessage);
+        ew.showToast(decodedSuccessMessage, 'success');
+        urlQueryParams.delete('successMessage');
+        currentUrlObject.search = urlQueryParams.toString();
+        history.pushState(null, '', currentUrlObject);
+    }
+});
+</script>
+}

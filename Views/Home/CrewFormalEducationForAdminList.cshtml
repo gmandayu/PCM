@@ -1,0 +1,851 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewFormalEducationForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewFormalEducationForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewFormalEducationForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewFormalEducationForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewFormalEducationForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewFormalEducationForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewFormalEducationForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewFormalEducationForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewFormalEducationForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "EducationLevel": @Html.Raw(crewFormalEducationForAdminList.EducationLevel.ToClientList(crewFormalEducationForAdminList)),
+            "SchoolName": @Html.Raw(crewFormalEducationForAdminList.SchoolName.ToClientList(crewFormalEducationForAdminList)),
+            "City": @Html.Raw(crewFormalEducationForAdminList.City.ToClientList(crewFormalEducationForAdminList)),
+            "Attachment": @Html.Raw(crewFormalEducationForAdminList.Attachment.ToClientList(crewFormalEducationForAdminList)),
+            "StartDate": @Html.Raw(crewFormalEducationForAdminList.StartDate.ToClientList(crewFormalEducationForAdminList)),
+            "EndDate": @Html.Raw(crewFormalEducationForAdminList.EndDate.ToClientList(crewFormalEducationForAdminList)),
+            "MTCrewID": @Html.Raw(crewFormalEducationForAdminList.MTCrewID.ToClientList(crewFormalEducationForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewFormalEducationForAdminList.CreatedByUserID.ToClientList(crewFormalEducationForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewFormalEducationForAdminList.CreatedDateTime.ToClientList(crewFormalEducationForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewFormalEducationForAdminList.LastUpdatedByUserID.ToClientList(crewFormalEducationForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewFormalEducationForAdminList.LastUpdatedDateTime.ToClientList(crewFormalEducationForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewFormalEducationForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewFormalEducationForAdminList.TotalRecords > 0 && crewFormalEducationForAdminList.ExportOptions.Visible) {
+    crewFormalEducationForAdminList.ExportOptions.Render("body");
+}
+@if (crewFormalEducationForAdminList.ImportOptions.Visible) {
+    crewFormalEducationForAdminList.ImportOptions.Render("body");
+}
+@if (crewFormalEducationForAdminList.SearchOptions.Visible) {
+    crewFormalEducationForAdminList.SearchOptions.Render("body");
+}
+@if (crewFormalEducationForAdminList.FilterOptions.Visible) {
+    crewFormalEducationForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewFormalEducationForAdminList.ShowCurrentFilter) {
+    crewFormalEducationForAdminList.ShowFilterList();
+}
+@if (!crewFormalEducationForAdminList.IsModal) {
+<form name="fCrewFormalEducationForAdminsrch" id="fCrewFormalEducationForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewFormalEducationForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewFormalEducationForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewFormalEducationForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewFormalEducationForAdmin: currentTable } });
+var currentForm;
+var fCrewFormalEducationForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewFormalEducationForAdminsrch")
+        .setPageId("list")
+@if (crewFormalEducationForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["EducationLevel", [], fields.EducationLevel.isInvalid],
+            ["SchoolName", [], fields.SchoolName.isInvalid],
+            ["City", [], fields.City.isInvalid],
+            ["Attachment", [], fields.Attachment.isInvalid],
+            ["StartDate", [], fields.StartDate.isInvalid],
+            ["EndDate", [], fields.EndDate.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "EducationLevel": @Html.Raw(crewFormalEducationForAdminList.EducationLevel.ToClientList(crewFormalEducationForAdminList)),
+            "SchoolName": @Html.Raw(crewFormalEducationForAdminList.SchoolName.ToClientList(crewFormalEducationForAdminList)),
+            "City": @Html.Raw(crewFormalEducationForAdminList.City.ToClientList(crewFormalEducationForAdminList)),
+            "Attachment": @Html.Raw(crewFormalEducationForAdminList.Attachment.ToClientList(crewFormalEducationForAdminList)),
+            "StartDate": @Html.Raw(crewFormalEducationForAdminList.StartDate.ToClientList(crewFormalEducationForAdminList)),
+            "EndDate": @Html.Raw(crewFormalEducationForAdminList.EndDate.ToClientList(crewFormalEducationForAdminList)),
+            "MTCrewID": @Html.Raw(crewFormalEducationForAdminList.MTCrewID.ToClientList(crewFormalEducationForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewFormalEducationForAdminList.CreatedByUserID.ToClientList(crewFormalEducationForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewFormalEducationForAdminList.CreatedDateTime.ToClientList(crewFormalEducationForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewFormalEducationForAdminList.LastUpdatedByUserID.ToClientList(crewFormalEducationForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewFormalEducationForAdminList.LastUpdatedDateTime.ToClientList(crewFormalEducationForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewFormalEducationForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewFormalEducationForAdminList.IsExport() && Empty(crewFormalEducationForAdminList.CurrentAction) && crewFormalEducationForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewFormalEducationForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewFormalEducationForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewFormalEducationForAdminList.RowType = RowType.Search;
+    crewFormalEducationForAdminList.ResetAttributes();
+    await crewFormalEducationForAdminList.RenderRow();
+}
+@if (crewFormalEducationForAdminList.EducationLevel.Visible) { // crewFormalEducationForAdminList.EducationLevel.Visible (begin)
+    if (!crewFormalEducationForAdminList.EducationLevel.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_EducationLevel" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.EducationLevel.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EducationLevel"
+            name="x_EducationLevel[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.EducationLevel.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_EducationLevel"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_EducationLevel"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.EducationLevel.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.EducationLevel.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.EducationLevel.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.EducationLevel.EditAttributes)>
+            @(crewFormalEducationForAdminList.EducationLevel.SelectOptionListHtml("x_EducationLevel", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.EducationLevel.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_EducationLevel",
+                selectId: "fCrewFormalEducationForAdminsrch_x_EducationLevel",
+                ajax: { id: "x_EducationLevel", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.EducationLevel.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.EducationLevel.Visible (end) *@
+@if (crewFormalEducationForAdminList.SchoolName.Visible) { // crewFormalEducationForAdminList.SchoolName.Visible (begin)
+    if (!crewFormalEducationForAdminList.SchoolName.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_SchoolName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.SchoolName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_SchoolName"
+            name="x_SchoolName[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.SchoolName.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_SchoolName"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_SchoolName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.SchoolName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.SchoolName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.SchoolName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.SchoolName.EditAttributes)>
+            @(crewFormalEducationForAdminList.SchoolName.SelectOptionListHtml("x_SchoolName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.SchoolName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_SchoolName",
+                selectId: "fCrewFormalEducationForAdminsrch_x_SchoolName",
+                ajax: { id: "x_SchoolName", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.SchoolName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.SchoolName.Visible (end) *@
+@if (crewFormalEducationForAdminList.City.Visible) { // crewFormalEducationForAdminList.City.Visible (begin)
+    if (!crewFormalEducationForAdminList.City.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_City" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.City.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_City"
+            name="x_City[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.City.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_City"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_City"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.City.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.City.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.City.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.City.EditAttributes)>
+            @(crewFormalEducationForAdminList.City.SelectOptionListHtml("x_City", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.City.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_City",
+                selectId: "fCrewFormalEducationForAdminsrch_x_City",
+                ajax: { id: "x_City", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.City.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.City.Visible (end) *@
+@if (crewFormalEducationForAdminList.Attachment.Visible) { // crewFormalEducationForAdminList.Attachment.Visible (begin)
+    if (!crewFormalEducationForAdminList.Attachment.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Attachment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.Attachment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Attachment"
+            name="x_Attachment[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.Attachment.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_Attachment"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_Attachment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.Attachment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.Attachment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.Attachment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.Attachment.EditAttributes)>
+            @(crewFormalEducationForAdminList.Attachment.SelectOptionListHtml("x_Attachment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.Attachment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_Attachment",
+                selectId: "fCrewFormalEducationForAdminsrch_x_Attachment",
+                ajax: { id: "x_Attachment", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.Attachment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.Attachment.Visible (end) *@
+@if (crewFormalEducationForAdminList.StartDate.Visible) { // crewFormalEducationForAdminList.StartDate.Visible (begin)
+    if (!crewFormalEducationForAdminList.StartDate.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_StartDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.StartDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_StartDate"
+            name="x_StartDate[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.StartDate.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_StartDate"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_StartDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.StartDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.StartDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.StartDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.StartDate.EditAttributes)>
+            @(crewFormalEducationForAdminList.StartDate.SelectOptionListHtml("x_StartDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.StartDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_StartDate",
+                selectId: "fCrewFormalEducationForAdminsrch_x_StartDate",
+                ajax: { id: "x_StartDate", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.StartDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.StartDate.Visible (end) *@
+@if (crewFormalEducationForAdminList.EndDate.Visible) { // crewFormalEducationForAdminList.EndDate.Visible (begin)
+    if (!crewFormalEducationForAdminList.EndDate.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_EndDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.EndDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_EndDate"
+            name="x_EndDate[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.EndDate.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_EndDate"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_EndDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.EndDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.EndDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.EndDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.EndDate.EditAttributes)>
+            @(crewFormalEducationForAdminList.EndDate.SelectOptionListHtml("x_EndDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.EndDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_EndDate",
+                selectId: "fCrewFormalEducationForAdminsrch_x_EndDate",
+                ajax: { id: "x_EndDate", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.EndDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.EndDate.Visible (end) *@
+@if (crewFormalEducationForAdminList.MTCrewID.Visible) { // crewFormalEducationForAdminList.MTCrewID.Visible (begin)
+    if (!crewFormalEducationForAdminList.MTCrewID.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_MTCrewID"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.MTCrewID.EditAttributes)>
+            @(crewFormalEducationForAdminList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewFormalEducationForAdminsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.MTCrewID.Visible (end) *@
+@if (crewFormalEducationForAdminList.CreatedByUserID.Visible) { // crewFormalEducationForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewFormalEducationForAdminList.CreatedByUserID.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_CreatedByUserID"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewFormalEducationForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewFormalEducationForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewFormalEducationForAdminList.CreatedDateTime.Visible) { // crewFormalEducationForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewFormalEducationForAdminList.CreatedDateTime.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_CreatedDateTime"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewFormalEducationForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewFormalEducationForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewFormalEducationForAdminList.LastUpdatedByUserID.Visible) { // crewFormalEducationForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewFormalEducationForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewFormalEducationForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewFormalEducationForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewFormalEducationForAdminList.LastUpdatedDateTime.Visible) { // crewFormalEducationForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewFormalEducationForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewFormalEducationForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewFormalEducationForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewFormalEducationForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewFormalEducationForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewFormalEducationForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewFormalEducationForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewFormalEducationForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewFormalEducationForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewFormalEducationForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewFormalEducationForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewFormalEducationForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewFormalEducationForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewFormalEducationForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewFormalEducationForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewFormalEducationForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewFormalEducationForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewFormalEducationForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewFormalEducationForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewFormalEducationForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewFormalEducationForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewFormalEducationForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewFormalEducationForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewFormalEducationForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewFormalEducationForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewFormalEducationForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewFormalEducationForAdminList.ShowPageHeader()
+@crewFormalEducationForAdminList.ShowMessages()
+<main class="list @(crewFormalEducationForAdminList.TotalRecords == 0 && !crewFormalEducationForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewFormalEducationForAdminList.TotalRecords > 0 || !Empty(crewFormalEducationForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewFormalEducationForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewFormalEducationForAdminList.TableGridClass)">
+<form name="@(crewFormalEducationForAdminList.FormName)" id="@(crewFormalEducationForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewFormalEducationForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewFormalEducationForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewFormalEducationForAdmin" class="card-body ew-grid-middle-panel @(crewFormalEducationForAdminList.TableContainerClass)" style="@(crewFormalEducationForAdminList.TableContainerStyle)">
+@if (crewFormalEducationForAdminList.TotalRecords > 0 || crewFormalEducationForAdminList.IsGridEdit || crewFormalEducationForAdminList.IsMultiEdit) {
+<table id="tbl_CrewFormalEducationForAdminlist" class="@(crewFormalEducationForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewFormalEducationForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewFormalEducationForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewFormalEducationForAdminList.ListOptions.RenderHeader("left")
+@if (crewFormalEducationForAdminList.EducationLevel.Visible) { // crewFormalEducationForAdminList.EducationLevel.Visible (begin)
+        <th data-name="EducationLevel" class="@(crewFormalEducationForAdminList.EducationLevel.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_EducationLevel" class="CrewFormalEducationForAdmin_EducationLevel">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.EducationLevel))</div></th>
+} @* crewFormalEducationForAdminList.EducationLevel.Visible (end) *@
+@if (crewFormalEducationForAdminList.SchoolName.Visible) { // crewFormalEducationForAdminList.SchoolName.Visible (begin)
+        <th data-name="SchoolName" class="@(crewFormalEducationForAdminList.SchoolName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_SchoolName" class="CrewFormalEducationForAdmin_SchoolName">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.SchoolName))</div></th>
+} @* crewFormalEducationForAdminList.SchoolName.Visible (end) *@
+@if (crewFormalEducationForAdminList.City.Visible) { // crewFormalEducationForAdminList.City.Visible (begin)
+        <th data-name="City" class="@(crewFormalEducationForAdminList.City.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_City" class="CrewFormalEducationForAdmin_City">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.City))</div></th>
+} @* crewFormalEducationForAdminList.City.Visible (end) *@
+@if (crewFormalEducationForAdminList.Attachment.Visible) { // crewFormalEducationForAdminList.Attachment.Visible (begin)
+        <th data-name="Attachment" class="@(crewFormalEducationForAdminList.Attachment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_Attachment" class="CrewFormalEducationForAdmin_Attachment">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.Attachment))</div></th>
+} @* crewFormalEducationForAdminList.Attachment.Visible (end) *@
+@if (crewFormalEducationForAdminList.StartDate.Visible) { // crewFormalEducationForAdminList.StartDate.Visible (begin)
+        <th data-name="StartDate" class="@(crewFormalEducationForAdminList.StartDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_StartDate" class="CrewFormalEducationForAdmin_StartDate">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.StartDate))</div></th>
+} @* crewFormalEducationForAdminList.StartDate.Visible (end) *@
+@if (crewFormalEducationForAdminList.EndDate.Visible) { // crewFormalEducationForAdminList.EndDate.Visible (begin)
+        <th data-name="EndDate" class="@(crewFormalEducationForAdminList.EndDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_EndDate" class="CrewFormalEducationForAdmin_EndDate">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.EndDate))</div></th>
+} @* crewFormalEducationForAdminList.EndDate.Visible (end) *@
+@if (crewFormalEducationForAdminList.MTCrewID.Visible) { // crewFormalEducationForAdminList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewFormalEducationForAdminList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_MTCrewID" class="CrewFormalEducationForAdmin_MTCrewID">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.MTCrewID))</div></th>
+} @* crewFormalEducationForAdminList.MTCrewID.Visible (end) *@
+@if (crewFormalEducationForAdminList.CreatedByUserID.Visible) { // crewFormalEducationForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewFormalEducationForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_CreatedByUserID" class="CrewFormalEducationForAdmin_CreatedByUserID">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.CreatedByUserID))</div></th>
+} @* crewFormalEducationForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewFormalEducationForAdminList.CreatedDateTime.Visible) { // crewFormalEducationForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewFormalEducationForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_CreatedDateTime" class="CrewFormalEducationForAdmin_CreatedDateTime">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.CreatedDateTime))</div></th>
+} @* crewFormalEducationForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewFormalEducationForAdminList.LastUpdatedByUserID.Visible) { // crewFormalEducationForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewFormalEducationForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_LastUpdatedByUserID" class="CrewFormalEducationForAdmin_LastUpdatedByUserID">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewFormalEducationForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewFormalEducationForAdminList.LastUpdatedDateTime.Visible) { // crewFormalEducationForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewFormalEducationForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewFormalEducationForAdmin_LastUpdatedDateTime" class="CrewFormalEducationForAdmin_LastUpdatedDateTime">@Html.Raw(crewFormalEducationForAdminList.RenderFieldHeader(crewFormalEducationForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewFormalEducationForAdminList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewFormalEducationForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewFormalEducationForAdminList.PageNumber)">
+@{
+    await crewFormalEducationForAdminList.SetupGrid();
+    bool eof = crewFormalEducationForAdminList.Recordset == null; // DN
+}
+@while (crewFormalEducationForAdminList.RecordCount < crewFormalEducationForAdminList.StopRecord || SameString(crewFormalEducationForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewFormalEducationForAdminList.RowIndex, "$rowindex$") &&
+        (!crewFormalEducationForAdminList.IsGridAdd || crewFormalEducationForAdminList.CurrentMode == "copy") &&
+        (!((crewFormalEducationForAdminList.IsCopy || crewFormalEducationForAdminList.IsAdd) && crewFormalEducationForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewFormalEducationForAdminList.Recordset.ReadAsync();
+    crewFormalEducationForAdminList.RecordCount++;
+    if (crewFormalEducationForAdminList.RecordCount >= crewFormalEducationForAdminList.StartRecord) {
+        await crewFormalEducationForAdminList.SetupRow();
+    <tr @Html.Raw(crewFormalEducationForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewFormalEducationForAdminList.ListOptions.RenderBody("left", crewFormalEducationForAdminList.RowCount)
+    @if (crewFormalEducationForAdminList.EducationLevel.Visible) { // crewFormalEducationForAdminList.EducationLevel.Visible (begin)
+        <td data-name="EducationLevel" @Html.Raw(crewFormalEducationForAdminList.EducationLevel.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_EducationLevel" class="el_CrewFormalEducationForAdmin_EducationLevel">
+<span @Html.Raw(crewFormalEducationForAdminList.EducationLevel.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.EducationLevel.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.EducationLevel.Visible (end) *@
+    @if (crewFormalEducationForAdminList.SchoolName.Visible) { // crewFormalEducationForAdminList.SchoolName.Visible (begin)
+        <td data-name="SchoolName" @Html.Raw(crewFormalEducationForAdminList.SchoolName.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_SchoolName" class="el_CrewFormalEducationForAdmin_SchoolName">
+<span @Html.Raw(crewFormalEducationForAdminList.SchoolName.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.SchoolName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.SchoolName.Visible (end) *@
+    @if (crewFormalEducationForAdminList.City.Visible) { // crewFormalEducationForAdminList.City.Visible (begin)
+        <td data-name="City" @Html.Raw(crewFormalEducationForAdminList.City.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_City" class="el_CrewFormalEducationForAdmin_City">
+<span @Html.Raw(crewFormalEducationForAdminList.City.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.City.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.City.Visible (end) *@
+    @if (crewFormalEducationForAdminList.Attachment.Visible) { // crewFormalEducationForAdminList.Attachment.Visible (begin)
+        <td data-name="Attachment" @Html.Raw(crewFormalEducationForAdminList.Attachment.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_Attachment" class="el_CrewFormalEducationForAdmin_Attachment">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewFormalEducationForAdminList.Attachment, ConvertToString(crewFormalEducationForAdminList.Attachment.GetViewValue()), false))
+</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.Attachment.Visible (end) *@
+    @if (crewFormalEducationForAdminList.StartDate.Visible) { // crewFormalEducationForAdminList.StartDate.Visible (begin)
+        <td data-name="StartDate" @Html.Raw(crewFormalEducationForAdminList.StartDate.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_StartDate" class="el_CrewFormalEducationForAdmin_StartDate">
+<span @Html.Raw(crewFormalEducationForAdminList.StartDate.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.StartDate.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.StartDate.Visible (end) *@
+    @if (crewFormalEducationForAdminList.EndDate.Visible) { // crewFormalEducationForAdminList.EndDate.Visible (begin)
+        <td data-name="EndDate" @Html.Raw(crewFormalEducationForAdminList.EndDate.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_EndDate" class="el_CrewFormalEducationForAdmin_EndDate">
+<span @Html.Raw(crewFormalEducationForAdminList.EndDate.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.EndDate.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.EndDate.Visible (end) *@
+    @if (crewFormalEducationForAdminList.MTCrewID.Visible) { // crewFormalEducationForAdminList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewFormalEducationForAdminList.MTCrewID.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_MTCrewID" class="el_CrewFormalEducationForAdmin_MTCrewID">
+<span @Html.Raw(crewFormalEducationForAdminList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.MTCrewID.Visible (end) *@
+    @if (crewFormalEducationForAdminList.CreatedByUserID.Visible) { // crewFormalEducationForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewFormalEducationForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_CreatedByUserID" class="el_CrewFormalEducationForAdmin_CreatedByUserID">
+<span @Html.Raw(crewFormalEducationForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewFormalEducationForAdminList.CreatedDateTime.Visible) { // crewFormalEducationForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewFormalEducationForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_CreatedDateTime" class="el_CrewFormalEducationForAdmin_CreatedDateTime">
+<span @Html.Raw(crewFormalEducationForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewFormalEducationForAdminList.LastUpdatedByUserID.Visible) { // crewFormalEducationForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewFormalEducationForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_LastUpdatedByUserID" class="el_CrewFormalEducationForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewFormalEducationForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewFormalEducationForAdminList.LastUpdatedDateTime.Visible) { // crewFormalEducationForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewFormalEducationForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewFormalEducationForAdminList.RowCount)_CrewFormalEducationForAdmin_LastUpdatedDateTime" class="el_CrewFormalEducationForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewFormalEducationForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewFormalEducationForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewFormalEducationForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewFormalEducationForAdminList.ListOptions.RenderBody("right", crewFormalEducationForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewFormalEducationForAdminList.RowIndex, "$rowindex$"))
+        crewFormalEducationForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewFormalEducationForAdminList.IsCopy || crewFormalEducationForAdminList.IsAdd) && crewFormalEducationForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewFormalEducationForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewFormalEducationForAdminList.CurrentAction) && !crewFormalEducationForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewFormalEducationForAdminList.CloseRecordset(); }
+@if (!crewFormalEducationForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewFormalEducationForAdminList.IsGridAdd && !(crewFormalEducationForAdminList.IsGridEdit && crewFormalEducationForAdminList.ModalGridEdit) && !crewFormalEducationForAdminList.IsMultiEdit) {
+@Html.Raw(crewFormalEducationForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewFormalEducationForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewFormalEducationForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewFormalEducationForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewFormalEducationForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewFormalEducationForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

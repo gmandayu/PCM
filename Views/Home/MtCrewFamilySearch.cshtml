@@ -1,0 +1,869 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewFamilySearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewFamilySearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewFamilySearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewFamily: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewFamilysearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewFamilysearch")
+        .setPageId("search")
+@if (mtCrewFamilySearch.IsModal && mtCrewFamilySearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["Relationship", [], fields.Relationship.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["DateOfBirth", [ew.Validators.datetime(fields.DateOfBirth.clientFormatPattern)], fields.DateOfBirth.isInvalid],
+            ["MobileNumberCode_CountryID", [ew.Validators.integer], fields.MobileNumberCode_CountryID.isInvalid],
+            ["MobileNumber", [], fields.MobileNumber.isInvalid],
+            ["_Email", [], fields._Email.isInvalid],
+            ["SocialSecurityNumber", [], fields.SocialSecurityNumber.isInvalid],
+            ["FamilyRegisterNumber", [], fields.FamilyRegisterNumber.isInvalid],
+            ["Address", [], fields.Address.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid],
+            ["PassportValidUntil", [ew.Validators.datetime(fields.PassportValidUntil.clientFormatPattern)], fields.PassportValidUntil.isInvalid],
+            ["PassportPlaceIssued", [], fields.PassportPlaceIssued.isInvalid],
+            ["PassportDateIssued", [ew.Validators.datetime(fields.PassportDateIssued.clientFormatPattern)], fields.PassportDateIssued.isInvalid],
+            ["PassportNumber", [], fields.PassportNumber.isInvalid],
+            ["FirstName", [], fields.FirstName.isInvalid],
+            ["LastName", [], fields.LastName.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewFamilySearch.MTCrewID.ToClientList(mtCrewFamilySearch)),
+            "Relationship": @Html.Raw(mtCrewFamilySearch.Relationship.ToClientList(mtCrewFamilySearch)),
+            "Gender": @Html.Raw(mtCrewFamilySearch.Gender.ToClientList(mtCrewFamilySearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewFamilySearch.CreatedByUserID.ToClientList(mtCrewFamilySearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewFamilySearch.LastUpdatedByUserID.ToClientList(mtCrewFamilySearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewFamilySearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewFamilySearch.ShowPageHeader()
+@mtCrewFamilySearch.ShowMessages()
+<form name="fMTCrewFamilysearch" id="fMTCrewFamilysearch" class="@(mtCrewFamilySearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewFamilySearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewFamilySearch.MTCrewID.Visible) { // mtCrewFamilySearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(mtCrewFamilySearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_MTCrewID">@Html.Raw(mtCrewFamilySearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_MTCrewID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTCrewID"
+        name="x_MTCrewID"
+        class="form-select ew-select@(mtCrewFamilySearch.MTCrewID.IsInvalidClass)"
+        data-select2-id="fMTCrewFamilysearch_x_MTCrewID"
+        data-table="MTCrewFamily"
+        data-field="x_MTCrewID"
+        data-value-separator="@(mtCrewFamilySearch.MTCrewID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewFamilySearch.MTCrewID.PlaceHolder))"
+        @Html.Raw(mtCrewFamilySearch.MTCrewID.EditAttributes)>
+        @(mtCrewFamilySearch.MTCrewID.SelectOptionListHtml("x_MTCrewID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.MTCrewID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewFamilySearch.MTCrewID.Lookup.GetParamTag(mtCrewFamilySearch, "p_x_MTCrewID"))
+<script>
+loadjs.ready("fMTCrewFamilysearch", function() {
+    var options = { name: "x_MTCrewID", selectId: "fMTCrewFamilysearch_x_MTCrewID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewFamilysearch.lists.MTCrewID?.lookupOptions.length) {
+        options.data = { id: "x_MTCrewID", form: "fMTCrewFamilysearch" };
+    } else {
+        options.ajax = { id: "x_MTCrewID", form: "fMTCrewFamilysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.MTCrewID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.MTCrewID.Visible (end) *@
+@if (mtCrewFamilySearch.Relationship.Visible) { // mtCrewFamilySearch.Relationship.Visible (begin)
+    <div id="r_Relationship" class="row" @Html.Raw(mtCrewFamilySearch.Relationship.RowAttributes)>
+        <label for="x_Relationship" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_Relationship">@Html.Raw(mtCrewFamilySearch.Relationship.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Relationship" id="z_Relationship" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.Relationship.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_Relationship" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Relationship"
+        name="x_Relationship"
+        class="form-select ew-select@(mtCrewFamilySearch.Relationship.IsInvalidClass)"
+        data-select2-id="fMTCrewFamilysearch_x_Relationship"
+        data-table="MTCrewFamily"
+        data-field="x_Relationship"
+        data-value-separator="@(mtCrewFamilySearch.Relationship.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewFamilySearch.Relationship.PlaceHolder))"
+        @Html.Raw(mtCrewFamilySearch.Relationship.EditAttributes)>
+        @(mtCrewFamilySearch.Relationship.SelectOptionListHtml("x_Relationship"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.Relationship.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTCrewFamilysearch", function() {
+    var options = { name: "x_Relationship", selectId: "fMTCrewFamilysearch_x_Relationship" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewFamilysearch.lists.Relationship?.lookupOptions.length) {
+        options.data = { id: "x_Relationship", form: "fMTCrewFamilysearch" };
+    } else {
+        options.ajax = { id: "x_Relationship", form: "fMTCrewFamilysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.Relationship.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.Relationship.Visible (end) *@
+@if (mtCrewFamilySearch.FullName.Visible) { // mtCrewFamilySearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(mtCrewFamilySearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_FullName">@Html.Raw(mtCrewFamilySearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="MTCrewFamily" data-field="x_FullName" value="@Html.Raw(mtCrewFamilySearch.FullName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.FullName.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.FullName.FormatPattern)"@Html.Raw(mtCrewFamilySearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.FullName.Visible (end) *@
+@if (mtCrewFamilySearch.Gender.Visible) { // mtCrewFamilySearch.Gender.Visible (begin)
+    <div id="r_Gender" class="row" @Html.Raw(mtCrewFamilySearch.Gender.RowAttributes)>
+        <label for="x_Gender" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_Gender">@Html.Raw(mtCrewFamilySearch.Gender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Gender" id="z_Gender" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.Gender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_Gender" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Gender"
+        name="x_Gender"
+        class="form-select ew-select@(mtCrewFamilySearch.Gender.IsInvalidClass)"
+        data-select2-id="fMTCrewFamilysearch_x_Gender"
+        data-table="MTCrewFamily"
+        data-field="x_Gender"
+        data-value-separator="@(mtCrewFamilySearch.Gender.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewFamilySearch.Gender.PlaceHolder))"
+        @Html.Raw(mtCrewFamilySearch.Gender.EditAttributes)>
+        @(mtCrewFamilySearch.Gender.SelectOptionListHtml("x_Gender"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.Gender.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTCrewFamilysearch", function() {
+    var options = { name: "x_Gender", selectId: "fMTCrewFamilysearch_x_Gender" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewFamilysearch.lists.Gender?.lookupOptions.length) {
+        options.data = { id: "x_Gender", form: "fMTCrewFamilysearch" };
+    } else {
+        options.ajax = { id: "x_Gender", form: "fMTCrewFamilysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.Gender.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.Gender.Visible (end) *@
+@if (mtCrewFamilySearch.DateOfBirth.Visible) { // mtCrewFamilySearch.DateOfBirth.Visible (begin)
+    <div id="r_DateOfBirth" class="row" @Html.Raw(mtCrewFamilySearch.DateOfBirth.RowAttributes)>
+        <label for="x_DateOfBirth" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_DateOfBirth">@Html.Raw(mtCrewFamilySearch.DateOfBirth.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateOfBirth" id="z_DateOfBirth" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.DateOfBirth.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_DateOfBirth" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.DateOfBirth.InputTextType)" name="x_DateOfBirth" id="x_DateOfBirth" data-table="MTCrewFamily" data-field="x_DateOfBirth" value="@Html.Raw(mtCrewFamilySearch.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.DateOfBirth.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.DateOfBirth.FormatPattern)"@Html.Raw(mtCrewFamilySearch.DateOfBirth.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.DateOfBirth.GetErrorMessage(false))</div>
+@if (!mtCrewFamilySearch.DateOfBirth.ReadOnly && !mtCrewFamilySearch.DateOfBirth.Disabled && !mtCrewFamilySearch.DateOfBirth.EditAttrs.Is("readonly") && !mtCrewFamilySearch.DateOfBirth.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFamilysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFamilysearch", "x_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.DateOfBirth.Visible (end) *@
+@if (mtCrewFamilySearch.MobileNumberCode_CountryID.Visible) { // mtCrewFamilySearch.MobileNumberCode_CountryID.Visible (begin)
+    <div id="r_MobileNumberCode_CountryID" class="row" @Html.Raw(mtCrewFamilySearch.MobileNumberCode_CountryID.RowAttributes)>
+        <label for="x_MobileNumberCode_CountryID" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_MobileNumberCode_CountryID">@Html.Raw(mtCrewFamilySearch.MobileNumberCode_CountryID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MobileNumberCode_CountryID" id="z_MobileNumberCode_CountryID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.MobileNumberCode_CountryID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_MobileNumberCode_CountryID" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.MobileNumberCode_CountryID.InputTextType)" name="x_MobileNumberCode_CountryID" id="x_MobileNumberCode_CountryID" data-table="MTCrewFamily" data-field="x_MobileNumberCode_CountryID" value="@Html.Raw(mtCrewFamilySearch.MobileNumberCode_CountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.MobileNumberCode_CountryID.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.MobileNumberCode_CountryID.FormatPattern)"@Html.Raw(mtCrewFamilySearch.MobileNumberCode_CountryID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.MobileNumberCode_CountryID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.MobileNumberCode_CountryID.Visible (end) *@
+@if (mtCrewFamilySearch.MobileNumber.Visible) { // mtCrewFamilySearch.MobileNumber.Visible (begin)
+    <div id="r_MobileNumber" class="row" @Html.Raw(mtCrewFamilySearch.MobileNumber.RowAttributes)>
+        <label for="x_MobileNumber" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_MobileNumber">@Html.Raw(mtCrewFamilySearch.MobileNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_MobileNumber" id="z_MobileNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.MobileNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_MobileNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.MobileNumber.InputTextType)" name="x_MobileNumber" id="x_MobileNumber" data-table="MTCrewFamily" data-field="x_MobileNumber" value="@Html.Raw(mtCrewFamilySearch.MobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.MobileNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.MobileNumber.FormatPattern)"@Html.Raw(mtCrewFamilySearch.MobileNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.MobileNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.MobileNumber.Visible (end) *@
+@if (mtCrewFamilySearch._Email.Visible) { // mtCrewFamilySearch._Email.Visible (begin)
+    <div id="r__Email" class="row" @Html.Raw(mtCrewFamilySearch._Email.RowAttributes)>
+        <label for="x__Email" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily__Email">@Html.Raw(mtCrewFamilySearch._Email.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Email" id="z__Email" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch._Email.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily__Email" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch._Email.InputTextType)" name="x__Email" id="x__Email" data-table="MTCrewFamily" data-field="x__Email" value="@Html.Raw(mtCrewFamilySearch._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch._Email.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch._Email.FormatPattern)"@Html.Raw(mtCrewFamilySearch._Email.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch._Email.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch._Email.Visible (end) *@
+@if (mtCrewFamilySearch.SocialSecurityNumber.Visible) { // mtCrewFamilySearch.SocialSecurityNumber.Visible (begin)
+    <div id="r_SocialSecurityNumber" class="row" @Html.Raw(mtCrewFamilySearch.SocialSecurityNumber.RowAttributes)>
+        <label for="x_SocialSecurityNumber" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_SocialSecurityNumber">@Html.Raw(mtCrewFamilySearch.SocialSecurityNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SocialSecurityNumber" id="z_SocialSecurityNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.SocialSecurityNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_SocialSecurityNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.SocialSecurityNumber.InputTextType)" name="x_SocialSecurityNumber" id="x_SocialSecurityNumber" data-table="MTCrewFamily" data-field="x_SocialSecurityNumber" value="@Html.Raw(mtCrewFamilySearch.SocialSecurityNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.SocialSecurityNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.SocialSecurityNumber.FormatPattern)"@Html.Raw(mtCrewFamilySearch.SocialSecurityNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.SocialSecurityNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.SocialSecurityNumber.Visible (end) *@
+@if (mtCrewFamilySearch.FamilyRegisterNumber.Visible) { // mtCrewFamilySearch.FamilyRegisterNumber.Visible (begin)
+    <div id="r_FamilyRegisterNumber" class="row" @Html.Raw(mtCrewFamilySearch.FamilyRegisterNumber.RowAttributes)>
+        <label for="x_FamilyRegisterNumber" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_FamilyRegisterNumber">@Html.Raw(mtCrewFamilySearch.FamilyRegisterNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FamilyRegisterNumber" id="z_FamilyRegisterNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.FamilyRegisterNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_FamilyRegisterNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.FamilyRegisterNumber.InputTextType)" name="x_FamilyRegisterNumber" id="x_FamilyRegisterNumber" data-table="MTCrewFamily" data-field="x_FamilyRegisterNumber" value="@Html.Raw(mtCrewFamilySearch.FamilyRegisterNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.FamilyRegisterNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.FamilyRegisterNumber.FormatPattern)"@Html.Raw(mtCrewFamilySearch.FamilyRegisterNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.FamilyRegisterNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.FamilyRegisterNumber.Visible (end) *@
+@if (mtCrewFamilySearch.Address.Visible) { // mtCrewFamilySearch.Address.Visible (begin)
+    <div id="r_Address" class="row" @Html.Raw(mtCrewFamilySearch.Address.RowAttributes)>
+        <label for="x_Address" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_Address">@Html.Raw(mtCrewFamilySearch.Address.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Address" id="z_Address" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.Address.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_Address" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.Address.InputTextType)" name="x_Address" id="x_Address" data-table="MTCrewFamily" data-field="x_Address" value="@Html.Raw(mtCrewFamilySearch.Address.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.Address.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.Address.FormatPattern)"@Html.Raw(mtCrewFamilySearch.Address.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.Address.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.Address.Visible (end) *@
+@if (mtCrewFamilySearch.CreatedByUserID.Visible) { // mtCrewFamilySearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewFamilySearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_CreatedByUserID">@Html.Raw(mtCrewFamilySearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewFamilySearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewFamilysearch_x_CreatedByUserID"
+        data-table="MTCrewFamily"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewFamilySearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewFamilySearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewFamilySearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewFamilySearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewFamilySearch.CreatedByUserID.Lookup.GetParamTag(mtCrewFamilySearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewFamilysearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewFamilysearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewFamilysearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewFamilysearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewFamilysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewFamilySearch.CreatedDateTime.Visible) { // mtCrewFamilySearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewFamilySearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_CreatedDateTime">@Html.Raw(mtCrewFamilySearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrewFamily" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewFamilySearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewFamilySearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewFamilySearch.CreatedDateTime.ReadOnly && !mtCrewFamilySearch.CreatedDateTime.Disabled && !mtCrewFamilySearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewFamilySearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFamilysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFamilysearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewFamilySearch.LastUpdatedByUserID.Visible) { // mtCrewFamilySearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewFamilySearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_LastUpdatedByUserID">@Html.Raw(mtCrewFamilySearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewFamilySearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewFamilysearch_x_LastUpdatedByUserID"
+        data-table="MTCrewFamily"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewFamilySearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewFamilySearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewFamilySearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewFamilySearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewFamilySearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewFamilySearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewFamilysearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewFamilysearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewFamilysearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewFamilysearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewFamilysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewFamilySearch.LastUpdatedDateTime.Visible) { // mtCrewFamilySearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewFamilySearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_LastUpdatedDateTime">@Html.Raw(mtCrewFamilySearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrewFamily" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewFamilySearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewFamilySearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewFamilySearch.LastUpdatedDateTime.ReadOnly && !mtCrewFamilySearch.LastUpdatedDateTime.Disabled && !mtCrewFamilySearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewFamilySearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFamilysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFamilysearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.LastUpdatedDateTime.Visible (end) *@
+@if (mtCrewFamilySearch.PassportValidUntil.Visible) { // mtCrewFamilySearch.PassportValidUntil.Visible (begin)
+    <div id="r_PassportValidUntil" class="row" @Html.Raw(mtCrewFamilySearch.PassportValidUntil.RowAttributes)>
+        <label for="x_PassportValidUntil" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_PassportValidUntil">@Html.Raw(mtCrewFamilySearch.PassportValidUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PassportValidUntil" id="z_PassportValidUntil" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.PassportValidUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_PassportValidUntil" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.PassportValidUntil.InputTextType)" name="x_PassportValidUntil" id="x_PassportValidUntil" data-table="MTCrewFamily" data-field="x_PassportValidUntil" value="@Html.Raw(mtCrewFamilySearch.PassportValidUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.PassportValidUntil.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.PassportValidUntil.FormatPattern)"@Html.Raw(mtCrewFamilySearch.PassportValidUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.PassportValidUntil.GetErrorMessage(false))</div>
+@if (!mtCrewFamilySearch.PassportValidUntil.ReadOnly && !mtCrewFamilySearch.PassportValidUntil.Disabled && !mtCrewFamilySearch.PassportValidUntil.EditAttrs.Is("readonly") && !mtCrewFamilySearch.PassportValidUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFamilysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFamilysearch", "x_PassportValidUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.PassportValidUntil.Visible (end) *@
+@if (mtCrewFamilySearch.PassportPlaceIssued.Visible) { // mtCrewFamilySearch.PassportPlaceIssued.Visible (begin)
+    <div id="r_PassportPlaceIssued" class="row" @Html.Raw(mtCrewFamilySearch.PassportPlaceIssued.RowAttributes)>
+        <label for="x_PassportPlaceIssued" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_PassportPlaceIssued">@Html.Raw(mtCrewFamilySearch.PassportPlaceIssued.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PassportPlaceIssued" id="z_PassportPlaceIssued" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.PassportPlaceIssued.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_PassportPlaceIssued" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.PassportPlaceIssued.InputTextType)" name="x_PassportPlaceIssued" id="x_PassportPlaceIssued" data-table="MTCrewFamily" data-field="x_PassportPlaceIssued" value="@Html.Raw(mtCrewFamilySearch.PassportPlaceIssued.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.PassportPlaceIssued.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.PassportPlaceIssued.FormatPattern)"@Html.Raw(mtCrewFamilySearch.PassportPlaceIssued.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.PassportPlaceIssued.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.PassportPlaceIssued.Visible (end) *@
+@if (mtCrewFamilySearch.PassportDateIssued.Visible) { // mtCrewFamilySearch.PassportDateIssued.Visible (begin)
+    <div id="r_PassportDateIssued" class="row" @Html.Raw(mtCrewFamilySearch.PassportDateIssued.RowAttributes)>
+        <label for="x_PassportDateIssued" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_PassportDateIssued">@Html.Raw(mtCrewFamilySearch.PassportDateIssued.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_PassportDateIssued" id="z_PassportDateIssued" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.PassportDateIssued.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_PassportDateIssued" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.PassportDateIssued.InputTextType)" name="x_PassportDateIssued" id="x_PassportDateIssued" data-table="MTCrewFamily" data-field="x_PassportDateIssued" value="@Html.Raw(mtCrewFamilySearch.PassportDateIssued.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.PassportDateIssued.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.PassportDateIssued.FormatPattern)"@Html.Raw(mtCrewFamilySearch.PassportDateIssued.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.PassportDateIssued.GetErrorMessage(false))</div>
+@if (!mtCrewFamilySearch.PassportDateIssued.ReadOnly && !mtCrewFamilySearch.PassportDateIssued.Disabled && !mtCrewFamilySearch.PassportDateIssued.EditAttrs.Is("readonly") && !mtCrewFamilySearch.PassportDateIssued.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewFamilysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewFamilysearch", "x_PassportDateIssued", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.PassportDateIssued.Visible (end) *@
+@if (mtCrewFamilySearch.PassportNumber.Visible) { // mtCrewFamilySearch.PassportNumber.Visible (begin)
+    <div id="r_PassportNumber" class="row" @Html.Raw(mtCrewFamilySearch.PassportNumber.RowAttributes)>
+        <label for="x_PassportNumber" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_PassportNumber">@Html.Raw(mtCrewFamilySearch.PassportNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PassportNumber" id="z_PassportNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.PassportNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_PassportNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.PassportNumber.InputTextType)" name="x_PassportNumber" id="x_PassportNumber" data-table="MTCrewFamily" data-field="x_PassportNumber" value="@Html.Raw(mtCrewFamilySearch.PassportNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.PassportNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.PassportNumber.FormatPattern)"@Html.Raw(mtCrewFamilySearch.PassportNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.PassportNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.PassportNumber.Visible (end) *@
+@if (mtCrewFamilySearch.FirstName.Visible) { // mtCrewFamilySearch.FirstName.Visible (begin)
+    <div id="r_FirstName" class="row" @Html.Raw(mtCrewFamilySearch.FirstName.RowAttributes)>
+        <label for="x_FirstName" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_FirstName">@Html.Raw(mtCrewFamilySearch.FirstName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FirstName" id="z_FirstName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.FirstName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_FirstName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.FirstName.InputTextType)" name="x_FirstName" id="x_FirstName" data-table="MTCrewFamily" data-field="x_FirstName" value="@Html.Raw(mtCrewFamilySearch.FirstName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.FirstName.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.FirstName.FormatPattern)"@Html.Raw(mtCrewFamilySearch.FirstName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.FirstName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.FirstName.Visible (end) *@
+@if (mtCrewFamilySearch.LastName.Visible) { // mtCrewFamilySearch.LastName.Visible (begin)
+    <div id="r_LastName" class="row" @Html.Raw(mtCrewFamilySearch.LastName.RowAttributes)>
+        <label for="x_LastName" class="@(mtCrewFamilySearch.LeftColumnClass)"><span id="elh_MTCrewFamily_LastName">@Html.Raw(mtCrewFamilySearch.LastName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_LastName" id="z_LastName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewFamilySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewFamilySearch.LastName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewFamily_LastName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewFamilySearch.LastName.InputTextType)" name="x_LastName" id="x_LastName" data-table="MTCrewFamily" data-field="x_LastName" value="@Html.Raw(mtCrewFamilySearch.LastName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilySearch.LastName.PlaceHolder))" data-format-pattern="@(mtCrewFamilySearch.LastName.FormatPattern)"@Html.Raw(mtCrewFamilySearch.LastName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewFamilySearch.LastName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewFamilySearch.LastName.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewFamilySearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewFamilySearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewFamilysearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewFamilySearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewFamilysearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewFamilysearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewFamilySearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewFamilySearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewFamily");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

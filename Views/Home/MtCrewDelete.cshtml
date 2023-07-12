@@ -1,0 +1,337 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewDelete.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewDelete.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewDelete.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrew: currentTable } });
+var currentPageID = ew.PAGE_ID = "delete";
+var currentForm;
+var fMTCrewdelete;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewdelete")
+        .setPageId("delete")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewDelete.ShowPageHeader()
+@mtCrewDelete.ShowMessages()
+<form name="fMTCrewdelete" id="fMTCrewdelete" class="ew-form ew-delete-form" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="delete">
+@foreach (string key in mtCrewDelete.RecordKeys) {
+<input type="hidden" name="key_m[]" value="@key">
+}
+<div class="card ew-card ew-grid @(mtCrewDelete.TableGridClass)">
+<div class="card-body ew-grid-middle-panel @(mtCrewDelete.TableContainerClass)" style="@(mtCrewDelete.TableContainerStyle)">
+<table class="@(mtCrewDelete.TableClass)">
+    <thead>
+    <tr class="ew-table-header">
+@if (mtCrewDelete.IndividualCodeNumber.Visible) { // mtCrewDelete.IndividualCodeNumber.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.IndividualCodeNumber.HeaderCellClass)"><span id="elh_MTCrew_IndividualCodeNumber" class="MTCrew_IndividualCodeNumber">@Html.Raw(mtCrewDelete.IndividualCodeNumber.Caption)</span></th>
+} @* mtCrewDelete.IndividualCodeNumber.Visible (end) *@
+@if (mtCrewDelete.FullName.Visible) { // mtCrewDelete.FullName.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.FullName.HeaderCellClass)"><span id="elh_MTCrew_FullName" class="MTCrew_FullName">@Html.Raw(mtCrewDelete.FullName.Caption)</span></th>
+} @* mtCrewDelete.FullName.Visible (end) *@
+@if (mtCrewDelete.RequiredPhoto.Visible) { // mtCrewDelete.RequiredPhoto.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.RequiredPhoto.HeaderCellClass)"><span id="elh_MTCrew_RequiredPhoto" class="MTCrew_RequiredPhoto">@Html.Raw(mtCrewDelete.RequiredPhoto.Caption)</span></th>
+} @* mtCrewDelete.RequiredPhoto.Visible (end) *@
+@if (mtCrewDelete.VisaPhoto.Visible) { // mtCrewDelete.VisaPhoto.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.VisaPhoto.HeaderCellClass)"><span id="elh_MTCrew_VisaPhoto" class="MTCrew_VisaPhoto">@Html.Raw(mtCrewDelete.VisaPhoto.Caption)</span></th>
+} @* mtCrewDelete.VisaPhoto.Visible (end) *@
+@if (mtCrewDelete.Nationality_CountryID.Visible) { // mtCrewDelete.Nationality_CountryID.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.Nationality_CountryID.HeaderCellClass)"><span id="elh_MTCrew_Nationality_CountryID" class="MTCrew_Nationality_CountryID">@Html.Raw(mtCrewDelete.Nationality_CountryID.Caption)</span></th>
+} @* mtCrewDelete.Nationality_CountryID.Visible (end) *@
+@if (mtCrewDelete.CountryOfOrigin_CountryID.Visible) { // mtCrewDelete.CountryOfOrigin_CountryID.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.CountryOfOrigin_CountryID.HeaderCellClass)"><span id="elh_MTCrew_CountryOfOrigin_CountryID" class="MTCrew_CountryOfOrigin_CountryID">@Html.Raw(mtCrewDelete.CountryOfOrigin_CountryID.Caption)</span></th>
+} @* mtCrewDelete.CountryOfOrigin_CountryID.Visible (end) *@
+@if (mtCrewDelete.DateOfBirth.Visible) { // mtCrewDelete.DateOfBirth.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.DateOfBirth.HeaderCellClass)"><span id="elh_MTCrew_DateOfBirth" class="MTCrew_DateOfBirth">@Html.Raw(mtCrewDelete.DateOfBirth.Caption)</span></th>
+} @* mtCrewDelete.DateOfBirth.Visible (end) *@
+@if (mtCrewDelete.CityOfBirth.Visible) { // mtCrewDelete.CityOfBirth.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.CityOfBirth.HeaderCellClass)"><span id="elh_MTCrew_CityOfBirth" class="MTCrew_CityOfBirth">@Html.Raw(mtCrewDelete.CityOfBirth.Caption)</span></th>
+} @* mtCrewDelete.CityOfBirth.Visible (end) *@
+@if (mtCrewDelete.MaritalStatus.Visible) { // mtCrewDelete.MaritalStatus.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.MaritalStatus.HeaderCellClass)"><span id="elh_MTCrew_MaritalStatus" class="MTCrew_MaritalStatus">@Html.Raw(mtCrewDelete.MaritalStatus.Caption)</span></th>
+} @* mtCrewDelete.MaritalStatus.Visible (end) *@
+@if (mtCrewDelete.Gender.Visible) { // mtCrewDelete.Gender.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.Gender.HeaderCellClass)"><span id="elh_MTCrew_Gender" class="MTCrew_Gender">@Html.Raw(mtCrewDelete.Gender.Caption)</span></th>
+} @* mtCrewDelete.Gender.Visible (end) *@
+@if (mtCrewDelete.ReligionID.Visible) { // mtCrewDelete.ReligionID.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.ReligionID.HeaderCellClass)"><span id="elh_MTCrew_ReligionID" class="MTCrew_ReligionID">@Html.Raw(mtCrewDelete.ReligionID.Caption)</span></th>
+} @* mtCrewDelete.ReligionID.Visible (end) *@
+@if (mtCrewDelete.RankAppliedFor_RankID.Visible) { // mtCrewDelete.RankAppliedFor_RankID.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.RankAppliedFor_RankID.HeaderCellClass)"><span id="elh_MTCrew_RankAppliedFor_RankID" class="MTCrew_RankAppliedFor_RankID">@Html.Raw(mtCrewDelete.RankAppliedFor_RankID.Caption)</span></th>
+} @* mtCrewDelete.RankAppliedFor_RankID.Visible (end) *@
+@if (mtCrewDelete.MobileNumber.Visible) { // mtCrewDelete.MobileNumber.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.MobileNumber.HeaderCellClass)"><span id="elh_MTCrew_MobileNumber" class="MTCrew_MobileNumber">@Html.Raw(mtCrewDelete.MobileNumber.Caption)</span></th>
+} @* mtCrewDelete.MobileNumber.Visible (end) *@
+@if (mtCrewDelete._Email.Visible) { // mtCrewDelete._Email.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete._Email.HeaderCellClass)"><span id="elh_MTCrew__Email" class="MTCrew__Email">@Html.Raw(mtCrewDelete._Email.Caption)</span></th>
+} @* mtCrewDelete._Email.Visible (end) *@
+@if (mtCrewDelete.EmployeeStatus.Visible) { // mtCrewDelete.EmployeeStatus.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.EmployeeStatus.HeaderCellClass)"><span id="elh_MTCrew_EmployeeStatus" class="MTCrew_EmployeeStatus">@Html.Raw(mtCrewDelete.EmployeeStatus.Caption)</span></th>
+} @* mtCrewDelete.EmployeeStatus.Visible (end) *@
+@if (mtCrewDelete.FormSubmittedDateTime.Visible) { // mtCrewDelete.FormSubmittedDateTime.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.FormSubmittedDateTime.HeaderCellClass)"><span id="elh_MTCrew_FormSubmittedDateTime" class="MTCrew_FormSubmittedDateTime">@Html.Raw(mtCrewDelete.FormSubmittedDateTime.Caption)</span></th>
+} @* mtCrewDelete.FormSubmittedDateTime.Visible (end) *@
+@if (mtCrewDelete.CreatedByUserID.Visible) { // mtCrewDelete.CreatedByUserID.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.CreatedByUserID.HeaderCellClass)"><span id="elh_MTCrew_CreatedByUserID" class="MTCrew_CreatedByUserID">@Html.Raw(mtCrewDelete.CreatedByUserID.Caption)</span></th>
+} @* mtCrewDelete.CreatedByUserID.Visible (end) *@
+@if (mtCrewDelete.CreatedDateTime.Visible) { // mtCrewDelete.CreatedDateTime.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.CreatedDateTime.HeaderCellClass)"><span id="elh_MTCrew_CreatedDateTime" class="MTCrew_CreatedDateTime">@Html.Raw(mtCrewDelete.CreatedDateTime.Caption)</span></th>
+} @* mtCrewDelete.CreatedDateTime.Visible (end) *@
+@if (mtCrewDelete.LastUpdatedByUserID.Visible) { // mtCrewDelete.LastUpdatedByUserID.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.LastUpdatedByUserID.HeaderCellClass)"><span id="elh_MTCrew_LastUpdatedByUserID" class="MTCrew_LastUpdatedByUserID">@Html.Raw(mtCrewDelete.LastUpdatedByUserID.Caption)</span></th>
+} @* mtCrewDelete.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewDelete.LastUpdatedDateTime.Visible) { // mtCrewDelete.LastUpdatedDateTime.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.LastUpdatedDateTime.HeaderCellClass)"><span id="elh_MTCrew_LastUpdatedDateTime" class="MTCrew_LastUpdatedDateTime">@Html.Raw(mtCrewDelete.LastUpdatedDateTime.Caption)</span></th>
+} @* mtCrewDelete.LastUpdatedDateTime.Visible (end) *@
+@if (mtCrewDelete.FinalAcceptedDate.Visible) { // mtCrewDelete.FinalAcceptedDate.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.FinalAcceptedDate.HeaderCellClass)"><span id="elh_MTCrew_FinalAcceptedDate" class="MTCrew_FinalAcceptedDate">@Html.Raw(mtCrewDelete.FinalAcceptedDate.Caption)</span></th>
+} @* mtCrewDelete.FinalAcceptedDate.Visible (end) *@
+@if (mtCrewDelete.RevisedReason.Visible) { // mtCrewDelete.RevisedReason.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.RevisedReason.HeaderCellClass)"><span id="elh_MTCrew_RevisedReason" class="MTCrew_RevisedReason">@Html.Raw(mtCrewDelete.RevisedReason.Caption)</span></th>
+} @* mtCrewDelete.RevisedReason.Visible (end) *@
+@if (mtCrewDelete.RevisedDateTime.Visible) { // mtCrewDelete.RevisedDateTime.Visible (begin)
+        <th class="@Html.Raw(mtCrewDelete.RevisedDateTime.HeaderCellClass)"><span id="elh_MTCrew_RevisedDateTime" class="MTCrew_RevisedDateTime">@Html.Raw(mtCrewDelete.RevisedDateTime.Caption)</span></th>
+} @* mtCrewDelete.RevisedDateTime.Visible (end) *@
+    </tr>
+    </thead>
+    <tbody>
+@{ mtCrewDelete.RecordCount = 0; }
+@while (mtCrewDelete.Recordset != null && await mtCrewDelete.Recordset.ReadAsync()) { // DN
+    mtCrewDelete.RecordCount++;
+    mtCrewDelete.RowCount++;
+
+    // Set row properties
+    mtCrewDelete.ResetAttributes();
+    mtCrewDelete.RowType = RowType.View; // View
+
+    // Get the field contents
+    await mtCrewDelete.LoadRowValues(mtCrewDelete.Recordset);
+
+    // Render row
+    await mtCrewDelete.RenderRow();
+    <tr @Html.Raw(mtCrewDelete.RowAttributes)>
+@if (mtCrewDelete.IndividualCodeNumber.Visible) { // mtCrewDelete.IndividualCodeNumber.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.IndividualCodeNumber.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_IndividualCodeNumber" class="el_MTCrew_IndividualCodeNumber">
+<span @Html.Raw(mtCrewDelete.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(mtCrewDelete.IndividualCodeNumber.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.IndividualCodeNumber.Visible (end) *@
+@if (mtCrewDelete.FullName.Visible) { // mtCrewDelete.FullName.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.FullName.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_FullName" class="el_MTCrew_FullName">
+<span @Html.Raw(mtCrewDelete.FullName.ViewAttributes)>
+@Html.Raw(mtCrewDelete.FullName.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.FullName.Visible (end) *@
+@if (mtCrewDelete.RequiredPhoto.Visible) { // mtCrewDelete.RequiredPhoto.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.RequiredPhoto.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_RequiredPhoto" class="el_MTCrew_RequiredPhoto">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)mtCrewDelete.RequiredPhoto, ConvertToString(mtCrewDelete.RequiredPhoto.GetViewValue()), false))
+</span>
+</span></td>
+} @* mtCrewDelete.RequiredPhoto.Visible (end) *@
+@if (mtCrewDelete.VisaPhoto.Visible) { // mtCrewDelete.VisaPhoto.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.VisaPhoto.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_VisaPhoto" class="el_MTCrew_VisaPhoto">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)mtCrewDelete.VisaPhoto, ConvertToString(mtCrewDelete.VisaPhoto.GetViewValue()), false))
+</span>
+</span></td>
+} @* mtCrewDelete.VisaPhoto.Visible (end) *@
+@if (mtCrewDelete.Nationality_CountryID.Visible) { // mtCrewDelete.Nationality_CountryID.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.Nationality_CountryID.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_Nationality_CountryID" class="el_MTCrew_Nationality_CountryID">
+<span @Html.Raw(mtCrewDelete.Nationality_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewDelete.Nationality_CountryID.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.Nationality_CountryID.Visible (end) *@
+@if (mtCrewDelete.CountryOfOrigin_CountryID.Visible) { // mtCrewDelete.CountryOfOrigin_CountryID.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.CountryOfOrigin_CountryID.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_CountryOfOrigin_CountryID" class="el_MTCrew_CountryOfOrigin_CountryID">
+<span @Html.Raw(mtCrewDelete.CountryOfOrigin_CountryID.ViewAttributes)>
+@Html.Raw(mtCrewDelete.CountryOfOrigin_CountryID.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.CountryOfOrigin_CountryID.Visible (end) *@
+@if (mtCrewDelete.DateOfBirth.Visible) { // mtCrewDelete.DateOfBirth.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.DateOfBirth.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_DateOfBirth" class="el_MTCrew_DateOfBirth">
+<span @Html.Raw(mtCrewDelete.DateOfBirth.ViewAttributes)>
+@Html.Raw(mtCrewDelete.DateOfBirth.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.DateOfBirth.Visible (end) *@
+@if (mtCrewDelete.CityOfBirth.Visible) { // mtCrewDelete.CityOfBirth.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.CityOfBirth.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_CityOfBirth" class="el_MTCrew_CityOfBirth">
+<span @Html.Raw(mtCrewDelete.CityOfBirth.ViewAttributes)>
+@Html.Raw(mtCrewDelete.CityOfBirth.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.CityOfBirth.Visible (end) *@
+@if (mtCrewDelete.MaritalStatus.Visible) { // mtCrewDelete.MaritalStatus.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.MaritalStatus.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_MaritalStatus" class="el_MTCrew_MaritalStatus">
+<span @Html.Raw(mtCrewDelete.MaritalStatus.ViewAttributes)>
+@Html.Raw(mtCrewDelete.MaritalStatus.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.MaritalStatus.Visible (end) *@
+@if (mtCrewDelete.Gender.Visible) { // mtCrewDelete.Gender.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.Gender.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_Gender" class="el_MTCrew_Gender">
+<span @Html.Raw(mtCrewDelete.Gender.ViewAttributes)>
+@Html.Raw(mtCrewDelete.Gender.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.Gender.Visible (end) *@
+@if (mtCrewDelete.ReligionID.Visible) { // mtCrewDelete.ReligionID.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.ReligionID.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_ReligionID" class="el_MTCrew_ReligionID">
+<span @Html.Raw(mtCrewDelete.ReligionID.ViewAttributes)>
+@Html.Raw(mtCrewDelete.ReligionID.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.ReligionID.Visible (end) *@
+@if (mtCrewDelete.RankAppliedFor_RankID.Visible) { // mtCrewDelete.RankAppliedFor_RankID.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.RankAppliedFor_RankID.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_RankAppliedFor_RankID" class="el_MTCrew_RankAppliedFor_RankID">
+<span @Html.Raw(mtCrewDelete.RankAppliedFor_RankID.ViewAttributes)>
+@Html.Raw(mtCrewDelete.RankAppliedFor_RankID.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.RankAppliedFor_RankID.Visible (end) *@
+@if (mtCrewDelete.MobileNumber.Visible) { // mtCrewDelete.MobileNumber.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.MobileNumber.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_MobileNumber" class="el_MTCrew_MobileNumber">
+<span @Html.Raw(mtCrewDelete.MobileNumber.ViewAttributes)>
+@Html.Raw(mtCrewDelete.MobileNumber.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.MobileNumber.Visible (end) *@
+@if (mtCrewDelete._Email.Visible) { // mtCrewDelete._Email.Visible (begin)
+        <td @Html.Raw(mtCrewDelete._Email.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew__Email" class="el_MTCrew__Email">
+<span @Html.Raw(mtCrewDelete._Email.ViewAttributes)>
+@Html.Raw(mtCrewDelete._Email.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete._Email.Visible (end) *@
+@if (mtCrewDelete.EmployeeStatus.Visible) { // mtCrewDelete.EmployeeStatus.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.EmployeeStatus.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_EmployeeStatus" class="el_MTCrew_EmployeeStatus">
+<span @Html.Raw(mtCrewDelete.EmployeeStatus.ViewAttributes)>
+@Html.Raw(mtCrewDelete.EmployeeStatus.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.EmployeeStatus.Visible (end) *@
+@if (mtCrewDelete.FormSubmittedDateTime.Visible) { // mtCrewDelete.FormSubmittedDateTime.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.FormSubmittedDateTime.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_FormSubmittedDateTime" class="el_MTCrew_FormSubmittedDateTime">
+<span @Html.Raw(mtCrewDelete.FormSubmittedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewDelete.FormSubmittedDateTime.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.FormSubmittedDateTime.Visible (end) *@
+@if (mtCrewDelete.CreatedByUserID.Visible) { // mtCrewDelete.CreatedByUserID.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.CreatedByUserID.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_CreatedByUserID" class="el_MTCrew_CreatedByUserID">
+<span @Html.Raw(mtCrewDelete.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewDelete.CreatedByUserID.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.CreatedByUserID.Visible (end) *@
+@if (mtCrewDelete.CreatedDateTime.Visible) { // mtCrewDelete.CreatedDateTime.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.CreatedDateTime.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_CreatedDateTime" class="el_MTCrew_CreatedDateTime">
+<span @Html.Raw(mtCrewDelete.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewDelete.CreatedDateTime.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.CreatedDateTime.Visible (end) *@
+@if (mtCrewDelete.LastUpdatedByUserID.Visible) { // mtCrewDelete.LastUpdatedByUserID.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_LastUpdatedByUserID" class="el_MTCrew_LastUpdatedByUserID">
+<span @Html.Raw(mtCrewDelete.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtCrewDelete.LastUpdatedByUserID.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewDelete.LastUpdatedDateTime.Visible) { // mtCrewDelete.LastUpdatedDateTime.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_LastUpdatedDateTime" class="el_MTCrew_LastUpdatedDateTime">
+<span @Html.Raw(mtCrewDelete.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewDelete.LastUpdatedDateTime.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.LastUpdatedDateTime.Visible (end) *@
+@if (mtCrewDelete.FinalAcceptedDate.Visible) { // mtCrewDelete.FinalAcceptedDate.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.FinalAcceptedDate.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_FinalAcceptedDate" class="el_MTCrew_FinalAcceptedDate">
+<span @Html.Raw(mtCrewDelete.FinalAcceptedDate.ViewAttributes)>
+@Html.Raw(mtCrewDelete.FinalAcceptedDate.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.FinalAcceptedDate.Visible (end) *@
+@if (mtCrewDelete.RevisedReason.Visible) { // mtCrewDelete.RevisedReason.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.RevisedReason.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_RevisedReason" class="el_MTCrew_RevisedReason">
+<span @Html.Raw(mtCrewDelete.RevisedReason.ViewAttributes)>
+@Html.Raw(mtCrewDelete.RevisedReason.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.RevisedReason.Visible (end) *@
+@if (mtCrewDelete.RevisedDateTime.Visible) { // mtCrewDelete.RevisedDateTime.Visible (begin)
+        <td @Html.Raw(mtCrewDelete.RevisedDateTime.CellAttributes)>
+<span id="el@(mtCrewDelete.RowCount)_MTCrew_RevisedDateTime" class="el_MTCrew_RevisedDateTime">
+<span @Html.Raw(mtCrewDelete.RevisedDateTime.ViewAttributes)>
+@Html.Raw(mtCrewDelete.RevisedDateTime.GetViewValue())</span>
+</span></td>
+} @* mtCrewDelete.RevisedDateTime.Visible (end) *@
+    </tr>
+}
+@{ mtCrewDelete.CloseRecordset(); }
+</tbody>
+</table>
+</div>
+</div>
+<div class="ew-buttons ew-desktop-buttons">
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("DeleteBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(mtCrewDelete.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+</div>
+</form>
+@mtCrewDelete.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

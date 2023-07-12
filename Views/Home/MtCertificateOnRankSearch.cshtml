@@ -1,0 +1,441 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCertificateOnRankSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCertificateOnRankSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCertificateOnRankSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCertificateOnRank: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCertificateOnRanksearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCertificateOnRanksearch")
+        .setPageId("search")
+@if (mtCertificateOnRankSearch.IsModal && mtCertificateOnRankSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTRankID", [], fields.MTRankID.isInvalid],
+            ["MTCertificateID", [], fields.MTCertificateID.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTRankID": @Html.Raw(mtCertificateOnRankSearch.MTRankID.ToClientList(mtCertificateOnRankSearch)),
+            "MTCertificateID": @Html.Raw(mtCertificateOnRankSearch.MTCertificateID.ToClientList(mtCertificateOnRankSearch)),
+            "CreatedByUserID": @Html.Raw(mtCertificateOnRankSearch.CreatedByUserID.ToClientList(mtCertificateOnRankSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCertificateOnRankSearch.LastUpdatedByUserID.ToClientList(mtCertificateOnRankSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCertificateOnRankSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCertificateOnRankSearch.ShowPageHeader()
+@mtCertificateOnRankSearch.ShowMessages()
+<form name="fMTCertificateOnRanksearch" id="fMTCertificateOnRanksearch" class="@(mtCertificateOnRankSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCertificateOnRankSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCertificateOnRankSearch.MTRankID.Visible) { // mtCertificateOnRankSearch.MTRankID.Visible (begin)
+    <div id="r_MTRankID" class="row" @Html.Raw(mtCertificateOnRankSearch.MTRankID.RowAttributes)>
+        <label for="x_MTRankID" class="@(mtCertificateOnRankSearch.LeftColumnClass)"><span id="elh_MTCertificateOnRank_MTRankID">@Html.Raw(mtCertificateOnRankSearch.MTRankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTRankID" id="z_MTRankID" value="=">
+</span>
+        </label>
+        <div class="@(mtCertificateOnRankSearch.RightColumnClass)">
+            <div @Html.Raw(mtCertificateOnRankSearch.MTRankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCertificateOnRank_MTRankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTRankID"
+        name="x_MTRankID"
+        class="form-select ew-select@(mtCertificateOnRankSearch.MTRankID.IsInvalidClass)"
+        data-select2-id="fMTCertificateOnRanksearch_x_MTRankID"
+        data-table="MTCertificateOnRank"
+        data-field="x_MTRankID"
+        data-value-separator="@(mtCertificateOnRankSearch.MTRankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCertificateOnRankSearch.MTRankID.PlaceHolder))"
+        @Html.Raw(mtCertificateOnRankSearch.MTRankID.EditAttributes)>
+        @(mtCertificateOnRankSearch.MTRankID.SelectOptionListHtml("x_MTRankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCertificateOnRankSearch.MTRankID.GetErrorMessage(false))</div>
+@Html.Raw(mtCertificateOnRankSearch.MTRankID.Lookup.GetParamTag(mtCertificateOnRankSearch, "p_x_MTRankID"))
+<script>
+loadjs.ready("fMTCertificateOnRanksearch", function() {
+    var options = { name: "x_MTRankID", selectId: "fMTCertificateOnRanksearch_x_MTRankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCertificateOnRanksearch.lists.MTRankID?.lookupOptions.length) {
+        options.data = { id: "x_MTRankID", form: "fMTCertificateOnRanksearch" };
+    } else {
+        options.ajax = { id: "x_MTRankID", form: "fMTCertificateOnRanksearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCertificateOnRank.fields.MTRankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCertificateOnRankSearch.MTRankID.Visible (end) *@
+@if (mtCertificateOnRankSearch.MTCertificateID.Visible) { // mtCertificateOnRankSearch.MTCertificateID.Visible (begin)
+    <div id="r_MTCertificateID" class="row" @Html.Raw(mtCertificateOnRankSearch.MTCertificateID.RowAttributes)>
+        <label for="x_MTCertificateID" class="@(mtCertificateOnRankSearch.LeftColumnClass)"><span id="elh_MTCertificateOnRank_MTCertificateID">@Html.Raw(mtCertificateOnRankSearch.MTCertificateID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCertificateID" id="z_MTCertificateID" value="=">
+</span>
+        </label>
+        <div class="@(mtCertificateOnRankSearch.RightColumnClass)">
+            <div @Html.Raw(mtCertificateOnRankSearch.MTCertificateID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCertificateOnRank_MTCertificateID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTCertificateID"
+        name="x_MTCertificateID"
+        class="form-select ew-select@(mtCertificateOnRankSearch.MTCertificateID.IsInvalidClass)"
+        data-select2-id="fMTCertificateOnRanksearch_x_MTCertificateID"
+        data-table="MTCertificateOnRank"
+        data-field="x_MTCertificateID"
+        data-value-separator="@(mtCertificateOnRankSearch.MTCertificateID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCertificateOnRankSearch.MTCertificateID.PlaceHolder))"
+        @Html.Raw(mtCertificateOnRankSearch.MTCertificateID.EditAttributes)>
+        @(mtCertificateOnRankSearch.MTCertificateID.SelectOptionListHtml("x_MTCertificateID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCertificateOnRankSearch.MTCertificateID.GetErrorMessage(false))</div>
+@Html.Raw(mtCertificateOnRankSearch.MTCertificateID.Lookup.GetParamTag(mtCertificateOnRankSearch, "p_x_MTCertificateID"))
+<script>
+loadjs.ready("fMTCertificateOnRanksearch", function() {
+    var options = { name: "x_MTCertificateID", selectId: "fMTCertificateOnRanksearch_x_MTCertificateID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCertificateOnRanksearch.lists.MTCertificateID?.lookupOptions.length) {
+        options.data = { id: "x_MTCertificateID", form: "fMTCertificateOnRanksearch" };
+    } else {
+        options.ajax = { id: "x_MTCertificateID", form: "fMTCertificateOnRanksearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCertificateOnRank.fields.MTCertificateID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCertificateOnRankSearch.MTCertificateID.Visible (end) *@
+@if (mtCertificateOnRankSearch.CreatedByUserID.Visible) { // mtCertificateOnRankSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCertificateOnRankSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCertificateOnRankSearch.LeftColumnClass)"><span id="elh_MTCertificateOnRank_CreatedByUserID">@Html.Raw(mtCertificateOnRankSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCertificateOnRankSearch.RightColumnClass)">
+            <div @Html.Raw(mtCertificateOnRankSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCertificateOnRank_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCertificateOnRankSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCertificateOnRanksearch_x_CreatedByUserID"
+        data-table="MTCertificateOnRank"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCertificateOnRankSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCertificateOnRankSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCertificateOnRankSearch.CreatedByUserID.EditAttributes)>
+        @(mtCertificateOnRankSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCertificateOnRankSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCertificateOnRankSearch.CreatedByUserID.Lookup.GetParamTag(mtCertificateOnRankSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCertificateOnRanksearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCertificateOnRanksearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCertificateOnRanksearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCertificateOnRanksearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCertificateOnRanksearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCertificateOnRank.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCertificateOnRankSearch.CreatedByUserID.Visible (end) *@
+@if (mtCertificateOnRankSearch.CreatedDateTime.Visible) { // mtCertificateOnRankSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCertificateOnRankSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCertificateOnRankSearch.LeftColumnClass)"><span id="elh_MTCertificateOnRank_CreatedDateTime">@Html.Raw(mtCertificateOnRankSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCertificateOnRankSearch.RightColumnClass)">
+            <div @Html.Raw(mtCertificateOnRankSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCertificateOnRank_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCertificateOnRankSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCertificateOnRank" data-field="x_CreatedDateTime" value="@Html.Raw(mtCertificateOnRankSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCertificateOnRankSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCertificateOnRankSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCertificateOnRankSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCertificateOnRankSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCertificateOnRankSearch.CreatedDateTime.ReadOnly && !mtCertificateOnRankSearch.CreatedDateTime.Disabled && !mtCertificateOnRankSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCertificateOnRankSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCertificateOnRanksearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCertificateOnRanksearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCertificateOnRankSearch.CreatedDateTime.Visible (end) *@
+@if (mtCertificateOnRankSearch.LastUpdatedByUserID.Visible) { // mtCertificateOnRankSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCertificateOnRankSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCertificateOnRankSearch.LeftColumnClass)"><span id="elh_MTCertificateOnRank_LastUpdatedByUserID">@Html.Raw(mtCertificateOnRankSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCertificateOnRankSearch.RightColumnClass)">
+            <div @Html.Raw(mtCertificateOnRankSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCertificateOnRank_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCertificateOnRankSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCertificateOnRanksearch_x_LastUpdatedByUserID"
+        data-table="MTCertificateOnRank"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCertificateOnRankSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCertificateOnRankSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCertificateOnRankSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCertificateOnRankSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCertificateOnRankSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCertificateOnRankSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCertificateOnRankSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCertificateOnRanksearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCertificateOnRanksearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCertificateOnRanksearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCertificateOnRanksearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCertificateOnRanksearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCertificateOnRank.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCertificateOnRankSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCertificateOnRankSearch.LastUpdatedDateTime.Visible) { // mtCertificateOnRankSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCertificateOnRankSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCertificateOnRankSearch.LeftColumnClass)"><span id="elh_MTCertificateOnRank_LastUpdatedDateTime">@Html.Raw(mtCertificateOnRankSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCertificateOnRankSearch.RightColumnClass)">
+            <div @Html.Raw(mtCertificateOnRankSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCertificateOnRank_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCertificateOnRankSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCertificateOnRank" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCertificateOnRankSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCertificateOnRankSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCertificateOnRankSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCertificateOnRankSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCertificateOnRankSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCertificateOnRankSearch.LastUpdatedDateTime.ReadOnly && !mtCertificateOnRankSearch.LastUpdatedDateTime.Disabled && !mtCertificateOnRankSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCertificateOnRankSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCertificateOnRanksearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCertificateOnRanksearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCertificateOnRankSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCertificateOnRankSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCertificateOnRankSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCertificateOnRanksearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCertificateOnRankSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCertificateOnRanksearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCertificateOnRanksearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCertificateOnRankSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCertificateOnRankSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCertificateOnRank");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

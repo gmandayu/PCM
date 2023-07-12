@@ -1,0 +1,904 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewDocumentForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewDocumentForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewDocumentForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewDocumentForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewDocumentForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewDocumentForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewDocumentForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewDocumentForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewDocumentForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTDocumentID": @Html.Raw(crewDocumentForAdminList.MTDocumentID.ToClientList(crewDocumentForAdminList)),
+            "Number": @Html.Raw(crewDocumentForAdminList.Number.ToClientList(crewDocumentForAdminList)),
+            "CountryOfIssue_CountryID": @Html.Raw(crewDocumentForAdminList.CountryOfIssue_CountryID.ToClientList(crewDocumentForAdminList)),
+            "DateOfIssue": @Html.Raw(crewDocumentForAdminList.DateOfIssue.ToClientList(crewDocumentForAdminList)),
+            "PlaceOfIssue": @Html.Raw(crewDocumentForAdminList.PlaceOfIssue.ToClientList(crewDocumentForAdminList)),
+            "DateValidUntil": @Html.Raw(crewDocumentForAdminList.DateValidUntil.ToClientList(crewDocumentForAdminList)),
+            "Image": @Html.Raw(crewDocumentForAdminList.Image.ToClientList(crewDocumentForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewDocumentForAdminList.CreatedByUserID.ToClientList(crewDocumentForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewDocumentForAdminList.CreatedDateTime.ToClientList(crewDocumentForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewDocumentForAdminList.LastUpdatedByUserID.ToClientList(crewDocumentForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewDocumentForAdminList.LastUpdatedDateTime.ToClientList(crewDocumentForAdminList)),
+            "IsDraft": @Html.Raw(crewDocumentForAdminList.IsDraft.ToClientList(crewDocumentForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewDocumentForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewDocumentForAdminList.TotalRecords > 0 && crewDocumentForAdminList.ExportOptions.Visible) {
+    crewDocumentForAdminList.ExportOptions.Render("body");
+}
+@if (crewDocumentForAdminList.ImportOptions.Visible) {
+    crewDocumentForAdminList.ImportOptions.Render("body");
+}
+@if (crewDocumentForAdminList.SearchOptions.Visible) {
+    crewDocumentForAdminList.SearchOptions.Render("body");
+}
+@if (crewDocumentForAdminList.FilterOptions.Visible) {
+    crewDocumentForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewDocumentForAdminList.ShowCurrentFilter) {
+    crewDocumentForAdminList.ShowFilterList();
+}
+@if (!crewDocumentForAdminList.IsModal) {
+<form name="fCrewDocumentForAdminsrch" id="fCrewDocumentForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewDocumentForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewDocumentForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewDocumentForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewDocumentForAdmin: currentTable } });
+var currentForm;
+var fCrewDocumentForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewDocumentForAdminsrch")
+        .setPageId("list")
+@if (crewDocumentForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTDocumentID", [], fields.MTDocumentID.isInvalid],
+            ["Number", [], fields.Number.isInvalid],
+            ["CountryOfIssue_CountryID", [], fields.CountryOfIssue_CountryID.isInvalid],
+            ["DateOfIssue", [], fields.DateOfIssue.isInvalid],
+            ["PlaceOfIssue", [], fields.PlaceOfIssue.isInvalid],
+            ["DateValidUntil", [], fields.DateValidUntil.isInvalid],
+            ["Image", [], fields.Image.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid],
+            ["IsDraft", [], fields.IsDraft.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTDocumentID": @Html.Raw(crewDocumentForAdminList.MTDocumentID.ToClientList(crewDocumentForAdminList)),
+            "Number": @Html.Raw(crewDocumentForAdminList.Number.ToClientList(crewDocumentForAdminList)),
+            "CountryOfIssue_CountryID": @Html.Raw(crewDocumentForAdminList.CountryOfIssue_CountryID.ToClientList(crewDocumentForAdminList)),
+            "DateOfIssue": @Html.Raw(crewDocumentForAdminList.DateOfIssue.ToClientList(crewDocumentForAdminList)),
+            "PlaceOfIssue": @Html.Raw(crewDocumentForAdminList.PlaceOfIssue.ToClientList(crewDocumentForAdminList)),
+            "DateValidUntil": @Html.Raw(crewDocumentForAdminList.DateValidUntil.ToClientList(crewDocumentForAdminList)),
+            "Image": @Html.Raw(crewDocumentForAdminList.Image.ToClientList(crewDocumentForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewDocumentForAdminList.CreatedByUserID.ToClientList(crewDocumentForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewDocumentForAdminList.CreatedDateTime.ToClientList(crewDocumentForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewDocumentForAdminList.LastUpdatedByUserID.ToClientList(crewDocumentForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewDocumentForAdminList.LastUpdatedDateTime.ToClientList(crewDocumentForAdminList)),
+            "IsDraft": @Html.Raw(crewDocumentForAdminList.IsDraft.ToClientList(crewDocumentForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewDocumentForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewDocumentForAdminList.IsExport() && Empty(crewDocumentForAdminList.CurrentAction) && crewDocumentForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewDocumentForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewDocumentForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewDocumentForAdminList.RowType = RowType.Search;
+    crewDocumentForAdminList.ResetAttributes();
+    await crewDocumentForAdminList.RenderRow();
+}
+@if (crewDocumentForAdminList.MTDocumentID.Visible) { // crewDocumentForAdminList.MTDocumentID.Visible (begin)
+    if (!crewDocumentForAdminList.MTDocumentID.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTDocumentID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.MTDocumentID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTDocumentID"
+            name="x_MTDocumentID[]"
+            class="form-control ew-select@(crewDocumentForAdminList.MTDocumentID.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_MTDocumentID"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_MTDocumentID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.MTDocumentID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.MTDocumentID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.MTDocumentID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.MTDocumentID.EditAttributes)>
+            @(crewDocumentForAdminList.MTDocumentID.SelectOptionListHtml("x_MTDocumentID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.MTDocumentID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_MTDocumentID",
+                selectId: "fCrewDocumentForAdminsrch_x_MTDocumentID",
+                ajax: { id: "x_MTDocumentID", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.MTDocumentID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.MTDocumentID.Visible (end) *@
+@if (crewDocumentForAdminList.Number.Visible) { // crewDocumentForAdminList.Number.Visible (begin)
+    if (!crewDocumentForAdminList.Number.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Number" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.Number.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Number"
+            name="x_Number[]"
+            class="form-control ew-select@(crewDocumentForAdminList.Number.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_Number"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_Number"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.Number.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.Number.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.Number.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.Number.EditAttributes)>
+            @(crewDocumentForAdminList.Number.SelectOptionListHtml("x_Number", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.Number.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_Number",
+                selectId: "fCrewDocumentForAdminsrch_x_Number",
+                ajax: { id: "x_Number", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.Number.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.Number.Visible (end) *@
+@if (crewDocumentForAdminList.CountryOfIssue_CountryID.Visible) { // crewDocumentForAdminList.CountryOfIssue_CountryID.Visible (begin)
+    if (!crewDocumentForAdminList.CountryOfIssue_CountryID.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CountryOfIssue_CountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.CountryOfIssue_CountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CountryOfIssue_CountryID"
+            name="x_CountryOfIssue_CountryID[]"
+            class="form-control ew-select@(crewDocumentForAdminList.CountryOfIssue_CountryID.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_CountryOfIssue_CountryID"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_CountryOfIssue_CountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.CountryOfIssue_CountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.CountryOfIssue_CountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.CountryOfIssue_CountryID.EditAttributes)>
+            @(crewDocumentForAdminList.CountryOfIssue_CountryID.SelectOptionListHtml("x_CountryOfIssue_CountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.CountryOfIssue_CountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_CountryOfIssue_CountryID",
+                selectId: "fCrewDocumentForAdminsrch_x_CountryOfIssue_CountryID",
+                ajax: { id: "x_CountryOfIssue_CountryID", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.CountryOfIssue_CountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.CountryOfIssue_CountryID.Visible (end) *@
+@if (crewDocumentForAdminList.DateOfIssue.Visible) { // crewDocumentForAdminList.DateOfIssue.Visible (begin)
+    if (!crewDocumentForAdminList.DateOfIssue.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.DateOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfIssue"
+            name="x_DateOfIssue[]"
+            class="form-control ew-select@(crewDocumentForAdminList.DateOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_DateOfIssue"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_DateOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.DateOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.DateOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.DateOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.DateOfIssue.EditAttributes)>
+            @(crewDocumentForAdminList.DateOfIssue.SelectOptionListHtml("x_DateOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.DateOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_DateOfIssue",
+                selectId: "fCrewDocumentForAdminsrch_x_DateOfIssue",
+                ajax: { id: "x_DateOfIssue", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.DateOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.DateOfIssue.Visible (end) *@
+@if (crewDocumentForAdminList.PlaceOfIssue.Visible) { // crewDocumentForAdminList.PlaceOfIssue.Visible (begin)
+    if (!crewDocumentForAdminList.PlaceOfIssue.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.PlaceOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOfIssue"
+            name="x_PlaceOfIssue[]"
+            class="form-control ew-select@(crewDocumentForAdminList.PlaceOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_PlaceOfIssue"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_PlaceOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.PlaceOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.PlaceOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.PlaceOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.PlaceOfIssue.EditAttributes)>
+            @(crewDocumentForAdminList.PlaceOfIssue.SelectOptionListHtml("x_PlaceOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.PlaceOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_PlaceOfIssue",
+                selectId: "fCrewDocumentForAdminsrch_x_PlaceOfIssue",
+                ajax: { id: "x_PlaceOfIssue", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.PlaceOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.PlaceOfIssue.Visible (end) *@
+@if (crewDocumentForAdminList.DateValidUntil.Visible) { // crewDocumentForAdminList.DateValidUntil.Visible (begin)
+    if (!crewDocumentForAdminList.DateValidUntil.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateValidUntil" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.DateValidUntil.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateValidUntil"
+            name="x_DateValidUntil[]"
+            class="form-control ew-select@(crewDocumentForAdminList.DateValidUntil.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_DateValidUntil"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_DateValidUntil"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.DateValidUntil.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.DateValidUntil.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.DateValidUntil.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.DateValidUntil.EditAttributes)>
+            @(crewDocumentForAdminList.DateValidUntil.SelectOptionListHtml("x_DateValidUntil", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.DateValidUntil.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_DateValidUntil",
+                selectId: "fCrewDocumentForAdminsrch_x_DateValidUntil",
+                ajax: { id: "x_DateValidUntil", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.DateValidUntil.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.DateValidUntil.Visible (end) *@
+@if (crewDocumentForAdminList.Image.Visible) { // crewDocumentForAdminList.Image.Visible (begin)
+    if (!crewDocumentForAdminList.Image.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Image" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.Image.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Image"
+            name="x_Image[]"
+            class="form-control ew-select@(crewDocumentForAdminList.Image.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_Image"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_Image"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.Image.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.Image.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.Image.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.Image.EditAttributes)>
+            @(crewDocumentForAdminList.Image.SelectOptionListHtml("x_Image", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.Image.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_Image",
+                selectId: "fCrewDocumentForAdminsrch_x_Image",
+                ajax: { id: "x_Image", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.Image.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.Image.Visible (end) *@
+@if (crewDocumentForAdminList.CreatedByUserID.Visible) { // crewDocumentForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewDocumentForAdminList.CreatedByUserID.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewDocumentForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_CreatedByUserID"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewDocumentForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewDocumentForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewDocumentForAdminList.CreatedDateTime.Visible) { // crewDocumentForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewDocumentForAdminList.CreatedDateTime.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewDocumentForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_CreatedDateTime"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewDocumentForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewDocumentForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewDocumentForAdminList.LastUpdatedByUserID.Visible) { // crewDocumentForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewDocumentForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewDocumentForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewDocumentForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewDocumentForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewDocumentForAdminList.LastUpdatedDateTime.Visible) { // crewDocumentForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewDocumentForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewDocumentForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewDocumentForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewDocumentForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.LastUpdatedDateTime.Visible (end) *@
+@if (crewDocumentForAdminList.IsDraft.Visible) { // crewDocumentForAdminList.IsDraft.Visible (begin)
+    if (!crewDocumentForAdminList.IsDraft.UseFilter) {
+        crewDocumentForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_IsDraft" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewDocumentForAdminList.IsDraft.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IsDraft"
+            name="x_IsDraft[]"
+            class="form-control ew-select@(crewDocumentForAdminList.IsDraft.IsInvalidClass)"
+            data-select2-id="fCrewDocumentForAdminsrch_x_IsDraft"
+            data-table="CrewDocumentForAdmin"
+            data-field="x_IsDraft"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewDocumentForAdminList.IsDraft.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewDocumentForAdminList.IsDraft.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewDocumentForAdminList.IsDraft.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewDocumentForAdminList.IsDraft.EditAttributes)>
+            @(crewDocumentForAdminList.IsDraft.SelectOptionListHtml("x_IsDraft", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewDocumentForAdminList.IsDraft.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewDocumentForAdminsrch", function() {
+            var options = {
+                name: "x_IsDraft",
+                selectId: "fCrewDocumentForAdminsrch_x_IsDraft",
+                ajax: { id: "x_IsDraft", form: "fCrewDocumentForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewDocumentForAdmin.fields.IsDraft.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewDocumentForAdminList.IsDraft.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewDocumentForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewDocumentForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewDocumentForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewDocumentForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewDocumentForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewDocumentForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewDocumentForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewDocumentForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewDocumentForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewDocumentForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewDocumentForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewDocumentForAdminList.ShowPageHeader()
+@crewDocumentForAdminList.ShowMessages()
+<main class="list @(crewDocumentForAdminList.TotalRecords == 0 && !crewDocumentForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewDocumentForAdminList.TotalRecords > 0 || !Empty(crewDocumentForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewDocumentForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewDocumentForAdminList.TableGridClass)">
+<form name="@(crewDocumentForAdminList.FormName)" id="@(crewDocumentForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewDocumentForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewDocumentForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewDocumentForAdmin" class="card-body ew-grid-middle-panel @(crewDocumentForAdminList.TableContainerClass)" style="@(crewDocumentForAdminList.TableContainerStyle)">
+@if (crewDocumentForAdminList.TotalRecords > 0 || crewDocumentForAdminList.IsGridEdit || crewDocumentForAdminList.IsMultiEdit) {
+<table id="tbl_CrewDocumentForAdminlist" class="@(crewDocumentForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewDocumentForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewDocumentForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewDocumentForAdminList.ListOptions.RenderHeader("left")
+@if (crewDocumentForAdminList.MTDocumentID.Visible) { // crewDocumentForAdminList.MTDocumentID.Visible (begin)
+        <th data-name="MTDocumentID" class="@(crewDocumentForAdminList.MTDocumentID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_MTDocumentID" class="CrewDocumentForAdmin_MTDocumentID">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.MTDocumentID))</div></th>
+} @* crewDocumentForAdminList.MTDocumentID.Visible (end) *@
+@if (crewDocumentForAdminList.Number.Visible) { // crewDocumentForAdminList.Number.Visible (begin)
+        <th data-name="Number" class="@(crewDocumentForAdminList.Number.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_Number" class="CrewDocumentForAdmin_Number">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.Number))</div></th>
+} @* crewDocumentForAdminList.Number.Visible (end) *@
+@if (crewDocumentForAdminList.CountryOfIssue_CountryID.Visible) { // crewDocumentForAdminList.CountryOfIssue_CountryID.Visible (begin)
+        <th data-name="CountryOfIssue_CountryID" class="@(crewDocumentForAdminList.CountryOfIssue_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_CountryOfIssue_CountryID" class="CrewDocumentForAdmin_CountryOfIssue_CountryID">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.CountryOfIssue_CountryID))</div></th>
+} @* crewDocumentForAdminList.CountryOfIssue_CountryID.Visible (end) *@
+@if (crewDocumentForAdminList.DateOfIssue.Visible) { // crewDocumentForAdminList.DateOfIssue.Visible (begin)
+        <th data-name="DateOfIssue" class="@(crewDocumentForAdminList.DateOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_DateOfIssue" class="CrewDocumentForAdmin_DateOfIssue">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.DateOfIssue))</div></th>
+} @* crewDocumentForAdminList.DateOfIssue.Visible (end) *@
+@if (crewDocumentForAdminList.PlaceOfIssue.Visible) { // crewDocumentForAdminList.PlaceOfIssue.Visible (begin)
+        <th data-name="PlaceOfIssue" class="@(crewDocumentForAdminList.PlaceOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_PlaceOfIssue" class="CrewDocumentForAdmin_PlaceOfIssue">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.PlaceOfIssue))</div></th>
+} @* crewDocumentForAdminList.PlaceOfIssue.Visible (end) *@
+@if (crewDocumentForAdminList.DateValidUntil.Visible) { // crewDocumentForAdminList.DateValidUntil.Visible (begin)
+        <th data-name="DateValidUntil" class="@(crewDocumentForAdminList.DateValidUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_DateValidUntil" class="CrewDocumentForAdmin_DateValidUntil">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.DateValidUntil))</div></th>
+} @* crewDocumentForAdminList.DateValidUntil.Visible (end) *@
+@if (crewDocumentForAdminList.Image.Visible) { // crewDocumentForAdminList.Image.Visible (begin)
+        <th data-name="Image" class="@(crewDocumentForAdminList.Image.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_Image" class="CrewDocumentForAdmin_Image">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.Image))</div></th>
+} @* crewDocumentForAdminList.Image.Visible (end) *@
+@if (crewDocumentForAdminList.CreatedByUserID.Visible) { // crewDocumentForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewDocumentForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_CreatedByUserID" class="CrewDocumentForAdmin_CreatedByUserID">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.CreatedByUserID))</div></th>
+} @* crewDocumentForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewDocumentForAdminList.CreatedDateTime.Visible) { // crewDocumentForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewDocumentForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_CreatedDateTime" class="CrewDocumentForAdmin_CreatedDateTime">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.CreatedDateTime))</div></th>
+} @* crewDocumentForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewDocumentForAdminList.LastUpdatedByUserID.Visible) { // crewDocumentForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewDocumentForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_LastUpdatedByUserID" class="CrewDocumentForAdmin_LastUpdatedByUserID">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewDocumentForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewDocumentForAdminList.LastUpdatedDateTime.Visible) { // crewDocumentForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewDocumentForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_LastUpdatedDateTime" class="CrewDocumentForAdmin_LastUpdatedDateTime">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewDocumentForAdminList.LastUpdatedDateTime.Visible (end) *@
+@if (crewDocumentForAdminList.IsDraft.Visible) { // crewDocumentForAdminList.IsDraft.Visible (begin)
+        <th data-name="IsDraft" class="@(crewDocumentForAdminList.IsDraft.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewDocumentForAdmin_IsDraft" class="CrewDocumentForAdmin_IsDraft">@Html.Raw(crewDocumentForAdminList.RenderFieldHeader(crewDocumentForAdminList.IsDraft))</div></th>
+} @* crewDocumentForAdminList.IsDraft.Visible (end) *@
+@* Render list options (header, right) *@
+@crewDocumentForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewDocumentForAdminList.PageNumber)">
+@{
+    await crewDocumentForAdminList.SetupGrid();
+    bool eof = crewDocumentForAdminList.Recordset == null; // DN
+}
+@while (crewDocumentForAdminList.RecordCount < crewDocumentForAdminList.StopRecord || SameString(crewDocumentForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewDocumentForAdminList.RowIndex, "$rowindex$") &&
+        (!crewDocumentForAdminList.IsGridAdd || crewDocumentForAdminList.CurrentMode == "copy") &&
+        (!((crewDocumentForAdminList.IsCopy || crewDocumentForAdminList.IsAdd) && crewDocumentForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewDocumentForAdminList.Recordset.ReadAsync();
+    crewDocumentForAdminList.RecordCount++;
+    if (crewDocumentForAdminList.RecordCount >= crewDocumentForAdminList.StartRecord) {
+        await crewDocumentForAdminList.SetupRow();
+    <tr @Html.Raw(crewDocumentForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewDocumentForAdminList.ListOptions.RenderBody("left", crewDocumentForAdminList.RowCount)
+    @if (crewDocumentForAdminList.MTDocumentID.Visible) { // crewDocumentForAdminList.MTDocumentID.Visible (begin)
+        <td data-name="MTDocumentID" @Html.Raw(crewDocumentForAdminList.MTDocumentID.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_MTDocumentID" class="el_CrewDocumentForAdmin_MTDocumentID">
+<span @Html.Raw(crewDocumentForAdminList.MTDocumentID.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.MTDocumentID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.MTDocumentID.Visible (end) *@
+    @if (crewDocumentForAdminList.Number.Visible) { // crewDocumentForAdminList.Number.Visible (begin)
+        <td data-name="Number" @Html.Raw(crewDocumentForAdminList.Number.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_Number" class="el_CrewDocumentForAdmin_Number">
+<span @Html.Raw(crewDocumentForAdminList.Number.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.Number.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.Number.Visible (end) *@
+    @if (crewDocumentForAdminList.CountryOfIssue_CountryID.Visible) { // crewDocumentForAdminList.CountryOfIssue_CountryID.Visible (begin)
+        <td data-name="CountryOfIssue_CountryID" @Html.Raw(crewDocumentForAdminList.CountryOfIssue_CountryID.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_CountryOfIssue_CountryID" class="el_CrewDocumentForAdmin_CountryOfIssue_CountryID">
+<span @Html.Raw(crewDocumentForAdminList.CountryOfIssue_CountryID.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.CountryOfIssue_CountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.CountryOfIssue_CountryID.Visible (end) *@
+    @if (crewDocumentForAdminList.DateOfIssue.Visible) { // crewDocumentForAdminList.DateOfIssue.Visible (begin)
+        <td data-name="DateOfIssue" @Html.Raw(crewDocumentForAdminList.DateOfIssue.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_DateOfIssue" class="el_CrewDocumentForAdmin_DateOfIssue">
+<span @Html.Raw(crewDocumentForAdminList.DateOfIssue.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.DateOfIssue.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.DateOfIssue.Visible (end) *@
+    @if (crewDocumentForAdminList.PlaceOfIssue.Visible) { // crewDocumentForAdminList.PlaceOfIssue.Visible (begin)
+        <td data-name="PlaceOfIssue" @Html.Raw(crewDocumentForAdminList.PlaceOfIssue.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_PlaceOfIssue" class="el_CrewDocumentForAdmin_PlaceOfIssue">
+<span @Html.Raw(crewDocumentForAdminList.PlaceOfIssue.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.PlaceOfIssue.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.PlaceOfIssue.Visible (end) *@
+    @if (crewDocumentForAdminList.DateValidUntil.Visible) { // crewDocumentForAdminList.DateValidUntil.Visible (begin)
+        <td data-name="DateValidUntil" @Html.Raw(crewDocumentForAdminList.DateValidUntil.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_DateValidUntil" class="el_CrewDocumentForAdmin_DateValidUntil">
+<span @Html.Raw(crewDocumentForAdminList.DateValidUntil.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.DateValidUntil.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.DateValidUntil.Visible (end) *@
+    @if (crewDocumentForAdminList.Image.Visible) { // crewDocumentForAdminList.Image.Visible (begin)
+        <td data-name="Image" @Html.Raw(crewDocumentForAdminList.Image.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_Image" class="el_CrewDocumentForAdmin_Image">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewDocumentForAdminList.Image, ConvertToString(crewDocumentForAdminList.Image.GetViewValue()), false))
+</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.Image.Visible (end) *@
+    @if (crewDocumentForAdminList.CreatedByUserID.Visible) { // crewDocumentForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewDocumentForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_CreatedByUserID" class="el_CrewDocumentForAdmin_CreatedByUserID">
+<span @Html.Raw(crewDocumentForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewDocumentForAdminList.CreatedDateTime.Visible) { // crewDocumentForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewDocumentForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_CreatedDateTime" class="el_CrewDocumentForAdmin_CreatedDateTime">
+<span @Html.Raw(crewDocumentForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewDocumentForAdminList.LastUpdatedByUserID.Visible) { // crewDocumentForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewDocumentForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_LastUpdatedByUserID" class="el_CrewDocumentForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewDocumentForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewDocumentForAdminList.LastUpdatedDateTime.Visible) { // crewDocumentForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewDocumentForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_LastUpdatedDateTime" class="el_CrewDocumentForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewDocumentForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewDocumentForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @if (crewDocumentForAdminList.IsDraft.Visible) { // crewDocumentForAdminList.IsDraft.Visible (begin)
+        <td data-name="IsDraft" @Html.Raw(crewDocumentForAdminList.IsDraft.CellAttributes)>
+<span id="el@(crewDocumentForAdminList.RowCount)_CrewDocumentForAdmin_IsDraft" class="el_CrewDocumentForAdmin_IsDraft">
+<span @Html.Raw(crewDocumentForAdminList.IsDraft.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_IsDraft_@(crewDocumentForAdminList.RowCount)" class="form-check-input" value="@(crewDocumentForAdminList.IsDraft.GetViewValue())" disabled checked="@(ConvertToBool(crewDocumentForAdminList.IsDraft.CurrentValue))">
+    <label class="form-check-label" for="x_IsDraft_@(crewDocumentForAdminList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* crewDocumentForAdminList.IsDraft.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewDocumentForAdminList.ListOptions.RenderBody("right", crewDocumentForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewDocumentForAdminList.RowIndex, "$rowindex$"))
+        crewDocumentForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewDocumentForAdminList.IsCopy || crewDocumentForAdminList.IsAdd) && crewDocumentForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewDocumentForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewDocumentForAdminList.CurrentAction) && !crewDocumentForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewDocumentForAdminList.CloseRecordset(); }
+@if (!crewDocumentForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewDocumentForAdminList.IsGridAdd && !(crewDocumentForAdminList.IsGridEdit && crewDocumentForAdminList.ModalGridEdit) && !crewDocumentForAdminList.IsMultiEdit) {
+@Html.Raw(crewDocumentForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewDocumentForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewDocumentForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewDocumentForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewDocumentForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewDocumentForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

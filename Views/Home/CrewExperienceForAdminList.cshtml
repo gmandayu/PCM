@@ -1,0 +1,1250 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewExperienceForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewExperienceForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewExperienceForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewExperienceForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewExperienceForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewExperienceForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewExperienceForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewExperienceForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewExperienceForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewExperienceForAdminList.MTCrewID.ToClientList(crewExperienceForAdminList)),
+            "CompanyName": @Html.Raw(crewExperienceForAdminList.CompanyName.ToClientList(crewExperienceForAdminList)),
+            "FlagName_CountryID": @Html.Raw(crewExperienceForAdminList.FlagName_CountryID.ToClientList(crewExperienceForAdminList)),
+            "VesselName": @Html.Raw(crewExperienceForAdminList.VesselName.ToClientList(crewExperienceForAdminList)),
+            "MTVesselTypeID": @Html.Raw(crewExperienceForAdminList.MTVesselTypeID.ToClientList(crewExperienceForAdminList)),
+            "GRT": @Html.Raw(crewExperienceForAdminList.GRT.ToClientList(crewExperienceForAdminList)),
+            "DWT": @Html.Raw(crewExperienceForAdminList.DWT.ToClientList(crewExperienceForAdminList)),
+            "MainEngine": @Html.Raw(crewExperienceForAdminList.MainEngine.ToClientList(crewExperienceForAdminList)),
+            "BHP": @Html.Raw(crewExperienceForAdminList.BHP.ToClientList(crewExperienceForAdminList)),
+            "MTRankID": @Html.Raw(crewExperienceForAdminList.MTRankID.ToClientList(crewExperienceForAdminList)),
+            "DateFrom": @Html.Raw(crewExperienceForAdminList.DateFrom.ToClientList(crewExperienceForAdminList)),
+            "DateUntil": @Html.Raw(crewExperienceForAdminList.DateUntil.ToClientList(crewExperienceForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewExperienceForAdminList.CreatedByUserID.ToClientList(crewExperienceForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewExperienceForAdminList.CreatedDateTime.ToClientList(crewExperienceForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewExperienceForAdminList.LastUpdatedByUserID.ToClientList(crewExperienceForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewExperienceForAdminList.LastUpdatedDateTime.ToClientList(crewExperienceForAdminList)),
+            "SignOnPortName": @Html.Raw(crewExperienceForAdminList.SignOnPortName.ToClientList(crewExperienceForAdminList)),
+            "SignOffPortName": @Html.Raw(crewExperienceForAdminList.SignOffPortName.ToClientList(crewExperienceForAdminList)),
+            "SignOffReason": @Html.Raw(crewExperienceForAdminList.SignOffReason.ToClientList(crewExperienceForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewExperienceForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewExperienceForAdminList.TotalRecords > 0 && crewExperienceForAdminList.ExportOptions.Visible) {
+    crewExperienceForAdminList.ExportOptions.Render("body");
+}
+@if (crewExperienceForAdminList.ImportOptions.Visible) {
+    crewExperienceForAdminList.ImportOptions.Render("body");
+}
+@if (crewExperienceForAdminList.SearchOptions.Visible) {
+    crewExperienceForAdminList.SearchOptions.Render("body");
+}
+@if (crewExperienceForAdminList.FilterOptions.Visible) {
+    crewExperienceForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewExperienceForAdminList.ShowCurrentFilter) {
+    crewExperienceForAdminList.ShowFilterList();
+}
+@if (!crewExperienceForAdminList.IsModal) {
+<form name="fCrewExperienceForAdminsrch" id="fCrewExperienceForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewExperienceForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewExperienceForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewExperienceForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewExperienceForAdmin: currentTable } });
+var currentForm;
+var fCrewExperienceForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewExperienceForAdminsrch")
+        .setPageId("list")
+@if (crewExperienceForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CompanyName", [], fields.CompanyName.isInvalid],
+            ["FlagName_CountryID", [], fields.FlagName_CountryID.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["MTVesselTypeID", [], fields.MTVesselTypeID.isInvalid],
+            ["GRT", [], fields.GRT.isInvalid],
+            ["DWT", [], fields.DWT.isInvalid],
+            ["MainEngine", [], fields.MainEngine.isInvalid],
+            ["BHP", [], fields.BHP.isInvalid],
+            ["MTRankID", [], fields.MTRankID.isInvalid],
+            ["DateFrom", [], fields.DateFrom.isInvalid],
+            ["DateUntil", [], fields.DateUntil.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid],
+            ["SignOnPortName", [], fields.SignOnPortName.isInvalid],
+            ["SignOffPortName", [], fields.SignOffPortName.isInvalid],
+            ["SignOffReason", [], fields.SignOffReason.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewExperienceForAdminList.MTCrewID.ToClientList(crewExperienceForAdminList)),
+            "CompanyName": @Html.Raw(crewExperienceForAdminList.CompanyName.ToClientList(crewExperienceForAdminList)),
+            "FlagName_CountryID": @Html.Raw(crewExperienceForAdminList.FlagName_CountryID.ToClientList(crewExperienceForAdminList)),
+            "VesselName": @Html.Raw(crewExperienceForAdminList.VesselName.ToClientList(crewExperienceForAdminList)),
+            "MTVesselTypeID": @Html.Raw(crewExperienceForAdminList.MTVesselTypeID.ToClientList(crewExperienceForAdminList)),
+            "GRT": @Html.Raw(crewExperienceForAdminList.GRT.ToClientList(crewExperienceForAdminList)),
+            "DWT": @Html.Raw(crewExperienceForAdminList.DWT.ToClientList(crewExperienceForAdminList)),
+            "MainEngine": @Html.Raw(crewExperienceForAdminList.MainEngine.ToClientList(crewExperienceForAdminList)),
+            "BHP": @Html.Raw(crewExperienceForAdminList.BHP.ToClientList(crewExperienceForAdminList)),
+            "MTRankID": @Html.Raw(crewExperienceForAdminList.MTRankID.ToClientList(crewExperienceForAdminList)),
+            "DateFrom": @Html.Raw(crewExperienceForAdminList.DateFrom.ToClientList(crewExperienceForAdminList)),
+            "DateUntil": @Html.Raw(crewExperienceForAdminList.DateUntil.ToClientList(crewExperienceForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewExperienceForAdminList.CreatedByUserID.ToClientList(crewExperienceForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewExperienceForAdminList.CreatedDateTime.ToClientList(crewExperienceForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewExperienceForAdminList.LastUpdatedByUserID.ToClientList(crewExperienceForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewExperienceForAdminList.LastUpdatedDateTime.ToClientList(crewExperienceForAdminList)),
+            "SignOnPortName": @Html.Raw(crewExperienceForAdminList.SignOnPortName.ToClientList(crewExperienceForAdminList)),
+            "SignOffPortName": @Html.Raw(crewExperienceForAdminList.SignOffPortName.ToClientList(crewExperienceForAdminList)),
+            "SignOffReason": @Html.Raw(crewExperienceForAdminList.SignOffReason.ToClientList(crewExperienceForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewExperienceForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewExperienceForAdminList.IsExport() && Empty(crewExperienceForAdminList.CurrentAction) && crewExperienceForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewExperienceForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewExperienceForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewExperienceForAdminList.RowType = RowType.Search;
+    crewExperienceForAdminList.ResetAttributes();
+    await crewExperienceForAdminList.RenderRow();
+}
+@if (crewExperienceForAdminList.MTCrewID.Visible) { // crewExperienceForAdminList.MTCrewID.Visible (begin)
+    if (!crewExperienceForAdminList.MTCrewID.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewExperienceForAdminList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_MTCrewID"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.MTCrewID.EditAttributes)>
+            @(crewExperienceForAdminList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewExperienceForAdminsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.MTCrewID.Visible (end) *@
+@if (crewExperienceForAdminList.CompanyName.Visible) { // crewExperienceForAdminList.CompanyName.Visible (begin)
+    if (!crewExperienceForAdminList.CompanyName.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CompanyName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.CompanyName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CompanyName"
+            name="x_CompanyName[]"
+            class="form-control ew-select@(crewExperienceForAdminList.CompanyName.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_CompanyName"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_CompanyName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.CompanyName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.CompanyName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.CompanyName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.CompanyName.EditAttributes)>
+            @(crewExperienceForAdminList.CompanyName.SelectOptionListHtml("x_CompanyName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.CompanyName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_CompanyName",
+                selectId: "fCrewExperienceForAdminsrch_x_CompanyName",
+                ajax: { id: "x_CompanyName", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.CompanyName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.CompanyName.Visible (end) *@
+@if (crewExperienceForAdminList.FlagName_CountryID.Visible) { // crewExperienceForAdminList.FlagName_CountryID.Visible (begin)
+    if (!crewExperienceForAdminList.FlagName_CountryID.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_FlagName_CountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.FlagName_CountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FlagName_CountryID"
+            name="x_FlagName_CountryID[]"
+            class="form-control ew-select@(crewExperienceForAdminList.FlagName_CountryID.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_FlagName_CountryID"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_FlagName_CountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.FlagName_CountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.FlagName_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.FlagName_CountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.FlagName_CountryID.EditAttributes)>
+            @(crewExperienceForAdminList.FlagName_CountryID.SelectOptionListHtml("x_FlagName_CountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.FlagName_CountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_FlagName_CountryID",
+                selectId: "fCrewExperienceForAdminsrch_x_FlagName_CountryID",
+                ajax: { id: "x_FlagName_CountryID", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.FlagName_CountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.FlagName_CountryID.Visible (end) *@
+@if (crewExperienceForAdminList.VesselName.Visible) { // crewExperienceForAdminList.VesselName.Visible (begin)
+    if (!crewExperienceForAdminList.VesselName.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_VesselName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.VesselName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VesselName"
+            name="x_VesselName[]"
+            class="form-control ew-select@(crewExperienceForAdminList.VesselName.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_VesselName"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_VesselName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.VesselName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.VesselName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.VesselName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.VesselName.EditAttributes)>
+            @(crewExperienceForAdminList.VesselName.SelectOptionListHtml("x_VesselName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.VesselName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_VesselName",
+                selectId: "fCrewExperienceForAdminsrch_x_VesselName",
+                ajax: { id: "x_VesselName", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.VesselName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.VesselName.Visible (end) *@
+@if (crewExperienceForAdminList.MTVesselTypeID.Visible) { // crewExperienceForAdminList.MTVesselTypeID.Visible (begin)
+    if (!crewExperienceForAdminList.MTVesselTypeID.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTVesselTypeID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.MTVesselTypeID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTVesselTypeID"
+            name="x_MTVesselTypeID[]"
+            class="form-control ew-select@(crewExperienceForAdminList.MTVesselTypeID.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_MTVesselTypeID"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_MTVesselTypeID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.MTVesselTypeID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.MTVesselTypeID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.MTVesselTypeID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.MTVesselTypeID.EditAttributes)>
+            @(crewExperienceForAdminList.MTVesselTypeID.SelectOptionListHtml("x_MTVesselTypeID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.MTVesselTypeID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_MTVesselTypeID",
+                selectId: "fCrewExperienceForAdminsrch_x_MTVesselTypeID",
+                ajax: { id: "x_MTVesselTypeID", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.MTVesselTypeID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.MTVesselTypeID.Visible (end) *@
+@if (crewExperienceForAdminList.GRT.Visible) { // crewExperienceForAdminList.GRT.Visible (begin)
+    if (!crewExperienceForAdminList.GRT.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_GRT" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.GRT.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_GRT"
+            name="x_GRT[]"
+            class="form-control ew-select@(crewExperienceForAdminList.GRT.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_GRT"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_GRT"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.GRT.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.GRT.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.GRT.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.GRT.EditAttributes)>
+            @(crewExperienceForAdminList.GRT.SelectOptionListHtml("x_GRT", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.GRT.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_GRT",
+                selectId: "fCrewExperienceForAdminsrch_x_GRT",
+                ajax: { id: "x_GRT", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.GRT.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.GRT.Visible (end) *@
+@if (crewExperienceForAdminList.DWT.Visible) { // crewExperienceForAdminList.DWT.Visible (begin)
+    if (!crewExperienceForAdminList.DWT.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DWT" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.DWT.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DWT"
+            name="x_DWT[]"
+            class="form-control ew-select@(crewExperienceForAdminList.DWT.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_DWT"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_DWT"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.DWT.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.DWT.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.DWT.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.DWT.EditAttributes)>
+            @(crewExperienceForAdminList.DWT.SelectOptionListHtml("x_DWT", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.DWT.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_DWT",
+                selectId: "fCrewExperienceForAdminsrch_x_DWT",
+                ajax: { id: "x_DWT", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.DWT.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.DWT.Visible (end) *@
+@if (crewExperienceForAdminList.MainEngine.Visible) { // crewExperienceForAdminList.MainEngine.Visible (begin)
+    if (!crewExperienceForAdminList.MainEngine.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MainEngine" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.MainEngine.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MainEngine"
+            name="x_MainEngine[]"
+            class="form-control ew-select@(crewExperienceForAdminList.MainEngine.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_MainEngine"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_MainEngine"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.MainEngine.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.MainEngine.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.MainEngine.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.MainEngine.EditAttributes)>
+            @(crewExperienceForAdminList.MainEngine.SelectOptionListHtml("x_MainEngine", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.MainEngine.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_MainEngine",
+                selectId: "fCrewExperienceForAdminsrch_x_MainEngine",
+                ajax: { id: "x_MainEngine", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.MainEngine.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.MainEngine.Visible (end) *@
+@if (crewExperienceForAdminList.BHP.Visible) { // crewExperienceForAdminList.BHP.Visible (begin)
+    if (!crewExperienceForAdminList.BHP.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_BHP" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.BHP.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_BHP"
+            name="x_BHP[]"
+            class="form-control ew-select@(crewExperienceForAdminList.BHP.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_BHP"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_BHP"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.BHP.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.BHP.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.BHP.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.BHP.EditAttributes)>
+            @(crewExperienceForAdminList.BHP.SelectOptionListHtml("x_BHP", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.BHP.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_BHP",
+                selectId: "fCrewExperienceForAdminsrch_x_BHP",
+                ajax: { id: "x_BHP", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.BHP.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.BHP.Visible (end) *@
+@if (crewExperienceForAdminList.MTRankID.Visible) { // crewExperienceForAdminList.MTRankID.Visible (begin)
+    if (!crewExperienceForAdminList.MTRankID.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTRankID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.MTRankID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTRankID"
+            name="x_MTRankID[]"
+            class="form-control ew-select@(crewExperienceForAdminList.MTRankID.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_MTRankID"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_MTRankID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.MTRankID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.MTRankID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.MTRankID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.MTRankID.EditAttributes)>
+            @(crewExperienceForAdminList.MTRankID.SelectOptionListHtml("x_MTRankID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.MTRankID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_MTRankID",
+                selectId: "fCrewExperienceForAdminsrch_x_MTRankID",
+                ajax: { id: "x_MTRankID", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.MTRankID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.MTRankID.Visible (end) *@
+@if (crewExperienceForAdminList.DateFrom.Visible) { // crewExperienceForAdminList.DateFrom.Visible (begin)
+    if (!crewExperienceForAdminList.DateFrom.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateFrom" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.DateFrom.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateFrom"
+            name="x_DateFrom[]"
+            class="form-control ew-select@(crewExperienceForAdminList.DateFrom.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_DateFrom"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_DateFrom"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.DateFrom.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.DateFrom.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.DateFrom.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.DateFrom.EditAttributes)>
+            @(crewExperienceForAdminList.DateFrom.SelectOptionListHtml("x_DateFrom", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.DateFrom.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_DateFrom",
+                selectId: "fCrewExperienceForAdminsrch_x_DateFrom",
+                ajax: { id: "x_DateFrom", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.DateFrom.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.DateFrom.Visible (end) *@
+@if (crewExperienceForAdminList.DateUntil.Visible) { // crewExperienceForAdminList.DateUntil.Visible (begin)
+    if (!crewExperienceForAdminList.DateUntil.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateUntil" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.DateUntil.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateUntil"
+            name="x_DateUntil[]"
+            class="form-control ew-select@(crewExperienceForAdminList.DateUntil.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_DateUntil"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_DateUntil"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.DateUntil.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.DateUntil.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.DateUntil.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.DateUntil.EditAttributes)>
+            @(crewExperienceForAdminList.DateUntil.SelectOptionListHtml("x_DateUntil", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.DateUntil.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_DateUntil",
+                selectId: "fCrewExperienceForAdminsrch_x_DateUntil",
+                ajax: { id: "x_DateUntil", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.DateUntil.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.DateUntil.Visible (end) *@
+@if (crewExperienceForAdminList.CreatedByUserID.Visible) { // crewExperienceForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewExperienceForAdminList.CreatedByUserID.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewExperienceForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_CreatedByUserID"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewExperienceForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewExperienceForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewExperienceForAdminList.CreatedDateTime.Visible) { // crewExperienceForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewExperienceForAdminList.CreatedDateTime.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewExperienceForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_CreatedDateTime"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewExperienceForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewExperienceForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewExperienceForAdminList.LastUpdatedByUserID.Visible) { // crewExperienceForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewExperienceForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewExperienceForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewExperienceForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewExperienceForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewExperienceForAdminList.LastUpdatedDateTime.Visible) { // crewExperienceForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewExperienceForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewExperienceForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewExperienceForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewExperienceForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.LastUpdatedDateTime.Visible (end) *@
+@if (crewExperienceForAdminList.SignOnPortName.Visible) { // crewExperienceForAdminList.SignOnPortName.Visible (begin)
+    if (!crewExperienceForAdminList.SignOnPortName.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_SignOnPortName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.SignOnPortName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_SignOnPortName"
+            name="x_SignOnPortName[]"
+            class="form-control ew-select@(crewExperienceForAdminList.SignOnPortName.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_SignOnPortName"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_SignOnPortName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.SignOnPortName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.SignOnPortName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.SignOnPortName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.SignOnPortName.EditAttributes)>
+            @(crewExperienceForAdminList.SignOnPortName.SelectOptionListHtml("x_SignOnPortName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.SignOnPortName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_SignOnPortName",
+                selectId: "fCrewExperienceForAdminsrch_x_SignOnPortName",
+                ajax: { id: "x_SignOnPortName", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.SignOnPortName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.SignOnPortName.Visible (end) *@
+@if (crewExperienceForAdminList.SignOffPortName.Visible) { // crewExperienceForAdminList.SignOffPortName.Visible (begin)
+    if (!crewExperienceForAdminList.SignOffPortName.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_SignOffPortName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.SignOffPortName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_SignOffPortName"
+            name="x_SignOffPortName[]"
+            class="form-control ew-select@(crewExperienceForAdminList.SignOffPortName.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_SignOffPortName"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_SignOffPortName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.SignOffPortName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.SignOffPortName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.SignOffPortName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.SignOffPortName.EditAttributes)>
+            @(crewExperienceForAdminList.SignOffPortName.SelectOptionListHtml("x_SignOffPortName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.SignOffPortName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_SignOffPortName",
+                selectId: "fCrewExperienceForAdminsrch_x_SignOffPortName",
+                ajax: { id: "x_SignOffPortName", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.SignOffPortName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.SignOffPortName.Visible (end) *@
+@if (crewExperienceForAdminList.SignOffReason.Visible) { // crewExperienceForAdminList.SignOffReason.Visible (begin)
+    if (!crewExperienceForAdminList.SignOffReason.UseFilter) {
+        crewExperienceForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_SignOffReason" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewExperienceForAdminList.SignOffReason.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_SignOffReason"
+            name="x_SignOffReason[]"
+            class="form-control ew-select@(crewExperienceForAdminList.SignOffReason.IsInvalidClass)"
+            data-select2-id="fCrewExperienceForAdminsrch_x_SignOffReason"
+            data-table="CrewExperienceForAdmin"
+            data-field="x_SignOffReason"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewExperienceForAdminList.SignOffReason.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewExperienceForAdminList.SignOffReason.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewExperienceForAdminList.SignOffReason.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewExperienceForAdminList.SignOffReason.EditAttributes)>
+            @(crewExperienceForAdminList.SignOffReason.SelectOptionListHtml("x_SignOffReason", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminList.SignOffReason.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewExperienceForAdminsrch", function() {
+            var options = {
+                name: "x_SignOffReason",
+                selectId: "fCrewExperienceForAdminsrch_x_SignOffReason",
+                ajax: { id: "x_SignOffReason", form: "fCrewExperienceForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.SignOffReason.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewExperienceForAdminList.SignOffReason.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewExperienceForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewExperienceForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewExperienceForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewExperienceForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewExperienceForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewExperienceForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewExperienceForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewExperienceForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewExperienceForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewExperienceForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewExperienceForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewExperienceForAdminList.ShowPageHeader()
+@crewExperienceForAdminList.ShowMessages()
+<main class="list @(crewExperienceForAdminList.TotalRecords == 0 && !crewExperienceForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewExperienceForAdminList.TotalRecords > 0 || !Empty(crewExperienceForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewExperienceForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewExperienceForAdminList.TableGridClass)">
+<form name="@(crewExperienceForAdminList.FormName)" id="@(crewExperienceForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewExperienceForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewExperienceForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewExperienceForAdmin" class="card-body ew-grid-middle-panel @(crewExperienceForAdminList.TableContainerClass)" style="@(crewExperienceForAdminList.TableContainerStyle)">
+@if (crewExperienceForAdminList.TotalRecords > 0 || crewExperienceForAdminList.IsGridEdit || crewExperienceForAdminList.IsMultiEdit) {
+<table id="tbl_CrewExperienceForAdminlist" class="@(crewExperienceForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewExperienceForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewExperienceForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewExperienceForAdminList.ListOptions.RenderHeader("left")
+@if (crewExperienceForAdminList.MTCrewID.Visible) { // crewExperienceForAdminList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewExperienceForAdminList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_MTCrewID" class="CrewExperienceForAdmin_MTCrewID">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.MTCrewID))</div></th>
+} @* crewExperienceForAdminList.MTCrewID.Visible (end) *@
+@if (crewExperienceForAdminList.CompanyName.Visible) { // crewExperienceForAdminList.CompanyName.Visible (begin)
+        <th data-name="CompanyName" class="@(crewExperienceForAdminList.CompanyName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_CompanyName" class="CrewExperienceForAdmin_CompanyName">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.CompanyName))</div></th>
+} @* crewExperienceForAdminList.CompanyName.Visible (end) *@
+@if (crewExperienceForAdminList.FlagName_CountryID.Visible) { // crewExperienceForAdminList.FlagName_CountryID.Visible (begin)
+        <th data-name="FlagName_CountryID" class="@(crewExperienceForAdminList.FlagName_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_FlagName_CountryID" class="CrewExperienceForAdmin_FlagName_CountryID">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.FlagName_CountryID))</div></th>
+} @* crewExperienceForAdminList.FlagName_CountryID.Visible (end) *@
+@if (crewExperienceForAdminList.VesselName.Visible) { // crewExperienceForAdminList.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(crewExperienceForAdminList.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_VesselName" class="CrewExperienceForAdmin_VesselName">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.VesselName))</div></th>
+} @* crewExperienceForAdminList.VesselName.Visible (end) *@
+@if (crewExperienceForAdminList.MTVesselTypeID.Visible) { // crewExperienceForAdminList.MTVesselTypeID.Visible (begin)
+        <th data-name="MTVesselTypeID" class="@(crewExperienceForAdminList.MTVesselTypeID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_MTVesselTypeID" class="CrewExperienceForAdmin_MTVesselTypeID">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.MTVesselTypeID))</div></th>
+} @* crewExperienceForAdminList.MTVesselTypeID.Visible (end) *@
+@if (crewExperienceForAdminList.GRT.Visible) { // crewExperienceForAdminList.GRT.Visible (begin)
+        <th data-name="GRT" class="@(crewExperienceForAdminList.GRT.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_GRT" class="CrewExperienceForAdmin_GRT">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.GRT))</div></th>
+} @* crewExperienceForAdminList.GRT.Visible (end) *@
+@if (crewExperienceForAdminList.DWT.Visible) { // crewExperienceForAdminList.DWT.Visible (begin)
+        <th data-name="DWT" class="@(crewExperienceForAdminList.DWT.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_DWT" class="CrewExperienceForAdmin_DWT">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.DWT))</div></th>
+} @* crewExperienceForAdminList.DWT.Visible (end) *@
+@if (crewExperienceForAdminList.MainEngine.Visible) { // crewExperienceForAdminList.MainEngine.Visible (begin)
+        <th data-name="MainEngine" class="@(crewExperienceForAdminList.MainEngine.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_MainEngine" class="CrewExperienceForAdmin_MainEngine">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.MainEngine))</div></th>
+} @* crewExperienceForAdminList.MainEngine.Visible (end) *@
+@if (crewExperienceForAdminList.BHP.Visible) { // crewExperienceForAdminList.BHP.Visible (begin)
+        <th data-name="BHP" class="@(crewExperienceForAdminList.BHP.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_BHP" class="CrewExperienceForAdmin_BHP">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.BHP))</div></th>
+} @* crewExperienceForAdminList.BHP.Visible (end) *@
+@if (crewExperienceForAdminList.MTRankID.Visible) { // crewExperienceForAdminList.MTRankID.Visible (begin)
+        <th data-name="MTRankID" class="@(crewExperienceForAdminList.MTRankID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_MTRankID" class="CrewExperienceForAdmin_MTRankID">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.MTRankID))</div></th>
+} @* crewExperienceForAdminList.MTRankID.Visible (end) *@
+@if (crewExperienceForAdminList.DateFrom.Visible) { // crewExperienceForAdminList.DateFrom.Visible (begin)
+        <th data-name="DateFrom" class="@(crewExperienceForAdminList.DateFrom.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_DateFrom" class="CrewExperienceForAdmin_DateFrom">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.DateFrom))</div></th>
+} @* crewExperienceForAdminList.DateFrom.Visible (end) *@
+@if (crewExperienceForAdminList.DateUntil.Visible) { // crewExperienceForAdminList.DateUntil.Visible (begin)
+        <th data-name="DateUntil" class="@(crewExperienceForAdminList.DateUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_DateUntil" class="CrewExperienceForAdmin_DateUntil">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.DateUntil))</div></th>
+} @* crewExperienceForAdminList.DateUntil.Visible (end) *@
+@if (crewExperienceForAdminList.CreatedByUserID.Visible) { // crewExperienceForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewExperienceForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_CreatedByUserID" class="CrewExperienceForAdmin_CreatedByUserID">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.CreatedByUserID))</div></th>
+} @* crewExperienceForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewExperienceForAdminList.CreatedDateTime.Visible) { // crewExperienceForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewExperienceForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_CreatedDateTime" class="CrewExperienceForAdmin_CreatedDateTime">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.CreatedDateTime))</div></th>
+} @* crewExperienceForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewExperienceForAdminList.LastUpdatedByUserID.Visible) { // crewExperienceForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewExperienceForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_LastUpdatedByUserID" class="CrewExperienceForAdmin_LastUpdatedByUserID">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewExperienceForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewExperienceForAdminList.LastUpdatedDateTime.Visible) { // crewExperienceForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewExperienceForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_LastUpdatedDateTime" class="CrewExperienceForAdmin_LastUpdatedDateTime">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewExperienceForAdminList.LastUpdatedDateTime.Visible (end) *@
+@if (crewExperienceForAdminList.SignOnPortName.Visible) { // crewExperienceForAdminList.SignOnPortName.Visible (begin)
+        <th data-name="SignOnPortName" class="@(crewExperienceForAdminList.SignOnPortName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_SignOnPortName" class="CrewExperienceForAdmin_SignOnPortName">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.SignOnPortName))</div></th>
+} @* crewExperienceForAdminList.SignOnPortName.Visible (end) *@
+@if (crewExperienceForAdminList.SignOffPortName.Visible) { // crewExperienceForAdminList.SignOffPortName.Visible (begin)
+        <th data-name="SignOffPortName" class="@(crewExperienceForAdminList.SignOffPortName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_SignOffPortName" class="CrewExperienceForAdmin_SignOffPortName">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.SignOffPortName))</div></th>
+} @* crewExperienceForAdminList.SignOffPortName.Visible (end) *@
+@if (crewExperienceForAdminList.SignOffReason.Visible) { // crewExperienceForAdminList.SignOffReason.Visible (begin)
+        <th data-name="SignOffReason" class="@(crewExperienceForAdminList.SignOffReason.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewExperienceForAdmin_SignOffReason" class="CrewExperienceForAdmin_SignOffReason">@Html.Raw(crewExperienceForAdminList.RenderFieldHeader(crewExperienceForAdminList.SignOffReason))</div></th>
+} @* crewExperienceForAdminList.SignOffReason.Visible (end) *@
+@* Render list options (header, right) *@
+@crewExperienceForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewExperienceForAdminList.PageNumber)">
+@{
+    await crewExperienceForAdminList.SetupGrid();
+    bool eof = crewExperienceForAdminList.Recordset == null; // DN
+}
+@while (crewExperienceForAdminList.RecordCount < crewExperienceForAdminList.StopRecord || SameString(crewExperienceForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewExperienceForAdminList.RowIndex, "$rowindex$") &&
+        (!crewExperienceForAdminList.IsGridAdd || crewExperienceForAdminList.CurrentMode == "copy") &&
+        (!((crewExperienceForAdminList.IsCopy || crewExperienceForAdminList.IsAdd) && crewExperienceForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewExperienceForAdminList.Recordset.ReadAsync();
+    crewExperienceForAdminList.RecordCount++;
+    if (crewExperienceForAdminList.RecordCount >= crewExperienceForAdminList.StartRecord) {
+        await crewExperienceForAdminList.SetupRow();
+    <tr @Html.Raw(crewExperienceForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewExperienceForAdminList.ListOptions.RenderBody("left", crewExperienceForAdminList.RowCount)
+    @if (crewExperienceForAdminList.MTCrewID.Visible) { // crewExperienceForAdminList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewExperienceForAdminList.MTCrewID.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_MTCrewID" class="el_CrewExperienceForAdmin_MTCrewID">
+<span @Html.Raw(crewExperienceForAdminList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.MTCrewID.Visible (end) *@
+    @if (crewExperienceForAdminList.CompanyName.Visible) { // crewExperienceForAdminList.CompanyName.Visible (begin)
+        <td data-name="CompanyName" @Html.Raw(crewExperienceForAdminList.CompanyName.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_CompanyName" class="el_CrewExperienceForAdmin_CompanyName">
+<span @Html.Raw(crewExperienceForAdminList.CompanyName.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.CompanyName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.CompanyName.Visible (end) *@
+    @if (crewExperienceForAdminList.FlagName_CountryID.Visible) { // crewExperienceForAdminList.FlagName_CountryID.Visible (begin)
+        <td data-name="FlagName_CountryID" @Html.Raw(crewExperienceForAdminList.FlagName_CountryID.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_FlagName_CountryID" class="el_CrewExperienceForAdmin_FlagName_CountryID">
+<span @Html.Raw(crewExperienceForAdminList.FlagName_CountryID.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.FlagName_CountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.FlagName_CountryID.Visible (end) *@
+    @if (crewExperienceForAdminList.VesselName.Visible) { // crewExperienceForAdminList.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(crewExperienceForAdminList.VesselName.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_VesselName" class="el_CrewExperienceForAdmin_VesselName">
+<span @Html.Raw(crewExperienceForAdminList.VesselName.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.VesselName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.VesselName.Visible (end) *@
+    @if (crewExperienceForAdminList.MTVesselTypeID.Visible) { // crewExperienceForAdminList.MTVesselTypeID.Visible (begin)
+        <td data-name="MTVesselTypeID" @Html.Raw(crewExperienceForAdminList.MTVesselTypeID.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_MTVesselTypeID" class="el_CrewExperienceForAdmin_MTVesselTypeID">
+<span @Html.Raw(crewExperienceForAdminList.MTVesselTypeID.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.MTVesselTypeID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.MTVesselTypeID.Visible (end) *@
+    @if (crewExperienceForAdminList.GRT.Visible) { // crewExperienceForAdminList.GRT.Visible (begin)
+        <td data-name="GRT" @Html.Raw(crewExperienceForAdminList.GRT.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_GRT" class="el_CrewExperienceForAdmin_GRT">
+<span @Html.Raw(crewExperienceForAdminList.GRT.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.GRT.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.GRT.Visible (end) *@
+    @if (crewExperienceForAdminList.DWT.Visible) { // crewExperienceForAdminList.DWT.Visible (begin)
+        <td data-name="DWT" @Html.Raw(crewExperienceForAdminList.DWT.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_DWT" class="el_CrewExperienceForAdmin_DWT">
+<span @Html.Raw(crewExperienceForAdminList.DWT.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.DWT.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.DWT.Visible (end) *@
+    @if (crewExperienceForAdminList.MainEngine.Visible) { // crewExperienceForAdminList.MainEngine.Visible (begin)
+        <td data-name="MainEngine" @Html.Raw(crewExperienceForAdminList.MainEngine.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_MainEngine" class="el_CrewExperienceForAdmin_MainEngine">
+<span @Html.Raw(crewExperienceForAdminList.MainEngine.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.MainEngine.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.MainEngine.Visible (end) *@
+    @if (crewExperienceForAdminList.BHP.Visible) { // crewExperienceForAdminList.BHP.Visible (begin)
+        <td data-name="BHP" @Html.Raw(crewExperienceForAdminList.BHP.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_BHP" class="el_CrewExperienceForAdmin_BHP">
+<span @Html.Raw(crewExperienceForAdminList.BHP.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.BHP.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.BHP.Visible (end) *@
+    @if (crewExperienceForAdminList.MTRankID.Visible) { // crewExperienceForAdminList.MTRankID.Visible (begin)
+        <td data-name="MTRankID" @Html.Raw(crewExperienceForAdminList.MTRankID.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_MTRankID" class="el_CrewExperienceForAdmin_MTRankID">
+<span @Html.Raw(crewExperienceForAdminList.MTRankID.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.MTRankID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.MTRankID.Visible (end) *@
+    @if (crewExperienceForAdminList.DateFrom.Visible) { // crewExperienceForAdminList.DateFrom.Visible (begin)
+        <td data-name="DateFrom" @Html.Raw(crewExperienceForAdminList.DateFrom.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_DateFrom" class="el_CrewExperienceForAdmin_DateFrom">
+<span @Html.Raw(crewExperienceForAdminList.DateFrom.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.DateFrom.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.DateFrom.Visible (end) *@
+    @if (crewExperienceForAdminList.DateUntil.Visible) { // crewExperienceForAdminList.DateUntil.Visible (begin)
+        <td data-name="DateUntil" @Html.Raw(crewExperienceForAdminList.DateUntil.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_DateUntil" class="el_CrewExperienceForAdmin_DateUntil">
+<span @Html.Raw(crewExperienceForAdminList.DateUntil.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.DateUntil.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.DateUntil.Visible (end) *@
+    @if (crewExperienceForAdminList.CreatedByUserID.Visible) { // crewExperienceForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewExperienceForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_CreatedByUserID" class="el_CrewExperienceForAdmin_CreatedByUserID">
+<span @Html.Raw(crewExperienceForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewExperienceForAdminList.CreatedDateTime.Visible) { // crewExperienceForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewExperienceForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_CreatedDateTime" class="el_CrewExperienceForAdmin_CreatedDateTime">
+<span @Html.Raw(crewExperienceForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewExperienceForAdminList.LastUpdatedByUserID.Visible) { // crewExperienceForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewExperienceForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_LastUpdatedByUserID" class="el_CrewExperienceForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewExperienceForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewExperienceForAdminList.LastUpdatedDateTime.Visible) { // crewExperienceForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewExperienceForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_LastUpdatedDateTime" class="el_CrewExperienceForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewExperienceForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @if (crewExperienceForAdminList.SignOnPortName.Visible) { // crewExperienceForAdminList.SignOnPortName.Visible (begin)
+        <td data-name="SignOnPortName" @Html.Raw(crewExperienceForAdminList.SignOnPortName.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_SignOnPortName" class="el_CrewExperienceForAdmin_SignOnPortName">
+<span @Html.Raw(crewExperienceForAdminList.SignOnPortName.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.SignOnPortName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.SignOnPortName.Visible (end) *@
+    @if (crewExperienceForAdminList.SignOffPortName.Visible) { // crewExperienceForAdminList.SignOffPortName.Visible (begin)
+        <td data-name="SignOffPortName" @Html.Raw(crewExperienceForAdminList.SignOffPortName.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_SignOffPortName" class="el_CrewExperienceForAdmin_SignOffPortName">
+<span @Html.Raw(crewExperienceForAdminList.SignOffPortName.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.SignOffPortName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.SignOffPortName.Visible (end) *@
+    @if (crewExperienceForAdminList.SignOffReason.Visible) { // crewExperienceForAdminList.SignOffReason.Visible (begin)
+        <td data-name="SignOffReason" @Html.Raw(crewExperienceForAdminList.SignOffReason.CellAttributes)>
+<span id="el@(crewExperienceForAdminList.RowCount)_CrewExperienceForAdmin_SignOffReason" class="el_CrewExperienceForAdmin_SignOffReason">
+<span @Html.Raw(crewExperienceForAdminList.SignOffReason.ViewAttributes)>
+@Html.Raw(crewExperienceForAdminList.SignOffReason.GetViewValue())</span>
+</span>
+</td>
+    } @* crewExperienceForAdminList.SignOffReason.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewExperienceForAdminList.ListOptions.RenderBody("right", crewExperienceForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewExperienceForAdminList.RowIndex, "$rowindex$"))
+        crewExperienceForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewExperienceForAdminList.IsCopy || crewExperienceForAdminList.IsAdd) && crewExperienceForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewExperienceForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewExperienceForAdminList.CurrentAction) && !crewExperienceForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewExperienceForAdminList.CloseRecordset(); }
+@if (!crewExperienceForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewExperienceForAdminList.IsGridAdd && !(crewExperienceForAdminList.IsGridEdit && crewExperienceForAdminList.ModalGridEdit) && !crewExperienceForAdminList.IsMultiEdit) {
+@Html.Raw(crewExperienceForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewExperienceForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewExperienceForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewExperienceForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewExperienceForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewExperienceForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

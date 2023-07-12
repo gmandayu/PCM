@@ -1,0 +1,508 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewBankAccountForAdminSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewBankAccountForAdminSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewBankAccountForAdminSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewBankAccountForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fCrewBankAccountForAdminsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewBankAccountForAdminsearch")
+        .setPageId("search")
+@if (crewBankAccountForAdminSearch.IsModal && crewBankAccountForAdminSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["AccountNumber", [], fields.AccountNumber.isInvalid],
+            ["Beneficiary", [], fields.Beneficiary.isInvalid],
+            ["MTCurrencyID", [], fields.MTCurrencyID.isInvalid],
+            ["MainAcc", [], fields.MainAcc.isInvalid],
+            ["Attachment", [], fields.Attachment.isInvalid],
+            ["CreatedByUserID", [ew.Validators.integer], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [ew.Validators.integer], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["MTBankID", [], fields.MTBankID.isInvalid],
+            ["OtherBankName", [], fields.OtherBankName.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCurrencyID": @Html.Raw(crewBankAccountForAdminSearch.MTCurrencyID.ToClientList(crewBankAccountForAdminSearch)),
+            "MainAcc": @Html.Raw(crewBankAccountForAdminSearch.MainAcc.ToClientList(crewBankAccountForAdminSearch)),
+            "MTBankID": @Html.Raw(crewBankAccountForAdminSearch.MTBankID.ToClientList(crewBankAccountForAdminSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (crewBankAccountForAdminSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@crewBankAccountForAdminSearch.ShowPageHeader()
+@crewBankAccountForAdminSearch.ShowMessages()
+<form name="fCrewBankAccountForAdminsearch" id="fCrewBankAccountForAdminsearch" class="@(crewBankAccountForAdminSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (crewBankAccountForAdminSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (crewBankAccountForAdminSearch.AccountNumber.Visible) { // crewBankAccountForAdminSearch.AccountNumber.Visible (begin)
+    <div id="r_AccountNumber" class="row" @Html.Raw(crewBankAccountForAdminSearch.AccountNumber.RowAttributes)>
+        <label for="x_AccountNumber" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_AccountNumber">@Html.Raw(crewBankAccountForAdminSearch.AccountNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AccountNumber" id="z_AccountNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.AccountNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_AccountNumber" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.AccountNumber.InputTextType)" name="x_AccountNumber" id="x_AccountNumber" data-table="CrewBankAccountForAdmin" data-field="x_AccountNumber" value="@Html.Raw(crewBankAccountForAdminSearch.AccountNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.AccountNumber.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.AccountNumber.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.AccountNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.AccountNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.AccountNumber.Visible (end) *@
+@if (crewBankAccountForAdminSearch.Beneficiary.Visible) { // crewBankAccountForAdminSearch.Beneficiary.Visible (begin)
+    <div id="r_Beneficiary" class="row" @Html.Raw(crewBankAccountForAdminSearch.Beneficiary.RowAttributes)>
+        <label for="x_Beneficiary" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_Beneficiary">@Html.Raw(crewBankAccountForAdminSearch.Beneficiary.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Beneficiary" id="z_Beneficiary" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.Beneficiary.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_Beneficiary" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.Beneficiary.InputTextType)" name="x_Beneficiary" id="x_Beneficiary" data-table="CrewBankAccountForAdmin" data-field="x_Beneficiary" value="@Html.Raw(crewBankAccountForAdminSearch.Beneficiary.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.Beneficiary.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.Beneficiary.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.Beneficiary.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.Beneficiary.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.Beneficiary.Visible (end) *@
+@if (crewBankAccountForAdminSearch.MTCurrencyID.Visible) { // crewBankAccountForAdminSearch.MTCurrencyID.Visible (begin)
+    <div id="r_MTCurrencyID" class="row" @Html.Raw(crewBankAccountForAdminSearch.MTCurrencyID.RowAttributes)>
+        <label for="x_MTCurrencyID" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_MTCurrencyID">@Html.Raw(crewBankAccountForAdminSearch.MTCurrencyID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCurrencyID" id="z_MTCurrencyID" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.MTCurrencyID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_MTCurrencyID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTCurrencyID"
+        name="x_MTCurrencyID"
+        class="form-select ew-select@(crewBankAccountForAdminSearch.MTCurrencyID.IsInvalidClass)"
+        data-select2-id="fCrewBankAccountForAdminsearch_x_MTCurrencyID"
+        data-table="CrewBankAccountForAdmin"
+        data-field="x_MTCurrencyID"
+        data-value-separator="@(crewBankAccountForAdminSearch.MTCurrencyID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewBankAccountForAdminSearch.MTCurrencyID.PlaceHolder))"
+        @Html.Raw(crewBankAccountForAdminSearch.MTCurrencyID.EditAttributes)>
+        @(crewBankAccountForAdminSearch.MTCurrencyID.SelectOptionListHtml("x_MTCurrencyID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.MTCurrencyID.GetErrorMessage(false))</div>
+@Html.Raw(crewBankAccountForAdminSearch.MTCurrencyID.Lookup.GetParamTag(crewBankAccountForAdminSearch, "p_x_MTCurrencyID"))
+<script>
+loadjs.ready("fCrewBankAccountForAdminsearch", function() {
+    var options = { name: "x_MTCurrencyID", selectId: "fCrewBankAccountForAdminsearch_x_MTCurrencyID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewBankAccountForAdminsearch.lists.MTCurrencyID?.lookupOptions.length) {
+        options.data = { id: "x_MTCurrencyID", form: "fCrewBankAccountForAdminsearch" };
+    } else {
+        options.ajax = { id: "x_MTCurrencyID", form: "fCrewBankAccountForAdminsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewBankAccountForAdmin.fields.MTCurrencyID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.MTCurrencyID.Visible (end) *@
+@if (crewBankAccountForAdminSearch.MainAcc.Visible) { // crewBankAccountForAdminSearch.MainAcc.Visible (begin)
+    <div id="r_MainAcc" class="row" @Html.Raw(crewBankAccountForAdminSearch.MainAcc.RowAttributes)>
+        <label class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_MainAcc">@Html.Raw(crewBankAccountForAdminSearch.MainAcc.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MainAcc" id="z_MainAcc" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.MainAcc.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_MainAcc" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(crewBankAccountForAdminSearch.MainAcc.IsInvalidClass)" data-table="CrewBankAccountForAdmin" data-field="x_MainAcc" data-boolean name="x_MainAcc" id="x_MainAcc" value="1" checked="@ConvertToBool(crewBankAccountForAdminSearch.MainAcc.AdvancedSearch.SearchValue)" @Html.Raw(crewBankAccountForAdminSearch.MainAcc.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.MainAcc.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.MainAcc.Visible (end) *@
+@if (crewBankAccountForAdminSearch.Attachment.Visible) { // crewBankAccountForAdminSearch.Attachment.Visible (begin)
+    <div id="r_Attachment" class="row" @Html.Raw(crewBankAccountForAdminSearch.Attachment.RowAttributes)>
+        <label class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_Attachment">@Html.Raw(crewBankAccountForAdminSearch.Attachment.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Attachment" id="z_Attachment" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.Attachment.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_Attachment" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.Attachment.InputTextType)" name="x_Attachment" id="x_Attachment" data-table="CrewBankAccountForAdmin" data-field="x_Attachment" value="@Html.Raw(crewBankAccountForAdminSearch.Attachment.EditValue)" size="30" maxlength="150" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.Attachment.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.Attachment.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.Attachment.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.Attachment.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.Attachment.Visible (end) *@
+@if (crewBankAccountForAdminSearch.CreatedByUserID.Visible) { // crewBankAccountForAdminSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(crewBankAccountForAdminSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_CreatedByUserID">@Html.Raw(crewBankAccountForAdminSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_CreatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.CreatedByUserID.InputTextType)" name="x_CreatedByUserID" id="x_CreatedByUserID" data-table="CrewBankAccountForAdmin" data-field="x_CreatedByUserID" value="@Html.Raw(crewBankAccountForAdminSearch.CreatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.CreatedByUserID.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.CreatedByUserID.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.CreatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.CreatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.CreatedByUserID.Visible (end) *@
+@if (crewBankAccountForAdminSearch.CreatedDateTime.Visible) { // crewBankAccountForAdminSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(crewBankAccountForAdminSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_CreatedDateTime">@Html.Raw(crewBankAccountForAdminSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="CrewBankAccountForAdmin" data-field="x_CreatedDateTime" value="@Html.Raw(crewBankAccountForAdminSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.CreatedDateTime.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!crewBankAccountForAdminSearch.CreatedDateTime.ReadOnly && !crewBankAccountForAdminSearch.CreatedDateTime.Disabled && !crewBankAccountForAdminSearch.CreatedDateTime.EditAttrs.Is("readonly") && !crewBankAccountForAdminSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewBankAccountForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewBankAccountForAdminsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.CreatedDateTime.Visible (end) *@
+@if (crewBankAccountForAdminSearch.LastUpdatedByUserID.Visible) { // crewBankAccountForAdminSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(crewBankAccountForAdminSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_LastUpdatedByUserID">@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.LastUpdatedByUserID.InputTextType)" name="x_LastUpdatedByUserID" id="x_LastUpdatedByUserID" data-table="CrewBankAccountForAdmin" data-field="x_LastUpdatedByUserID" value="@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.LastUpdatedByUserID.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.LastUpdatedByUserID.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.LastUpdatedByUserID.Visible (end) *@
+@if (crewBankAccountForAdminSearch.LastUpdatedDateTime.Visible) { // crewBankAccountForAdminSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(crewBankAccountForAdminSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_LastUpdatedDateTime">@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="CrewBankAccountForAdmin" data-field="x_LastUpdatedDateTime" value="@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!crewBankAccountForAdminSearch.LastUpdatedDateTime.ReadOnly && !crewBankAccountForAdminSearch.LastUpdatedDateTime.Disabled && !crewBankAccountForAdminSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !crewBankAccountForAdminSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewBankAccountForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewBankAccountForAdminsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.LastUpdatedDateTime.Visible (end) *@
+@if (crewBankAccountForAdminSearch.MTCrewID.Visible) { // crewBankAccountForAdminSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(crewBankAccountForAdminSearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_MTCrewID">@Html.Raw(crewBankAccountForAdminSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_MTCrewID" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.MTCrewID.InputTextType)" name="x_MTCrewID" id="x_MTCrewID" data-table="CrewBankAccountForAdmin" data-field="x_MTCrewID" value="@Html.Raw(crewBankAccountForAdminSearch.MTCrewID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.MTCrewID.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.MTCrewID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.MTCrewID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.MTCrewID.Visible (end) *@
+@if (crewBankAccountForAdminSearch.MTBankID.Visible) { // crewBankAccountForAdminSearch.MTBankID.Visible (begin)
+    <div id="r_MTBankID" class="row" @Html.Raw(crewBankAccountForAdminSearch.MTBankID.RowAttributes)>
+        <label for="x_MTBankID" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_MTBankID">@Html.Raw(crewBankAccountForAdminSearch.MTBankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTBankID" id="z_MTBankID" value="=">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.MTBankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_MTBankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTBankID"
+        name="x_MTBankID"
+        class="form-select ew-select@(crewBankAccountForAdminSearch.MTBankID.IsInvalidClass)"
+        data-select2-id="fCrewBankAccountForAdminsearch_x_MTBankID"
+        data-table="CrewBankAccountForAdmin"
+        data-field="x_MTBankID"
+        data-value-separator="@(crewBankAccountForAdminSearch.MTBankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewBankAccountForAdminSearch.MTBankID.PlaceHolder))"
+        @Html.Raw(crewBankAccountForAdminSearch.MTBankID.EditAttributes)>
+        @(crewBankAccountForAdminSearch.MTBankID.SelectOptionListHtml("x_MTBankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.MTBankID.GetErrorMessage(false))</div>
+@Html.Raw(crewBankAccountForAdminSearch.MTBankID.Lookup.GetParamTag(crewBankAccountForAdminSearch, "p_x_MTBankID"))
+<script>
+loadjs.ready("fCrewBankAccountForAdminsearch", function() {
+    var options = { name: "x_MTBankID", selectId: "fCrewBankAccountForAdminsearch_x_MTBankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewBankAccountForAdminsearch.lists.MTBankID?.lookupOptions.length) {
+        options.data = { id: "x_MTBankID", form: "fCrewBankAccountForAdminsearch" };
+    } else {
+        options.ajax = { id: "x_MTBankID", form: "fCrewBankAccountForAdminsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewBankAccountForAdmin.fields.MTBankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.MTBankID.Visible (end) *@
+@if (crewBankAccountForAdminSearch.OtherBankName.Visible) { // crewBankAccountForAdminSearch.OtherBankName.Visible (begin)
+    <div id="r_OtherBankName" class="row" @Html.Raw(crewBankAccountForAdminSearch.OtherBankName.RowAttributes)>
+        <label for="x_OtherBankName" class="@(crewBankAccountForAdminSearch.LeftColumnClass)"><span id="elh_CrewBankAccountForAdmin_OtherBankName">@Html.Raw(crewBankAccountForAdminSearch.OtherBankName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_OtherBankName" id="z_OtherBankName" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewBankAccountForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewBankAccountForAdminSearch.OtherBankName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewBankAccountForAdmin_OtherBankName" class="ew-search-field ew-search-field-single">
+<input type="@(crewBankAccountForAdminSearch.OtherBankName.InputTextType)" name="x_OtherBankName" id="x_OtherBankName" data-table="CrewBankAccountForAdmin" data-field="x_OtherBankName" value="@Html.Raw(crewBankAccountForAdminSearch.OtherBankName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewBankAccountForAdminSearch.OtherBankName.PlaceHolder))" data-format-pattern="@(crewBankAccountForAdminSearch.OtherBankName.FormatPattern)"@Html.Raw(crewBankAccountForAdminSearch.OtherBankName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewBankAccountForAdminSearch.OtherBankName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewBankAccountForAdminSearch.OtherBankName.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(crewBankAccountForAdminSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(crewBankAccountForAdminSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCrewBankAccountForAdminsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (crewBankAccountForAdminSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCrewBankAccountForAdminsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fCrewBankAccountForAdminsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(crewBankAccountForAdminSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@crewBankAccountForAdminSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewBankAccountForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

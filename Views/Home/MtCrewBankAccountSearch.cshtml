@@ -1,0 +1,585 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewBankAccountSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewBankAccountSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewBankAccountSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewBankAccount: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewBankAccountsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewBankAccountsearch")
+        .setPageId("search")
+@if (mtCrewBankAccountSearch.IsModal && mtCrewBankAccountSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["BankName", [], fields.BankName.isInvalid],
+            ["MTBankID", [], fields.MTBankID.isInvalid],
+            ["OtherBankName", [], fields.OtherBankName.isInvalid],
+            ["AccountNumber", [], fields.AccountNumber.isInvalid],
+            ["Beneficiary", [], fields.Beneficiary.isInvalid],
+            ["MTCurrencyID", [], fields.MTCurrencyID.isInvalid],
+            ["MainAcc", [], fields.MainAcc.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewBankAccountSearch.MTCrewID.ToClientList(mtCrewBankAccountSearch)),
+            "MTBankID": @Html.Raw(mtCrewBankAccountSearch.MTBankID.ToClientList(mtCrewBankAccountSearch)),
+            "MTCurrencyID": @Html.Raw(mtCrewBankAccountSearch.MTCurrencyID.ToClientList(mtCrewBankAccountSearch)),
+            "MainAcc": @Html.Raw(mtCrewBankAccountSearch.MainAcc.ToClientList(mtCrewBankAccountSearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewBankAccountSearch.CreatedByUserID.ToClientList(mtCrewBankAccountSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewBankAccountSearch.LastUpdatedByUserID.ToClientList(mtCrewBankAccountSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewBankAccountSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewBankAccountSearch.ShowPageHeader()
+@mtCrewBankAccountSearch.ShowMessages()
+<form name="fMTCrewBankAccountsearch" id="fMTCrewBankAccountsearch" class="@(mtCrewBankAccountSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewBankAccountSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewBankAccountSearch.MTCrewID.Visible) { // mtCrewBankAccountSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(mtCrewBankAccountSearch.MTCrewID.RowAttributes)>
+        <label class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_MTCrewID">@Html.Raw(mtCrewBankAccountSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_MTCrewID" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mtCrewBankAccountSearch.MTCrewID.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_MTCrewID" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_MTCrewID" id="sv_x_MTCrewID" value="@(RemoveHtml(ConvertToString(mtCrewBankAccountSearch.MTCrewID.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.MTCrewID.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(mtCrewBankAccountSearch.MTCrewID.FormatPattern)" @Html.Raw(mtCrewBankAccountSearch.MTCrewID.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="MTCrewBankAccount" data-field="x_MTCrewID" data-input="sv_x_MTCrewID" data-value-separator="@(mtCrewBankAccountSearch.MTCrewID.DisplayValueSeparatorAttribute)" name="x_MTCrewID" id="x_MTCrewID" value="@(HtmlEncode(mtCrewBankAccountSearch.MTCrewID.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.MTCrewID.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMTCrewBankAccountsearch"], function() {
+    fMTCrewBankAccountsearch.createAutoSuggest(Object.assign({"id":"x_MTCrewID","forceSelect":false}, { lookupAllDisplayFields: @(mtCrewBankAccountSearch.MTCrewID.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.MTCrewBankAccount.fields.MTCrewID.autoSuggestOptions));
+});
+</script>
+@Html.Raw(mtCrewBankAccountSearch.MTCrewID.Lookup.GetParamTag(mtCrewBankAccountSearch, "p_x_MTCrewID"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.MTCrewID.Visible (end) *@
+@if (mtCrewBankAccountSearch.BankName.Visible) { // mtCrewBankAccountSearch.BankName.Visible (begin)
+    <div id="r_BankName" class="row" @Html.Raw(mtCrewBankAccountSearch.BankName.RowAttributes)>
+        <label for="x_BankName" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_BankName">@Html.Raw(mtCrewBankAccountSearch.BankName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_BankName" id="z_BankName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.BankName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_BankName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewBankAccountSearch.BankName.InputTextType)" name="x_BankName" id="x_BankName" data-table="MTCrewBankAccount" data-field="x_BankName" value="@Html.Raw(mtCrewBankAccountSearch.BankName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.BankName.PlaceHolder))" data-format-pattern="@(mtCrewBankAccountSearch.BankName.FormatPattern)"@Html.Raw(mtCrewBankAccountSearch.BankName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.BankName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.BankName.Visible (end) *@
+@if (mtCrewBankAccountSearch.MTBankID.Visible) { // mtCrewBankAccountSearch.MTBankID.Visible (begin)
+    <div id="r_MTBankID" class="row" @Html.Raw(mtCrewBankAccountSearch.MTBankID.RowAttributes)>
+        <label for="x_MTBankID" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_MTBankID">@Html.Raw(mtCrewBankAccountSearch.MTBankID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTBankID" id="z_MTBankID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.MTBankID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_MTBankID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTBankID"
+        name="x_MTBankID"
+        class="form-select ew-select@(mtCrewBankAccountSearch.MTBankID.IsInvalidClass)"
+        data-select2-id="fMTCrewBankAccountsearch_x_MTBankID"
+        data-table="MTCrewBankAccount"
+        data-field="x_MTBankID"
+        data-value-separator="@(mtCrewBankAccountSearch.MTBankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewBankAccountSearch.MTBankID.PlaceHolder))"
+        @Html.Raw(mtCrewBankAccountSearch.MTBankID.EditAttributes)>
+        @(mtCrewBankAccountSearch.MTBankID.SelectOptionListHtml("x_MTBankID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.MTBankID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewBankAccountSearch.MTBankID.Lookup.GetParamTag(mtCrewBankAccountSearch, "p_x_MTBankID"))
+<script>
+loadjs.ready("fMTCrewBankAccountsearch", function() {
+    var options = { name: "x_MTBankID", selectId: "fMTCrewBankAccountsearch_x_MTBankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewBankAccountsearch.lists.MTBankID?.lookupOptions.length) {
+        options.data = { id: "x_MTBankID", form: "fMTCrewBankAccountsearch" };
+    } else {
+        options.ajax = { id: "x_MTBankID", form: "fMTCrewBankAccountsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewBankAccount.fields.MTBankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.MTBankID.Visible (end) *@
+@if (mtCrewBankAccountSearch.OtherBankName.Visible) { // mtCrewBankAccountSearch.OtherBankName.Visible (begin)
+    <div id="r_OtherBankName" class="row" @Html.Raw(mtCrewBankAccountSearch.OtherBankName.RowAttributes)>
+        <label for="x_OtherBankName" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_OtherBankName">@Html.Raw(mtCrewBankAccountSearch.OtherBankName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_OtherBankName" id="z_OtherBankName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.OtherBankName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_OtherBankName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewBankAccountSearch.OtherBankName.InputTextType)" name="x_OtherBankName" id="x_OtherBankName" data-table="MTCrewBankAccount" data-field="x_OtherBankName" value="@Html.Raw(mtCrewBankAccountSearch.OtherBankName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.OtherBankName.PlaceHolder))" data-format-pattern="@(mtCrewBankAccountSearch.OtherBankName.FormatPattern)"@Html.Raw(mtCrewBankAccountSearch.OtherBankName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.OtherBankName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.OtherBankName.Visible (end) *@
+@if (mtCrewBankAccountSearch.AccountNumber.Visible) { // mtCrewBankAccountSearch.AccountNumber.Visible (begin)
+    <div id="r_AccountNumber" class="row" @Html.Raw(mtCrewBankAccountSearch.AccountNumber.RowAttributes)>
+        <label for="x_AccountNumber" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_AccountNumber">@Html.Raw(mtCrewBankAccountSearch.AccountNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_AccountNumber" id="z_AccountNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.AccountNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_AccountNumber" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewBankAccountSearch.AccountNumber.InputTextType)" name="x_AccountNumber" id="x_AccountNumber" data-table="MTCrewBankAccount" data-field="x_AccountNumber" value="@Html.Raw(mtCrewBankAccountSearch.AccountNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.AccountNumber.PlaceHolder))" data-format-pattern="@(mtCrewBankAccountSearch.AccountNumber.FormatPattern)"@Html.Raw(mtCrewBankAccountSearch.AccountNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.AccountNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.AccountNumber.Visible (end) *@
+@if (mtCrewBankAccountSearch.Beneficiary.Visible) { // mtCrewBankAccountSearch.Beneficiary.Visible (begin)
+    <div id="r_Beneficiary" class="row" @Html.Raw(mtCrewBankAccountSearch.Beneficiary.RowAttributes)>
+        <label for="x_Beneficiary" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_Beneficiary">@Html.Raw(mtCrewBankAccountSearch.Beneficiary.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Beneficiary" id="z_Beneficiary" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.Beneficiary.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_Beneficiary" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewBankAccountSearch.Beneficiary.InputTextType)" name="x_Beneficiary" id="x_Beneficiary" data-table="MTCrewBankAccount" data-field="x_Beneficiary" value="@Html.Raw(mtCrewBankAccountSearch.Beneficiary.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.Beneficiary.PlaceHolder))" data-format-pattern="@(mtCrewBankAccountSearch.Beneficiary.FormatPattern)"@Html.Raw(mtCrewBankAccountSearch.Beneficiary.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.Beneficiary.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.Beneficiary.Visible (end) *@
+@if (mtCrewBankAccountSearch.MTCurrencyID.Visible) { // mtCrewBankAccountSearch.MTCurrencyID.Visible (begin)
+    <div id="r_MTCurrencyID" class="row" @Html.Raw(mtCrewBankAccountSearch.MTCurrencyID.RowAttributes)>
+        <label for="x_MTCurrencyID" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_MTCurrencyID">@Html.Raw(mtCrewBankAccountSearch.MTCurrencyID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCurrencyID" id="z_MTCurrencyID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.MTCurrencyID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_MTCurrencyID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTCurrencyID"
+        name="x_MTCurrencyID"
+        class="form-select ew-select@(mtCrewBankAccountSearch.MTCurrencyID.IsInvalidClass)"
+        data-select2-id="fMTCrewBankAccountsearch_x_MTCurrencyID"
+        data-table="MTCrewBankAccount"
+        data-field="x_MTCurrencyID"
+        data-value-separator="@(mtCrewBankAccountSearch.MTCurrencyID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewBankAccountSearch.MTCurrencyID.PlaceHolder))"
+        @Html.Raw(mtCrewBankAccountSearch.MTCurrencyID.EditAttributes)>
+        @(mtCrewBankAccountSearch.MTCurrencyID.SelectOptionListHtml("x_MTCurrencyID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.MTCurrencyID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewBankAccountSearch.MTCurrencyID.Lookup.GetParamTag(mtCrewBankAccountSearch, "p_x_MTCurrencyID"))
+<script>
+loadjs.ready("fMTCrewBankAccountsearch", function() {
+    var options = { name: "x_MTCurrencyID", selectId: "fMTCrewBankAccountsearch_x_MTCurrencyID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewBankAccountsearch.lists.MTCurrencyID?.lookupOptions.length) {
+        options.data = { id: "x_MTCurrencyID", form: "fMTCrewBankAccountsearch" };
+    } else {
+        options.ajax = { id: "x_MTCurrencyID", form: "fMTCrewBankAccountsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewBankAccount.fields.MTCurrencyID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.MTCurrencyID.Visible (end) *@
+@if (mtCrewBankAccountSearch.MainAcc.Visible) { // mtCrewBankAccountSearch.MainAcc.Visible (begin)
+    <div id="r_MainAcc" class="row" @Html.Raw(mtCrewBankAccountSearch.MainAcc.RowAttributes)>
+        <label class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_MainAcc">@Html.Raw(mtCrewBankAccountSearch.MainAcc.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MainAcc" id="z_MainAcc" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.MainAcc.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_MainAcc" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtCrewBankAccountSearch.MainAcc.IsInvalidClass)" data-table="MTCrewBankAccount" data-field="x_MainAcc" data-boolean name="x_MainAcc" id="x_MainAcc" value="1" checked="@ConvertToBool(mtCrewBankAccountSearch.MainAcc.AdvancedSearch.SearchValue)" @Html.Raw(mtCrewBankAccountSearch.MainAcc.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.MainAcc.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.MainAcc.Visible (end) *@
+@if (mtCrewBankAccountSearch.CreatedByUserID.Visible) { // mtCrewBankAccountSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewBankAccountSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_CreatedByUserID">@Html.Raw(mtCrewBankAccountSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewBankAccountSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewBankAccountsearch_x_CreatedByUserID"
+        data-table="MTCrewBankAccount"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewBankAccountSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewBankAccountSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewBankAccountSearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewBankAccountSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewBankAccountSearch.CreatedByUserID.Lookup.GetParamTag(mtCrewBankAccountSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewBankAccountsearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewBankAccountsearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewBankAccountsearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewBankAccountsearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewBankAccountsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewBankAccount.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewBankAccountSearch.CreatedDateTime.Visible) { // mtCrewBankAccountSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewBankAccountSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_CreatedDateTime">@Html.Raw(mtCrewBankAccountSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewBankAccountSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrewBankAccount" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewBankAccountSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewBankAccountSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewBankAccountSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewBankAccountSearch.CreatedDateTime.ReadOnly && !mtCrewBankAccountSearch.CreatedDateTime.Disabled && !mtCrewBankAccountSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewBankAccountSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewBankAccountsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewBankAccountsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewBankAccountSearch.LastUpdatedByUserID.Visible) { // mtCrewBankAccountSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewBankAccountSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_LastUpdatedByUserID">@Html.Raw(mtCrewBankAccountSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewBankAccountSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewBankAccountsearch_x_LastUpdatedByUserID"
+        data-table="MTCrewBankAccount"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewBankAccountSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewBankAccountSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewBankAccountSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewBankAccountSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewBankAccountSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewBankAccountSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewBankAccountsearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewBankAccountsearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewBankAccountsearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewBankAccountsearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewBankAccountsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewBankAccount.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewBankAccountSearch.LastUpdatedDateTime.Visible) { // mtCrewBankAccountSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewBankAccountSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewBankAccountSearch.LeftColumnClass)"><span id="elh_MTCrewBankAccount_LastUpdatedDateTime">@Html.Raw(mtCrewBankAccountSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewBankAccountSearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewBankAccountSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewBankAccount_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewBankAccountSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrewBankAccount" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewBankAccountSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewBankAccountSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewBankAccountSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewBankAccountSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewBankAccountSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewBankAccountSearch.LastUpdatedDateTime.ReadOnly && !mtCrewBankAccountSearch.LastUpdatedDateTime.Disabled && !mtCrewBankAccountSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewBankAccountSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewBankAccountsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewBankAccountsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewBankAccountSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewBankAccountSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewBankAccountSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewBankAccountsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewBankAccountSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewBankAccountsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewBankAccountsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewBankAccountSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewBankAccountSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewBankAccount");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

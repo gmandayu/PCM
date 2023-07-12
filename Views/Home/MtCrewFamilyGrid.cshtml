@@ -1,0 +1,1235 @@
+@{
+    // View
+    View = this;
+
+    // Set up CurrentGrid
+    CurrentGrid = mtCrewFamilyGrid;
+
+    // Run
+    await mtCrewFamilyGrid.Run();
+
+    // Check action result
+    if (mtCrewFamilyGrid.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewFamilyGrid.IsExport()) {
+<script>
+var fMTCrewFamilygrid;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let currentTable = @Html.Raw(ConvertToJson(mtCrewFamilyGrid.ToClientVar()));
+    ew.deepAssign(ew.vars, { tables: { MTCrewFamily: currentTable } });
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewFamilygrid")
+        .setPageId("grid")
+        .setFormKeyCountName("@(mtCrewFamilyGrid.FormKeyCountName)")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [fields.MTCrewID.visible && fields.MTCrewID.required ? ew.Validators.required(fields.MTCrewID.caption) : null], fields.MTCrewID.isInvalid],
+            ["Relationship", [fields.Relationship.visible && fields.Relationship.required ? ew.Validators.required(fields.Relationship.caption) : null], fields.Relationship.isInvalid],
+            ["FullName", [fields.FullName.visible && fields.FullName.required ? ew.Validators.required(fields.FullName.caption) : null], fields.FullName.isInvalid],
+            ["Gender", [fields.Gender.visible && fields.Gender.required ? ew.Validators.required(fields.Gender.caption) : null], fields.Gender.isInvalid],
+            ["DateOfBirth", [fields.DateOfBirth.visible && fields.DateOfBirth.required ? ew.Validators.required(fields.DateOfBirth.caption) : null, ew.Validators.datetime(fields.DateOfBirth.clientFormatPattern)], fields.DateOfBirth.isInvalid],
+            ["MobileNumberCode_CountryID", [fields.MobileNumberCode_CountryID.visible && fields.MobileNumberCode_CountryID.required ? ew.Validators.required(fields.MobileNumberCode_CountryID.caption) : null, ew.Validators.integer], fields.MobileNumberCode_CountryID.isInvalid],
+            ["MobileNumber", [fields.MobileNumber.visible && fields.MobileNumber.required ? ew.Validators.required(fields.MobileNumber.caption) : null], fields.MobileNumber.isInvalid],
+            ["_Email", [fields._Email.visible && fields._Email.required ? ew.Validators.required(fields._Email.caption) : null], fields._Email.isInvalid],
+            ["SocialSecurityNumber", [fields.SocialSecurityNumber.visible && fields.SocialSecurityNumber.required ? ew.Validators.required(fields.SocialSecurityNumber.caption) : null], fields.SocialSecurityNumber.isInvalid],
+            ["FamilyRegisterNumber", [fields.FamilyRegisterNumber.visible && fields.FamilyRegisterNumber.required ? ew.Validators.required(fields.FamilyRegisterNumber.caption) : null], fields.FamilyRegisterNumber.isInvalid],
+            ["Address", [fields.Address.visible && fields.Address.required ? ew.Validators.required(fields.Address.caption) : null], fields.Address.isInvalid],
+            ["CreatedByUserID", [fields.CreatedByUserID.visible && fields.CreatedByUserID.required ? ew.Validators.required(fields.CreatedByUserID.caption) : null], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [fields.LastUpdatedByUserID.visible && fields.LastUpdatedByUserID.required ? ew.Validators.required(fields.LastUpdatedByUserID.caption) : null], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [fields.LastUpdatedDateTime.visible && fields.LastUpdatedDateTime.required ? ew.Validators.required(fields.LastUpdatedDateTime.caption) : null, ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+
+        // Check empty row
+        .setEmptyRow(
+            function (rowIndex) {
+                let fobj = this.getForm(),
+                    fields = [["MTCrewID",false],["Relationship",false],["FullName",false],["Gender",false],["DateOfBirth",false],["MobileNumberCode_CountryID",false],["MobileNumber",false],["_Email",false],["SocialSecurityNumber",false],["FamilyRegisterNumber",false],["Address",false],["CreatedByUserID",false],["CreatedDateTime",false],["LastUpdatedByUserID",false],["LastUpdatedDateTime",false]];
+                if (fields.some(field => ew.valueChanged(fobj, rowIndex, ...field)))
+                    return false;
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewFamilyGrid.MTCrewID.ToClientList(mtCrewFamilyGrid)),
+            "Relationship": @Html.Raw(mtCrewFamilyGrid.Relationship.ToClientList(mtCrewFamilyGrid)),
+            "Gender": @Html.Raw(mtCrewFamilyGrid.Gender.ToClientList(mtCrewFamilyGrid)),
+            "CreatedByUserID": @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.ToClientList(mtCrewFamilyGrid)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.ToClientList(mtCrewFamilyGrid)),
+        })
+        .build();
+    window[form.id] = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+<main class="list">
+<div id="ew-list">
+@if (mtCrewFamilyGrid.TotalRecords > 0 || !Empty(mtCrewFamilyGrid.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCrewFamilyGrid.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCrewFamilyGrid.TableGridClass)">
+<div id="fMTCrewFamilygrid" class="ew-form ew-list-form">
+<div id="gmp_MTCrewFamily" class="card-body ew-grid-middle-panel @(mtCrewFamilyGrid.TableContainerClass)" style="@(mtCrewFamilyGrid.TableContainerStyle)">
+<table id="tbl_MTCrewFamilygrid" class="@(mtCrewFamilyGrid.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCrewFamilyGrid.RowType = RowType.Header;
+
+    // Render list options
+    await mtCrewFamilyGrid.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCrewFamilyGrid.ListOptions.RenderHeader("left")
+@if (mtCrewFamilyGrid.MTCrewID.Visible) { // mtCrewFamilyGrid.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtCrewFamilyGrid.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_MTCrewID" class="MTCrewFamily_MTCrewID">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.MTCrewID))</div></th>
+} @* mtCrewFamilyGrid.MTCrewID.Visible (end) *@
+@if (mtCrewFamilyGrid.Relationship.Visible) { // mtCrewFamilyGrid.Relationship.Visible (begin)
+        <th data-name="Relationship" class="@(mtCrewFamilyGrid.Relationship.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_Relationship" class="MTCrewFamily_Relationship">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.Relationship))</div></th>
+} @* mtCrewFamilyGrid.Relationship.Visible (end) *@
+@if (mtCrewFamilyGrid.FullName.Visible) { // mtCrewFamilyGrid.FullName.Visible (begin)
+        <th data-name="FullName" class="@(mtCrewFamilyGrid.FullName.HeaderCellClass)"><div id="elh_MTCrewFamily_FullName" class="MTCrewFamily_FullName">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.FullName))</div></th>
+} @* mtCrewFamilyGrid.FullName.Visible (end) *@
+@if (mtCrewFamilyGrid.Gender.Visible) { // mtCrewFamilyGrid.Gender.Visible (begin)
+        <th data-name="Gender" class="@(mtCrewFamilyGrid.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_Gender" class="MTCrewFamily_Gender">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.Gender))</div></th>
+} @* mtCrewFamilyGrid.Gender.Visible (end) *@
+@if (mtCrewFamilyGrid.DateOfBirth.Visible) { // mtCrewFamilyGrid.DateOfBirth.Visible (begin)
+        <th data-name="DateOfBirth" class="@(mtCrewFamilyGrid.DateOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_DateOfBirth" class="MTCrewFamily_DateOfBirth">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.DateOfBirth))</div></th>
+} @* mtCrewFamilyGrid.DateOfBirth.Visible (end) *@
+@if (mtCrewFamilyGrid.MobileNumberCode_CountryID.Visible) { // mtCrewFamilyGrid.MobileNumberCode_CountryID.Visible (begin)
+        <th data-name="MobileNumberCode_CountryID" class="@(mtCrewFamilyGrid.MobileNumberCode_CountryID.HeaderCellClass)"><div id="elh_MTCrewFamily_MobileNumberCode_CountryID" class="MTCrewFamily_MobileNumberCode_CountryID">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.MobileNumberCode_CountryID))</div></th>
+} @* mtCrewFamilyGrid.MobileNumberCode_CountryID.Visible (end) *@
+@if (mtCrewFamilyGrid.MobileNumber.Visible) { // mtCrewFamilyGrid.MobileNumber.Visible (begin)
+        <th data-name="MobileNumber" class="@(mtCrewFamilyGrid.MobileNumber.HeaderCellClass)"><div id="elh_MTCrewFamily_MobileNumber" class="MTCrewFamily_MobileNumber">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.MobileNumber))</div></th>
+} @* mtCrewFamilyGrid.MobileNumber.Visible (end) *@
+@if (mtCrewFamilyGrid._Email.Visible) { // mtCrewFamilyGrid._Email.Visible (begin)
+        <th data-name="_Email" class="@(mtCrewFamilyGrid._Email.HeaderCellClass)"><div id="elh_MTCrewFamily__Email" class="MTCrewFamily__Email">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid._Email))</div></th>
+} @* mtCrewFamilyGrid._Email.Visible (end) *@
+@if (mtCrewFamilyGrid.SocialSecurityNumber.Visible) { // mtCrewFamilyGrid.SocialSecurityNumber.Visible (begin)
+        <th data-name="SocialSecurityNumber" class="@(mtCrewFamilyGrid.SocialSecurityNumber.HeaderCellClass)"><div id="elh_MTCrewFamily_SocialSecurityNumber" class="MTCrewFamily_SocialSecurityNumber">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.SocialSecurityNumber))</div></th>
+} @* mtCrewFamilyGrid.SocialSecurityNumber.Visible (end) *@
+@if (mtCrewFamilyGrid.FamilyRegisterNumber.Visible) { // mtCrewFamilyGrid.FamilyRegisterNumber.Visible (begin)
+        <th data-name="FamilyRegisterNumber" class="@(mtCrewFamilyGrid.FamilyRegisterNumber.HeaderCellClass)"><div id="elh_MTCrewFamily_FamilyRegisterNumber" class="MTCrewFamily_FamilyRegisterNumber">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.FamilyRegisterNumber))</div></th>
+} @* mtCrewFamilyGrid.FamilyRegisterNumber.Visible (end) *@
+@if (mtCrewFamilyGrid.Address.Visible) { // mtCrewFamilyGrid.Address.Visible (begin)
+        <th data-name="Address" class="@(mtCrewFamilyGrid.Address.HeaderCellClass)"><div id="elh_MTCrewFamily_Address" class="MTCrewFamily_Address">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.Address))</div></th>
+} @* mtCrewFamilyGrid.Address.Visible (end) *@
+@if (mtCrewFamilyGrid.CreatedByUserID.Visible) { // mtCrewFamilyGrid.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCrewFamilyGrid.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_CreatedByUserID" class="MTCrewFamily_CreatedByUserID">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.CreatedByUserID))</div></th>
+} @* mtCrewFamilyGrid.CreatedByUserID.Visible (end) *@
+@if (mtCrewFamilyGrid.CreatedDateTime.Visible) { // mtCrewFamilyGrid.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCrewFamilyGrid.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_CreatedDateTime" class="MTCrewFamily_CreatedDateTime">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.CreatedDateTime))</div></th>
+} @* mtCrewFamilyGrid.CreatedDateTime.Visible (end) *@
+@if (mtCrewFamilyGrid.LastUpdatedByUserID.Visible) { // mtCrewFamilyGrid.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCrewFamilyGrid.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_LastUpdatedByUserID" class="MTCrewFamily_LastUpdatedByUserID">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.LastUpdatedByUserID))</div></th>
+} @* mtCrewFamilyGrid.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewFamilyGrid.LastUpdatedDateTime.Visible) { // mtCrewFamilyGrid.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCrewFamilyGrid.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewFamily_LastUpdatedDateTime" class="MTCrewFamily_LastUpdatedDateTime">@Html.Raw(mtCrewFamilyGrid.RenderFieldHeader(mtCrewFamilyGrid.LastUpdatedDateTime))</div></th>
+} @* mtCrewFamilyGrid.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCrewFamilyGrid.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCrewFamilyGrid.PageNumber)">
+@{
+    await mtCrewFamilyGrid.SetupGrid();
+    bool eof = mtCrewFamilyGrid.Recordset == null; // DN
+}
+@while (mtCrewFamilyGrid.RecordCount < mtCrewFamilyGrid.StopRecord || SameString(mtCrewFamilyGrid.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCrewFamilyGrid.RowIndex, "$rowindex$") &&
+        (!mtCrewFamilyGrid.IsGridAdd || mtCrewFamilyGrid.CurrentMode == "copy") &&
+        (!((mtCrewFamilyGrid.IsCopy || mtCrewFamilyGrid.IsAdd) && mtCrewFamilyGrid.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCrewFamilyGrid.Recordset.ReadAsync();
+    mtCrewFamilyGrid.RecordCount++;
+    if (mtCrewFamilyGrid.RecordCount >= mtCrewFamilyGrid.StartRecord) {
+        await mtCrewFamilyGrid.SetupRow();
+
+        // Skip 1) delete row / empty row for confirm page, 2) hidden row
+        if (mtCrewFamilyGrid.RowAction != "delete" &&
+            mtCrewFamilyGrid.RowAction != "insertdelete" &&
+            !(mtCrewFamilyGrid.RowAction == "insert" && mtCrewFamilyGrid.IsConfirm && mtCrewFamilyGrid.EmptyRow()) &&
+            mtCrewFamilyGrid.RowAction != "hide") {
+    <tr @Html.Raw(mtCrewFamilyGrid.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCrewFamilyGrid.ListOptions.RenderBody("left", mtCrewFamilyGrid.RowCount)
+    @if (mtCrewFamilyGrid.MTCrewID.Visible) { // mtCrewFamilyGrid.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtCrewFamilyGrid.MTCrewID.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewFamilyGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewFamilyGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewFamilyGrid.MTCrewID.DisplayValue(mtCrewFamilyGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" name="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewFamilyGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MTCrewID" class="el_MTCrewFamily_MTCrewID">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewFamilyGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewFamily"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewFamilyGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.MTCrewID.EditAttributes)>
+            @(mtCrewFamilyGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewFamilyGrid.MTCrewID.Lookup.GetParamTag(mtCrewFamilyGrid, "p_x" + mtCrewFamilyGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_MTCrewID", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_MTCrewID", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_MTCrewID", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MTCrewID" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_MTCrewID" id="o@(mtCrewFamilyGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MTCrewID.OldValue))">
+    @* MTCrewID (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewFamilyGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewFamilyGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewFamilyGrid.MTCrewID.DisplayValue(mtCrewFamilyGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" name="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewFamilyGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MTCrewID" class="el_MTCrewFamily_MTCrewID">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewFamilyGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewFamilyGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewFamily"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewFamilyGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.MTCrewID.EditAttributes)>
+            @(mtCrewFamilyGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewFamilyGrid.MTCrewID.Lookup.GetParamTag(mtCrewFamilyGrid, "p_x" + mtCrewFamilyGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_MTCrewID", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_MTCrewID", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_MTCrewID", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    @* MTCrewID (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* MTCrewID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MTCrewID" class="el_MTCrewFamily_MTCrewID">
+    <span @Html.Raw(mtCrewFamilyGrid.MTCrewID.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.MTCrewID.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MTCrewID" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MTCrewID.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MTCrewID" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_MTCrewID" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MTCrewID.OldValue))">
+    }
+    @* MTCrewID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.MTCrewID.Visible (end) *@
+    @if (mtCrewFamilyGrid.Relationship.Visible) { // mtCrewFamilyGrid.Relationship.Visible (begin)
+        <td data-name="Relationship" @Html.Raw(mtCrewFamilyGrid.Relationship.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* Relationship (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Relationship" class="el_MTCrewFamily_Relationship">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_Relationship"
+            name="x@(mtCrewFamilyGrid.RowIndex)_Relationship"
+            class="form-select ew-select@(mtCrewFamilyGrid.Relationship.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Relationship"
+            data-table="MTCrewFamily"
+            data-field="x_Relationship"
+            data-value-separator="@(mtCrewFamilyGrid.Relationship.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.Relationship.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.Relationship.EditAttributes)>
+            @(mtCrewFamilyGrid.Relationship.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_Relationship"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.Relationship.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_Relationship", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Relationship" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.Relationship?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_Relationship", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_Relationship", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.Relationship.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Relationship" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_Relationship" id="o@(mtCrewFamilyGrid.RowIndex)_Relationship" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Relationship.OldValue))">
+    @* Relationship (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Relationship (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Relationship" class="el_MTCrewFamily_Relationship">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_Relationship"
+            name="x@(mtCrewFamilyGrid.RowIndex)_Relationship"
+            class="form-select ew-select@(mtCrewFamilyGrid.Relationship.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Relationship"
+            data-table="MTCrewFamily"
+            data-field="x_Relationship"
+            data-value-separator="@(mtCrewFamilyGrid.Relationship.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.Relationship.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.Relationship.EditAttributes)>
+            @(mtCrewFamilyGrid.Relationship.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_Relationship"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.Relationship.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_Relationship", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Relationship" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.Relationship?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_Relationship", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_Relationship", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.Relationship.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* Relationship (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* Relationship (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Relationship" class="el_MTCrewFamily_Relationship">
+    <span @Html.Raw(mtCrewFamilyGrid.Relationship.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.Relationship.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Relationship" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_Relationship" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_Relationship" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Relationship.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Relationship" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_Relationship" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_Relationship" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Relationship.OldValue))">
+    }
+    @* Relationship (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.Relationship.Visible (end) *@
+    @if (mtCrewFamilyGrid.FullName.Visible) { // mtCrewFamilyGrid.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(mtCrewFamilyGrid.FullName.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* FullName (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_FullName" class="el_MTCrewFamily_FullName">
+    <input type="@(mtCrewFamilyGrid.FullName.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_FullName" id="x@(mtCrewFamilyGrid.RowIndex)_FullName" data-table="MTCrewFamily" data-field="x_FullName" value="@Html.Raw(mtCrewFamilyGrid.FullName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FullName.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.FullName.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.FullName.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.FullName.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_FullName" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_FullName" id="o@(mtCrewFamilyGrid.RowIndex)_FullName" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FullName.OldValue))">
+    @* FullName (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* FullName (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_FullName" class="el_MTCrewFamily_FullName">
+    <input type="@(mtCrewFamilyGrid.FullName.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_FullName" id="x@(mtCrewFamilyGrid.RowIndex)_FullName" data-table="MTCrewFamily" data-field="x_FullName" value="@Html.Raw(mtCrewFamilyGrid.FullName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FullName.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.FullName.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.FullName.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.FullName.GetErrorMessage())</div>
+    </span>
+    @* FullName (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* FullName (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_FullName" class="el_MTCrewFamily_FullName">
+    <span @Html.Raw(mtCrewFamilyGrid.FullName.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.FullName.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_FullName" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_FullName" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_FullName" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FullName.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_FullName" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_FullName" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_FullName" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FullName.OldValue))">
+    }
+    @* FullName (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.FullName.Visible (end) *@
+    @if (mtCrewFamilyGrid.Gender.Visible) { // mtCrewFamilyGrid.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(mtCrewFamilyGrid.Gender.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* Gender (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Gender" class="el_MTCrewFamily_Gender">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_Gender"
+            name="x@(mtCrewFamilyGrid.RowIndex)_Gender"
+            class="form-select ew-select@(mtCrewFamilyGrid.Gender.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Gender"
+            data-table="MTCrewFamily"
+            data-field="x_Gender"
+            data-value-separator="@(mtCrewFamilyGrid.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.Gender.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.Gender.EditAttributes)>
+            @(mtCrewFamilyGrid.Gender.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_Gender"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.Gender.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_Gender", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Gender" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.Gender?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_Gender", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_Gender", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.Gender.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Gender" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_Gender" id="o@(mtCrewFamilyGrid.RowIndex)_Gender" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Gender.OldValue))">
+    @* Gender (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Gender (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Gender" class="el_MTCrewFamily_Gender">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_Gender"
+            name="x@(mtCrewFamilyGrid.RowIndex)_Gender"
+            class="form-select ew-select@(mtCrewFamilyGrid.Gender.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Gender"
+            data-table="MTCrewFamily"
+            data-field="x_Gender"
+            data-value-separator="@(mtCrewFamilyGrid.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.Gender.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.Gender.EditAttributes)>
+            @(mtCrewFamilyGrid.Gender.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_Gender"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.Gender.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_Gender", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_Gender" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.Gender?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_Gender", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_Gender", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.Gender.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* Gender (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* Gender (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Gender" class="el_MTCrewFamily_Gender">
+    <span @Html.Raw(mtCrewFamilyGrid.Gender.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.Gender.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Gender" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_Gender" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_Gender" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Gender.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Gender" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_Gender" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_Gender" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Gender.OldValue))">
+    }
+    @* Gender (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.Gender.Visible (end) *@
+    @if (mtCrewFamilyGrid.DateOfBirth.Visible) { // mtCrewFamilyGrid.DateOfBirth.Visible (begin)
+        <td data-name="DateOfBirth" @Html.Raw(mtCrewFamilyGrid.DateOfBirth.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* DateOfBirth (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_DateOfBirth" class="el_MTCrewFamily_DateOfBirth">
+    <input type="@(mtCrewFamilyGrid.DateOfBirth.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" id="x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" data-table="MTCrewFamily" data-field="x_DateOfBirth" value="@Html.Raw(mtCrewFamilyGrid.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.DateOfBirth.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.DateOfBirth.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.DateOfBirth.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.DateOfBirth.GetErrorMessage())</div>
+    @if (!mtCrewFamilyGrid.DateOfBirth.ReadOnly && !mtCrewFamilyGrid.DateOfBirth.Disabled && !mtCrewFamilyGrid.DateOfBirth.EditAttrs.Is("readonly") && !mtCrewFamilyGrid.DateOfBirth.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewFamilygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewFamilygrid", "x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_DateOfBirth" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" id="o@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.DateOfBirth.OldValue))">
+    @* DateOfBirth (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* DateOfBirth (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_DateOfBirth" class="el_MTCrewFamily_DateOfBirth">
+    <input type="@(mtCrewFamilyGrid.DateOfBirth.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" id="x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" data-table="MTCrewFamily" data-field="x_DateOfBirth" value="@Html.Raw(mtCrewFamilyGrid.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.DateOfBirth.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.DateOfBirth.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.DateOfBirth.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.DateOfBirth.GetErrorMessage())</div>
+    @if (!mtCrewFamilyGrid.DateOfBirth.ReadOnly && !mtCrewFamilyGrid.DateOfBirth.Disabled && !mtCrewFamilyGrid.DateOfBirth.EditAttrs.Is("readonly") && !mtCrewFamilyGrid.DateOfBirth.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewFamilygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewFamilygrid", "x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* DateOfBirth (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* DateOfBirth (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_DateOfBirth" class="el_MTCrewFamily_DateOfBirth">
+    <span @Html.Raw(mtCrewFamilyGrid.DateOfBirth.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.DateOfBirth.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_DateOfBirth" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.DateOfBirth.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_DateOfBirth" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_DateOfBirth" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.DateOfBirth.OldValue))">
+    }
+    @* DateOfBirth (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.DateOfBirth.Visible (end) *@
+    @if (mtCrewFamilyGrid.MobileNumberCode_CountryID.Visible) { // mtCrewFamilyGrid.MobileNumberCode_CountryID.Visible (begin)
+        <td data-name="MobileNumberCode_CountryID" @Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* MobileNumberCode_CountryID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MobileNumberCode_CountryID" class="el_MTCrewFamily_MobileNumberCode_CountryID">
+    <input type="@(mtCrewFamilyGrid.MobileNumberCode_CountryID.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" id="x@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" data-table="MTCrewFamily" data-field="x_MobileNumberCode_CountryID" value="@Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumberCode_CountryID.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.MobileNumberCode_CountryID.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MobileNumberCode_CountryID" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" id="o@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumberCode_CountryID.OldValue))">
+    @* MobileNumberCode_CountryID (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MobileNumberCode_CountryID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MobileNumberCode_CountryID" class="el_MTCrewFamily_MobileNumberCode_CountryID">
+    <input type="@(mtCrewFamilyGrid.MobileNumberCode_CountryID.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" id="x@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" data-table="MTCrewFamily" data-field="x_MobileNumberCode_CountryID" value="@Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumberCode_CountryID.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.MobileNumberCode_CountryID.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.GetErrorMessage())</div>
+    </span>
+    @* MobileNumberCode_CountryID (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* MobileNumberCode_CountryID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MobileNumberCode_CountryID" class="el_MTCrewFamily_MobileNumberCode_CountryID">
+    <span @Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.MobileNumberCode_CountryID.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MobileNumberCode_CountryID" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumberCode_CountryID.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MobileNumberCode_CountryID" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_MobileNumberCode_CountryID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumberCode_CountryID.OldValue))">
+    }
+    @* MobileNumberCode_CountryID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.MobileNumberCode_CountryID.Visible (end) *@
+    @if (mtCrewFamilyGrid.MobileNumber.Visible) { // mtCrewFamilyGrid.MobileNumber.Visible (begin)
+        <td data-name="MobileNumber" @Html.Raw(mtCrewFamilyGrid.MobileNumber.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* MobileNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MobileNumber" class="el_MTCrewFamily_MobileNumber">
+    <input type="@(mtCrewFamilyGrid.MobileNumber.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_MobileNumber" id="x@(mtCrewFamilyGrid.RowIndex)_MobileNumber" data-table="MTCrewFamily" data-field="x_MobileNumber" value="@Html.Raw(mtCrewFamilyGrid.MobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.MobileNumber.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.MobileNumber.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.MobileNumber.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MobileNumber" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_MobileNumber" id="o@(mtCrewFamilyGrid.RowIndex)_MobileNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumber.OldValue))">
+    @* MobileNumber (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MobileNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MobileNumber" class="el_MTCrewFamily_MobileNumber">
+    <input type="@(mtCrewFamilyGrid.MobileNumber.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_MobileNumber" id="x@(mtCrewFamilyGrid.RowIndex)_MobileNumber" data-table="MTCrewFamily" data-field="x_MobileNumber" value="@Html.Raw(mtCrewFamilyGrid.MobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.MobileNumber.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.MobileNumber.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.MobileNumber.GetErrorMessage())</div>
+    </span>
+    @* MobileNumber (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* MobileNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_MobileNumber" class="el_MTCrewFamily_MobileNumber">
+    <span @Html.Raw(mtCrewFamilyGrid.MobileNumber.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.MobileNumber.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MobileNumber" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_MobileNumber" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_MobileNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumber.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_MobileNumber" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_MobileNumber" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_MobileNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.MobileNumber.OldValue))">
+    }
+    @* MobileNumber (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.MobileNumber.Visible (end) *@
+    @if (mtCrewFamilyGrid._Email.Visible) { // mtCrewFamilyGrid._Email.Visible (begin)
+        <td data-name="_Email" @Html.Raw(mtCrewFamilyGrid._Email.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* _Email (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily__Email" class="el_MTCrewFamily__Email">
+    <input type="@(mtCrewFamilyGrid._Email.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)__Email" id="x@(mtCrewFamilyGrid.RowIndex)__Email" data-table="MTCrewFamily" data-field="x__Email" value="@Html.Raw(mtCrewFamilyGrid._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid._Email.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid._Email.FormatPattern)"@Html.Raw(mtCrewFamilyGrid._Email.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid._Email.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x__Email" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)__Email" id="o@(mtCrewFamilyGrid.RowIndex)__Email" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid._Email.OldValue))">
+    @* _Email (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* _Email (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily__Email" class="el_MTCrewFamily__Email">
+    <input type="@(mtCrewFamilyGrid._Email.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)__Email" id="x@(mtCrewFamilyGrid.RowIndex)__Email" data-table="MTCrewFamily" data-field="x__Email" value="@Html.Raw(mtCrewFamilyGrid._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid._Email.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid._Email.FormatPattern)"@Html.Raw(mtCrewFamilyGrid._Email.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid._Email.GetErrorMessage())</div>
+    </span>
+    @* _Email (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* _Email (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily__Email" class="el_MTCrewFamily__Email">
+    <span @Html.Raw(mtCrewFamilyGrid._Email.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid._Email.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x__Email" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)__Email" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)__Email" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid._Email.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x__Email" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)__Email" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)__Email" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid._Email.OldValue))">
+    }
+    @* _Email (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid._Email.Visible (end) *@
+    @if (mtCrewFamilyGrid.SocialSecurityNumber.Visible) { // mtCrewFamilyGrid.SocialSecurityNumber.Visible (begin)
+        <td data-name="SocialSecurityNumber" @Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* SocialSecurityNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_SocialSecurityNumber" class="el_MTCrewFamily_SocialSecurityNumber">
+    <input type="@(mtCrewFamilyGrid.SocialSecurityNumber.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" id="x@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" data-table="MTCrewFamily" data-field="x_SocialSecurityNumber" value="@Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.SocialSecurityNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.SocialSecurityNumber.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_SocialSecurityNumber" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" id="o@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.SocialSecurityNumber.OldValue))">
+    @* SocialSecurityNumber (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* SocialSecurityNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_SocialSecurityNumber" class="el_MTCrewFamily_SocialSecurityNumber">
+    <input type="@(mtCrewFamilyGrid.SocialSecurityNumber.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" id="x@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" data-table="MTCrewFamily" data-field="x_SocialSecurityNumber" value="@Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.SocialSecurityNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.SocialSecurityNumber.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.GetErrorMessage())</div>
+    </span>
+    @* SocialSecurityNumber (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* SocialSecurityNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_SocialSecurityNumber" class="el_MTCrewFamily_SocialSecurityNumber">
+    <span @Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.SocialSecurityNumber.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_SocialSecurityNumber" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.SocialSecurityNumber.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_SocialSecurityNumber" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_SocialSecurityNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.SocialSecurityNumber.OldValue))">
+    }
+    @* SocialSecurityNumber (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.SocialSecurityNumber.Visible (end) *@
+    @if (mtCrewFamilyGrid.FamilyRegisterNumber.Visible) { // mtCrewFamilyGrid.FamilyRegisterNumber.Visible (begin)
+        <td data-name="FamilyRegisterNumber" @Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* FamilyRegisterNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_FamilyRegisterNumber" class="el_MTCrewFamily_FamilyRegisterNumber">
+    <input type="@(mtCrewFamilyGrid.FamilyRegisterNumber.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" id="x@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" data-table="MTCrewFamily" data-field="x_FamilyRegisterNumber" value="@Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FamilyRegisterNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.FamilyRegisterNumber.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_FamilyRegisterNumber" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" id="o@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FamilyRegisterNumber.OldValue))">
+    @* FamilyRegisterNumber (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* FamilyRegisterNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_FamilyRegisterNumber" class="el_MTCrewFamily_FamilyRegisterNumber">
+    <input type="@(mtCrewFamilyGrid.FamilyRegisterNumber.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" id="x@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" data-table="MTCrewFamily" data-field="x_FamilyRegisterNumber" value="@Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FamilyRegisterNumber.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.FamilyRegisterNumber.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.GetErrorMessage())</div>
+    </span>
+    @* FamilyRegisterNumber (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* FamilyRegisterNumber (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_FamilyRegisterNumber" class="el_MTCrewFamily_FamilyRegisterNumber">
+    <span @Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.FamilyRegisterNumber.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_FamilyRegisterNumber" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FamilyRegisterNumber.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_FamilyRegisterNumber" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_FamilyRegisterNumber" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.FamilyRegisterNumber.OldValue))">
+    }
+    @* FamilyRegisterNumber (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.FamilyRegisterNumber.Visible (end) *@
+    @if (mtCrewFamilyGrid.Address.Visible) { // mtCrewFamilyGrid.Address.Visible (begin)
+        <td data-name="Address" @Html.Raw(mtCrewFamilyGrid.Address.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* Address (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Address" class="el_MTCrewFamily_Address">
+    <input type="@(mtCrewFamilyGrid.Address.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_Address" id="x@(mtCrewFamilyGrid.RowIndex)_Address" data-table="MTCrewFamily" data-field="x_Address" value="@Html.Raw(mtCrewFamilyGrid.Address.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Address.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.Address.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.Address.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.Address.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Address" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_Address" id="o@(mtCrewFamilyGrid.RowIndex)_Address" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Address.OldValue))">
+    @* Address (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Address (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Address" class="el_MTCrewFamily_Address">
+    <input type="@(mtCrewFamilyGrid.Address.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_Address" id="x@(mtCrewFamilyGrid.RowIndex)_Address" data-table="MTCrewFamily" data-field="x_Address" value="@Html.Raw(mtCrewFamilyGrid.Address.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Address.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.Address.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.Address.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.Address.GetErrorMessage())</div>
+    </span>
+    @* Address (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* Address (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_Address" class="el_MTCrewFamily_Address">
+    <span @Html.Raw(mtCrewFamilyGrid.Address.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.Address.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Address" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_Address" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_Address" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Address.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_Address" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_Address" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_Address" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.Address.OldValue))">
+    }
+    @* Address (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.Address.Visible (end) *@
+    @if (mtCrewFamilyGrid.CreatedByUserID.Visible) { // mtCrewFamilyGrid.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_CreatedByUserID" class="el_MTCrewFamily_CreatedByUserID">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewFamilyGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewFamily"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewFamilyGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewFamilyGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewFamilyGrid, "p_x" + mtCrewFamilyGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_CreatedByUserID" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" id="o@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedByUserID.OldValue))">
+    @* CreatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_CreatedByUserID" class="el_MTCrewFamily_CreatedByUserID">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewFamilyGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewFamily"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewFamilyGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewFamilyGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewFamilyGrid, "p_x" + mtCrewFamilyGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* CreatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_CreatedByUserID" class="el_MTCrewFamily_CreatedByUserID">
+    <span @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.CreatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_CreatedByUserID" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_CreatedByUserID" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedByUserID.OldValue))">
+    }
+    @* CreatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.CreatedByUserID.Visible (end) *@
+    @if (mtCrewFamilyGrid.CreatedDateTime.Visible) { // mtCrewFamilyGrid.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewFamilyGrid.CreatedDateTime.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_CreatedDateTime" class="el_MTCrewFamily_CreatedDateTime">
+    <input type="@(mtCrewFamilyGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" data-table="MTCrewFamily" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewFamilyGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewFamilyGrid.CreatedDateTime.ReadOnly && !mtCrewFamilyGrid.CreatedDateTime.Disabled && !mtCrewFamilyGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewFamilyGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewFamilygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewFamilygrid", "x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_CreatedDateTime" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" id="o@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedDateTime.OldValue))">
+    @* CreatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_CreatedDateTime" class="el_MTCrewFamily_CreatedDateTime">
+    <input type="@(mtCrewFamilyGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" data-table="MTCrewFamily" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewFamilyGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewFamilyGrid.CreatedDateTime.ReadOnly && !mtCrewFamilyGrid.CreatedDateTime.Disabled && !mtCrewFamilyGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewFamilyGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewFamilygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewFamilygrid", "x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* CreatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_CreatedDateTime" class="el_MTCrewFamily_CreatedDateTime">
+    <span @Html.Raw(mtCrewFamilyGrid.CreatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.CreatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_CreatedDateTime" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_CreatedDateTime" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.CreatedDateTime.OldValue))">
+    }
+    @* CreatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.CreatedDateTime.Visible (end) *@
+    @if (mtCrewFamilyGrid.LastUpdatedByUserID.Visible) { // mtCrewFamilyGrid.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_LastUpdatedByUserID" class="el_MTCrewFamily_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewFamilyGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewFamily"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewFamilyGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewFamilyGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewFamilyGrid, "p_x" + mtCrewFamilyGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" id="o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedByUserID.OldValue))">
+    @* LastUpdatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_LastUpdatedByUserID" class="el_MTCrewFamily_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewFamilyGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewFamily"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewFamilyGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewFamilyGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewFamilyGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewFamilyGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewFamilyGrid, "p_x" + mtCrewFamilyGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewFamilygrid", function() {
+        var options = { name: "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewFamilygrid_x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewFamilygrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewFamilygrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewFamilygrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewFamily.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* LastUpdatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_LastUpdatedByUserID" class="el_MTCrewFamily_LastUpdatedByUserID">
+    <span @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.LastUpdatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_LastUpdatedByUserID" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedByUserID.OldValue))">
+    }
+    @* LastUpdatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCrewFamilyGrid.LastUpdatedDateTime.Visible) { // mtCrewFamilyGrid.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.CellAttributes)>
+@if (mtCrewFamilyGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_LastUpdatedDateTime" class="el_MTCrewFamily_LastUpdatedDateTime">
+    <input type="@(mtCrewFamilyGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewFamily" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewFamilyGrid.LastUpdatedDateTime.ReadOnly && !mtCrewFamilyGrid.LastUpdatedDateTime.Disabled && !mtCrewFamilyGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewFamilyGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewFamilygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewFamilygrid", "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" id="o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedDateTime.OldValue))">
+    @* LastUpdatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_LastUpdatedDateTime" class="el_MTCrewFamily_LastUpdatedDateTime">
+    <input type="@(mtCrewFamilyGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewFamily" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewFamilyGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewFamilyGrid.LastUpdatedDateTime.ReadOnly && !mtCrewFamilyGrid.LastUpdatedDateTime.Disabled && !mtCrewFamilyGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewFamilyGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewFamilygrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewFamilygrid", "x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* LastUpdatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewFamilyGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewFamilyGrid.RowCount)_MTCrewFamily_LastUpdatedDateTime" class="el_MTCrewFamily_LastUpdatedDateTime">
+    <span @Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewFamilyGrid.LastUpdatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewFamilyGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_LastUpdatedDateTime" data-hidden="1" name="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewFamilygrid$x@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewFamily" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewFamilygrid$o@(mtCrewFamilyGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewFamilyGrid.LastUpdatedDateTime.OldValue))">
+    }
+    @* LastUpdatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewFamilyGrid.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCrewFamilyGrid.ListOptions.RenderBody("right", mtCrewFamilyGrid.RowCount)
+    </tr>
+if (mtCrewFamilyGrid.RowType == RowType.Add || mtCrewFamilyGrid.RowType == RowType.Edit) {
+<script>
+loadjs.ready(["fMTCrewFamilygrid","load"], () => fMTCrewFamilygrid.updateLists(@(mtCrewFamilyGrid.RowIndex)@(mtCrewFamilyGrid.IsAdd || mtCrewFamilyGrid.IsEdit || mtCrewFamilyGrid.IsCopy || SameString(mtCrewFamilyGrid.RowIndex, "$rowindex$") ? ", true" : "")));
+</script>
+}
+    } @* End delete row checking *@
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCrewFamilyGrid.RowIndex, "$rowindex$"))
+        mtCrewFamilyGrid.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCrewFamilyGrid.IsCopy || mtCrewFamilyGrid.IsAdd) && mtCrewFamilyGrid.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCrewFamilyGrid.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+@if (mtCrewFamilyGrid.CurrentMode == "add" || mtCrewFamilyGrid.CurrentMode == "copy") {
+<input type="hidden" name="@(mtCrewFamilyGrid.FormKeyCountName)" id="@(mtCrewFamilyGrid.FormKeyCountName)" value="@(mtCrewFamilyGrid.KeyCount)">
+@Html.Raw(mtCrewFamilyGrid.MultiSelectKey)
+}
+@if (mtCrewFamilyGrid.CurrentMode == "edit") {
+<input type="hidden" name="@(mtCrewFamilyGrid.FormKeyCountName)" id="@(mtCrewFamilyGrid.FormKeyCountName)" value="@(mtCrewFamilyGrid.KeyCount)">
+@Html.Raw(mtCrewFamilyGrid.MultiSelectKey)
+}
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCrewFamilyGrid.CurrentMode)) {
+<input type="hidden" name="action" id="action" value="">
+}
+<input type="hidden" name="detailpage" value="fMTCrewFamilygrid">
+</div><!-- /.ew-list-form -->
+@{ mtCrewFamilyGrid.CloseRecordset(); }
+@if (mtCrewFamilyGrid.ShowOtherOptions) {
+<div class="card-footer ew-grid-lower-panel">
+    @mtCrewFamilyGrid.OtherOptions.RenderBody("bottom")
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCrewFamilyGrid.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@if (!mtCrewFamilyGrid.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewFamily");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}
+@{
+    // Close Recordset
+    mtCrewFamilyGrid.CloseRecordset(); // DN
+    // Clear CurrentGrid
+    CurrentGrid = null;
+}

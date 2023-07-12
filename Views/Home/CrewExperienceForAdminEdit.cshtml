@@ -1,0 +1,1337 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewExperienceForAdminEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewExperienceForAdminEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@crewExperienceForAdminEdit.ShowPageHeader()
+@crewExperienceForAdminEdit.ShowMessages()
+<main class="edit">
+<form name="fCrewExperienceForAdminedit" id="fCrewExperienceForAdminedit" class="@(crewExperienceForAdminEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewExperienceForAdminEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewExperienceForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fCrewExperienceForAdminedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fCrewExperienceForAdminedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [fields.MTCrewID.visible && fields.MTCrewID.required ? ew.Validators.required(fields.MTCrewID.caption) : null], fields.MTCrewID.isInvalid],
+            ["CompanyName", [fields.CompanyName.visible && fields.CompanyName.required ? ew.Validators.required(fields.CompanyName.caption) : null], fields.CompanyName.isInvalid],
+            ["FlagName_CountryID", [fields.FlagName_CountryID.visible && fields.FlagName_CountryID.required ? ew.Validators.required(fields.FlagName_CountryID.caption) : null], fields.FlagName_CountryID.isInvalid],
+            ["VesselName", [fields.VesselName.visible && fields.VesselName.required ? ew.Validators.required(fields.VesselName.caption) : null], fields.VesselName.isInvalid],
+            ["MTVesselTypeID", [fields.MTVesselTypeID.visible && fields.MTVesselTypeID.required ? ew.Validators.required(fields.MTVesselTypeID.caption) : null], fields.MTVesselTypeID.isInvalid],
+            ["GRT", [fields.GRT.visible && fields.GRT.required ? ew.Validators.required(fields.GRT.caption) : null], fields.GRT.isInvalid],
+            ["DWT", [fields.DWT.visible && fields.DWT.required ? ew.Validators.required(fields.DWT.caption) : null], fields.DWT.isInvalid],
+            ["MainEngine", [fields.MainEngine.visible && fields.MainEngine.required ? ew.Validators.required(fields.MainEngine.caption) : null], fields.MainEngine.isInvalid],
+            ["BHP", [fields.BHP.visible && fields.BHP.required ? ew.Validators.required(fields.BHP.caption) : null], fields.BHP.isInvalid],
+            ["MTRankID", [fields.MTRankID.visible && fields.MTRankID.required ? ew.Validators.required(fields.MTRankID.caption) : null], fields.MTRankID.isInvalid],
+            ["DateFrom", [fields.DateFrom.visible && fields.DateFrom.required ? ew.Validators.required(fields.DateFrom.caption) : null, ew.Validators.datetime(fields.DateFrom.clientFormatPattern)], fields.DateFrom.isInvalid],
+            ["DateUntil", [fields.DateUntil.visible && fields.DateUntil.required ? ew.Validators.required(fields.DateUntil.caption) : null, ew.Validators.datetime(fields.DateUntil.clientFormatPattern)], fields.DateUntil.isInvalid],
+            ["SignOnPortName", [fields.SignOnPortName.visible && fields.SignOnPortName.required ? ew.Validators.required(fields.SignOnPortName.caption) : null], fields.SignOnPortName.isInvalid],
+            ["SignOffPortName", [fields.SignOffPortName.visible && fields.SignOffPortName.required ? ew.Validators.required(fields.SignOffPortName.caption) : null], fields.SignOffPortName.isInvalid],
+            ["SignOffReason", [fields.SignOffReason.visible && fields.SignOffReason.required ? ew.Validators.required(fields.SignOffReason.caption) : null], fields.SignOffReason.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "FlagName_CountryID": @Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.ToClientList(crewExperienceForAdminEdit)),
+            "MTVesselTypeID": @Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.ToClientList(crewExperienceForAdminEdit)),
+            "MTRankID": @Html.Raw(crewExperienceForAdminEdit.MTRankID.ToClientList(crewExperienceForAdminEdit)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(crewExperienceForAdminEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(crewExperienceForAdminEdit.OldKeyName)" value="@Html.Raw(crewExperienceForAdminEdit.OldKey)">
+<div class="ew-edit-div d-none"><!-- page* -->
+@if (crewExperienceForAdminEdit.MTCrewID.Visible) { // crewExperienceForAdminEdit.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" @Html.Raw(crewExperienceForAdminEdit.MTCrewID.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_MTCrewID" for="x_MTCrewID" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_MTCrewID">@Html.Raw(crewExperienceForAdminEdit.MTCrewID.Caption)@Html.Raw(crewExperienceForAdminEdit.MTCrewID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.MTCrewID.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_MTCrewID"><span id="el_CrewExperienceForAdmin_MTCrewID">
+<input type="@(crewExperienceForAdminEdit.MTCrewID.InputTextType)" name="x_MTCrewID" id="x_MTCrewID" data-table="CrewExperienceForAdmin" data-field="x_MTCrewID" value="@Html.Raw(crewExperienceForAdminEdit.MTCrewID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.MTCrewID.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.MTCrewID.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.MTCrewID.EditAttributes) aria-describedby="x_MTCrewID_help">
+@Html.Raw(crewExperienceForAdminEdit.MTCrewID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.MTCrewID.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.MTCrewID.Visible (end) *@
+@if (crewExperienceForAdminEdit.CompanyName.Visible) { // crewExperienceForAdminEdit.CompanyName.Visible (begin)
+    <div id="r_CompanyName" @Html.Raw(crewExperienceForAdminEdit.CompanyName.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_CompanyName" for="x_CompanyName" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_CompanyName">@Html.Raw(crewExperienceForAdminEdit.CompanyName.Caption)@Html.Raw(crewExperienceForAdminEdit.CompanyName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.CompanyName.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_CompanyName"><span id="el_CrewExperienceForAdmin_CompanyName">
+<input type="@(crewExperienceForAdminEdit.CompanyName.InputTextType)" name="x_CompanyName" id="x_CompanyName" data-table="CrewExperienceForAdmin" data-field="x_CompanyName" value="@Html.Raw(crewExperienceForAdminEdit.CompanyName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.CompanyName.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.CompanyName.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.CompanyName.EditAttributes) aria-describedby="x_CompanyName_help">
+@Html.Raw(crewExperienceForAdminEdit.CompanyName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.CompanyName.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.CompanyName.Visible (end) *@
+@if (crewExperienceForAdminEdit.FlagName_CountryID.Visible) { // crewExperienceForAdminEdit.FlagName_CountryID.Visible (begin)
+    <div id="r_FlagName_CountryID" @Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_FlagName_CountryID" for="x_FlagName_CountryID" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_FlagName_CountryID">@Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.Caption)@Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_FlagName_CountryID"><span id="el_CrewExperienceForAdmin_FlagName_CountryID">
+    <select
+        id="x_FlagName_CountryID"
+        name="x_FlagName_CountryID"
+        class="form-select ew-select@(crewExperienceForAdminEdit.FlagName_CountryID.IsInvalidClass)"
+        data-select2-id="fCrewExperienceForAdminedit_x_FlagName_CountryID"
+        data-table="CrewExperienceForAdmin"
+        data-field="x_FlagName_CountryID"
+        data-value-separator="@(crewExperienceForAdminEdit.FlagName_CountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewExperienceForAdminEdit.FlagName_CountryID.PlaceHolder))"
+        @Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.EditAttributes)>
+        @(crewExperienceForAdminEdit.FlagName_CountryID.SelectOptionListHtml("x_FlagName_CountryID"))
+    </select>
+    @Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.GetErrorMessage())</div>
+@Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.Lookup.GetParamTag(crewExperienceForAdminEdit, "p_x_FlagName_CountryID"))
+<script>
+loadjs.ready("fCrewExperienceForAdminedit", function() {
+    var options = { name: "x_FlagName_CountryID", selectId: "fCrewExperienceForAdminedit_x_FlagName_CountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewExperienceForAdminedit.lists.FlagName_CountryID?.lookupOptions.length) {
+        options.data = { id: "x_FlagName_CountryID", form: "fCrewExperienceForAdminedit" };
+    } else {
+        options.ajax = { id: "x_FlagName_CountryID", form: "fCrewExperienceForAdminedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.FlagName_CountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.FlagName_CountryID.Visible (end) *@
+@if (crewExperienceForAdminEdit.VesselName.Visible) { // crewExperienceForAdminEdit.VesselName.Visible (begin)
+    <div id="r_VesselName" @Html.Raw(crewExperienceForAdminEdit.VesselName.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_VesselName" for="x_VesselName" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_VesselName">@Html.Raw(crewExperienceForAdminEdit.VesselName.Caption)@Html.Raw(crewExperienceForAdminEdit.VesselName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.VesselName.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_VesselName"><span id="el_CrewExperienceForAdmin_VesselName">
+<input type="@(crewExperienceForAdminEdit.VesselName.InputTextType)" name="x_VesselName" id="x_VesselName" data-table="CrewExperienceForAdmin" data-field="x_VesselName" value="@Html.Raw(crewExperienceForAdminEdit.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.VesselName.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.VesselName.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.VesselName.EditAttributes) aria-describedby="x_VesselName_help">
+@Html.Raw(crewExperienceForAdminEdit.VesselName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.VesselName.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.VesselName.Visible (end) *@
+@if (crewExperienceForAdminEdit.MTVesselTypeID.Visible) { // crewExperienceForAdminEdit.MTVesselTypeID.Visible (begin)
+    <div id="r_MTVesselTypeID" @Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_MTVesselTypeID" for="x_MTVesselTypeID" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_MTVesselTypeID">@Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.Caption)@Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_MTVesselTypeID"><span id="el_CrewExperienceForAdmin_MTVesselTypeID">
+    <select
+        id="x_MTVesselTypeID"
+        name="x_MTVesselTypeID"
+        class="form-select ew-select@(crewExperienceForAdminEdit.MTVesselTypeID.IsInvalidClass)"
+        data-select2-id="fCrewExperienceForAdminedit_x_MTVesselTypeID"
+        data-table="CrewExperienceForAdmin"
+        data-field="x_MTVesselTypeID"
+        data-value-separator="@(crewExperienceForAdminEdit.MTVesselTypeID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewExperienceForAdminEdit.MTVesselTypeID.PlaceHolder))"
+        @Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.EditAttributes)>
+        @(crewExperienceForAdminEdit.MTVesselTypeID.SelectOptionListHtml("x_MTVesselTypeID"))
+    </select>
+    @Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.GetErrorMessage())</div>
+@Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.Lookup.GetParamTag(crewExperienceForAdminEdit, "p_x_MTVesselTypeID"))
+<script>
+loadjs.ready("fCrewExperienceForAdminedit", function() {
+    var options = { name: "x_MTVesselTypeID", selectId: "fCrewExperienceForAdminedit_x_MTVesselTypeID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewExperienceForAdminedit.lists.MTVesselTypeID?.lookupOptions.length) {
+        options.data = { id: "x_MTVesselTypeID", form: "fCrewExperienceForAdminedit" };
+    } else {
+        options.ajax = { id: "x_MTVesselTypeID", form: "fCrewExperienceForAdminedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.MTVesselTypeID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.MTVesselTypeID.Visible (end) *@
+@if (crewExperienceForAdminEdit.GRT.Visible) { // crewExperienceForAdminEdit.GRT.Visible (begin)
+    <div id="r_GRT" @Html.Raw(crewExperienceForAdminEdit.GRT.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_GRT" for="x_GRT" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_GRT">@Html.Raw(crewExperienceForAdminEdit.GRT.Caption)@Html.Raw(crewExperienceForAdminEdit.GRT.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.GRT.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_GRT"><span id="el_CrewExperienceForAdmin_GRT">
+<input type="@(crewExperienceForAdminEdit.GRT.InputTextType)" name="x_GRT" id="x_GRT" data-table="CrewExperienceForAdmin" data-field="x_GRT" value="@Html.Raw(crewExperienceForAdminEdit.GRT.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.GRT.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.GRT.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.GRT.EditAttributes) aria-describedby="x_GRT_help">
+@Html.Raw(crewExperienceForAdminEdit.GRT.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.GRT.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.GRT.Visible (end) *@
+@if (crewExperienceForAdminEdit.DWT.Visible) { // crewExperienceForAdminEdit.DWT.Visible (begin)
+    <div id="r_DWT" @Html.Raw(crewExperienceForAdminEdit.DWT.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_DWT" for="x_DWT" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_DWT">@Html.Raw(crewExperienceForAdminEdit.DWT.Caption)@Html.Raw(crewExperienceForAdminEdit.DWT.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.DWT.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_DWT"><span id="el_CrewExperienceForAdmin_DWT">
+<input type="@(crewExperienceForAdminEdit.DWT.InputTextType)" name="x_DWT" id="x_DWT" data-table="CrewExperienceForAdmin" data-field="x_DWT" value="@Html.Raw(crewExperienceForAdminEdit.DWT.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.DWT.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.DWT.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.DWT.EditAttributes) aria-describedby="x_DWT_help">
+@Html.Raw(crewExperienceForAdminEdit.DWT.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.DWT.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.DWT.Visible (end) *@
+@if (crewExperienceForAdminEdit.MainEngine.Visible) { // crewExperienceForAdminEdit.MainEngine.Visible (begin)
+    <div id="r_MainEngine" @Html.Raw(crewExperienceForAdminEdit.MainEngine.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_MainEngine" for="x_MainEngine" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_MainEngine">@Html.Raw(crewExperienceForAdminEdit.MainEngine.Caption)@Html.Raw(crewExperienceForAdminEdit.MainEngine.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.MainEngine.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_MainEngine"><span id="el_CrewExperienceForAdmin_MainEngine">
+<input type="@(crewExperienceForAdminEdit.MainEngine.InputTextType)" name="x_MainEngine" id="x_MainEngine" data-table="CrewExperienceForAdmin" data-field="x_MainEngine" value="@Html.Raw(crewExperienceForAdminEdit.MainEngine.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.MainEngine.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.MainEngine.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.MainEngine.EditAttributes) aria-describedby="x_MainEngine_help">
+@Html.Raw(crewExperienceForAdminEdit.MainEngine.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.MainEngine.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.MainEngine.Visible (end) *@
+@if (crewExperienceForAdminEdit.BHP.Visible) { // crewExperienceForAdminEdit.BHP.Visible (begin)
+    <div id="r_BHP" @Html.Raw(crewExperienceForAdminEdit.BHP.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_BHP" for="x_BHP" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_BHP">@Html.Raw(crewExperienceForAdminEdit.BHP.Caption)@Html.Raw(crewExperienceForAdminEdit.BHP.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.BHP.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_BHP"><span id="el_CrewExperienceForAdmin_BHP">
+<input type="@(crewExperienceForAdminEdit.BHP.InputTextType)" name="x_BHP" id="x_BHP" data-table="CrewExperienceForAdmin" data-field="x_BHP" value="@Html.Raw(crewExperienceForAdminEdit.BHP.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.BHP.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.BHP.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.BHP.EditAttributes) aria-describedby="x_BHP_help">
+@Html.Raw(crewExperienceForAdminEdit.BHP.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.BHP.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.BHP.Visible (end) *@
+@if (crewExperienceForAdminEdit.MTRankID.Visible) { // crewExperienceForAdminEdit.MTRankID.Visible (begin)
+    <div id="r_MTRankID" @Html.Raw(crewExperienceForAdminEdit.MTRankID.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_MTRankID" for="x_MTRankID" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_MTRankID">@Html.Raw(crewExperienceForAdminEdit.MTRankID.Caption)@Html.Raw(crewExperienceForAdminEdit.MTRankID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.MTRankID.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_MTRankID"><span id="el_CrewExperienceForAdmin_MTRankID">
+    <select
+        id="x_MTRankID"
+        name="x_MTRankID"
+        class="form-select ew-select@(crewExperienceForAdminEdit.MTRankID.IsInvalidClass)"
+        data-select2-id="fCrewExperienceForAdminedit_x_MTRankID"
+        data-table="CrewExperienceForAdmin"
+        data-field="x_MTRankID"
+        data-value-separator="@(crewExperienceForAdminEdit.MTRankID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewExperienceForAdminEdit.MTRankID.PlaceHolder))"
+        @Html.Raw(crewExperienceForAdminEdit.MTRankID.EditAttributes)>
+        @(crewExperienceForAdminEdit.MTRankID.SelectOptionListHtml("x_MTRankID"))
+    </select>
+    @Html.Raw(crewExperienceForAdminEdit.MTRankID.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.MTRankID.GetErrorMessage())</div>
+@Html.Raw(crewExperienceForAdminEdit.MTRankID.Lookup.GetParamTag(crewExperienceForAdminEdit, "p_x_MTRankID"))
+<script>
+loadjs.ready("fCrewExperienceForAdminedit", function() {
+    var options = { name: "x_MTRankID", selectId: "fCrewExperienceForAdminedit_x_MTRankID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewExperienceForAdminedit.lists.MTRankID?.lookupOptions.length) {
+        options.data = { id: "x_MTRankID", form: "fCrewExperienceForAdminedit" };
+    } else {
+        options.ajax = { id: "x_MTRankID", form: "fCrewExperienceForAdminedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewExperienceForAdmin.fields.MTRankID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.MTRankID.Visible (end) *@
+@if (crewExperienceForAdminEdit.DateFrom.Visible) { // crewExperienceForAdminEdit.DateFrom.Visible (begin)
+    <div id="r_DateFrom" @Html.Raw(crewExperienceForAdminEdit.DateFrom.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_DateFrom" for="x_DateFrom" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_DateFrom">@Html.Raw(crewExperienceForAdminEdit.DateFrom.Caption)@Html.Raw(crewExperienceForAdminEdit.DateFrom.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.DateFrom.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_DateFrom"><span id="el_CrewExperienceForAdmin_DateFrom">
+<input type="@(crewExperienceForAdminEdit.DateFrom.InputTextType)" name="x_DateFrom" id="x_DateFrom" data-table="CrewExperienceForAdmin" data-field="x_DateFrom" value="@Html.Raw(crewExperienceForAdminEdit.DateFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.DateFrom.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.DateFrom.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.DateFrom.EditAttributes) aria-describedby="x_DateFrom_help">
+@Html.Raw(crewExperienceForAdminEdit.DateFrom.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.DateFrom.GetErrorMessage())</div>
+@if (!crewExperienceForAdminEdit.DateFrom.ReadOnly && !crewExperienceForAdminEdit.DateFrom.Disabled && !crewExperienceForAdminEdit.DateFrom.EditAttrs.Is("readonly") && !crewExperienceForAdminEdit.DateFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewExperienceForAdminedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewExperienceForAdminedit", "x_DateFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.DateFrom.Visible (end) *@
+@if (crewExperienceForAdminEdit.DateUntil.Visible) { // crewExperienceForAdminEdit.DateUntil.Visible (begin)
+    <div id="r_DateUntil" @Html.Raw(crewExperienceForAdminEdit.DateUntil.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_DateUntil" for="x_DateUntil" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_DateUntil">@Html.Raw(crewExperienceForAdminEdit.DateUntil.Caption)@Html.Raw(crewExperienceForAdminEdit.DateUntil.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.DateUntil.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_DateUntil"><span id="el_CrewExperienceForAdmin_DateUntil">
+<input type="@(crewExperienceForAdminEdit.DateUntil.InputTextType)" name="x_DateUntil" id="x_DateUntil" data-table="CrewExperienceForAdmin" data-field="x_DateUntil" value="@Html.Raw(crewExperienceForAdminEdit.DateUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.DateUntil.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.DateUntil.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.DateUntil.EditAttributes) aria-describedby="x_DateUntil_help">
+@Html.Raw(crewExperienceForAdminEdit.DateUntil.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.DateUntil.GetErrorMessage())</div>
+@if (!crewExperienceForAdminEdit.DateUntil.ReadOnly && !crewExperienceForAdminEdit.DateUntil.Disabled && !crewExperienceForAdminEdit.DateUntil.EditAttrs.Is("readonly") && !crewExperienceForAdminEdit.DateUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewExperienceForAdminedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewExperienceForAdminedit", "x_DateUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.DateUntil.Visible (end) *@
+@if (crewExperienceForAdminEdit.SignOnPortName.Visible) { // crewExperienceForAdminEdit.SignOnPortName.Visible (begin)
+    <div id="r_SignOnPortName" @Html.Raw(crewExperienceForAdminEdit.SignOnPortName.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_SignOnPortName" for="x_SignOnPortName" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_SignOnPortName">@Html.Raw(crewExperienceForAdminEdit.SignOnPortName.Caption)@Html.Raw(crewExperienceForAdminEdit.SignOnPortName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.SignOnPortName.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_SignOnPortName"><span id="el_CrewExperienceForAdmin_SignOnPortName">
+<input type="@(crewExperienceForAdminEdit.SignOnPortName.InputTextType)" name="x_SignOnPortName" id="x_SignOnPortName" data-table="CrewExperienceForAdmin" data-field="x_SignOnPortName" value="@Html.Raw(crewExperienceForAdminEdit.SignOnPortName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.SignOnPortName.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.SignOnPortName.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.SignOnPortName.EditAttributes) aria-describedby="x_SignOnPortName_help">
+@Html.Raw(crewExperienceForAdminEdit.SignOnPortName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.SignOnPortName.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.SignOnPortName.Visible (end) *@
+@if (crewExperienceForAdminEdit.SignOffPortName.Visible) { // crewExperienceForAdminEdit.SignOffPortName.Visible (begin)
+    <div id="r_SignOffPortName" @Html.Raw(crewExperienceForAdminEdit.SignOffPortName.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_SignOffPortName" for="x_SignOffPortName" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_SignOffPortName">@Html.Raw(crewExperienceForAdminEdit.SignOffPortName.Caption)@Html.Raw(crewExperienceForAdminEdit.SignOffPortName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.SignOffPortName.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_SignOffPortName"><span id="el_CrewExperienceForAdmin_SignOffPortName">
+<input type="@(crewExperienceForAdminEdit.SignOffPortName.InputTextType)" name="x_SignOffPortName" id="x_SignOffPortName" data-table="CrewExperienceForAdmin" data-field="x_SignOffPortName" value="@Html.Raw(crewExperienceForAdminEdit.SignOffPortName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.SignOffPortName.PlaceHolder))" data-format-pattern="@(crewExperienceForAdminEdit.SignOffPortName.FormatPattern)"@Html.Raw(crewExperienceForAdminEdit.SignOffPortName.EditAttributes) aria-describedby="x_SignOffPortName_help">
+@Html.Raw(crewExperienceForAdminEdit.SignOffPortName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.SignOffPortName.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.SignOffPortName.Visible (end) *@
+@if (crewExperienceForAdminEdit.SignOffReason.Visible) { // crewExperienceForAdminEdit.SignOffReason.Visible (begin)
+    <div id="r_SignOffReason" @Html.Raw(crewExperienceForAdminEdit.SignOffReason.RowAttributes)>
+        <label id="elh_CrewExperienceForAdmin_SignOffReason" for="x_SignOffReason" class="@(crewExperienceForAdminEdit.LeftColumnClass)"><template id="tpc_CrewExperienceForAdmin_SignOffReason">@Html.Raw(crewExperienceForAdminEdit.SignOffReason.Caption)@Html.Raw(crewExperienceForAdminEdit.SignOffReason.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewExperienceForAdminEdit.RightColumnClass)"><div @Html.Raw(crewExperienceForAdminEdit.SignOffReason.CellAttributes)>
+<template id="tpx_CrewExperienceForAdmin_SignOffReason"><span id="el_CrewExperienceForAdmin_SignOffReason">
+<textarea data-table="CrewExperienceForAdmin" data-field="x_SignOffReason" name="x_SignOffReason" id="x_SignOffReason" cols="50" rows="2" placeholder="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.SignOffReason.PlaceHolder))"@Html.Raw(crewExperienceForAdminEdit.SignOffReason.EditAttributes) aria-describedby="x_SignOffReason_help">@(crewExperienceForAdminEdit.SignOffReason.EditValue)</textarea>
+@Html.Raw(crewExperienceForAdminEdit.SignOffReason.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(crewExperienceForAdminEdit.SignOffReason.GetErrorMessage())</div>
+</span></template>
+</div></div>
+    </div>
+} @* crewExperienceForAdminEdit.SignOffReason.Visible (end) *@
+</div><!-- /page* -->
+    <input type="hidden" data-table="CrewExperienceForAdmin" data-field="x_ID" data-hidden="1" name="x_ID" id="x_ID" value="@Html.Raw(HtmlEncode(crewExperienceForAdminEdit.ID.CurrentValue))">
+<div id="tpd_CrewExperienceForAdminedit" class="ew-custom-template"></div>
+<template id="tpm_CrewExperienceForAdminedit">
+<div id="ct_crewExperienceForAdminEdit">    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewPersonalDataForAdminEdit")">
+                @(CurrentLanguage == "en-US" ? "PERSONAL DATA" : "DATA PERSONAL")
+            </a>     
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewDocumentForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "DOCUMENTS" : "DOKUMEN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewBankAccountForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "BANK ACCOUNT" : "REKENING BANK")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFamilyForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "FAMILY" : "KELUARGA")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFormalEducationForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "FORMAL EDUCATION" : "PENDIDIKAN FORMAL")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalCertificateForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL CERTIFICATE / TEST" : "SERTIFIKAT / TES MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewCertificateForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "CERTIFICATES AND QUALIFICATIONS" : "SERTIFIKAT DAN KUALIFIKASI")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewExperienceForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "SEA EXPERIENCE" : "PENGALAMAN BERLAYAR")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewAppraisalForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "APPRAISALS" : "PENILAIAN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalHistoryForAdminAdd")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL HISTORY" : "RIWAYAT MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewGeneralDataForAdminEdit")">
+                @(CurrentLanguage == "en-US" ? "GENERAL" : "UMUM")
+            </a>
+        </li>
+    </ul>
+    <h6 class="fw-bold">
+        @(CurrentLanguage == "en-US" ? "Sea Experiences In The Last 10 Years" : "Pengalaman Berlayar 10 Tahun Terakhir")
+    </h6>
+    <div class="mb-2 row">
+        <div class="col-sm-3">
+            <div id="r_CompanyName" class="mb-2 row">
+                <label for="x_CompanyName" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.CompanyName.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_CompanyName"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_FlagName_CountryID" class="mb-2 row">
+                <label for="x_FlagName_CountryID" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_FlagName_CountryID"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_VesselName" class="mb-2 row">
+                <label for="x_VesselName" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.VesselName.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_VesselName"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_MTVesselTypeID" class="mb-2 row">
+                <label for="x_MTVesselTypeID" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_MTVesselTypeID"></slot></div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-2 row">
+        <div class="col-sm-3">
+            <div id="r_GRT" class="mb-2 row">
+                <label for="x_GRT" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.GRT.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_GRT"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_DWT" class="mb-2 row">
+                <label for="x_DWT" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.DWT.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_DWT"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_MainEngine" class="mb-2 row">
+                <label for="x_MainEngine" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.MainEngine.Caption)</label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_MainEngine"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_BHP" class="mb-2 row">
+                <label for="x_BHP" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.BHP.Caption)</label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_BHP"></slot></div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-2 row">
+        <div class="col-sm-3">
+            <div id="r_DateFrom" class="mb-2 row">
+                <label for="x_DateFrom" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.DateFrom.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_DateFrom"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_SignOnPortName" class="mb-2 row">
+                <label for="x_SignOnPortName" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.SignOnPortName.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_SignOnPortName"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_DateUntil" class="mb-2 row">
+                <label for="x_IssuingAuthority" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.DateUntil.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_DateUntil"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_SignOffPortName" class="mb-2 row">
+                <label for="x_SignOffPortName" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.SignOffPortName.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_SignOffPortName"></slot></div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-2 row">
+        <div class="col-sm-3">
+            <div id="r_SignOffReason" class="mb-2 row">
+                <label for="x_SignOffReason" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.SignOffReason.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_SignOffReason"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div id="r_MTRankID" class="mb-2 row">
+                <label for="x_MTRankID" class="col-form-label">@Html.Raw(crewExperienceForAdminEdit.MTRankID.Caption)<i class="fa-solid fa-asterisk ew-required"></i></label>
+                <div><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_MTRankID"></slot></div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+        </div>
+        <div class="col-sm-3">
+        </div>
+    </div>
+    <div class="row"><!-- buttons .row -->
+        <div class="d-flex mb-2"><!-- buttons offset -->
+            <button class="btn btn-primary ew-btn ms-auto primary-black-clr gray-bg" id="btn-update-entry">
+                @(CurrentLanguage == "en-US" ? "Update Entry" : "Ubah")
+            </button>
+        </div><!-- /buttons offset -->
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm ew-table table-head-fixed" id="ForAdminTable" data-isset="true">
+            <thead>
+                <tr class="ew-table-header">
+                    <th class="ew-list-option-header w-1" data-name="button"></th>
+                    <th class="ew-list-option-header text-nowrap" data-name="sequence"><span></span></th>
+                    <th data-name="CompanyName" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.CompanyName.Caption)
+                    </th>
+                    <th data-name="FlagName_CountryID" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.FlagName_CountryID.Caption)
+                    </th>
+                    <th data-name="VesselName" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.VesselName.Caption)
+                    </th>              
+                    <th data-name="MTVesselTypeID" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.MTVesselTypeID.Caption)
+                    </th>
+                    <th data-name="GRT" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.GRT.Caption)
+                    </th>
+                    <th data-name="DWT" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.DWT.Caption)
+                    </th>
+                    <th data-name="MainEngine" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.MainEngine.Caption)
+                    </th>              
+                    <th data-name="BHP" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.BHP.Caption)
+                    </th>
+                    <th data-name="MTRankID" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.MTRankID.Caption)
+                    </th>
+                    <th data-name="DateFrom" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.DateFrom.Caption)
+                    </th>
+                    <th data-name="SignOnPortName" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.SignOnPortName.Caption)
+                    </th>
+                    <th data-name="DateUntil" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.DateUntil.Caption)
+                    </th>
+                    <th data-name="SignOffPortName" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.SignOffPortName.Caption)
+                    </th>
+                    <th data-name="SignOffReason" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.SignOffReason.Caption)
+                    </th>
+                    <th data-name="Duration" class="ew-table-header-cell theadnowrap">
+                        @(CurrentLanguage == "en-US" ? "Duration" : "Durasi")
+                    </th>
+                    <th data-name="CreatedByUserID" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.CreatedByUserID.Caption)
+                    </th>
+                    <th data-name="CreatedDateTime" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.CreatedDateTime.Caption)
+                    </th>
+                    <th data-name="LastUpdatedByUserID" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.LastUpdatedByUserID.Caption)
+                    </th>
+                    <th data-name="LastUpdatedDateTime" class="ew-table-header-cell theadnowrap">
+                        @Html.Raw(crewExperienceForAdminEdit.LastUpdatedDateTime.Caption)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="r_MTCrewID" class="mb-3 row">
+        <label for="x_MTCrewID" class="col-sm-2 col-form-label">@Html.Raw(crewExperienceForAdminEdit.MTCrewID.Caption)</label>
+        <div class="col-sm-10"><slot class="ew-slot" name="tpx_CrewExperienceForAdmin_MTCrewID"></slot></div>
+    </div>
+    <div id="proceed-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="proceed-modal-dialog-title" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="proceed-modal-dialog-title" class="modal-title">
+                        @(CurrentLanguage == "en-US" ? "Warning" : "Peringatan")
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p> 
+                        @{
+                            if (CurrentLanguage == "en-US")
+                            {
+                                <span>There are error(s) in this tab.</span><br/>
+                                <span>If you choose to Proceed, any unsaved data will be lost.</span><br/>
+                                <span>Do you want to Proceed?</span>
+                            }
+                            else
+                            {
+                                <span>Masih ada error di tab ini.</span><br/>
+                                <span>Jika Anda memilih Lanjutkan, data yang belum disimpan akan hilang.</span><br/>
+                                <span>Apakah Anda ingin melanjutkan?</span>
+                            }
+                        }
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger ew-btn" id="btn-proceed" type="button">
+                        @(CurrentLanguage == "en-US" ? "Proceed" : "Lanjutkan")
+                    </button>
+                    <button class="btn btn-default ew-btn" id="btn-proceed-cancel" type="button" data-bs-dismiss="modal">
+                        @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loading-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p class="text-center mb-0">
+                        @(CurrentLanguage == "en-US" ? "Saving..." : "Menyimpan...")
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="delete-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="delete-modal-dialog-title" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="delete-modal-dialog-title" class="modal-title">
+                        @(CurrentLanguage == "en-US" ? "Confirmation" : "Konfirmasi")
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        @(CurrentLanguage == "en-US" ? "Are you sure you want to delete?" : "Anda yakin ingin menghapus?")
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary ew-btn" id="btn-delete" type="button">
+                        @(CurrentLanguage == "en-US" ? "Yes" : "Iya")
+                    </button>
+                    <button class="btn btn-default ew-btn" id="btn-delete-cancel" type="button" data-bs-dismiss="modal">
+                        @(CurrentLanguage == "en-US" ? "No" : "Tidak")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div></div>
+</template>
+@{ crewExperienceForAdminEdit.CloseRecordset(); }
+@Html.Raw(crewExperienceForAdminEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(crewExperienceForAdminEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCrewExperienceForAdminedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCrewExperienceForAdminedit" data-href="@AppPath(crewExperienceForAdminEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(crewExperienceForAdminEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+<script class="ew-apply-template">
+loadjs.ready(ew.applyTemplateId, function() {
+    var $ = jQuery;
+    ew.templateData = { rows: @Html.Raw(ConvertToJson(crewExperienceForAdminEdit.Rows)) };
+    ew.applyTemplate("tpd_CrewExperienceForAdminedit", "tpm_CrewExperienceForAdminedit", "CrewExperienceForAdminedit", "@(crewExperienceForAdminEdit.Export)", "CrewExperienceForAdmin", ew.templateData.rows[0], @(crewExperienceForAdminEdit.IsModal ? "true" : "false"));
+    loadjs.done("customtemplate");
+});
+</script>
+</main>
+@crewExperienceForAdminEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewExperienceForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // get the current URL without Add or Edit for assigning active class in tabs
+    const currentUrlWithoutAddEdit = currentUrlObject.href.replace(/Add|Edit/g, "");
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    // Extract the value of the crewID query parameter
+    const currentlyEditedCrewID = urlQueryParams.get('crewID');
+    const currentTableID = parseInt(currentUrlObject.pathname.split('/').pop()); 
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+    const parentUrl = ew.PATH_BASE;
+    const tableName = "CrewExperienceForAdmin";
+    const pageType = "edit";
+    const pageTypeCapital = "Edit";
+    const formID = `f${tableName}${pageType}`;
+    const updateEntryUrl = `${parentUrl}${tableName}${pageTypeCapital}/${currentTableID}?crewID=${currentlyEditedCrewID}`;
+    const addPageUrl = `${parentUrl}${tableName}Add?crewID=${currentlyEditedCrewID}`;
+    let isChangeTabApproved = false;
+    const adminAndEmployeeStatusApi = 'get-admin-and-employee-status';
+    $.ajax({
+        url: `${parentUrl}api/Registration/${adminAndEmployeeStatusApi}`,
+        method: 'GET',
+        data: {
+            crewID: currentlyEditedCrewID
+        },
+        success: function(response) {
+            if (response.success) {
+                const isAdmin = response.data.IsAdmin;
+                if (isAdmin) {
+                    if (currentlyEditedCrewID === null) {
+                        window.location.replace(`${ew.PATH_BASE}RegistrationEdit/-1`);
+                    }
+                    const originalCancelHref = $('#btn-cancel').attr('data-href');
+                    const customCancelButton = $('<button/>', {
+                        'class': 'btn btn-danger ew-btn ms-auto primary-red-bg primary-white-clr',
+                        'id': 'btn-custom-cancel',
+                        'type': 'button',
+                        'text': `${ew.language.phrase("CancelBtn")}`,
+                    }).click(function() {
+                        if (window[formID].modified) {
+                            ew.prompt(ew.language.phrase("ConfirmCancel"), result => {
+                                if (result) {
+                                    isChangeTabApproved = true;
+                                    proceedToLink(originalCancelHref);
+                                }
+                              });
+                        } else {
+                            isChangeTabApproved = true;
+                            proceedToLink(originalCancelHref);
+                        }
+                    });
+                    $('#btn-cancel').after(customCancelButton);
+                    $('#btn-cancel').remove();
+                } else {
+                    if (currentlyEditedCrewID === null) {
+                        window.location.replace(`${ew.PATH_BASE}index`);
+                    }
+                    $('#btn-cancel').addClass('ms-auto primary-red-bg primary-white-clr');
+                }
+            } else {
+                ew.showToast(response.errorMessage);
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            ew.showToast(errorThrown);
+        }
+    });
+    $('#x_GRT').attr('type', 'number');
+    $('#x_DWT').attr('type', 'number');
+    $('#x_BHP').attr('type', 'number');
+    $('#x_GRT').val(parseInt($('#x_GRT').val().replace(",", ".")));
+    $('#x_DWT').val(parseInt($('#x_DWT').val().replace(",", ".")));
+    $('#x_BHP').val(parseInt($('#x_BHP').val().replace(",", ".")));
+    $('#x_MTCrewID').val(currentlyEditedCrewID);
+
+    // Iterate over each anchor element inside the nav-tabs
+    $(".nav-tabs .nav-item a").each(function() {
+        const href = $(this).attr("href");
+        const hrefWithoutAddEdit = href.replace(/Add|Edit/g, "");
+        // Check if the href contains current page's url
+        if (currentUrlWithoutAddEdit.includes(hrefWithoutAddEdit)) {
+            // add class and attribute
+            $(this).addClass("active");
+            $(this).attr("aria-current", "page");
+        }
+        // Check if the href contains "Edit" or "Add"
+        if (href.includes("Edit")) {
+            // Add "/" and the currently edited crew ID to the href
+            const newHref = href + "/" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        } else if (href.includes("Add")) {
+            // Add "?crewID=" and the currently edited crew ID to the href
+            const newHref = href + "?crewID=" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        }
+    });
+
+    // start code for auto capitalize first letter of each word
+    $('#x_CompanyName').on('input', function() {
+        $(this).val($(this).val().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }));
+    });
+    $('#x_VesselName').on('input', function() {
+        $(this).val($(this).val().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }));
+    });
+    $('#x_SignOnPortName').on('input', function() {
+        $(this).val($(this).val().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }));
+    });
+    $('#x_SignOffPortName').on('input', function() {
+        $(this).val($(this).val().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }));
+    });
+    // end code for auto capitalize first letter of each word
+    const entryButton = $('<button/>', {
+        'class': 'btn btn-primary ew-btn ms-auto primary-black-clr gray-bg',
+        'id': 'btn-entry',
+        'type': 'button',
+        'text': (selectedLanguage.id === 'en-US') ? `Update Entry` : `Ubah`
+    }).click(function() {
+        const validateUpdateEntryResult = validateUpdateEntry();
+        if (validateUpdateEntryResult) {
+            $('#loading-modal-dialog').modal('show');
+            const targetUrlRelative = addPageUrl;
+            updateEntry({ redirectUrlWhenSuccess: targetUrlRelative });
+        } else {
+            scrollToFirstInvalidInput();
+        }
+    });
+    $('#btn-update-entry').after(entryButton);
+    $('#btn-update-entry').remove();
+    $('#btn-delete').click(function() {
+        const selectedTableID = $(this).attr('selected-table-id');
+        $.ajax({
+            url: `${parentUrl}api/delete/${tableName}/${selectedTableID}`,
+            type: 'GET',
+            success: function(res) {
+                if (res && res.success) {
+                    $('#delete-modal-dialog').modal('hide');
+                    isChangeTabApproved = true;
+                    proceedToLink(addPageUrl);
+                } else {
+                    $('#delete-modal-dialog').modal('hide');
+                    ew.showToast(res.failureMessage);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                ew.showToast(errorThrown);
+                $('#delete-modal-dialog').modal('hide');
+            }
+        });
+    });
+
+    // Target the ol element that has breadcrumb class
+    const $breadCrumbOl = $('.breadcrumb').first();
+
+    // Delete the ol element that has breadcrumb class
+    $breadCrumbOl.remove();
+    $('#btn-action').remove();
+    $('.ew-buttons > .col-sm-10').removeClass('col-sm-10').addClass('d-flex mb-3');
+    $('.ew-buttons > .offset-sm-2').removeClass('offset-sm-2');
+
+    // get list of crew documents via API
+    const apiEndpoint = 'crew-experience-for-admin';
+    $.ajax({
+      url: `${parentUrl}api/Registration/${apiEndpoint}`,
+      method: 'GET',
+      data: {
+        crewID: currentlyEditedCrewID
+      },
+      success: function(response) {
+        if (response.success) {
+          // Parse the data in the response
+          const dataArray = response.data;
+          const tbody = $('#ForAdminTable tbody'); // select the tbody element
+          if (dataArray.length > 0) {
+              const tableName = 'CrewExperienceForAdmin';
+              for (let rowIndex = 0; rowIndex < dataArray.length; rowIndex++) {
+                const row = dataArray[rowIndex];
+                const rowID = row['ID'];
+                delete row['ID']; // delete ID for easier looping for table columns
+                const tr = $('<tr>'); // create a new tr element 
+
+                // first td for dropdown
+                const buttonsTd = $('<td>').addClass('ew-list-option-body w-1');
+                const buttonDropdownDiv = $('<div>').addClass('btn-group btn-group-sm ew-btn-dropdown');
+                const dropdownButton = $('<button>')
+                    .addClass('btn-default btn dropdown-toggle')
+                    .attr('type', 'button')
+                    .attr('data-title', 'Options')
+                    .attr('data-bs-toggle', 'dropdown')
+                    .attr('data-bs-auto-close', 'true');
+                const dropdownButtonIcon = $('<i>').addClass('fa-solid fa-bars ew-icon').attr('data-phrase', 'ButtonListOptions');
+                const dropdownButtonIconSpan = $('<span>').addClass('visually-hidden').text('Options');
+                const dropdownUl = $('<ul>').addClass('dropdown-menu ew-dropdown-menu ew-list-options');
+                const firstDropdownLi = $('<li>');
+                const editUrl = `${parentUrl}${tableName}Edit/${rowID}?crewID=${currentlyEditedCrewID}`;
+                const editAnchor = $('<a>')
+                    .addClass('ew-row-link ew-edit dropdown-item')
+                    .attr('data-caption', 'Edit')
+                    .attr('href', editUrl)
+                    .on('click', function(event) {
+                        event.preventDefault();
+                        isChangeTabApproved = true;
+                        proceedToLink(editUrl);
+                    });
+                const editAnchorIcon = $('<i>').addClass('fa-solid fa-pen ew-icon me-2').attr('data-phrase', 'EditLink');
+                const editAnchorSpan = $('<span>').addClass('visually-hidden').text('Edit');
+                const editAnchorText= 'Edit';
+                const secondDropdownLi = $('<li>');
+                const deleteAnchor = $('<a>')
+                    .addClass('ew-row-link dropdown-item')
+                    .attr('data-caption', 'Delete')
+                    .on('click', function(event) {
+                        event.preventDefault();
+                        $('#btn-delete').attr('selected-table-id', rowID);
+                        $('#delete-modal-dialog').modal('show');
+                    });
+                const deleteAnchorIcon = $('<i>').addClass('fa-solid fa-trash ew-icon me-2').attr('data-phrase', 'DeleteLink');
+                const deleteAnchorSpan = $('<span>').addClass('visually-hidden').text('Delete');
+                const deleteAnchorText= 'Delete';
+                deleteAnchorIcon.append(deleteAnchorSpan);
+                deleteAnchor.append(deleteAnchorIcon);
+                deleteAnchor.append(deleteAnchorText);
+                secondDropdownLi.append(deleteAnchor);
+                editAnchorIcon.append(editAnchorSpan);
+                editAnchor.append(editAnchorIcon);
+                editAnchor.append(editAnchorText);
+                firstDropdownLi.append(editAnchor);
+                dropdownUl.append(firstDropdownLi);
+                dropdownUl.append(secondDropdownLi);
+                dropdownButtonIcon.append(dropdownButtonIconSpan);
+                dropdownButton.append(dropdownButtonIcon);
+                buttonDropdownDiv.append(dropdownButton);
+                buttonDropdownDiv.append(dropdownUl);
+                buttonsTd.append(buttonDropdownDiv);
+                tr.append(buttonsTd);
+
+                // second td for sequence
+                const sequenceTd = $('<td>').addClass('ew-list-option-body text-nowrap').attr('data-name', 'sequence');
+                const sequenceNumberString = (rowIndex + 1).toString() + '.';
+                const sequenceSpan = $('<span>').text(sequenceNumberString);
+                sequenceTd.append(sequenceSpan);
+                tr.append(sequenceTd);
+
+                // remaining td for each column
+                for (const columnName of Object.keys(row)) {
+                  if (columnName === 'Duration') {
+                    const dataTd = $('<td>');
+                    const totalDays = row[columnName];
+                    const durationInYears = Math.floor(totalDays / 365);
+                    const durationInMonths = Math.floor((totalDays % 365) / 30);
+                    const durationInDays = (totalDays % 365) % 30;
+                    let formattedDuration = '';
+                    if (durationInYears > 0) {
+                        formattedDuration += `${durationInYears} Years`;
+                    }
+                    if (durationInMonths > 0) {
+                        if (formattedDuration.length > 0) {
+                            formattedDuration += ' ';
+                        }
+                        formattedDuration += `${durationInMonths} Months`;
+                    }
+                    if (durationInDays > 0) {
+                        if (formattedDuration.length > 0) {
+                            formattedDuration += ' ';
+                        }
+                        formattedDuration += `${durationInDays} Days`;
+                    }
+                    const dataSpan = $('<span>').text(formattedDuration);
+                    dataTd.append(dataSpan);
+                    tr.append(dataTd);
+                  } else if (columnName === 'DateFrom' || columnName === 'DateUntil') {
+                    const dataTd = $('<td>');
+                    const columnValue = row[columnName];
+                    const dataSpan = $('<span class="text-nowrap">').text(columnValue);
+                    dataTd.append(dataSpan);
+                    tr.append(dataTd);
+                  } else {
+                    const dataTd = $('<td>');
+                    const columnValue = row[columnName];
+                    const dataSpan = $('<span>').text(columnValue);
+                    dataTd.append(dataSpan);
+                    tr.append(dataTd);
+                  }
+                }
+                tbody.append(tr);
+              }
+          } else {
+              const columnsCount = $('#ForAdminTable th.ew-table-header-cell').length;
+              for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+                const tr = $('<tr>'); // create a new tr element 
+
+                // 1 is for buttons dropdown(for edit) column and 1 for sequence number column
+                const emptyTdWithColspan = $('<td>').html('&nbsp;').attr('colspan', 2); 
+                tr.append(emptyTdWithColspan);
+                for (let columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
+                  const emptyTd = $('<td>').html('&nbsp;');
+                  tr.append(emptyTd);
+                }
+                tbody.append(tr);
+              }
+          }
+        } else {
+          // Handle the error
+          ew.showToast(response.errorMessage);
+        }
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        // Handle the error
+        ew.showToast(errorThrown);
+      }
+    });
+    $('div#r_MTCrewID').hide();
+
+    // AUTO SAVE WHEN MOVING FROM THIS TAB
+    $(window).on('beforeunload', function(event) {
+        if (!isChangeTabApproved && window[formID].modified) {
+            event.preventDefault();
+            event.returnValue = '';
+            return '';
+        }
+    });
+    $("#btn-proceed").click(function() {
+        isChangeTabApproved = true;
+        const targetUrlRelative = $(this).attr('target-url-relative');
+        $('#approve-modal-dialog').modal('hide');
+        proceedToLink(targetUrlRelative);
+    });
+    $('ul.nav.nav-tabs li.nav-item a.nav-link').on('click', function(event) {
+        event.preventDefault();
+        const targetUrlRelative = $(this).attr('href');
+        if (window[formID].modified) {
+            const validateUpdateEntryResult = validateUpdateEntry();
+            if (validateUpdateEntryResult) {
+                $('#loading-modal-dialog').modal('show');
+                updateEntry({ redirectUrlWhenSuccess: targetUrlRelative });
+            } else {
+                scrollToFirstInvalidInput();
+                $('#btn-proceed').attr('target-url-relative', targetUrlRelative);
+                $('#proceed-modal-dialog').modal('show');
+            }
+        } else {
+            isChangeTabApproved = true;
+            proceedToLink(targetUrlRelative);
+        }
+    });
+    function proceedToLink(targetUrlRelative) {
+        const baseUrl = new URL(window.location.href).origin;
+        const targetUrl = new URL(baseUrl + targetUrlRelative);
+        window.location.href = targetUrl.href;
+    }
+    function scrollToFirstInvalidInput() {
+        const invalidInput = $("input.is-invalid:first");
+        if (invalidInput.length > 0) { // Check if an invalid input is found
+            const offset = invalidInput.offset().top; // Calculate the offset of the invalid input element from the top of the page
+            const windowHeight = $(window).height(); // Calculate the height of the viewport
+            const scrollPosition = offset - (windowHeight / 2); // Calculate the scroll position to center the invalid input element
+            $("html, body").animate({ // Animate the scroll to the center position
+                scrollTop: scrollPosition
+            }, 1000); // Adjust the duration as needed (in milliseconds)
+        }
+    }
+    function updateEntry({ redirectUrlWhenSuccess }) {
+        isChangeTabApproved = true;
+        let formData = $(`form#${formID}`).serialize();
+        $('input[type="checkbox"]').each(function() {
+            // Jika checkbox tidak dicentang dan tidak ada di hasil serialize(),
+            // tambahkan nilai 0 ke hasil serialize()
+            if (!this.checked && formData.indexOf(this.name) === -1) {
+                formData += '&' + this.name + '=0';
+            }
+        });
+        $.ajax({
+            url: updateEntryUrl,
+            type: 'POST',
+            data: formData,
+            success: function(res) {
+                const $errorDiv = $(res).find('div.ew-error'); // res is a string containing html document
+                $('#loading-modal-dialog').modal('hide');
+                if ($errorDiv.length > 0) {
+                    ew.showToast($errorDiv.text());
+                } else {
+                    proceedToLink(redirectUrlWhenSuccess);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                $('#loading-modal-dialog').modal('hide');
+                isChangeTabApproved = false;
+                ew.showToast(errorThrown);
+            }
+        });
+    }
+    function validateUpdateEntry() {
+        let formErrorCount = 0;
+        function validateRequiredField(fieldName) {
+            const errorMessage = (selectedLanguage.id === 'en-US') ? "Please enter required field" : "Masukkan input yang dibutuhkan";
+            const fieldNameWithPrefix = `x_${fieldName}`;
+            const fieldCaption = $(`label[for=${fieldNameWithPrefix}]`).text();
+            const fieldValue = $(`#${fieldNameWithPrefix}`).val();
+            const errorMessageWithFieldName = `${errorMessage} - ${fieldCaption}`;
+            if (fieldValue === '' || fieldValue === null) {
+                window[formID].fields[fieldName].addError({ custom: errorMessageWithFieldName });
+                window[formID].fields[fieldName].updateFeedback();
+                window[formID].addError(fieldName, { custom: errorMessageWithFieldName });
+                return false;
+            } else {
+                return true;
+            }
+        }
+        function validateDateField(fieldName) {
+            const errorMessage = (selectedLanguage.id === 'en-US') ? 'Incorrect date (dd MMM yyyy)' : 'Tanggal tidak benar (dd MMM yyyy)';
+            const fieldNameWithPrefix = `x_${fieldName}`;
+            const fieldValue = $(`#${fieldNameWithPrefix}`).val();
+            const dateParts = fieldValue.split(' ');
+            const day = parseInt(dateParts[0], 10);
+            const monthNamesEnglish = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthNamesIndonesian = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const month = (selectedLanguage.id === 'en-US') ? monthNamesEnglish.indexOf(dateParts[1]) : monthNamesIndonesian.indexOf(dateParts[1]);
+            const year = parseInt(dateParts[2], 10);
+            let valid = false;
+            if (year >= 1900 && year <= 9999 && month >= 0 && day >= 1 && day <= 31) {
+                switch (month) {
+                    case 1: // February
+                        // Check for leap year
+                        valid = day <= (((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 29 : 28);
+                        break;
+                    case 3: // April
+                    case 5: // June
+                    case 8: // September
+                    case 10: // November
+                        valid = day <= 30;
+                        break;
+                    default:
+                        valid = true;
+                        break;
+                }
+            }
+            if (!valid) {
+                window[formID].fields[fieldName].addError({ custom: errorMessage });
+                window[formID].fields[fieldName].updateFeedback();
+                window[formID].addError(fieldName, { custom: errorMessage });
+                return false;
+            } else {
+                return true;
+            }
+        }
+        function validateFieldWithRegex(fieldName, errorMessage, regex) {
+            const fieldNameWithPrefix = `x_${fieldName}`;
+            const fieldValue = $(`#${fieldNameWithPrefix}`).val();
+            if (!regex.test(fieldValue)) {  
+                window[formID].fields[fieldName].addError({ custom: errorMessage });
+                window[formID].fields[fieldName].updateFeedback();
+                window[formID].addError(fieldName, { custom: errorMessage });
+                return false;
+            } else {
+                return true;
+            }
+        }
+        const digitsOnlyRegex = /^\d+$/;
+        const digitsOnlyRegexErrorMessage = (selectedLanguage.id === 'en-US') ? "Must contain digits only" : "Harus terdiri dari angka saja";
+        if (!validateRequiredField("CompanyName")) {
+            formErrorCount += 1;
+        }
+        if (!validateRequiredField("FlagName_CountryID")) {
+            formErrorCount += 1;
+        }
+        if (!validateRequiredField("VesselName")) {
+            formErrorCount += 1;
+        }
+        if (!validateRequiredField("MTVesselTypeID")) {
+            formErrorCount += 1;
+        }
+        if (!validateRequiredField("GRT")) {
+            formErrorCount += 1;
+        } else {
+            formErrorCount += validateFieldWithRegex("GRT",  digitsOnlyRegexErrorMessage, digitsOnlyRegex) ? 0 : 1;
+        }
+        if (!validateRequiredField("DWT")) {
+            formErrorCount += 1;
+        } else {
+            formErrorCount += validateFieldWithRegex("DWT",  digitsOnlyRegexErrorMessage, digitsOnlyRegex) ? 0 : 1;
+        }
+        /*
+        if (!validateRequiredField("BHP")) {
+            formErrorCount += 1;
+        } else {
+            formErrorCount += validateFieldWithRegex("BHP",  digitsOnlyRegexErrorMessage, digitsOnlyRegex) ? 0 : 1;
+        }
+        */
+        if (!validateRequiredField("DateFrom")) {
+            formErrorCount += 1;
+        } else {
+            if (validateDateField("DateFrom")) {
+                const dateFromValue = $(`#x_DateFrom`).val();
+                const currentDateTenYearsAgo = new Date();
+                currentDateTenYearsAgo.setFullYear(currentDateTenYearsAgo.getFullYear() - 10);
+                const dateFromObject = new Date(dateFromValue);
+                if (dateFromObject < currentDateTenYearsAgo) {
+                    const dateFromCaption = $('label[for="x_DateFrom"]').text();
+                    formErrorCount += 1;
+                    const errorMessage = (selectedLanguage.id === 'en-US') ? `${dateFromCaption} cannot be older than 10 years ago` : `${dateFromCaption} tidak boleh lebih awal dari 10 tahun yang lalu`;
+                    window[formID].fields["DateFrom"].addError({ custom: errorMessage });
+                    window[formID].fields["DateFrom"].updateFeedback();
+                    window[formID].addError("DateFrom", { custom: errorMessage });
+                }
+            } else {
+                formErrorCount += 1;
+            }
+        }
+        if (!validateRequiredField("SignOnPortName")) {
+            formErrorCount += 1;
+        }
+        if (!validateRequiredField("DateUntil")) {
+            formErrorCount += 1;
+        } else {
+            if (validateDateField("DateUntil")) {
+                const dateUntilValue = $(`#x_DateUntil`).val();
+                const currentDateTenYearsAgo = new Date();
+                currentDateTenYearsAgo.setFullYear(currentDateTenYearsAgo.getFullYear() - 10);
+                const dateUntilObject = new Date(dateUntilValue);
+                if (dateUntilObject < currentDateTenYearsAgo) {
+                    const dateUntilCaption = $('label[for="x_DateUntil"]').text();
+                    formErrorCount += 1;
+                    const errorMessage = (selectedLanguage.id === 'en-US') ? `${dateUntilCaption} cannot be older than 10 years ago` : `${dateUntilCaption} tidak boleh lebih awal dari 10 tahun yang lalu`;
+                    window[formID].fields["DateUntil"].addError({ custom: errorMessage });
+                    window[formID].fields["DateUntil"].updateFeedback();
+                    window[formID].addError("DateUntil", { custom: errorMessage });
+                }
+            } else {
+                formErrorCount += 1;
+            }
+        }
+        if (!validateRequiredField("SignOffPortName")) {
+            formErrorCount += 1;
+        }
+        if (!validateRequiredField("SignOffReason")) {
+            formErrorCount += 1;
+        }
+        if (!validateRequiredField("MTRankID")) {
+            formErrorCount += 1;
+        } else {
+            const rankName = $('#x_MTRankID').select2('data')[0].text;
+            if (rankName.includes('Engineer')) {
+                isNotEmpty = validateRequiredField("MainEngine");
+                if (!isNotEmpty) {
+                    formErrorCount += 1;
+                    const errorMessage = (selectedLanguage.id === 'en-US') ? `Must be filled when chosen rank is Engineer` : `Harus diisi ketika memilih jabatan Engineer`;
+                    window[formID].fields["MainEngine"].addError({ custom: errorMessage });
+                    window[formID].fields["MainEngine"].updateFeedback();
+                    window[formID].addError("MainEngine", { custom: errorMessage });
+                }
+            }
+        }
+        return formErrorCount === 0;
+    }
+});
+</script>

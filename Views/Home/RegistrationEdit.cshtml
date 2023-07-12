@@ -1,0 +1,367 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (registrationEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!registrationEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@registrationEdit.ShowPageHeader()
+@registrationEdit.ShowMessages()
+<main class="edit">
+<form name="fRegistrationedit" id="fRegistrationedit" class="@(registrationEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(registrationEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Registration: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fRegistrationedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fRegistrationedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [fields.IndividualCodeNumber.visible && fields.IndividualCodeNumber.required ? ew.Validators.required(fields.IndividualCodeNumber.caption) : null], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [fields.FullName.visible && fields.FullName.required ? ew.Validators.required(fields.FullName.caption) : null], fields.FullName.isInvalid],
+            ["RequiredPhoto", [fields.RequiredPhoto.visible && fields.RequiredPhoto.required ? ew.Validators.fileRequired(fields.RequiredPhoto.caption) : null], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [fields.VisaPhoto.visible && fields.VisaPhoto.required ? ew.Validators.fileRequired(fields.VisaPhoto.caption) : null], fields.VisaPhoto.isInvalid],
+            ["Gender", [fields.Gender.visible && fields.Gender.required ? ew.Validators.required(fields.Gender.caption) : null], fields.Gender.isInvalid],
+            ["RankAppliedFor", [fields.RankAppliedFor.visible && fields.RankAppliedFor.required ? ew.Validators.required(fields.RankAppliedFor.caption) : null], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [fields.WillAcceptLowRank.visible && fields.WillAcceptLowRank.required ? ew.Validators.required(fields.WillAcceptLowRank.caption) : null], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [fields.AvailableFrom.visible && fields.AvailableFrom.required ? ew.Validators.required(fields.AvailableFrom.caption) : null, ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [fields.AvailableUntil.visible && fields.AvailableUntil.required ? ew.Validators.required(fields.AvailableUntil.caption) : null, ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Gender": @Html.Raw(registrationEdit.Gender.ToClientList(registrationEdit)),
+            "WillAcceptLowRank": @Html.Raw(registrationEdit.WillAcceptLowRank.ToClientList(registrationEdit)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(registrationEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(registrationEdit.OldKeyName)" value="@Html.Raw(registrationEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (registrationEdit.IndividualCodeNumber.Visible) { // registrationEdit.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" @Html.Raw(registrationEdit.IndividualCodeNumber.RowAttributes)>
+        <label id="elh_Registration_IndividualCodeNumber" for="x_IndividualCodeNumber" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.IndividualCodeNumber.Caption)@Html.Raw(registrationEdit.IndividualCodeNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.IndividualCodeNumber.CellAttributes)>
+<span id="el_Registration_IndividualCodeNumber">
+<input type="@(registrationEdit.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="Registration" data-field="x_IndividualCodeNumber" value="@Html.Raw(registrationEdit.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(registrationEdit.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(registrationEdit.IndividualCodeNumber.FormatPattern)"@Html.Raw(registrationEdit.IndividualCodeNumber.EditAttributes) aria-describedby="x_IndividualCodeNumber_help">
+@Html.Raw(registrationEdit.IndividualCodeNumber.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(registrationEdit.IndividualCodeNumber.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.IndividualCodeNumber.Visible (end) *@
+@if (registrationEdit.FullName.Visible) { // registrationEdit.FullName.Visible (begin)
+    <div id="r_FullName" @Html.Raw(registrationEdit.FullName.RowAttributes)>
+        <label id="elh_Registration_FullName" for="x_FullName" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.FullName.Caption)@Html.Raw(registrationEdit.FullName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.FullName.CellAttributes)>
+<span id="el_Registration_FullName">
+<input type="@(registrationEdit.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="Registration" data-field="x_FullName" value="@Html.Raw(registrationEdit.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(registrationEdit.FullName.PlaceHolder))" data-format-pattern="@(registrationEdit.FullName.FormatPattern)"@Html.Raw(registrationEdit.FullName.EditAttributes) aria-describedby="x_FullName_help">
+@Html.Raw(registrationEdit.FullName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(registrationEdit.FullName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.FullName.Visible (end) *@
+@if (registrationEdit.RequiredPhoto.Visible) { // registrationEdit.RequiredPhoto.Visible (begin)
+    <div id="r_RequiredPhoto" @Html.Raw(registrationEdit.RequiredPhoto.RowAttributes)>
+        <label id="elh_Registration_RequiredPhoto" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.RequiredPhoto.Caption)@Html.Raw(registrationEdit.RequiredPhoto.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.RequiredPhoto.CellAttributes)>
+<span id="el_Registration_RequiredPhoto">
+<div id="fd_x_RequiredPhoto" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_RequiredPhoto"
+        name="x_RequiredPhoto"
+        class="form-control ew-file-input"
+        title="@(registrationEdit.RequiredPhoto.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="Registration"
+        data-field="x_RequiredPhoto"
+        data-size="100"
+        data-accept-file-types="@(registrationEdit.RequiredPhoto.AcceptFileTypes)"
+        data-max-file-size="@(registrationEdit.RequiredPhoto.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(registrationEdit.RequiredPhoto.ImageCropper ? 0 : 1)"
+        aria-describedby="x_RequiredPhoto_help"
+        @Html.Raw((registrationEdit.RequiredPhoto.ReadOnly || registrationEdit.RequiredPhoto.Disabled) ? " disabled" : "")
+        @Html.Raw(registrationEdit.RequiredPhoto.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(registrationEdit.RequiredPhoto.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(registrationEdit.RequiredPhoto.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_RequiredPhoto" id= "fn_x_RequiredPhoto" value="@(registrationEdit.RequiredPhoto.Upload.FileName)">
+<input type="hidden" name="fa_x_RequiredPhoto" id= "fa_x_RequiredPhoto" value="@(Post("fa_x_RequiredPhoto") == "0" ? "0" : "1")">
+<table id="ft_x_RequiredPhoto" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.RequiredPhoto.Visible (end) *@
+@if (registrationEdit.VisaPhoto.Visible) { // registrationEdit.VisaPhoto.Visible (begin)
+    <div id="r_VisaPhoto" @Html.Raw(registrationEdit.VisaPhoto.RowAttributes)>
+        <label id="elh_Registration_VisaPhoto" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.VisaPhoto.Caption)@Html.Raw(registrationEdit.VisaPhoto.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.VisaPhoto.CellAttributes)>
+<span id="el_Registration_VisaPhoto">
+<div id="fd_x_VisaPhoto" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_VisaPhoto"
+        name="x_VisaPhoto"
+        class="form-control ew-file-input"
+        title="@(registrationEdit.VisaPhoto.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="Registration"
+        data-field="x_VisaPhoto"
+        data-size="100"
+        data-accept-file-types="@(registrationEdit.VisaPhoto.AcceptFileTypes)"
+        data-max-file-size="@(registrationEdit.VisaPhoto.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(registrationEdit.VisaPhoto.ImageCropper ? 0 : 1)"
+        aria-describedby="x_VisaPhoto_help"
+        @Html.Raw((registrationEdit.VisaPhoto.ReadOnly || registrationEdit.VisaPhoto.Disabled) ? " disabled" : "")
+        @Html.Raw(registrationEdit.VisaPhoto.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(registrationEdit.VisaPhoto.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(registrationEdit.VisaPhoto.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_VisaPhoto" id= "fn_x_VisaPhoto" value="@(registrationEdit.VisaPhoto.Upload.FileName)">
+<input type="hidden" name="fa_x_VisaPhoto" id= "fa_x_VisaPhoto" value="@(Post("fa_x_VisaPhoto") == "0" ? "0" : "1")">
+<table id="ft_x_VisaPhoto" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.VisaPhoto.Visible (end) *@
+@if (registrationEdit.Gender.Visible) { // registrationEdit.Gender.Visible (begin)
+    <div id="r_Gender" @Html.Raw(registrationEdit.Gender.RowAttributes)>
+        <label id="elh_Registration_Gender" for="x_Gender" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.Gender.Caption)@Html.Raw(registrationEdit.Gender.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.Gender.CellAttributes)>
+<span id="el_Registration_Gender">
+    <select
+        id="x_Gender"
+        name="x_Gender"
+        class="form-select ew-select@(registrationEdit.Gender.IsInvalidClass)"
+        data-select2-id="fRegistrationedit_x_Gender"
+        data-table="Registration"
+        data-field="x_Gender"
+        data-value-separator="@(registrationEdit.Gender.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(registrationEdit.Gender.PlaceHolder))"
+        @Html.Raw(registrationEdit.Gender.EditAttributes)>
+        @(registrationEdit.Gender.SelectOptionListHtml("x_Gender"))
+    </select>
+    @Html.Raw(registrationEdit.Gender.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(registrationEdit.Gender.GetErrorMessage())</div>
+<script>
+loadjs.ready("fRegistrationedit", function() {
+    var options = { name: "x_Gender", selectId: "fRegistrationedit_x_Gender" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fRegistrationedit.lists.Gender?.lookupOptions.length) {
+        options.data = { id: "x_Gender", form: "fRegistrationedit" };
+    } else {
+        options.ajax = { id: "x_Gender", form: "fRegistrationedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.Registration.fields.Gender.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.Gender.Visible (end) *@
+@if (registrationEdit.RankAppliedFor.Visible) { // registrationEdit.RankAppliedFor.Visible (begin)
+    <div id="r_RankAppliedFor" @Html.Raw(registrationEdit.RankAppliedFor.RowAttributes)>
+        <label id="elh_Registration_RankAppliedFor" for="x_RankAppliedFor" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.RankAppliedFor.Caption)@Html.Raw(registrationEdit.RankAppliedFor.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.RankAppliedFor.CellAttributes)>
+<span id="el_Registration_RankAppliedFor">
+<input type="@(registrationEdit.RankAppliedFor.InputTextType)" name="x_RankAppliedFor" id="x_RankAppliedFor" data-table="Registration" data-field="x_RankAppliedFor" value="@Html.Raw(registrationEdit.RankAppliedFor.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(registrationEdit.RankAppliedFor.PlaceHolder))" data-format-pattern="@(registrationEdit.RankAppliedFor.FormatPattern)"@Html.Raw(registrationEdit.RankAppliedFor.EditAttributes) aria-describedby="x_RankAppliedFor_help">
+@Html.Raw(registrationEdit.RankAppliedFor.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(registrationEdit.RankAppliedFor.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.RankAppliedFor.Visible (end) *@
+@if (registrationEdit.WillAcceptLowRank.Visible) { // registrationEdit.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" @Html.Raw(registrationEdit.WillAcceptLowRank.RowAttributes)>
+        <label id="elh_Registration_WillAcceptLowRank" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.WillAcceptLowRank.Caption)@Html.Raw(registrationEdit.WillAcceptLowRank.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.WillAcceptLowRank.CellAttributes)>
+<span id="el_Registration_WillAcceptLowRank">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(registrationEdit.WillAcceptLowRank.IsInvalidClass)" data-table="Registration" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(registrationEdit.WillAcceptLowRank.CurrentValue)" @Html.Raw(registrationEdit.WillAcceptLowRank.EditAttributes) aria-describedby="x_WillAcceptLowRank_help">
+    <div class="invalid-feedback">@Html.Raw(registrationEdit.WillAcceptLowRank.GetErrorMessage())</div>
+</div>
+@Html.Raw(registrationEdit.WillAcceptLowRank.GetCustomMessage)
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.WillAcceptLowRank.Visible (end) *@
+@if (registrationEdit.AvailableFrom.Visible) { // registrationEdit.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" @Html.Raw(registrationEdit.AvailableFrom.RowAttributes)>
+        <label id="elh_Registration_AvailableFrom" for="x_AvailableFrom" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.AvailableFrom.Caption)@Html.Raw(registrationEdit.AvailableFrom.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.AvailableFrom.CellAttributes)>
+<span id="el_Registration_AvailableFrom">
+<input type="@(registrationEdit.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="Registration" data-field="x_AvailableFrom" value="@Html.Raw(registrationEdit.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(registrationEdit.AvailableFrom.PlaceHolder))" data-format-pattern="@(registrationEdit.AvailableFrom.FormatPattern)"@Html.Raw(registrationEdit.AvailableFrom.EditAttributes) aria-describedby="x_AvailableFrom_help">
+@Html.Raw(registrationEdit.AvailableFrom.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(registrationEdit.AvailableFrom.GetErrorMessage())</div>
+@if (!registrationEdit.AvailableFrom.ReadOnly && !registrationEdit.AvailableFrom.Disabled && !registrationEdit.AvailableFrom.EditAttrs.Is("readonly") && !registrationEdit.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fRegistrationedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fRegistrationedit", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.AvailableFrom.Visible (end) *@
+@if (registrationEdit.AvailableUntil.Visible) { // registrationEdit.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" @Html.Raw(registrationEdit.AvailableUntil.RowAttributes)>
+        <label id="elh_Registration_AvailableUntil" for="x_AvailableUntil" class="@(registrationEdit.LeftColumnClass)">@Html.Raw(registrationEdit.AvailableUntil.Caption)@Html.Raw(registrationEdit.AvailableUntil.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(registrationEdit.RightColumnClass)"><div @Html.Raw(registrationEdit.AvailableUntil.CellAttributes)>
+<span id="el_Registration_AvailableUntil">
+<input type="@(registrationEdit.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="Registration" data-field="x_AvailableUntil" value="@Html.Raw(registrationEdit.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(registrationEdit.AvailableUntil.PlaceHolder))" data-format-pattern="@(registrationEdit.AvailableUntil.FormatPattern)"@Html.Raw(registrationEdit.AvailableUntil.EditAttributes) aria-describedby="x_AvailableUntil_help">
+@Html.Raw(registrationEdit.AvailableUntil.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(registrationEdit.AvailableUntil.GetErrorMessage())</div>
+@if (!registrationEdit.AvailableUntil.ReadOnly && !registrationEdit.AvailableUntil.Disabled && !registrationEdit.AvailableUntil.EditAttrs.Is("readonly") && !registrationEdit.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fRegistrationedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fRegistrationedit", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* registrationEdit.AvailableUntil.Visible (end) *@
+</div><!-- /page* -->
+    <input type="hidden" data-table="Registration" data-field="x_ID" data-hidden="1" name="x_ID" id="x_ID" value="@Html.Raw(HtmlEncode(registrationEdit.ID.CurrentValue))">
+@{ registrationEdit.CloseRecordset(); }
+@Html.Raw(registrationEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(registrationEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fRegistrationedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fRegistrationedit" data-href="@AppPath(registrationEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(registrationEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+</main>
+@registrationEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Registration");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

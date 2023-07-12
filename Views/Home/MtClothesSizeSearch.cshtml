@@ -1,0 +1,421 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtClothesSizeSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtClothesSizeSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtClothesSizeSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTClothesSize: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTClothesSizesearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTClothesSizesearch")
+        .setPageId("search")
+@if (mtClothesSizeSearch.IsModal && mtClothesSizeSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["CoverallSizeDescription", [], fields.CoverallSizeDescription.isInvalid],
+            ["ShirtSizeDescription", [], fields.ShirtSizeDescription.isInvalid],
+            ["TrouserSizeDescription", [], fields.TrouserSizeDescription.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CreatedByUserID": @Html.Raw(mtClothesSizeSearch.CreatedByUserID.ToClientList(mtClothesSizeSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtClothesSizeSearch.LastUpdatedByUserID.ToClientList(mtClothesSizeSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtClothesSizeSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtClothesSizeSearch.ShowPageHeader()
+@mtClothesSizeSearch.ShowMessages()
+<form name="fMTClothesSizesearch" id="fMTClothesSizesearch" class="@(mtClothesSizeSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtClothesSizeSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtClothesSizeSearch._Name.Visible) { // mtClothesSizeSearch._Name.Visible (begin)
+    <div id="r__Name" class="row" @Html.Raw(mtClothesSizeSearch._Name.RowAttributes)>
+        <label for="x__Name" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize__Name">@Html.Raw(mtClothesSizeSearch._Name.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Name" id="z__Name" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch._Name.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize__Name" class="ew-search-field ew-search-field-single">
+<input type="@(mtClothesSizeSearch._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTClothesSize" data-field="x__Name" value="@Html.Raw(mtClothesSizeSearch._Name.EditValue)" size="30" maxlength="5" placeholder="@Html.Raw(HtmlEncode(mtClothesSizeSearch._Name.PlaceHolder))" data-format-pattern="@(mtClothesSizeSearch._Name.FormatPattern)"@Html.Raw(mtClothesSizeSearch._Name.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch._Name.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch._Name.Visible (end) *@
+@if (mtClothesSizeSearch.CoverallSizeDescription.Visible) { // mtClothesSizeSearch.CoverallSizeDescription.Visible (begin)
+    <div id="r_CoverallSizeDescription" class="row" @Html.Raw(mtClothesSizeSearch.CoverallSizeDescription.RowAttributes)>
+        <label for="x_CoverallSizeDescription" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize_CoverallSizeDescription">@Html.Raw(mtClothesSizeSearch.CoverallSizeDescription.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CoverallSizeDescription" id="z_CoverallSizeDescription" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch.CoverallSizeDescription.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize_CoverallSizeDescription" class="ew-search-field ew-search-field-single">
+<input type="@(mtClothesSizeSearch.CoverallSizeDescription.InputTextType)" name="x_CoverallSizeDescription" id="x_CoverallSizeDescription" data-table="MTClothesSize" data-field="x_CoverallSizeDescription" value="@Html.Raw(mtClothesSizeSearch.CoverallSizeDescription.EditValue)" size="30" maxlength="30" placeholder="@Html.Raw(HtmlEncode(mtClothesSizeSearch.CoverallSizeDescription.PlaceHolder))" data-format-pattern="@(mtClothesSizeSearch.CoverallSizeDescription.FormatPattern)"@Html.Raw(mtClothesSizeSearch.CoverallSizeDescription.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch.CoverallSizeDescription.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch.CoverallSizeDescription.Visible (end) *@
+@if (mtClothesSizeSearch.ShirtSizeDescription.Visible) { // mtClothesSizeSearch.ShirtSizeDescription.Visible (begin)
+    <div id="r_ShirtSizeDescription" class="row" @Html.Raw(mtClothesSizeSearch.ShirtSizeDescription.RowAttributes)>
+        <label for="x_ShirtSizeDescription" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize_ShirtSizeDescription">@Html.Raw(mtClothesSizeSearch.ShirtSizeDescription.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_ShirtSizeDescription" id="z_ShirtSizeDescription" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch.ShirtSizeDescription.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize_ShirtSizeDescription" class="ew-search-field ew-search-field-single">
+<input type="@(mtClothesSizeSearch.ShirtSizeDescription.InputTextType)" name="x_ShirtSizeDescription" id="x_ShirtSizeDescription" data-table="MTClothesSize" data-field="x_ShirtSizeDescription" value="@Html.Raw(mtClothesSizeSearch.ShirtSizeDescription.EditValue)" size="30" maxlength="30" placeholder="@Html.Raw(HtmlEncode(mtClothesSizeSearch.ShirtSizeDescription.PlaceHolder))" data-format-pattern="@(mtClothesSizeSearch.ShirtSizeDescription.FormatPattern)"@Html.Raw(mtClothesSizeSearch.ShirtSizeDescription.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch.ShirtSizeDescription.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch.ShirtSizeDescription.Visible (end) *@
+@if (mtClothesSizeSearch.TrouserSizeDescription.Visible) { // mtClothesSizeSearch.TrouserSizeDescription.Visible (begin)
+    <div id="r_TrouserSizeDescription" class="row" @Html.Raw(mtClothesSizeSearch.TrouserSizeDescription.RowAttributes)>
+        <label for="x_TrouserSizeDescription" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize_TrouserSizeDescription">@Html.Raw(mtClothesSizeSearch.TrouserSizeDescription.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_TrouserSizeDescription" id="z_TrouserSizeDescription" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch.TrouserSizeDescription.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize_TrouserSizeDescription" class="ew-search-field ew-search-field-single">
+<input type="@(mtClothesSizeSearch.TrouserSizeDescription.InputTextType)" name="x_TrouserSizeDescription" id="x_TrouserSizeDescription" data-table="MTClothesSize" data-field="x_TrouserSizeDescription" value="@Html.Raw(mtClothesSizeSearch.TrouserSizeDescription.EditValue)" size="30" maxlength="30" placeholder="@Html.Raw(HtmlEncode(mtClothesSizeSearch.TrouserSizeDescription.PlaceHolder))" data-format-pattern="@(mtClothesSizeSearch.TrouserSizeDescription.FormatPattern)"@Html.Raw(mtClothesSizeSearch.TrouserSizeDescription.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch.TrouserSizeDescription.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch.TrouserSizeDescription.Visible (end) *@
+@if (mtClothesSizeSearch.CreatedByUserID.Visible) { // mtClothesSizeSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtClothesSizeSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize_CreatedByUserID">@Html.Raw(mtClothesSizeSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtClothesSizeSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTClothesSizesearch_x_CreatedByUserID"
+        data-table="MTClothesSize"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtClothesSizeSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtClothesSizeSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtClothesSizeSearch.CreatedByUserID.EditAttributes)>
+        @(mtClothesSizeSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtClothesSizeSearch.CreatedByUserID.Lookup.GetParamTag(mtClothesSizeSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTClothesSizesearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTClothesSizesearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTClothesSizesearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTClothesSizesearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTClothesSizesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTClothesSize.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch.CreatedByUserID.Visible (end) *@
+@if (mtClothesSizeSearch.CreatedDateTime.Visible) { // mtClothesSizeSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtClothesSizeSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize_CreatedDateTime">@Html.Raw(mtClothesSizeSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtClothesSizeSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTClothesSize" data-field="x_CreatedDateTime" value="@Html.Raw(mtClothesSizeSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtClothesSizeSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtClothesSizeSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtClothesSizeSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtClothesSizeSearch.CreatedDateTime.ReadOnly && !mtClothesSizeSearch.CreatedDateTime.Disabled && !mtClothesSizeSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtClothesSizeSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTClothesSizesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTClothesSizesearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch.CreatedDateTime.Visible (end) *@
+@if (mtClothesSizeSearch.LastUpdatedByUserID.Visible) { // mtClothesSizeSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtClothesSizeSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize_LastUpdatedByUserID">@Html.Raw(mtClothesSizeSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtClothesSizeSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTClothesSizesearch_x_LastUpdatedByUserID"
+        data-table="MTClothesSize"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtClothesSizeSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtClothesSizeSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtClothesSizeSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtClothesSizeSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtClothesSizeSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtClothesSizeSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTClothesSizesearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTClothesSizesearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTClothesSizesearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTClothesSizesearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTClothesSizesearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTClothesSize.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtClothesSizeSearch.LastUpdatedDateTime.Visible) { // mtClothesSizeSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtClothesSizeSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtClothesSizeSearch.LeftColumnClass)"><span id="elh_MTClothesSize_LastUpdatedDateTime">@Html.Raw(mtClothesSizeSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtClothesSizeSearch.RightColumnClass)">
+            <div @Html.Raw(mtClothesSizeSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTClothesSize_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtClothesSizeSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTClothesSize" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtClothesSizeSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtClothesSizeSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtClothesSizeSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtClothesSizeSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtClothesSizeSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtClothesSizeSearch.LastUpdatedDateTime.ReadOnly && !mtClothesSizeSearch.LastUpdatedDateTime.Disabled && !mtClothesSizeSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtClothesSizeSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTClothesSizesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTClothesSizesearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtClothesSizeSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtClothesSizeSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtClothesSizeSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTClothesSizesearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtClothesSizeSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTClothesSizesearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTClothesSizesearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtClothesSizeSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtClothesSizeSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTClothesSize");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

@@ -1,0 +1,1373 @@
+@{
+    // View
+    View = this;
+
+    // Set up CurrentGrid
+    CurrentGrid = mtCrewDocumentGrid;
+
+    // Run
+    await mtCrewDocumentGrid.Run();
+
+    // Check action result
+    if (mtCrewDocumentGrid.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewDocumentGrid.IsExport()) {
+<script>
+var fMTCrewDocumentgrid;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let currentTable = @Html.Raw(ConvertToJson(mtCrewDocumentGrid.ToClientVar()));
+    ew.deepAssign(ew.vars, { tables: { MTCrewDocument: currentTable } });
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewDocumentgrid")
+        .setPageId("grid")
+        .setFormKeyCountName("@(mtCrewDocumentGrid.FormKeyCountName)")
+
+        // Add fields
+        .setFields([
+
+            ["IsDraft", [fields.IsDraft.visible && fields.IsDraft.required ? ew.Validators.required(fields.IsDraft.caption) : null], fields.IsDraft.isInvalid],
+            ["MTCrewID", [fields.MTCrewID.visible && fields.MTCrewID.required ? ew.Validators.required(fields.MTCrewID.caption) : null], fields.MTCrewID.isInvalid],
+            ["MTDocumentID", [fields.MTDocumentID.visible && fields.MTDocumentID.required ? ew.Validators.required(fields.MTDocumentID.caption) : null], fields.MTDocumentID.isInvalid],
+            ["CountryOfIssue_CountryID", [fields.CountryOfIssue_CountryID.visible && fields.CountryOfIssue_CountryID.required ? ew.Validators.required(fields.CountryOfIssue_CountryID.caption) : null], fields.CountryOfIssue_CountryID.isInvalid],
+            ["Number", [fields.Number.visible && fields.Number.required ? ew.Validators.required(fields.Number.caption) : null], fields.Number.isInvalid],
+            ["DateOfIssue", [fields.DateOfIssue.visible && fields.DateOfIssue.required ? ew.Validators.required(fields.DateOfIssue.caption) : null, ew.Validators.datetime(fields.DateOfIssue.clientFormatPattern)], fields.DateOfIssue.isInvalid],
+            ["PlaceOfIssue", [fields.PlaceOfIssue.visible && fields.PlaceOfIssue.required ? ew.Validators.required(fields.PlaceOfIssue.caption) : null], fields.PlaceOfIssue.isInvalid],
+            ["DateValidUntil", [fields.DateValidUntil.visible && fields.DateValidUntil.required ? ew.Validators.required(fields.DateValidUntil.caption) : null, ew.Validators.datetime(fields.DateValidUntil.clientFormatPattern)], fields.DateValidUntil.isInvalid],
+            ["Image", [fields.Image.visible && fields.Image.required ? ew.Validators.fileRequired(fields.Image.caption) : null], fields.Image.isInvalid],
+            ["CreatedByUserID", [fields.CreatedByUserID.visible && fields.CreatedByUserID.required ? ew.Validators.required(fields.CreatedByUserID.caption) : null], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [fields.LastUpdatedByUserID.visible && fields.LastUpdatedByUserID.required ? ew.Validators.required(fields.LastUpdatedByUserID.caption) : null], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [fields.LastUpdatedDateTime.visible && fields.LastUpdatedDateTime.required ? ew.Validators.required(fields.LastUpdatedDateTime.caption) : null, ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+
+        // Check empty row
+        .setEmptyRow(
+            function (rowIndex) {
+                let fobj = this.getForm(),
+                    fields = [["IsDraft",true],["MTCrewID",false],["MTDocumentID",false],["CountryOfIssue_CountryID",false],["Number",false],["DateOfIssue",false],["PlaceOfIssue",false],["DateValidUntil",false],["Image",false],["CreatedByUserID",false],["CreatedDateTime",false],["LastUpdatedByUserID",false],["LastUpdatedDateTime",false]];
+                if (fields.some(field => ew.valueChanged(fobj, rowIndex, ...field)))
+                    return false;
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IsDraft": @Html.Raw(mtCrewDocumentGrid.IsDraft.ToClientList(mtCrewDocumentGrid)),
+            "MTCrewID": @Html.Raw(mtCrewDocumentGrid.MTCrewID.ToClientList(mtCrewDocumentGrid)),
+            "MTDocumentID": @Html.Raw(mtCrewDocumentGrid.MTDocumentID.ToClientList(mtCrewDocumentGrid)),
+            "CountryOfIssue_CountryID": @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.ToClientList(mtCrewDocumentGrid)),
+            "CreatedByUserID": @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.ToClientList(mtCrewDocumentGrid)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.ToClientList(mtCrewDocumentGrid)),
+        })
+        .build();
+    window[form.id] = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+<main class="list">
+<div id="ew-list">
+@if (mtCrewDocumentGrid.TotalRecords > 0 || !Empty(mtCrewDocumentGrid.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCrewDocumentGrid.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCrewDocumentGrid.TableGridClass)">
+<div id="fMTCrewDocumentgrid" class="ew-form ew-list-form">
+<div id="gmp_MTCrewDocument" class="card-body ew-grid-middle-panel @(mtCrewDocumentGrid.TableContainerClass)" style="@(mtCrewDocumentGrid.TableContainerStyle)">
+<table id="tbl_MTCrewDocumentgrid" class="@(mtCrewDocumentGrid.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCrewDocumentGrid.RowType = RowType.Header;
+
+    // Render list options
+    await mtCrewDocumentGrid.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCrewDocumentGrid.ListOptions.RenderHeader("left")
+@if (mtCrewDocumentGrid.IsDraft.Visible) { // mtCrewDocumentGrid.IsDraft.Visible (begin)
+        <th data-name="IsDraft" class="@(mtCrewDocumentGrid.IsDraft.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_IsDraft" class="MTCrewDocument_IsDraft">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.IsDraft))</div></th>
+} @* mtCrewDocumentGrid.IsDraft.Visible (end) *@
+@if (mtCrewDocumentGrid.MTCrewID.Visible) { // mtCrewDocumentGrid.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtCrewDocumentGrid.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_MTCrewID" class="MTCrewDocument_MTCrewID">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.MTCrewID))</div></th>
+} @* mtCrewDocumentGrid.MTCrewID.Visible (end) *@
+@if (mtCrewDocumentGrid.MTDocumentID.Visible) { // mtCrewDocumentGrid.MTDocumentID.Visible (begin)
+        <th data-name="MTDocumentID" class="@(mtCrewDocumentGrid.MTDocumentID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_MTDocumentID" class="MTCrewDocument_MTDocumentID">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.MTDocumentID))</div></th>
+} @* mtCrewDocumentGrid.MTDocumentID.Visible (end) *@
+@if (mtCrewDocumentGrid.CountryOfIssue_CountryID.Visible) { // mtCrewDocumentGrid.CountryOfIssue_CountryID.Visible (begin)
+        <th data-name="CountryOfIssue_CountryID" class="@(mtCrewDocumentGrid.CountryOfIssue_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_CountryOfIssue_CountryID" class="MTCrewDocument_CountryOfIssue_CountryID">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.CountryOfIssue_CountryID))</div></th>
+} @* mtCrewDocumentGrid.CountryOfIssue_CountryID.Visible (end) *@
+@if (mtCrewDocumentGrid.Number.Visible) { // mtCrewDocumentGrid.Number.Visible (begin)
+        <th data-name="Number" class="@(mtCrewDocumentGrid.Number.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_Number" class="MTCrewDocument_Number">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.Number))</div></th>
+} @* mtCrewDocumentGrid.Number.Visible (end) *@
+@if (mtCrewDocumentGrid.DateOfIssue.Visible) { // mtCrewDocumentGrid.DateOfIssue.Visible (begin)
+        <th data-name="DateOfIssue" class="@(mtCrewDocumentGrid.DateOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_DateOfIssue" class="MTCrewDocument_DateOfIssue">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.DateOfIssue))</div></th>
+} @* mtCrewDocumentGrid.DateOfIssue.Visible (end) *@
+@if (mtCrewDocumentGrid.PlaceOfIssue.Visible) { // mtCrewDocumentGrid.PlaceOfIssue.Visible (begin)
+        <th data-name="PlaceOfIssue" class="@(mtCrewDocumentGrid.PlaceOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_PlaceOfIssue" class="MTCrewDocument_PlaceOfIssue">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.PlaceOfIssue))</div></th>
+} @* mtCrewDocumentGrid.PlaceOfIssue.Visible (end) *@
+@if (mtCrewDocumentGrid.DateValidUntil.Visible) { // mtCrewDocumentGrid.DateValidUntil.Visible (begin)
+        <th data-name="DateValidUntil" class="@(mtCrewDocumentGrid.DateValidUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_DateValidUntil" class="MTCrewDocument_DateValidUntil">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.DateValidUntil))</div></th>
+} @* mtCrewDocumentGrid.DateValidUntil.Visible (end) *@
+@if (mtCrewDocumentGrid.Image.Visible) { // mtCrewDocumentGrid.Image.Visible (begin)
+        <th data-name="Image" class="@(mtCrewDocumentGrid.Image.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_Image" class="MTCrewDocument_Image">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.Image))</div></th>
+} @* mtCrewDocumentGrid.Image.Visible (end) *@
+@if (mtCrewDocumentGrid.CreatedByUserID.Visible) { // mtCrewDocumentGrid.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCrewDocumentGrid.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_CreatedByUserID" class="MTCrewDocument_CreatedByUserID">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.CreatedByUserID))</div></th>
+} @* mtCrewDocumentGrid.CreatedByUserID.Visible (end) *@
+@if (mtCrewDocumentGrid.CreatedDateTime.Visible) { // mtCrewDocumentGrid.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCrewDocumentGrid.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_CreatedDateTime" class="MTCrewDocument_CreatedDateTime">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.CreatedDateTime))</div></th>
+} @* mtCrewDocumentGrid.CreatedDateTime.Visible (end) *@
+@if (mtCrewDocumentGrid.LastUpdatedByUserID.Visible) { // mtCrewDocumentGrid.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCrewDocumentGrid.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_LastUpdatedByUserID" class="MTCrewDocument_LastUpdatedByUserID">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.LastUpdatedByUserID))</div></th>
+} @* mtCrewDocumentGrid.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewDocumentGrid.LastUpdatedDateTime.Visible) { // mtCrewDocumentGrid.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCrewDocumentGrid.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewDocument_LastUpdatedDateTime" class="MTCrewDocument_LastUpdatedDateTime">@Html.Raw(mtCrewDocumentGrid.RenderFieldHeader(mtCrewDocumentGrid.LastUpdatedDateTime))</div></th>
+} @* mtCrewDocumentGrid.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCrewDocumentGrid.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCrewDocumentGrid.PageNumber)">
+@{
+    await mtCrewDocumentGrid.SetupGrid();
+    bool eof = mtCrewDocumentGrid.Recordset == null; // DN
+}
+@while (mtCrewDocumentGrid.RecordCount < mtCrewDocumentGrid.StopRecord || SameString(mtCrewDocumentGrid.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCrewDocumentGrid.RowIndex, "$rowindex$") &&
+        (!mtCrewDocumentGrid.IsGridAdd || mtCrewDocumentGrid.CurrentMode == "copy") &&
+        (!((mtCrewDocumentGrid.IsCopy || mtCrewDocumentGrid.IsAdd) && mtCrewDocumentGrid.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCrewDocumentGrid.Recordset.ReadAsync();
+    mtCrewDocumentGrid.RecordCount++;
+    if (mtCrewDocumentGrid.RecordCount >= mtCrewDocumentGrid.StartRecord) {
+        await mtCrewDocumentGrid.SetupRow();
+
+        // Skip 1) delete row / empty row for confirm page, 2) hidden row
+        if (mtCrewDocumentGrid.RowAction != "delete" &&
+            mtCrewDocumentGrid.RowAction != "insertdelete" &&
+            !(mtCrewDocumentGrid.RowAction == "insert" && mtCrewDocumentGrid.IsConfirm && mtCrewDocumentGrid.EmptyRow()) &&
+            mtCrewDocumentGrid.RowAction != "hide") {
+    <tr @Html.Raw(mtCrewDocumentGrid.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCrewDocumentGrid.ListOptions.RenderBody("left", mtCrewDocumentGrid.RowCount)
+    @if (mtCrewDocumentGrid.IsDraft.Visible) { // mtCrewDocumentGrid.IsDraft.Visible (begin)
+        <td data-name="IsDraft" @Html.Raw(mtCrewDocumentGrid.IsDraft.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* IsDraft (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_IsDraft" class="el_MTCrewDocument_IsDraft">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_IsDraft"
+            name="x@(mtCrewDocumentGrid.RowIndex)_IsDraft"
+            class="form-select ew-select@(mtCrewDocumentGrid.IsDraft.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_IsDraft"
+            data-table="MTCrewDocument"
+            data-field="x_IsDraft"
+            data-value-separator="@(mtCrewDocumentGrid.IsDraft.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.IsDraft.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.IsDraft.EditAttributes)>
+            @(mtCrewDocumentGrid.IsDraft.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_IsDraft"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.IsDraft.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_IsDraft", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_IsDraft" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.IsDraft?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_IsDraft", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_IsDraft", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.IsDraft.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_IsDraft" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_IsDraft" id="o@(mtCrewDocumentGrid.RowIndex)_IsDraft" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.IsDraft.OldValue))">
+    @* IsDraft (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* IsDraft (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_IsDraft" class="el_MTCrewDocument_IsDraft">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_IsDraft"
+            name="x@(mtCrewDocumentGrid.RowIndex)_IsDraft"
+            class="form-select ew-select@(mtCrewDocumentGrid.IsDraft.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_IsDraft"
+            data-table="MTCrewDocument"
+            data-field="x_IsDraft"
+            data-value-separator="@(mtCrewDocumentGrid.IsDraft.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.IsDraft.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.IsDraft.EditAttributes)>
+            @(mtCrewDocumentGrid.IsDraft.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_IsDraft"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.IsDraft.GetErrorMessage())</div>
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_IsDraft", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_IsDraft" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.IsDraft?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_IsDraft", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_IsDraft", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.IsDraft.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* IsDraft (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* IsDraft (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_IsDraft" class="el_MTCrewDocument_IsDraft">
+    <span @Html.Raw(mtCrewDocumentGrid.IsDraft.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.IsDraft.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_IsDraft" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_IsDraft" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_IsDraft" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.IsDraft.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_IsDraft" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_IsDraft" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_IsDraft" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.IsDraft.OldValue))">
+    }
+    @* IsDraft (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.IsDraft.Visible (end) *@
+    @if (mtCrewDocumentGrid.MTCrewID.Visible) { // mtCrewDocumentGrid.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtCrewDocumentGrid.MTCrewID.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewDocumentGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewDocumentGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewDocumentGrid.MTCrewID.DisplayValue(mtCrewDocumentGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" name="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewDocumentGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_MTCrewID" class="el_MTCrewDocument_MTCrewID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewDocumentGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewDocument"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewDocumentGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.MTCrewID.EditAttributes)>
+            @(mtCrewDocumentGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.MTCrewID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_MTCrewID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTCrewID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTCrewID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_MTCrewID" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_MTCrewID" id="o@(mtCrewDocumentGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.MTCrewID.OldValue))">
+    @* MTCrewID (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewDocumentGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewDocumentGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewDocumentGrid.MTCrewID.DisplayValue(mtCrewDocumentGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" name="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewDocumentGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_MTCrewID" class="el_MTCrewDocument_MTCrewID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewDocumentGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewDocument"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewDocumentGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.MTCrewID.EditAttributes)>
+            @(mtCrewDocumentGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.MTCrewID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_MTCrewID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTCrewID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTCrewID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    @* MTCrewID (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* MTCrewID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_MTCrewID" class="el_MTCrewDocument_MTCrewID">
+    <span @Html.Raw(mtCrewDocumentGrid.MTCrewID.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.MTCrewID.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_MTCrewID" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.MTCrewID.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_MTCrewID" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_MTCrewID" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.MTCrewID.OldValue))">
+    }
+    @* MTCrewID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.MTCrewID.Visible (end) *@
+    @if (mtCrewDocumentGrid.MTDocumentID.Visible) { // mtCrewDocumentGrid.MTDocumentID.Visible (begin)
+        <td data-name="MTDocumentID" @Html.Raw(mtCrewDocumentGrid.MTDocumentID.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* MTDocumentID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_MTDocumentID" class="el_MTCrewDocument_MTDocumentID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID"
+            class="form-select ew-select@(mtCrewDocumentGrid.MTDocumentID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID"
+            data-table="MTCrewDocument"
+            data-field="x_MTDocumentID"
+            data-value-separator="@(mtCrewDocumentGrid.MTDocumentID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.MTDocumentID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.MTDocumentID.EditAttributes)>
+            @(mtCrewDocumentGrid.MTDocumentID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_MTDocumentID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.MTDocumentID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.MTDocumentID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_MTDocumentID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.MTDocumentID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.MTDocumentID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_MTDocumentID" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" id="o@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.MTDocumentID.OldValue))">
+    @* MTDocumentID (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MTDocumentID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_MTDocumentID" class="el_MTCrewDocument_MTDocumentID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID"
+            class="form-select ew-select@(mtCrewDocumentGrid.MTDocumentID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID"
+            data-table="MTCrewDocument"
+            data-field="x_MTDocumentID"
+            data-value-separator="@(mtCrewDocumentGrid.MTDocumentID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.MTDocumentID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.MTDocumentID.EditAttributes)>
+            @(mtCrewDocumentGrid.MTDocumentID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_MTDocumentID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.MTDocumentID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.MTDocumentID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_MTDocumentID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.MTDocumentID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumResultsForSearch = Infinity;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.MTDocumentID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* MTDocumentID (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* MTDocumentID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_MTDocumentID" class="el_MTCrewDocument_MTDocumentID">
+    <span @Html.Raw(mtCrewDocumentGrid.MTDocumentID.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.MTDocumentID.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_MTDocumentID" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.MTDocumentID.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_MTDocumentID" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_MTDocumentID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.MTDocumentID.OldValue))">
+    }
+    @* MTDocumentID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.MTDocumentID.Visible (end) *@
+    @if (mtCrewDocumentGrid.CountryOfIssue_CountryID.Visible) { // mtCrewDocumentGrid.CountryOfIssue_CountryID.Visible (begin)
+        <td data-name="CountryOfIssue_CountryID" @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* CountryOfIssue_CountryID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CountryOfIssue_CountryID" class="el_MTCrewDocument_CountryOfIssue_CountryID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID"
+            class="form-select ew-select@(mtCrewDocumentGrid.CountryOfIssue_CountryID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID"
+            data-table="MTCrewDocument"
+            data-field="x_CountryOfIssue_CountryID"
+            data-value-separator="@(mtCrewDocumentGrid.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.CountryOfIssue_CountryID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.EditAttributes)>
+            @(mtCrewDocumentGrid.CountryOfIssue_CountryID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_CountryOfIssue_CountryID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_CountryOfIssue_CountryID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.CountryOfIssue_CountryID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.CountryOfIssue_CountryID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CountryOfIssue_CountryID" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" id="o@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CountryOfIssue_CountryID.OldValue))">
+    @* CountryOfIssue_CountryID (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CountryOfIssue_CountryID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CountryOfIssue_CountryID" class="el_MTCrewDocument_CountryOfIssue_CountryID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID"
+            class="form-select ew-select@(mtCrewDocumentGrid.CountryOfIssue_CountryID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID"
+            data-table="MTCrewDocument"
+            data-field="x_CountryOfIssue_CountryID"
+            data-value-separator="@(mtCrewDocumentGrid.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.CountryOfIssue_CountryID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.EditAttributes)>
+            @(mtCrewDocumentGrid.CountryOfIssue_CountryID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_CountryOfIssue_CountryID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_CountryOfIssue_CountryID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.CountryOfIssue_CountryID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.CountryOfIssue_CountryID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* CountryOfIssue_CountryID (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* CountryOfIssue_CountryID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CountryOfIssue_CountryID" class="el_MTCrewDocument_CountryOfIssue_CountryID">
+    <span @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.CountryOfIssue_CountryID.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CountryOfIssue_CountryID" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CountryOfIssue_CountryID.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CountryOfIssue_CountryID" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_CountryOfIssue_CountryID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CountryOfIssue_CountryID.OldValue))">
+    }
+    @* CountryOfIssue_CountryID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.CountryOfIssue_CountryID.Visible (end) *@
+    @if (mtCrewDocumentGrid.Number.Visible) { // mtCrewDocumentGrid.Number.Visible (begin)
+        <td data-name="Number" @Html.Raw(mtCrewDocumentGrid.Number.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* Number (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_Number" class="el_MTCrewDocument_Number">
+    <input type="@(mtCrewDocumentGrid.Number.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_Number" id="x@(mtCrewDocumentGrid.RowIndex)_Number" data-table="MTCrewDocument" data-field="x_Number" value="@Html.Raw(mtCrewDocumentGrid.Number.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.Number.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.Number.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.Number.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.Number.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_Number" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_Number" id="o@(mtCrewDocumentGrid.RowIndex)_Number" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.Number.OldValue))">
+    @* Number (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Number (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_Number" class="el_MTCrewDocument_Number">
+    <input type="@(mtCrewDocumentGrid.Number.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_Number" id="x@(mtCrewDocumentGrid.RowIndex)_Number" data-table="MTCrewDocument" data-field="x_Number" value="@Html.Raw(mtCrewDocumentGrid.Number.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.Number.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.Number.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.Number.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.Number.GetErrorMessage())</div>
+    </span>
+    @* Number (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* Number (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_Number" class="el_MTCrewDocument_Number">
+    <span @Html.Raw(mtCrewDocumentGrid.Number.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.Number.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_Number" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_Number" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_Number" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.Number.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_Number" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_Number" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_Number" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.Number.OldValue))">
+    }
+    @* Number (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.Number.Visible (end) *@
+    @if (mtCrewDocumentGrid.DateOfIssue.Visible) { // mtCrewDocumentGrid.DateOfIssue.Visible (begin)
+        <td data-name="DateOfIssue" @Html.Raw(mtCrewDocumentGrid.DateOfIssue.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* DateOfIssue (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_DateOfIssue" class="el_MTCrewDocument_DateOfIssue">
+    <input type="@(mtCrewDocumentGrid.DateOfIssue.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" id="x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" data-table="MTCrewDocument" data-field="x_DateOfIssue" value="@Html.Raw(mtCrewDocumentGrid.DateOfIssue.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.DateOfIssue.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.DateOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.DateOfIssue.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.DateOfIssue.ReadOnly && !mtCrewDocumentGrid.DateOfIssue.Disabled && !mtCrewDocumentGrid.DateOfIssue.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.DateOfIssue.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_DateOfIssue" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" id="o@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateOfIssue.OldValue))">
+    @* DateOfIssue (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* DateOfIssue (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_DateOfIssue" class="el_MTCrewDocument_DateOfIssue">
+    <input type="@(mtCrewDocumentGrid.DateOfIssue.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" id="x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" data-table="MTCrewDocument" data-field="x_DateOfIssue" value="@Html.Raw(mtCrewDocumentGrid.DateOfIssue.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.DateOfIssue.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.DateOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.DateOfIssue.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.DateOfIssue.ReadOnly && !mtCrewDocumentGrid.DateOfIssue.Disabled && !mtCrewDocumentGrid.DateOfIssue.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.DateOfIssue.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* DateOfIssue (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* DateOfIssue (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_DateOfIssue" class="el_MTCrewDocument_DateOfIssue">
+    <span @Html.Raw(mtCrewDocumentGrid.DateOfIssue.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.DateOfIssue.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_DateOfIssue" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateOfIssue.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_DateOfIssue" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_DateOfIssue" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateOfIssue.OldValue))">
+    }
+    @* DateOfIssue (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.DateOfIssue.Visible (end) *@
+    @if (mtCrewDocumentGrid.PlaceOfIssue.Visible) { // mtCrewDocumentGrid.PlaceOfIssue.Visible (begin)
+        <td data-name="PlaceOfIssue" @Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* PlaceOfIssue (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_PlaceOfIssue" class="el_MTCrewDocument_PlaceOfIssue">
+    <input type="@(mtCrewDocumentGrid.PlaceOfIssue.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" id="x@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" data-table="MTCrewDocument" data-field="x_PlaceOfIssue" value="@Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.PlaceOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.PlaceOfIssue.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_PlaceOfIssue" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" id="o@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.PlaceOfIssue.OldValue))">
+    @* PlaceOfIssue (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* PlaceOfIssue (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_PlaceOfIssue" class="el_MTCrewDocument_PlaceOfIssue">
+    <input type="@(mtCrewDocumentGrid.PlaceOfIssue.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" id="x@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" data-table="MTCrewDocument" data-field="x_PlaceOfIssue" value="@Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.PlaceOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.PlaceOfIssue.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.GetErrorMessage())</div>
+    </span>
+    @* PlaceOfIssue (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* PlaceOfIssue (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_PlaceOfIssue" class="el_MTCrewDocument_PlaceOfIssue">
+    <span @Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.PlaceOfIssue.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_PlaceOfIssue" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.PlaceOfIssue.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_PlaceOfIssue" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_PlaceOfIssue" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.PlaceOfIssue.OldValue))">
+    }
+    @* PlaceOfIssue (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.PlaceOfIssue.Visible (end) *@
+    @if (mtCrewDocumentGrid.DateValidUntil.Visible) { // mtCrewDocumentGrid.DateValidUntil.Visible (begin)
+        <td data-name="DateValidUntil" @Html.Raw(mtCrewDocumentGrid.DateValidUntil.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* DateValidUntil (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_DateValidUntil" class="el_MTCrewDocument_DateValidUntil">
+    <input type="@(mtCrewDocumentGrid.DateValidUntil.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" id="x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" data-table="MTCrewDocument" data-field="x_DateValidUntil" value="@Html.Raw(mtCrewDocumentGrid.DateValidUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateValidUntil.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.DateValidUntil.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.DateValidUntil.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.DateValidUntil.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.DateValidUntil.ReadOnly && !mtCrewDocumentGrid.DateValidUntil.Disabled && !mtCrewDocumentGrid.DateValidUntil.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.DateValidUntil.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_DateValidUntil" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" id="o@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateValidUntil.OldValue))">
+    @* DateValidUntil (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* DateValidUntil (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_DateValidUntil" class="el_MTCrewDocument_DateValidUntil">
+    <input type="@(mtCrewDocumentGrid.DateValidUntil.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" id="x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" data-table="MTCrewDocument" data-field="x_DateValidUntil" value="@Html.Raw(mtCrewDocumentGrid.DateValidUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateValidUntil.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.DateValidUntil.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.DateValidUntil.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.DateValidUntil.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.DateValidUntil.ReadOnly && !mtCrewDocumentGrid.DateValidUntil.Disabled && !mtCrewDocumentGrid.DateValidUntil.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.DateValidUntil.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* DateValidUntil (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* DateValidUntil (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_DateValidUntil" class="el_MTCrewDocument_DateValidUntil">
+    <span @Html.Raw(mtCrewDocumentGrid.DateValidUntil.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.DateValidUntil.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_DateValidUntil" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateValidUntil.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_DateValidUntil" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_DateValidUntil" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.DateValidUntil.OldValue))">
+    }
+    @* DateValidUntil (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.DateValidUntil.Visible (end) *@
+    @if (mtCrewDocumentGrid.Image.Visible) { // mtCrewDocumentGrid.Image.Visible (begin)
+        <td data-name="Image" @Html.Raw(mtCrewDocumentGrid.Image.CellAttributes)>
+@if (mtCrewDocumentGrid.RowAction == "insert") { // Add (begin)
+    @* Image (begin) *@
+    @if (!mtCrewDocumentGrid.IsConfirm) { // Image (begin)
+    <span id="el@(mtCrewDocumentGrid.RowIndex)_MTCrewDocument_Image" class="el_MTCrewDocument_Image">
+    <div id="fd_x@(mtCrewDocumentGrid.RowIndex)_Image" class="fileinput-button ew-file-drop-zone">
+        <input
+            type="file"
+            id="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            name="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            class="form-control ew-file-input"
+            title="@(mtCrewDocumentGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewDocument"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewDocumentGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewDocumentGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewDocumentGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw((mtCrewDocumentGrid.Image.ReadOnly || mtCrewDocumentGrid.Image.Disabled) ? " disabled" : "")
+            @Html.Raw(mtCrewDocumentGrid.Image.EditAttributes)
+        >
+        <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fn_x@(mtCrewDocumentGrid.RowIndex)_Image" value="@(mtCrewDocumentGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fa_x@(mtCrewDocumentGrid.RowIndex)_Image" value="0">
+    <table id="ft_x@(mtCrewDocumentGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } else { // Image (confirm)
+    <span id="el@(mtCrewDocumentGrid.RowIndex)_MTCrewDocument_Image" class="el_MTCrewDocument_Image">
+    <div id="fd_x@(mtCrewDocumentGrid.RowIndex)_Image">
+        <input
+            type="file"
+            id="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            name="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            class="form-control ew-file-input d-none"
+            title="@(mtCrewDocumentGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewDocument"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewDocumentGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewDocumentGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewDocumentGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw(mtCrewDocumentGrid.Image.EditAttributes)
+        >
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fn_x@(mtCrewDocumentGrid.RowIndex)_Image" value="@(mtCrewDocumentGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fa_x@(mtCrewDocumentGrid.RowIndex)_Image" value="0">
+    <table id="ft_x@(mtCrewDocumentGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } @* Image (end) *@
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_Image" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_Image" id="o@(mtCrewDocumentGrid.RowIndex)_Image" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.Image.OldValue))">
+    @* Image (end) *@
+} else if (mtCrewDocumentGrid.RowType == RowType.View) { // View record
+    @* Image (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_Image" class="el_MTCrewDocument_Image">
+    <span @Html.Raw(mtCrewDocumentGrid.Image.ViewAttributes)>@{
+    	var individualCodeNumber = ConvertToString(mtCrewDocumentList.Image.GetViewValue()).Split('-')[0];
+    }
+    <a href="uploads/@individualCodeNumber/@ConvertToString(mtCrewDocumentList.Image.GetViewValue())" target="_blank">Attachment</a>
+    </span>
+    </span>
+    @* Image (end) *@
+} else  { // Edit (begin)
+    @* Image (begin) *@
+    @if (!mtCrewDocumentGrid.IsConfirm) { // Image (begin)
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_Image" class="el_MTCrewDocument_Image">
+    <div id="fd_x@(mtCrewDocumentGrid.RowIndex)_Image">
+        <input
+            type="file"
+            id="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            name="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            class="form-control ew-file-input d-none"
+            title="@(mtCrewDocumentGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewDocument"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewDocumentGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewDocumentGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewDocumentGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw(mtCrewDocumentGrid.Image.EditAttributes)
+        >
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fn_x@(mtCrewDocumentGrid.RowIndex)_Image" value="@(mtCrewDocumentGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fa_x@(mtCrewDocumentGrid.RowIndex)_Image" value="@(Post("fa_x" + mtCrewDocumentGrid.RowIndex + "_Image") == "0" ? "0" : "1")">
+    <table id="ft_x@(mtCrewDocumentGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } else { // Image (confirm)
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_Image" class="el_MTCrewDocument_Image">
+    <div id="fd_x@(mtCrewDocumentGrid.RowIndex)_Image">
+        <input
+            type="file"
+            id="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            name="x@(mtCrewDocumentGrid.RowIndex)_Image"
+            class="form-control ew-file-input d-none"
+            title="@(mtCrewDocumentGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewDocument"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewDocumentGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewDocumentGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewDocumentGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw(mtCrewDocumentGrid.Image.EditAttributes)
+        >
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fn_x@(mtCrewDocumentGrid.RowIndex)_Image" value="@(mtCrewDocumentGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewDocumentGrid.RowIndex)_Image" id= "fa_x@(mtCrewDocumentGrid.RowIndex)_Image" value="@(Post("fa_x" + mtCrewDocumentGrid.RowIndex + "_Image") == "0" ? "0" : "1")">
+    <table id="ft_x@(mtCrewDocumentGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } @* Image (end) *@
+    @* Image (end) *@
+} @* Add/Edit (end) *@
+</td>
+    } @* mtCrewDocumentGrid.Image.Visible (end) *@
+    @if (mtCrewDocumentGrid.CreatedByUserID.Visible) { // mtCrewDocumentGrid.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CreatedByUserID" class="el_MTCrewDocument_CreatedByUserID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewDocumentGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewDocument"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewDocumentGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewDocumentGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CreatedByUserID" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" id="o@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedByUserID.OldValue))">
+    @* CreatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CreatedByUserID" class="el_MTCrewDocument_CreatedByUserID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewDocumentGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewDocument"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewDocumentGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewDocumentGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* CreatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CreatedByUserID" class="el_MTCrewDocument_CreatedByUserID">
+    <span @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.CreatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CreatedByUserID" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CreatedByUserID" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedByUserID.OldValue))">
+    }
+    @* CreatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.CreatedByUserID.Visible (end) *@
+    @if (mtCrewDocumentGrid.CreatedDateTime.Visible) { // mtCrewDocumentGrid.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewDocumentGrid.CreatedDateTime.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CreatedDateTime" class="el_MTCrewDocument_CreatedDateTime">
+    <input type="@(mtCrewDocumentGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" data-table="MTCrewDocument" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewDocumentGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.CreatedDateTime.ReadOnly && !mtCrewDocumentGrid.CreatedDateTime.Disabled && !mtCrewDocumentGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CreatedDateTime" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" id="o@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedDateTime.OldValue))">
+    @* CreatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CreatedDateTime" class="el_MTCrewDocument_CreatedDateTime">
+    <input type="@(mtCrewDocumentGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" data-table="MTCrewDocument" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewDocumentGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.CreatedDateTime.ReadOnly && !mtCrewDocumentGrid.CreatedDateTime.Disabled && !mtCrewDocumentGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* CreatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_CreatedDateTime" class="el_MTCrewDocument_CreatedDateTime">
+    <span @Html.Raw(mtCrewDocumentGrid.CreatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.CreatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CreatedDateTime" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_CreatedDateTime" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.CreatedDateTime.OldValue))">
+    }
+    @* CreatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.CreatedDateTime.Visible (end) *@
+    @if (mtCrewDocumentGrid.LastUpdatedByUserID.Visible) { // mtCrewDocumentGrid.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_LastUpdatedByUserID" class="el_MTCrewDocument_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewDocumentGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewDocument"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewDocumentGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewDocumentGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" id="o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedByUserID.OldValue))">
+    @* LastUpdatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_LastUpdatedByUserID" class="el_MTCrewDocument_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewDocumentGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewDocument"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewDocumentGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewDocumentGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewDocumentGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewDocumentGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewDocumentGrid, "p_x" + mtCrewDocumentGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewDocumentgrid", function() {
+        var options = { name: "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewDocumentgrid_x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewDocumentgrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewDocumentgrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewDocumentgrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewDocument.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* LastUpdatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_LastUpdatedByUserID" class="el_MTCrewDocument_LastUpdatedByUserID">
+    <span @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.LastUpdatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_LastUpdatedByUserID" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedByUserID.OldValue))">
+    }
+    @* LastUpdatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCrewDocumentGrid.LastUpdatedDateTime.Visible) { // mtCrewDocumentGrid.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.CellAttributes)>
+@if (mtCrewDocumentGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_LastUpdatedDateTime" class="el_MTCrewDocument_LastUpdatedDateTime">
+    <input type="@(mtCrewDocumentGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewDocument" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.LastUpdatedDateTime.ReadOnly && !mtCrewDocumentGrid.LastUpdatedDateTime.Disabled && !mtCrewDocumentGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" id="o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedDateTime.OldValue))">
+    @* LastUpdatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_LastUpdatedDateTime" class="el_MTCrewDocument_LastUpdatedDateTime">
+    <input type="@(mtCrewDocumentGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewDocument" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewDocumentGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewDocumentGrid.LastUpdatedDateTime.ReadOnly && !mtCrewDocumentGrid.LastUpdatedDateTime.Disabled && !mtCrewDocumentGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewDocumentGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewDocumentgrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewDocumentgrid", "x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* LastUpdatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewDocumentGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewDocumentGrid.RowCount)_MTCrewDocument_LastUpdatedDateTime" class="el_MTCrewDocument_LastUpdatedDateTime">
+    <span @Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewDocumentGrid.LastUpdatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewDocumentGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_LastUpdatedDateTime" data-hidden="1" name="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewDocumentgrid$x@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewDocument" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewDocumentgrid$o@(mtCrewDocumentGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewDocumentGrid.LastUpdatedDateTime.OldValue))">
+    }
+    @* LastUpdatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewDocumentGrid.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCrewDocumentGrid.ListOptions.RenderBody("right", mtCrewDocumentGrid.RowCount)
+    </tr>
+if (mtCrewDocumentGrid.RowType == RowType.Add || mtCrewDocumentGrid.RowType == RowType.Edit) {
+<script>
+loadjs.ready(["fMTCrewDocumentgrid","load"], () => fMTCrewDocumentgrid.updateLists(@(mtCrewDocumentGrid.RowIndex)@(mtCrewDocumentGrid.IsAdd || mtCrewDocumentGrid.IsEdit || mtCrewDocumentGrid.IsCopy || SameString(mtCrewDocumentGrid.RowIndex, "$rowindex$") ? ", true" : "")));
+</script>
+}
+    } @* End delete row checking *@
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCrewDocumentGrid.RowIndex, "$rowindex$"))
+        mtCrewDocumentGrid.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCrewDocumentGrid.IsCopy || mtCrewDocumentGrid.IsAdd) && mtCrewDocumentGrid.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCrewDocumentGrid.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+@if (mtCrewDocumentGrid.CurrentMode == "add" || mtCrewDocumentGrid.CurrentMode == "copy") {
+<input type="hidden" name="@(mtCrewDocumentGrid.FormKeyCountName)" id="@(mtCrewDocumentGrid.FormKeyCountName)" value="@(mtCrewDocumentGrid.KeyCount)">
+@Html.Raw(mtCrewDocumentGrid.MultiSelectKey)
+}
+@if (mtCrewDocumentGrid.CurrentMode == "edit") {
+<input type="hidden" name="@(mtCrewDocumentGrid.FormKeyCountName)" id="@(mtCrewDocumentGrid.FormKeyCountName)" value="@(mtCrewDocumentGrid.KeyCount)">
+@Html.Raw(mtCrewDocumentGrid.MultiSelectKey)
+}
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCrewDocumentGrid.CurrentMode)) {
+<input type="hidden" name="action" id="action" value="">
+}
+<input type="hidden" name="detailpage" value="fMTCrewDocumentgrid">
+</div><!-- /.ew-list-form -->
+@{ mtCrewDocumentGrid.CloseRecordset(); }
+@if (mtCrewDocumentGrid.ShowOtherOptions) {
+<div class="card-footer ew-grid-lower-panel">
+    @mtCrewDocumentGrid.OtherOptions.RenderBody("bottom")
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCrewDocumentGrid.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@if (!mtCrewDocumentGrid.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewDocument");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}
+@{
+    // Close Recordset
+    mtCrewDocumentGrid.CloseRecordset(); // DN
+    // Clear CurrentGrid
+    CurrentGrid = null;
+}

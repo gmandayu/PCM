@@ -1,0 +1,615 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtCrewMedicalHistorySearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtCrewMedicalHistorySearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtCrewMedicalHistorySearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTCrewMedicalHistory: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTCrewMedicalHistorysearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewMedicalHistorysearch")
+        .setPageId("search")
+@if (mtCrewMedicalHistorySearch.IsModal && mtCrewMedicalHistorySearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["_Type", [], fields._Type.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["DateOccurence", [ew.Validators.datetime(fields.DateOccurence.clientFormatPattern)], fields.DateOccurence.isInvalid],
+            ["PlaceOccurence", [], fields.PlaceOccurence.isInvalid],
+            ["PeriodOfDisability", [], fields.PeriodOfDisability.isInvalid],
+            ["PresentCondition", [], fields.PresentCondition.isInvalid],
+            ["Treatment", [], fields.Treatment.isInvalid],
+            ["Details", [], fields.Details.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewMedicalHistorySearch.MTCrewID.ToClientList(mtCrewMedicalHistorySearch)),
+            "_Type": @Html.Raw(mtCrewMedicalHistorySearch._Type.ToClientList(mtCrewMedicalHistorySearch)),
+            "CreatedByUserID": @Html.Raw(mtCrewMedicalHistorySearch.CreatedByUserID.ToClientList(mtCrewMedicalHistorySearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedByUserID.ToClientList(mtCrewMedicalHistorySearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtCrewMedicalHistorySearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtCrewMedicalHistorySearch.ShowPageHeader()
+@mtCrewMedicalHistorySearch.ShowMessages()
+<form name="fMTCrewMedicalHistorysearch" id="fMTCrewMedicalHistorysearch" class="@(mtCrewMedicalHistorySearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtCrewMedicalHistorySearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtCrewMedicalHistorySearch.MTCrewID.Visible) { // mtCrewMedicalHistorySearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(mtCrewMedicalHistorySearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_MTCrewID">@Html.Raw(mtCrewMedicalHistorySearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_MTCrewID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_MTCrewID"
+        name="x_MTCrewID"
+        class="form-select ew-select@(mtCrewMedicalHistorySearch.MTCrewID.IsInvalidClass)"
+        data-select2-id="fMTCrewMedicalHistorysearch_x_MTCrewID"
+        data-table="MTCrewMedicalHistory"
+        data-field="x_MTCrewID"
+        data-value-separator="@(mtCrewMedicalHistorySearch.MTCrewID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewMedicalHistorySearch.MTCrewID.PlaceHolder))"
+        @Html.Raw(mtCrewMedicalHistorySearch.MTCrewID.EditAttributes)>
+        @(mtCrewMedicalHistorySearch.MTCrewID.SelectOptionListHtml("x_MTCrewID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.MTCrewID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewMedicalHistorySearch.MTCrewID.Lookup.GetParamTag(mtCrewMedicalHistorySearch, "p_x_MTCrewID"))
+<script>
+loadjs.ready("fMTCrewMedicalHistorysearch", function() {
+    var options = { name: "x_MTCrewID", selectId: "fMTCrewMedicalHistorysearch_x_MTCrewID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewMedicalHistorysearch.lists.MTCrewID?.lookupOptions.length) {
+        options.data = { id: "x_MTCrewID", form: "fMTCrewMedicalHistorysearch" };
+    } else {
+        options.ajax = { id: "x_MTCrewID", form: "fMTCrewMedicalHistorysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.MTCrewID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.MTCrewID.Visible (end) *@
+@if (mtCrewMedicalHistorySearch._Type.Visible) { // mtCrewMedicalHistorySearch._Type.Visible (begin)
+    <div id="r__Type" class="row" @Html.Raw(mtCrewMedicalHistorySearch._Type.RowAttributes)>
+        <label for="x__Type" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory__Type">@Html.Raw(mtCrewMedicalHistorySearch._Type.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Type" id="z__Type" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch._Type.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory__Type" class="ew-search-field ew-search-field-single">
+    <select
+        id="x__Type"
+        name="x__Type"
+        class="form-select ew-select@(mtCrewMedicalHistorySearch._Type.IsInvalidClass)"
+        data-select2-id="fMTCrewMedicalHistorysearch_x__Type"
+        data-table="MTCrewMedicalHistory"
+        data-field="x__Type"
+        data-value-separator="@(mtCrewMedicalHistorySearch._Type.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewMedicalHistorySearch._Type.PlaceHolder))"
+        @Html.Raw(mtCrewMedicalHistorySearch._Type.EditAttributes)>
+        @(mtCrewMedicalHistorySearch._Type.SelectOptionListHtml("x__Type"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch._Type.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fMTCrewMedicalHistorysearch", function() {
+    var options = { name: "x__Type", selectId: "fMTCrewMedicalHistorysearch_x__Type" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewMedicalHistorysearch.lists._Type?.lookupOptions.length) {
+        options.data = { id: "x__Type", form: "fMTCrewMedicalHistorysearch" };
+    } else {
+        options.ajax = { id: "x__Type", form: "fMTCrewMedicalHistorysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields._Type.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch._Type.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.VesselName.Visible) { // mtCrewMedicalHistorySearch.VesselName.Visible (begin)
+    <div id="r_VesselName" class="row" @Html.Raw(mtCrewMedicalHistorySearch.VesselName.RowAttributes)>
+        <label for="x_VesselName" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_VesselName">@Html.Raw(mtCrewMedicalHistorySearch.VesselName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VesselName" id="z_VesselName" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.VesselName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_VesselName" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.VesselName.InputTextType)" name="x_VesselName" id="x_VesselName" data-table="MTCrewMedicalHistory" data-field="x_VesselName" value="@Html.Raw(mtCrewMedicalHistorySearch.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.VesselName.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.VesselName.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.VesselName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.VesselName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.VesselName.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.DateOccurence.Visible) { // mtCrewMedicalHistorySearch.DateOccurence.Visible (begin)
+    <div id="r_DateOccurence" class="row" @Html.Raw(mtCrewMedicalHistorySearch.DateOccurence.RowAttributes)>
+        <label for="x_DateOccurence" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_DateOccurence">@Html.Raw(mtCrewMedicalHistorySearch.DateOccurence.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateOccurence" id="z_DateOccurence" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.DateOccurence.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_DateOccurence" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.DateOccurence.InputTextType)" name="x_DateOccurence" id="x_DateOccurence" data-table="MTCrewMedicalHistory" data-field="x_DateOccurence" value="@Html.Raw(mtCrewMedicalHistorySearch.DateOccurence.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.DateOccurence.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.DateOccurence.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.DateOccurence.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.DateOccurence.GetErrorMessage(false))</div>
+@if (!mtCrewMedicalHistorySearch.DateOccurence.ReadOnly && !mtCrewMedicalHistorySearch.DateOccurence.Disabled && !mtCrewMedicalHistorySearch.DateOccurence.EditAttrs.Is("readonly") && !mtCrewMedicalHistorySearch.DateOccurence.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewMedicalHistorysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewMedicalHistorysearch", "x_DateOccurence", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.DateOccurence.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.PlaceOccurence.Visible) { // mtCrewMedicalHistorySearch.PlaceOccurence.Visible (begin)
+    <div id="r_PlaceOccurence" class="row" @Html.Raw(mtCrewMedicalHistorySearch.PlaceOccurence.RowAttributes)>
+        <label for="x_PlaceOccurence" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_PlaceOccurence">@Html.Raw(mtCrewMedicalHistorySearch.PlaceOccurence.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PlaceOccurence" id="z_PlaceOccurence" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.PlaceOccurence.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_PlaceOccurence" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.PlaceOccurence.InputTextType)" name="x_PlaceOccurence" id="x_PlaceOccurence" data-table="MTCrewMedicalHistory" data-field="x_PlaceOccurence" value="@Html.Raw(mtCrewMedicalHistorySearch.PlaceOccurence.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.PlaceOccurence.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.PlaceOccurence.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.PlaceOccurence.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.PlaceOccurence.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.PlaceOccurence.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.PeriodOfDisability.Visible) { // mtCrewMedicalHistorySearch.PeriodOfDisability.Visible (begin)
+    <div id="r_PeriodOfDisability" class="row" @Html.Raw(mtCrewMedicalHistorySearch.PeriodOfDisability.RowAttributes)>
+        <label for="x_PeriodOfDisability" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_PeriodOfDisability">@Html.Raw(mtCrewMedicalHistorySearch.PeriodOfDisability.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PeriodOfDisability" id="z_PeriodOfDisability" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.PeriodOfDisability.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_PeriodOfDisability" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.PeriodOfDisability.InputTextType)" name="x_PeriodOfDisability" id="x_PeriodOfDisability" data-table="MTCrewMedicalHistory" data-field="x_PeriodOfDisability" value="@Html.Raw(mtCrewMedicalHistorySearch.PeriodOfDisability.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.PeriodOfDisability.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.PeriodOfDisability.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.PeriodOfDisability.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.PeriodOfDisability.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.PeriodOfDisability.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.PresentCondition.Visible) { // mtCrewMedicalHistorySearch.PresentCondition.Visible (begin)
+    <div id="r_PresentCondition" class="row" @Html.Raw(mtCrewMedicalHistorySearch.PresentCondition.RowAttributes)>
+        <label for="x_PresentCondition" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_PresentCondition">@Html.Raw(mtCrewMedicalHistorySearch.PresentCondition.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_PresentCondition" id="z_PresentCondition" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.PresentCondition.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_PresentCondition" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.PresentCondition.InputTextType)" name="x_PresentCondition" id="x_PresentCondition" data-table="MTCrewMedicalHistory" data-field="x_PresentCondition" value="@Html.Raw(mtCrewMedicalHistorySearch.PresentCondition.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.PresentCondition.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.PresentCondition.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.PresentCondition.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.PresentCondition.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.PresentCondition.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.Treatment.Visible) { // mtCrewMedicalHistorySearch.Treatment.Visible (begin)
+    <div id="r_Treatment" class="row" @Html.Raw(mtCrewMedicalHistorySearch.Treatment.RowAttributes)>
+        <label for="x_Treatment" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_Treatment">@Html.Raw(mtCrewMedicalHistorySearch.Treatment.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Treatment" id="z_Treatment" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.Treatment.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_Treatment" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.Treatment.InputTextType)" name="x_Treatment" id="x_Treatment" data-table="MTCrewMedicalHistory" data-field="x_Treatment" value="@Html.Raw(mtCrewMedicalHistorySearch.Treatment.EditValue)" size="50" maxlength="255" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.Treatment.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.Treatment.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.Treatment.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.Treatment.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.Treatment.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.Details.Visible) { // mtCrewMedicalHistorySearch.Details.Visible (begin)
+    <div id="r_Details" class="row" @Html.Raw(mtCrewMedicalHistorySearch.Details.RowAttributes)>
+        <label for="x_Details" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_Details">@Html.Raw(mtCrewMedicalHistorySearch.Details.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Details" id="z_Details" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.Details.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_Details" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.Details.InputTextType)" name="x_Details" id="x_Details" data-table="MTCrewMedicalHistory" data-field="x_Details" value="@Html.Raw(mtCrewMedicalHistorySearch.Details.EditValue)" size="50" maxlength="500" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.Details.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.Details.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.Details.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.Details.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.Details.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.CreatedByUserID.Visible) { // mtCrewMedicalHistorySearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtCrewMedicalHistorySearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_CreatedByUserID">@Html.Raw(mtCrewMedicalHistorySearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtCrewMedicalHistorySearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewMedicalHistorysearch_x_CreatedByUserID"
+        data-table="MTCrewMedicalHistory"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtCrewMedicalHistorySearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewMedicalHistorySearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewMedicalHistorySearch.CreatedByUserID.EditAttributes)>
+        @(mtCrewMedicalHistorySearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewMedicalHistorySearch.CreatedByUserID.Lookup.GetParamTag(mtCrewMedicalHistorySearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTCrewMedicalHistorysearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTCrewMedicalHistorysearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewMedicalHistorysearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTCrewMedicalHistorysearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTCrewMedicalHistorysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.CreatedByUserID.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.CreatedDateTime.Visible) { // mtCrewMedicalHistorySearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtCrewMedicalHistorySearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_CreatedDateTime">@Html.Raw(mtCrewMedicalHistorySearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTCrewMedicalHistory" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewMedicalHistorySearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewMedicalHistorySearch.CreatedDateTime.ReadOnly && !mtCrewMedicalHistorySearch.CreatedDateTime.Disabled && !mtCrewMedicalHistorySearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalHistorySearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewMedicalHistorysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewMedicalHistorysearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.CreatedDateTime.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.LastUpdatedByUserID.Visible) { // mtCrewMedicalHistorySearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_LastUpdatedByUserID">@Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtCrewMedicalHistorySearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTCrewMedicalHistorysearch_x_LastUpdatedByUserID"
+        data-table="MTCrewMedicalHistory"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtCrewMedicalHistorySearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtCrewMedicalHistorySearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtCrewMedicalHistorySearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewMedicalHistorySearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTCrewMedicalHistorysearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTCrewMedicalHistorysearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTCrewMedicalHistorysearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTCrewMedicalHistorysearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTCrewMedicalHistorysearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewMedicalHistory.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewMedicalHistorySearch.LastUpdatedDateTime.Visible) { // mtCrewMedicalHistorySearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtCrewMedicalHistorySearch.LeftColumnClass)"><span id="elh_MTCrewMedicalHistory_LastUpdatedDateTime">@Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtCrewMedicalHistorySearch.RightColumnClass)">
+            <div @Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTCrewMedicalHistory_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtCrewMedicalHistorySearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTCrewMedicalHistory" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewMedicalHistorySearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewMedicalHistorySearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtCrewMedicalHistorySearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtCrewMedicalHistorySearch.LastUpdatedDateTime.ReadOnly && !mtCrewMedicalHistorySearch.LastUpdatedDateTime.Disabled && !mtCrewMedicalHistorySearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewMedicalHistorySearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTCrewMedicalHistorysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTCrewMedicalHistorysearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtCrewMedicalHistorySearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtCrewMedicalHistorySearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtCrewMedicalHistorySearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTCrewMedicalHistorysearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtCrewMedicalHistorySearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTCrewMedicalHistorysearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTCrewMedicalHistorysearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtCrewMedicalHistorySearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtCrewMedicalHistorySearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewMedicalHistory");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

@@ -1,0 +1,1388 @@
+@{
+    // View
+    View = this;
+
+    // Set up CurrentGrid
+    CurrentGrid = mtCrewCertificateGrid;
+
+    // Run
+    await mtCrewCertificateGrid.Run();
+
+    // Check action result
+    if (mtCrewCertificateGrid.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtCrewCertificateGrid.IsExport()) {
+<script>
+var fMTCrewCertificategrid;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let currentTable = @Html.Raw(ConvertToJson(mtCrewCertificateGrid.ToClientVar()));
+    ew.deepAssign(ew.vars, { tables: { MTCrewCertificate: currentTable } });
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMTCrewCertificategrid")
+        .setPageId("grid")
+        .setFormKeyCountName("@(mtCrewCertificateGrid.FormKeyCountName)")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [fields.MTCrewID.visible && fields.MTCrewID.required ? ew.Validators.required(fields.MTCrewID.caption) : null], fields.MTCrewID.isInvalid],
+            ["MTCertificateID", [fields.MTCertificateID.visible && fields.MTCertificateID.required ? ew.Validators.required(fields.MTCertificateID.caption) : null], fields.MTCertificateID.isInvalid],
+            ["CountryOfIssue_CountryID", [fields.CountryOfIssue_CountryID.visible && fields.CountryOfIssue_CountryID.required ? ew.Validators.required(fields.CountryOfIssue_CountryID.caption) : null], fields.CountryOfIssue_CountryID.isInvalid],
+            ["Number", [fields.Number.visible && fields.Number.required ? ew.Validators.required(fields.Number.caption) : null], fields.Number.isInvalid],
+            ["DateOfIssue", [fields.DateOfIssue.visible && fields.DateOfIssue.required ? ew.Validators.required(fields.DateOfIssue.caption) : null, ew.Validators.datetime(fields.DateOfIssue.clientFormatPattern)], fields.DateOfIssue.isInvalid],
+            ["DateOfExpiry", [fields.DateOfExpiry.visible && fields.DateOfExpiry.required ? ew.Validators.required(fields.DateOfExpiry.caption) : null, ew.Validators.datetime(fields.DateOfExpiry.clientFormatPattern)], fields.DateOfExpiry.isInvalid],
+            ["PlaceOfIssue", [fields.PlaceOfIssue.visible && fields.PlaceOfIssue.required ? ew.Validators.required(fields.PlaceOfIssue.caption) : null], fields.PlaceOfIssue.isInvalid],
+            ["IssuingAuthority", [fields.IssuingAuthority.visible && fields.IssuingAuthority.required ? ew.Validators.required(fields.IssuingAuthority.caption) : null], fields.IssuingAuthority.isInvalid],
+            ["Level", [fields.Level.visible && fields.Level.required ? ew.Validators.required(fields.Level.caption) : null], fields.Level.isInvalid],
+            ["PaxVesselType", [fields.PaxVesselType.visible && fields.PaxVesselType.required ? ew.Validators.required(fields.PaxVesselType.caption) : null], fields.PaxVesselType.isInvalid],
+            ["Image", [fields.Image.visible && fields.Image.required ? ew.Validators.fileRequired(fields.Image.caption) : null], fields.Image.isInvalid],
+            ["CreatedByUserID", [fields.CreatedByUserID.visible && fields.CreatedByUserID.required ? ew.Validators.required(fields.CreatedByUserID.caption) : null], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [fields.LastUpdatedByUserID.visible && fields.LastUpdatedByUserID.required ? ew.Validators.required(fields.LastUpdatedByUserID.caption) : null], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [fields.LastUpdatedDateTime.visible && fields.LastUpdatedDateTime.required ? ew.Validators.required(fields.LastUpdatedDateTime.caption) : null, ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+
+        // Check empty row
+        .setEmptyRow(
+            function (rowIndex) {
+                let fobj = this.getForm(),
+                    fields = [["MTCrewID",false],["MTCertificateID",false],["CountryOfIssue_CountryID",false],["Number",false],["DateOfIssue",false],["DateOfExpiry",false],["PlaceOfIssue",false],["IssuingAuthority",false],["Level",false],["PaxVesselType",false],["Image",false],["CreatedByUserID",false],["CreatedDateTime",false],["LastUpdatedByUserID",false],["LastUpdatedDateTime",false]];
+                if (fields.some(field => ew.valueChanged(fobj, rowIndex, ...field)))
+                    return false;
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(mtCrewCertificateGrid.MTCrewID.ToClientList(mtCrewCertificateGrid)),
+            "MTCertificateID": @Html.Raw(mtCrewCertificateGrid.MTCertificateID.ToClientList(mtCrewCertificateGrid)),
+            "CountryOfIssue_CountryID": @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.ToClientList(mtCrewCertificateGrid)),
+            "CreatedByUserID": @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.ToClientList(mtCrewCertificateGrid)),
+            "LastUpdatedByUserID": @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.ToClientList(mtCrewCertificateGrid)),
+        })
+        .build();
+    window[form.id] = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+<main class="list">
+<div id="ew-list">
+@if (mtCrewCertificateGrid.TotalRecords > 0 || !Empty(mtCrewCertificateGrid.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtCrewCertificateGrid.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtCrewCertificateGrid.TableGridClass)">
+<div id="fMTCrewCertificategrid" class="ew-form ew-list-form">
+<div id="gmp_MTCrewCertificate" class="card-body ew-grid-middle-panel @(mtCrewCertificateGrid.TableContainerClass)" style="@(mtCrewCertificateGrid.TableContainerStyle)">
+<table id="tbl_MTCrewCertificategrid" class="@(mtCrewCertificateGrid.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtCrewCertificateGrid.RowType = RowType.Header;
+
+    // Render list options
+    await mtCrewCertificateGrid.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtCrewCertificateGrid.ListOptions.RenderHeader("left")
+@if (mtCrewCertificateGrid.MTCrewID.Visible) { // mtCrewCertificateGrid.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(mtCrewCertificateGrid.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_MTCrewID" class="MTCrewCertificate_MTCrewID">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.MTCrewID))</div></th>
+} @* mtCrewCertificateGrid.MTCrewID.Visible (end) *@
+@if (mtCrewCertificateGrid.MTCertificateID.Visible) { // mtCrewCertificateGrid.MTCertificateID.Visible (begin)
+        <th data-name="MTCertificateID" class="@(mtCrewCertificateGrid.MTCertificateID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_MTCertificateID" class="MTCrewCertificate_MTCertificateID">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.MTCertificateID))</div></th>
+} @* mtCrewCertificateGrid.MTCertificateID.Visible (end) *@
+@if (mtCrewCertificateGrid.CountryOfIssue_CountryID.Visible) { // mtCrewCertificateGrid.CountryOfIssue_CountryID.Visible (begin)
+        <th data-name="CountryOfIssue_CountryID" class="@(mtCrewCertificateGrid.CountryOfIssue_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_CountryOfIssue_CountryID" class="MTCrewCertificate_CountryOfIssue_CountryID">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.CountryOfIssue_CountryID))</div></th>
+} @* mtCrewCertificateGrid.CountryOfIssue_CountryID.Visible (end) *@
+@if (mtCrewCertificateGrid.Number.Visible) { // mtCrewCertificateGrid.Number.Visible (begin)
+        <th data-name="Number" class="@(mtCrewCertificateGrid.Number.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_Number" class="MTCrewCertificate_Number">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.Number))</div></th>
+} @* mtCrewCertificateGrid.Number.Visible (end) *@
+@if (mtCrewCertificateGrid.DateOfIssue.Visible) { // mtCrewCertificateGrid.DateOfIssue.Visible (begin)
+        <th data-name="DateOfIssue" class="@(mtCrewCertificateGrid.DateOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_DateOfIssue" class="MTCrewCertificate_DateOfIssue">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.DateOfIssue))</div></th>
+} @* mtCrewCertificateGrid.DateOfIssue.Visible (end) *@
+@if (mtCrewCertificateGrid.DateOfExpiry.Visible) { // mtCrewCertificateGrid.DateOfExpiry.Visible (begin)
+        <th data-name="DateOfExpiry" class="@(mtCrewCertificateGrid.DateOfExpiry.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_DateOfExpiry" class="MTCrewCertificate_DateOfExpiry">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.DateOfExpiry))</div></th>
+} @* mtCrewCertificateGrid.DateOfExpiry.Visible (end) *@
+@if (mtCrewCertificateGrid.PlaceOfIssue.Visible) { // mtCrewCertificateGrid.PlaceOfIssue.Visible (begin)
+        <th data-name="PlaceOfIssue" class="@(mtCrewCertificateGrid.PlaceOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_PlaceOfIssue" class="MTCrewCertificate_PlaceOfIssue">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.PlaceOfIssue))</div></th>
+} @* mtCrewCertificateGrid.PlaceOfIssue.Visible (end) *@
+@if (mtCrewCertificateGrid.IssuingAuthority.Visible) { // mtCrewCertificateGrid.IssuingAuthority.Visible (begin)
+        <th data-name="IssuingAuthority" class="@(mtCrewCertificateGrid.IssuingAuthority.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_IssuingAuthority" class="MTCrewCertificate_IssuingAuthority">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.IssuingAuthority))</div></th>
+} @* mtCrewCertificateGrid.IssuingAuthority.Visible (end) *@
+@if (mtCrewCertificateGrid.Level.Visible) { // mtCrewCertificateGrid.Level.Visible (begin)
+        <th data-name="Level" class="@(mtCrewCertificateGrid.Level.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_Level" class="MTCrewCertificate_Level">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.Level))</div></th>
+} @* mtCrewCertificateGrid.Level.Visible (end) *@
+@if (mtCrewCertificateGrid.PaxVesselType.Visible) { // mtCrewCertificateGrid.PaxVesselType.Visible (begin)
+        <th data-name="PaxVesselType" class="@(mtCrewCertificateGrid.PaxVesselType.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_PaxVesselType" class="MTCrewCertificate_PaxVesselType">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.PaxVesselType))</div></th>
+} @* mtCrewCertificateGrid.PaxVesselType.Visible (end) *@
+@if (mtCrewCertificateGrid.Image.Visible) { // mtCrewCertificateGrid.Image.Visible (begin)
+        <th data-name="Image" class="@(mtCrewCertificateGrid.Image.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_Image" class="MTCrewCertificate_Image">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.Image))</div></th>
+} @* mtCrewCertificateGrid.Image.Visible (end) *@
+@if (mtCrewCertificateGrid.CreatedByUserID.Visible) { // mtCrewCertificateGrid.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtCrewCertificateGrid.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_CreatedByUserID" class="MTCrewCertificate_CreatedByUserID">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.CreatedByUserID))</div></th>
+} @* mtCrewCertificateGrid.CreatedByUserID.Visible (end) *@
+@if (mtCrewCertificateGrid.CreatedDateTime.Visible) { // mtCrewCertificateGrid.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtCrewCertificateGrid.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_CreatedDateTime" class="MTCrewCertificate_CreatedDateTime">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.CreatedDateTime))</div></th>
+} @* mtCrewCertificateGrid.CreatedDateTime.Visible (end) *@
+@if (mtCrewCertificateGrid.LastUpdatedByUserID.Visible) { // mtCrewCertificateGrid.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtCrewCertificateGrid.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_LastUpdatedByUserID" class="MTCrewCertificate_LastUpdatedByUserID">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.LastUpdatedByUserID))</div></th>
+} @* mtCrewCertificateGrid.LastUpdatedByUserID.Visible (end) *@
+@if (mtCrewCertificateGrid.LastUpdatedDateTime.Visible) { // mtCrewCertificateGrid.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtCrewCertificateGrid.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTCrewCertificate_LastUpdatedDateTime" class="MTCrewCertificate_LastUpdatedDateTime">@Html.Raw(mtCrewCertificateGrid.RenderFieldHeader(mtCrewCertificateGrid.LastUpdatedDateTime))</div></th>
+} @* mtCrewCertificateGrid.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtCrewCertificateGrid.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtCrewCertificateGrid.PageNumber)">
+@{
+    await mtCrewCertificateGrid.SetupGrid();
+    bool eof = mtCrewCertificateGrid.Recordset == null; // DN
+}
+@while (mtCrewCertificateGrid.RecordCount < mtCrewCertificateGrid.StopRecord || SameString(mtCrewCertificateGrid.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtCrewCertificateGrid.RowIndex, "$rowindex$") &&
+        (!mtCrewCertificateGrid.IsGridAdd || mtCrewCertificateGrid.CurrentMode == "copy") &&
+        (!((mtCrewCertificateGrid.IsCopy || mtCrewCertificateGrid.IsAdd) && mtCrewCertificateGrid.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtCrewCertificateGrid.Recordset.ReadAsync();
+    mtCrewCertificateGrid.RecordCount++;
+    if (mtCrewCertificateGrid.RecordCount >= mtCrewCertificateGrid.StartRecord) {
+        await mtCrewCertificateGrid.SetupRow();
+
+        // Skip 1) delete row / empty row for confirm page, 2) hidden row
+        if (mtCrewCertificateGrid.RowAction != "delete" &&
+            mtCrewCertificateGrid.RowAction != "insertdelete" &&
+            !(mtCrewCertificateGrid.RowAction == "insert" && mtCrewCertificateGrid.IsConfirm && mtCrewCertificateGrid.EmptyRow()) &&
+            mtCrewCertificateGrid.RowAction != "hide") {
+    <tr @Html.Raw(mtCrewCertificateGrid.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtCrewCertificateGrid.ListOptions.RenderBody("left", mtCrewCertificateGrid.RowCount)
+    @if (mtCrewCertificateGrid.MTCrewID.Visible) { // mtCrewCertificateGrid.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(mtCrewCertificateGrid.MTCrewID.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewCertificateGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewCertificateGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewCertificateGrid.MTCrewID.DisplayValue(mtCrewCertificateGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" name="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewCertificateGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_MTCrewID" class="el_MTCrewCertificate_MTCrewID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewCertificateGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewCertificate"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewCertificateGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.MTCrewID.EditAttributes)>
+            @(mtCrewCertificateGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.MTCrewID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_MTCrewID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCrewID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCrewID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_MTCrewID" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_MTCrewID" id="o@(mtCrewCertificateGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.MTCrewID.OldValue))">
+    @* MTCrewID (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MTCrewID (begin) *@
+    @if (!Empty(mtCrewCertificateGrid.MTCrewID.SessionValue)) {
+    <span @Html.Raw(mtCrewCertificateGrid.MTCrewID.ViewAttributes)>
+    <span class="form-control-plaintext">@Html.Raw(mtCrewCertificateGrid.MTCrewID.DisplayValue(mtCrewCertificateGrid.MTCrewID.ViewValue))</span></span>
+    <input type="hidden" id="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" name="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" value="@(HtmlEncode(mtCrewCertificateGrid.MTCrewID.CurrentValue))" data-hidden="1">
+    } else {
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_MTCrewID" class="el_MTCrewCertificate_MTCrewID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_MTCrewID"
+            class="form-select ew-select@(mtCrewCertificateGrid.MTCrewID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCrewID"
+            data-table="MTCrewCertificate"
+            data-field="x_MTCrewID"
+            data-value-separator="@(mtCrewCertificateGrid.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.MTCrewID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.MTCrewID.EditAttributes)>
+            @(mtCrewCertificateGrid.MTCrewID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_MTCrewID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.MTCrewID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.MTCrewID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_MTCrewID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_MTCrewID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.MTCrewID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCrewID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCrewID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.MTCrewID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    }
+    @* MTCrewID (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* MTCrewID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_MTCrewID" class="el_MTCrewCertificate_MTCrewID">
+    <span @Html.Raw(mtCrewCertificateGrid.MTCrewID.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.MTCrewID.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_MTCrewID" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.MTCrewID.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_MTCrewID" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_MTCrewID" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_MTCrewID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.MTCrewID.OldValue))">
+    }
+    @* MTCrewID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.MTCrewID.Visible (end) *@
+    @if (mtCrewCertificateGrid.MTCertificateID.Visible) { // mtCrewCertificateGrid.MTCertificateID.Visible (begin)
+        <td data-name="MTCertificateID" @Html.Raw(mtCrewCertificateGrid.MTCertificateID.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* MTCertificateID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_MTCertificateID" class="el_MTCrewCertificate_MTCertificateID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID"
+            class="form-select ew-select@(mtCrewCertificateGrid.MTCertificateID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID"
+            data-table="MTCrewCertificate"
+            data-field="x_MTCertificateID"
+            data-value-separator="@(mtCrewCertificateGrid.MTCertificateID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.MTCertificateID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.MTCertificateID.EditAttributes)>
+            @(mtCrewCertificateGrid.MTCertificateID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_MTCertificateID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.MTCertificateID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.MTCertificateID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_MTCertificateID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.MTCertificateID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.MTCertificateID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_MTCertificateID" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" id="o@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.MTCertificateID.OldValue))">
+    @* MTCertificateID (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* MTCertificateID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_MTCertificateID" class="el_MTCrewCertificate_MTCertificateID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID"
+            class="form-select ew-select@(mtCrewCertificateGrid.MTCertificateID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID"
+            data-table="MTCrewCertificate"
+            data-field="x_MTCertificateID"
+            data-value-separator="@(mtCrewCertificateGrid.MTCertificateID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.MTCertificateID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.MTCertificateID.EditAttributes)>
+            @(mtCrewCertificateGrid.MTCertificateID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_MTCertificateID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.MTCertificateID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.MTCertificateID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_MTCertificateID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.MTCertificateID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.MTCertificateID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* MTCertificateID (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* MTCertificateID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_MTCertificateID" class="el_MTCrewCertificate_MTCertificateID">
+    <span @Html.Raw(mtCrewCertificateGrid.MTCertificateID.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.MTCertificateID.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_MTCertificateID" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.MTCertificateID.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_MTCertificateID" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_MTCertificateID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.MTCertificateID.OldValue))">
+    }
+    @* MTCertificateID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.MTCertificateID.Visible (end) *@
+    @if (mtCrewCertificateGrid.CountryOfIssue_CountryID.Visible) { // mtCrewCertificateGrid.CountryOfIssue_CountryID.Visible (begin)
+        <td data-name="CountryOfIssue_CountryID" @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* CountryOfIssue_CountryID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CountryOfIssue_CountryID" class="el_MTCrewCertificate_CountryOfIssue_CountryID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID"
+            class="form-select ew-select@(mtCrewCertificateGrid.CountryOfIssue_CountryID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID"
+            data-table="MTCrewCertificate"
+            data-field="x_CountryOfIssue_CountryID"
+            data-value-separator="@(mtCrewCertificateGrid.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.CountryOfIssue_CountryID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.EditAttributes)>
+            @(mtCrewCertificateGrid.CountryOfIssue_CountryID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_CountryOfIssue_CountryID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_CountryOfIssue_CountryID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.CountryOfIssue_CountryID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.CountryOfIssue_CountryID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CountryOfIssue_CountryID" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" id="o@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CountryOfIssue_CountryID.OldValue))">
+    @* CountryOfIssue_CountryID (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CountryOfIssue_CountryID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CountryOfIssue_CountryID" class="el_MTCrewCertificate_CountryOfIssue_CountryID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID"
+            class="form-select ew-select@(mtCrewCertificateGrid.CountryOfIssue_CountryID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID"
+            data-table="MTCrewCertificate"
+            data-field="x_CountryOfIssue_CountryID"
+            data-value-separator="@(mtCrewCertificateGrid.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.CountryOfIssue_CountryID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.EditAttributes)>
+            @(mtCrewCertificateGrid.CountryOfIssue_CountryID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_CountryOfIssue_CountryID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_CountryOfIssue_CountryID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.CountryOfIssue_CountryID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.CountryOfIssue_CountryID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* CountryOfIssue_CountryID (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* CountryOfIssue_CountryID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CountryOfIssue_CountryID" class="el_MTCrewCertificate_CountryOfIssue_CountryID">
+    <span @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.CountryOfIssue_CountryID.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CountryOfIssue_CountryID" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CountryOfIssue_CountryID.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CountryOfIssue_CountryID" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_CountryOfIssue_CountryID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CountryOfIssue_CountryID.OldValue))">
+    }
+    @* CountryOfIssue_CountryID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.CountryOfIssue_CountryID.Visible (end) *@
+    @if (mtCrewCertificateGrid.Number.Visible) { // mtCrewCertificateGrid.Number.Visible (begin)
+        <td data-name="Number" @Html.Raw(mtCrewCertificateGrid.Number.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* Number (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Number" class="el_MTCrewCertificate_Number">
+    <input type="@(mtCrewCertificateGrid.Number.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_Number" id="x@(mtCrewCertificateGrid.RowIndex)_Number" data-table="MTCrewCertificate" data-field="x_Number" value="@Html.Raw(mtCrewCertificateGrid.Number.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Number.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.Number.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.Number.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Number.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_Number" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_Number" id="o@(mtCrewCertificateGrid.RowIndex)_Number" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Number.OldValue))">
+    @* Number (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Number (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Number" class="el_MTCrewCertificate_Number">
+    <input type="@(mtCrewCertificateGrid.Number.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_Number" id="x@(mtCrewCertificateGrid.RowIndex)_Number" data-table="MTCrewCertificate" data-field="x_Number" value="@Html.Raw(mtCrewCertificateGrid.Number.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Number.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.Number.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.Number.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Number.GetErrorMessage())</div>
+    </span>
+    @* Number (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* Number (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Number" class="el_MTCrewCertificate_Number">
+    <span @Html.Raw(mtCrewCertificateGrid.Number.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.Number.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_Number" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_Number" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_Number" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Number.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_Number" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_Number" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_Number" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Number.OldValue))">
+    }
+    @* Number (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.Number.Visible (end) *@
+    @if (mtCrewCertificateGrid.DateOfIssue.Visible) { // mtCrewCertificateGrid.DateOfIssue.Visible (begin)
+        <td data-name="DateOfIssue" @Html.Raw(mtCrewCertificateGrid.DateOfIssue.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* DateOfIssue (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_DateOfIssue" class="el_MTCrewCertificate_DateOfIssue">
+    <input type="@(mtCrewCertificateGrid.DateOfIssue.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" id="x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" data-table="MTCrewCertificate" data-field="x_DateOfIssue" value="@Html.Raw(mtCrewCertificateGrid.DateOfIssue.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.DateOfIssue.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.DateOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.DateOfIssue.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.DateOfIssue.ReadOnly && !mtCrewCertificateGrid.DateOfIssue.Disabled && !mtCrewCertificateGrid.DateOfIssue.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.DateOfIssue.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_DateOfIssue" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" id="o@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfIssue.OldValue))">
+    @* DateOfIssue (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* DateOfIssue (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_DateOfIssue" class="el_MTCrewCertificate_DateOfIssue">
+    <input type="@(mtCrewCertificateGrid.DateOfIssue.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" id="x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" data-table="MTCrewCertificate" data-field="x_DateOfIssue" value="@Html.Raw(mtCrewCertificateGrid.DateOfIssue.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.DateOfIssue.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.DateOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.DateOfIssue.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.DateOfIssue.ReadOnly && !mtCrewCertificateGrid.DateOfIssue.Disabled && !mtCrewCertificateGrid.DateOfIssue.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.DateOfIssue.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* DateOfIssue (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* DateOfIssue (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_DateOfIssue" class="el_MTCrewCertificate_DateOfIssue">
+    <span @Html.Raw(mtCrewCertificateGrid.DateOfIssue.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.DateOfIssue.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_DateOfIssue" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfIssue.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_DateOfIssue" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_DateOfIssue" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfIssue.OldValue))">
+    }
+    @* DateOfIssue (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.DateOfIssue.Visible (end) *@
+    @if (mtCrewCertificateGrid.DateOfExpiry.Visible) { // mtCrewCertificateGrid.DateOfExpiry.Visible (begin)
+        <td data-name="DateOfExpiry" @Html.Raw(mtCrewCertificateGrid.DateOfExpiry.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* DateOfExpiry (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_DateOfExpiry" class="el_MTCrewCertificate_DateOfExpiry">
+    <input type="@(mtCrewCertificateGrid.DateOfExpiry.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" id="x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" data-table="MTCrewCertificate" data-field="x_DateOfExpiry" value="@Html.Raw(mtCrewCertificateGrid.DateOfExpiry.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfExpiry.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.DateOfExpiry.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.DateOfExpiry.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.DateOfExpiry.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.DateOfExpiry.ReadOnly && !mtCrewCertificateGrid.DateOfExpiry.Disabled && !mtCrewCertificateGrid.DateOfExpiry.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.DateOfExpiry.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_DateOfExpiry" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" id="o@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfExpiry.OldValue))">
+    @* DateOfExpiry (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* DateOfExpiry (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_DateOfExpiry" class="el_MTCrewCertificate_DateOfExpiry">
+    <input type="@(mtCrewCertificateGrid.DateOfExpiry.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" id="x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" data-table="MTCrewCertificate" data-field="x_DateOfExpiry" value="@Html.Raw(mtCrewCertificateGrid.DateOfExpiry.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfExpiry.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.DateOfExpiry.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.DateOfExpiry.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.DateOfExpiry.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.DateOfExpiry.ReadOnly && !mtCrewCertificateGrid.DateOfExpiry.Disabled && !mtCrewCertificateGrid.DateOfExpiry.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.DateOfExpiry.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(0))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* DateOfExpiry (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* DateOfExpiry (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_DateOfExpiry" class="el_MTCrewCertificate_DateOfExpiry">
+    <span @Html.Raw(mtCrewCertificateGrid.DateOfExpiry.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.DateOfExpiry.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_DateOfExpiry" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfExpiry.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_DateOfExpiry" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_DateOfExpiry" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.DateOfExpiry.OldValue))">
+    }
+    @* DateOfExpiry (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.DateOfExpiry.Visible (end) *@
+    @if (mtCrewCertificateGrid.PlaceOfIssue.Visible) { // mtCrewCertificateGrid.PlaceOfIssue.Visible (begin)
+        <td data-name="PlaceOfIssue" @Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* PlaceOfIssue (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_PlaceOfIssue" class="el_MTCrewCertificate_PlaceOfIssue">
+    <input type="@(mtCrewCertificateGrid.PlaceOfIssue.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" id="x@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" data-table="MTCrewCertificate" data-field="x_PlaceOfIssue" value="@Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PlaceOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.PlaceOfIssue.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_PlaceOfIssue" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" id="o@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PlaceOfIssue.OldValue))">
+    @* PlaceOfIssue (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* PlaceOfIssue (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_PlaceOfIssue" class="el_MTCrewCertificate_PlaceOfIssue">
+    <input type="@(mtCrewCertificateGrid.PlaceOfIssue.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" id="x@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" data-table="MTCrewCertificate" data-field="x_PlaceOfIssue" value="@Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PlaceOfIssue.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.PlaceOfIssue.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.GetErrorMessage())</div>
+    </span>
+    @* PlaceOfIssue (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* PlaceOfIssue (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_PlaceOfIssue" class="el_MTCrewCertificate_PlaceOfIssue">
+    <span @Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.PlaceOfIssue.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_PlaceOfIssue" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PlaceOfIssue.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_PlaceOfIssue" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_PlaceOfIssue" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PlaceOfIssue.OldValue))">
+    }
+    @* PlaceOfIssue (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.PlaceOfIssue.Visible (end) *@
+    @if (mtCrewCertificateGrid.IssuingAuthority.Visible) { // mtCrewCertificateGrid.IssuingAuthority.Visible (begin)
+        <td data-name="IssuingAuthority" @Html.Raw(mtCrewCertificateGrid.IssuingAuthority.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* IssuingAuthority (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_IssuingAuthority" class="el_MTCrewCertificate_IssuingAuthority">
+    <input type="@(mtCrewCertificateGrid.IssuingAuthority.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" id="x@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" data-table="MTCrewCertificate" data-field="x_IssuingAuthority" value="@Html.Raw(mtCrewCertificateGrid.IssuingAuthority.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.IssuingAuthority.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.IssuingAuthority.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.IssuingAuthority.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.IssuingAuthority.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_IssuingAuthority" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" id="o@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.IssuingAuthority.OldValue))">
+    @* IssuingAuthority (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* IssuingAuthority (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_IssuingAuthority" class="el_MTCrewCertificate_IssuingAuthority">
+    <input type="@(mtCrewCertificateGrid.IssuingAuthority.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" id="x@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" data-table="MTCrewCertificate" data-field="x_IssuingAuthority" value="@Html.Raw(mtCrewCertificateGrid.IssuingAuthority.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.IssuingAuthority.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.IssuingAuthority.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.IssuingAuthority.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.IssuingAuthority.GetErrorMessage())</div>
+    </span>
+    @* IssuingAuthority (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* IssuingAuthority (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_IssuingAuthority" class="el_MTCrewCertificate_IssuingAuthority">
+    <span @Html.Raw(mtCrewCertificateGrid.IssuingAuthority.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.IssuingAuthority.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_IssuingAuthority" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.IssuingAuthority.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_IssuingAuthority" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_IssuingAuthority" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.IssuingAuthority.OldValue))">
+    }
+    @* IssuingAuthority (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.IssuingAuthority.Visible (end) *@
+    @if (mtCrewCertificateGrid.Level.Visible) { // mtCrewCertificateGrid.Level.Visible (begin)
+        <td data-name="Level" @Html.Raw(mtCrewCertificateGrid.Level.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* Level (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Level" class="el_MTCrewCertificate_Level">
+    <input type="@(mtCrewCertificateGrid.Level.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_Level" id="x@(mtCrewCertificateGrid.RowIndex)_Level" data-table="MTCrewCertificate" data-field="x_Level" value="@Html.Raw(mtCrewCertificateGrid.Level.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Level.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.Level.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.Level.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Level.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_Level" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_Level" id="o@(mtCrewCertificateGrid.RowIndex)_Level" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Level.OldValue))">
+    @* Level (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* Level (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Level" class="el_MTCrewCertificate_Level">
+    <input type="@(mtCrewCertificateGrid.Level.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_Level" id="x@(mtCrewCertificateGrid.RowIndex)_Level" data-table="MTCrewCertificate" data-field="x_Level" value="@Html.Raw(mtCrewCertificateGrid.Level.EditValue)" size="30" maxlength="1" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Level.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.Level.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.Level.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Level.GetErrorMessage())</div>
+    </span>
+    @* Level (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* Level (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Level" class="el_MTCrewCertificate_Level">
+    <span @Html.Raw(mtCrewCertificateGrid.Level.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.Level.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_Level" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_Level" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_Level" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Level.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_Level" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_Level" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_Level" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Level.OldValue))">
+    }
+    @* Level (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.Level.Visible (end) *@
+    @if (mtCrewCertificateGrid.PaxVesselType.Visible) { // mtCrewCertificateGrid.PaxVesselType.Visible (begin)
+        <td data-name="PaxVesselType" @Html.Raw(mtCrewCertificateGrid.PaxVesselType.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* PaxVesselType (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_PaxVesselType" class="el_MTCrewCertificate_PaxVesselType">
+    <input type="@(mtCrewCertificateGrid.PaxVesselType.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" id="x@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" data-table="MTCrewCertificate" data-field="x_PaxVesselType" value="@Html.Raw(mtCrewCertificateGrid.PaxVesselType.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PaxVesselType.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.PaxVesselType.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.PaxVesselType.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.PaxVesselType.GetErrorMessage())</div>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_PaxVesselType" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" id="o@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PaxVesselType.OldValue))">
+    @* PaxVesselType (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* PaxVesselType (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_PaxVesselType" class="el_MTCrewCertificate_PaxVesselType">
+    <input type="@(mtCrewCertificateGrid.PaxVesselType.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" id="x@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" data-table="MTCrewCertificate" data-field="x_PaxVesselType" value="@Html.Raw(mtCrewCertificateGrid.PaxVesselType.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PaxVesselType.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.PaxVesselType.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.PaxVesselType.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.PaxVesselType.GetErrorMessage())</div>
+    </span>
+    @* PaxVesselType (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* PaxVesselType (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_PaxVesselType" class="el_MTCrewCertificate_PaxVesselType">
+    <span @Html.Raw(mtCrewCertificateGrid.PaxVesselType.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.PaxVesselType.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_PaxVesselType" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PaxVesselType.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_PaxVesselType" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_PaxVesselType" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.PaxVesselType.OldValue))">
+    }
+    @* PaxVesselType (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.PaxVesselType.Visible (end) *@
+    @if (mtCrewCertificateGrid.Image.Visible) { // mtCrewCertificateGrid.Image.Visible (begin)
+        <td data-name="Image" @Html.Raw(mtCrewCertificateGrid.Image.CellAttributes)>
+@if (mtCrewCertificateGrid.RowAction == "insert") { // Add (begin)
+    @* Image (begin) *@
+    @if (!mtCrewCertificateGrid.IsConfirm) { // Image (begin)
+    <span id="el@(mtCrewCertificateGrid.RowIndex)_MTCrewCertificate_Image" class="el_MTCrewCertificate_Image">
+    <div id="fd_x@(mtCrewCertificateGrid.RowIndex)_Image" class="fileinput-button ew-file-drop-zone">
+        <input
+            type="file"
+            id="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            name="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            class="form-control ew-file-input"
+            title="@(mtCrewCertificateGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewCertificate"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewCertificateGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewCertificateGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewCertificateGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw((mtCrewCertificateGrid.Image.ReadOnly || mtCrewCertificateGrid.Image.Disabled) ? " disabled" : "")
+            @Html.Raw(mtCrewCertificateGrid.Image.EditAttributes)
+        >
+        <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fn_x@(mtCrewCertificateGrid.RowIndex)_Image" value="@(mtCrewCertificateGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fa_x@(mtCrewCertificateGrid.RowIndex)_Image" value="0">
+    <table id="ft_x@(mtCrewCertificateGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } else { // Image (confirm)
+    <span id="el@(mtCrewCertificateGrid.RowIndex)_MTCrewCertificate_Image" class="el_MTCrewCertificate_Image">
+    <div id="fd_x@(mtCrewCertificateGrid.RowIndex)_Image">
+        <input
+            type="file"
+            id="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            name="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            class="form-control ew-file-input d-none"
+            title="@(mtCrewCertificateGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewCertificate"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewCertificateGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewCertificateGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewCertificateGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw(mtCrewCertificateGrid.Image.EditAttributes)
+        >
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fn_x@(mtCrewCertificateGrid.RowIndex)_Image" value="@(mtCrewCertificateGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fa_x@(mtCrewCertificateGrid.RowIndex)_Image" value="0">
+    <table id="ft_x@(mtCrewCertificateGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } @* Image (end) *@
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_Image" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_Image" id="o@(mtCrewCertificateGrid.RowIndex)_Image" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.Image.OldValue))">
+    @* Image (end) *@
+} else if (mtCrewCertificateGrid.RowType == RowType.View) { // View record
+    @* Image (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Image" class="el_MTCrewCertificate_Image">
+    <span @Html.Raw(mtCrewCertificateGrid.Image.ViewAttributes)>@{
+    	var individualCodeNumber = ConvertToString(mtCrewCertificateList.Image.GetViewValue()).Split('-')[0];
+    }
+    <a href="uploads/@individualCodeNumber/@ConvertToString(mtCrewCertificateList.Image.GetViewValue())" target="_blank">Attachment</a>
+    </span>
+    </span>
+    @* Image (end) *@
+} else  { // Edit (begin)
+    @* Image (begin) *@
+    @if (!mtCrewCertificateGrid.IsConfirm) { // Image (begin)
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Image" class="el_MTCrewCertificate_Image">
+    <div id="fd_x@(mtCrewCertificateGrid.RowIndex)_Image">
+        <input
+            type="file"
+            id="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            name="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            class="form-control ew-file-input d-none"
+            title="@(mtCrewCertificateGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewCertificate"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewCertificateGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewCertificateGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewCertificateGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw(mtCrewCertificateGrid.Image.EditAttributes)
+        >
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fn_x@(mtCrewCertificateGrid.RowIndex)_Image" value="@(mtCrewCertificateGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fa_x@(mtCrewCertificateGrid.RowIndex)_Image" value="@(Post("fa_x" + mtCrewCertificateGrid.RowIndex + "_Image") == "0" ? "0" : "1")">
+    <table id="ft_x@(mtCrewCertificateGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } else { // Image (confirm)
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_Image" class="el_MTCrewCertificate_Image">
+    <div id="fd_x@(mtCrewCertificateGrid.RowIndex)_Image">
+        <input
+            type="file"
+            id="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            name="x@(mtCrewCertificateGrid.RowIndex)_Image"
+            class="form-control ew-file-input d-none"
+            title="@(mtCrewCertificateGrid.Image.Title)"
+            lang="@(CurrentLanguageID)"
+            data-table="MTCrewCertificate"
+            data-field="x_Image"
+            data-size="100"
+            data-accept-file-types="@(mtCrewCertificateGrid.Image.AcceptFileTypes)"
+            data-max-file-size="@(mtCrewCertificateGrid.Image.UploadMaxFileSize)"
+            data-max-number-of-files="null"
+            data-disable-image-crop="@(mtCrewCertificateGrid.Image.ImageCropper ? 0 : 1)"
+            @Html.Raw(mtCrewCertificateGrid.Image.EditAttributes)
+        >
+    </div>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.Image.GetErrorMessage())</div>
+    <input type="hidden" name="fn_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fn_x@(mtCrewCertificateGrid.RowIndex)_Image" value="@(mtCrewCertificateGrid.Image.Upload.FileName)">
+    <input type="hidden" name="fa_x@(mtCrewCertificateGrid.RowIndex)_Image" id= "fa_x@(mtCrewCertificateGrid.RowIndex)_Image" value="@(Post("fa_x" + mtCrewCertificateGrid.RowIndex + "_Image") == "0" ? "0" : "1")">
+    <table id="ft_x@(mtCrewCertificateGrid.RowIndex)_Image" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+    </span>
+    } @* Image (end) *@
+    @* Image (end) *@
+} @* Add/Edit (end) *@
+</td>
+    } @* mtCrewCertificateGrid.Image.Visible (end) *@
+    @if (mtCrewCertificateGrid.CreatedByUserID.Visible) { // mtCrewCertificateGrid.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CreatedByUserID" class="el_MTCrewCertificate_CreatedByUserID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewCertificateGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewCertificate"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewCertificateGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewCertificateGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CreatedByUserID" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" id="o@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedByUserID.OldValue))">
+    @* CreatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CreatedByUserID" class="el_MTCrewCertificate_CreatedByUserID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID"
+            class="form-select ew-select@(mtCrewCertificateGrid.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID"
+            data-table="MTCrewCertificate"
+            data-field="x_CreatedByUserID"
+            data-value-separator="@(mtCrewCertificateGrid.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.CreatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.EditAttributes)>
+            @(mtCrewCertificateGrid.CreatedByUserID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_CreatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.CreatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_CreatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.CreatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.CreatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* CreatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedByUserID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CreatedByUserID" class="el_MTCrewCertificate_CreatedByUserID">
+    <span @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.CreatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CreatedByUserID" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CreatedByUserID" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_CreatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedByUserID.OldValue))">
+    }
+    @* CreatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.CreatedByUserID.Visible (end) *@
+    @if (mtCrewCertificateGrid.CreatedDateTime.Visible) { // mtCrewCertificateGrid.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtCrewCertificateGrid.CreatedDateTime.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CreatedDateTime" class="el_MTCrewCertificate_CreatedDateTime">
+    <input type="@(mtCrewCertificateGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" data-table="MTCrewCertificate" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewCertificateGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.CreatedDateTime.ReadOnly && !mtCrewCertificateGrid.CreatedDateTime.Disabled && !mtCrewCertificateGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CreatedDateTime" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" id="o@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedDateTime.OldValue))">
+    @* CreatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CreatedDateTime" class="el_MTCrewCertificate_CreatedDateTime">
+    <input type="@(mtCrewCertificateGrid.CreatedDateTime.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" id="x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" data-table="MTCrewCertificate" data-field="x_CreatedDateTime" value="@Html.Raw(mtCrewCertificateGrid.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.CreatedDateTime.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.CreatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.CreatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.CreatedDateTime.ReadOnly && !mtCrewCertificateGrid.CreatedDateTime.Disabled && !mtCrewCertificateGrid.CreatedDateTime.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.CreatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* CreatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* CreatedDateTime (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_CreatedDateTime" class="el_MTCrewCertificate_CreatedDateTime">
+    <span @Html.Raw(mtCrewCertificateGrid.CreatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.CreatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CreatedDateTime" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_CreatedDateTime" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_CreatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.CreatedDateTime.OldValue))">
+    }
+    @* CreatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.CreatedDateTime.Visible (end) *@
+    @if (mtCrewCertificateGrid.LastUpdatedByUserID.Visible) { // mtCrewCertificateGrid.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_LastUpdatedByUserID" class="el_MTCrewCertificate_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewCertificateGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewCertificate"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewCertificateGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewCertificateGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" id="o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedByUserID.OldValue))">
+    @* LastUpdatedByUserID (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_LastUpdatedByUserID" class="el_MTCrewCertificate_LastUpdatedByUserID">
+        <select
+            id="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID"
+            name="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID"
+            class="form-select ew-select@(mtCrewCertificateGrid.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID"
+            data-table="MTCrewCertificate"
+            data-field="x_LastUpdatedByUserID"
+            data-value-separator="@(mtCrewCertificateGrid.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtCrewCertificateGrid.LastUpdatedByUserID.PlaceHolder))"
+            @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.EditAttributes)>
+            @(mtCrewCertificateGrid.LastUpdatedByUserID.SelectOptionListHtml("x" + mtCrewCertificateGrid.RowIndex + "_LastUpdatedByUserID"))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.GetErrorMessage())</div>
+    @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.Lookup.GetParamTag(mtCrewCertificateGrid, "p_x" + mtCrewCertificateGrid.RowIndex + "_LastUpdatedByUserID"))
+    <script>
+    loadjs.ready("fMTCrewCertificategrid", function() {
+        var options = { name: "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID", selectId: "fMTCrewCertificategrid_x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" },
+            el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+        if (!el)
+            return;
+        options.closeOnSelect = !options.multiple;
+        options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+        if (fMTCrewCertificategrid.lists.LastUpdatedByUserID?.lookupOptions.length) {
+            options.data = { id: "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewCertificategrid" };
+        } else {
+            options.ajax = { id: "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID", form: "fMTCrewCertificategrid", limit: ew.LOOKUP_PAGE_SIZE };
+        }
+        options.minimumInputLength = ew.selectMinimumInputLength;
+        options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTCrewCertificate.fields.LastUpdatedByUserID.selectOptions);
+        ew.createSelect(options);
+    });
+    </script>
+    </span>
+    @* LastUpdatedByUserID (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedByUserID (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_LastUpdatedByUserID" class="el_MTCrewCertificate_LastUpdatedByUserID">
+    <span @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.LastUpdatedByUserID.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_LastUpdatedByUserID" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedByUserID.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_LastUpdatedByUserID" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedByUserID" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedByUserID.OldValue))">
+    }
+    @* LastUpdatedByUserID (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.LastUpdatedByUserID.Visible (end) *@
+    @if (mtCrewCertificateGrid.LastUpdatedDateTime.Visible) { // mtCrewCertificateGrid.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.CellAttributes)>
+@if (mtCrewCertificateGrid.RowType == RowType.Add) { // Add (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_LastUpdatedDateTime" class="el_MTCrewCertificate_LastUpdatedDateTime">
+    <input type="@(mtCrewCertificateGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewCertificate" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.LastUpdatedDateTime.ReadOnly && !mtCrewCertificateGrid.LastUpdatedDateTime.Disabled && !mtCrewCertificateGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" id="o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedDateTime.OldValue))">
+    @* LastUpdatedDateTime (end) *@
+} @* Add (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.Edit) { // Edit (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_LastUpdatedDateTime" class="el_MTCrewCertificate_LastUpdatedDateTime">
+    <input type="@(mtCrewCertificateGrid.LastUpdatedDateTime.InputTextType)" name="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" id="x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" data-table="MTCrewCertificate" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtCrewCertificateGrid.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.GetErrorMessage())</div>
+    @if (!mtCrewCertificateGrid.LastUpdatedDateTime.ReadOnly && !mtCrewCertificateGrid.LastUpdatedDateTime.Disabled && !mtCrewCertificateGrid.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtCrewCertificateGrid.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+    <script>
+    loadjs.ready(["fMTCrewCertificategrid", "datetimepicker"], function () {
+        let format = "@Html.Raw(DateFormat(1))", // DN
+            options = {
+                    localization: {
+                        locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                        hourCycle: format.match(/H/) ? "h24" : "h12",
+                        format,
+                        ...ew.language.phrase("datetimepicker")
+                    },
+                    display: {
+                        icons: {
+                            previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                            next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                        },
+                        components: {
+                            hours: !!format.match(/h/i),
+                            minutes: !!format.match(/m/),
+                            seconds: !!format.match(/s/i)
+                        },
+                        theme: ew.isDark() ? "dark" : "auto"
+                    }
+                };
+        ew.createDateTimePicker("fMTCrewCertificategrid", "x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    });
+    </script>
+    }
+    </span>
+    @* LastUpdatedDateTime (end) *@
+} @* Edit (end) *@
+@if (mtCrewCertificateGrid.RowType == RowType.View) { // View (begin)
+    @* LastUpdatedDateTime (begin) *@
+    <span id="el@(mtCrewCertificateGrid.RowCount)_MTCrewCertificate_LastUpdatedDateTime" class="el_MTCrewCertificate_LastUpdatedDateTime">
+    <span @Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.ViewAttributes)>
+    @Html.Raw(mtCrewCertificateGrid.LastUpdatedDateTime.GetViewValue())</span>
+    </span>
+    if (mtCrewCertificateGrid.IsConfirm) {
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_LastUpdatedDateTime" data-hidden="1" name="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewCertificategrid$x@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedDateTime.FormValue))">
+    <input type="hidden" data-table="MTCrewCertificate" data-field="x_LastUpdatedDateTime" data-hidden="1" data-old name="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" id="fMTCrewCertificategrid$o@(mtCrewCertificateGrid.RowIndex)_LastUpdatedDateTime" value="@Html.Raw(HtmlEncode(mtCrewCertificateGrid.LastUpdatedDateTime.OldValue))">
+    }
+    @* LastUpdatedDateTime (end) *@
+} @* View (end) *@
+</td>
+    } @* mtCrewCertificateGrid.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtCrewCertificateGrid.ListOptions.RenderBody("right", mtCrewCertificateGrid.RowCount)
+    </tr>
+if (mtCrewCertificateGrid.RowType == RowType.Add || mtCrewCertificateGrid.RowType == RowType.Edit) {
+<script>
+loadjs.ready(["fMTCrewCertificategrid","load"], () => fMTCrewCertificategrid.updateLists(@(mtCrewCertificateGrid.RowIndex)@(mtCrewCertificateGrid.IsAdd || mtCrewCertificateGrid.IsEdit || mtCrewCertificateGrid.IsCopy || SameString(mtCrewCertificateGrid.RowIndex, "$rowindex$") ? ", true" : "")));
+</script>
+}
+    } @* End delete row checking *@
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtCrewCertificateGrid.RowIndex, "$rowindex$"))
+        mtCrewCertificateGrid.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtCrewCertificateGrid.IsCopy || mtCrewCertificateGrid.IsAdd) && mtCrewCertificateGrid.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtCrewCertificateGrid.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+@if (mtCrewCertificateGrid.CurrentMode == "add" || mtCrewCertificateGrid.CurrentMode == "copy") {
+<input type="hidden" name="@(mtCrewCertificateGrid.FormKeyCountName)" id="@(mtCrewCertificateGrid.FormKeyCountName)" value="@(mtCrewCertificateGrid.KeyCount)">
+@Html.Raw(mtCrewCertificateGrid.MultiSelectKey)
+}
+@if (mtCrewCertificateGrid.CurrentMode == "edit") {
+<input type="hidden" name="@(mtCrewCertificateGrid.FormKeyCountName)" id="@(mtCrewCertificateGrid.FormKeyCountName)" value="@(mtCrewCertificateGrid.KeyCount)">
+@Html.Raw(mtCrewCertificateGrid.MultiSelectKey)
+}
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtCrewCertificateGrid.CurrentMode)) {
+<input type="hidden" name="action" id="action" value="">
+}
+<input type="hidden" name="detailpage" value="fMTCrewCertificategrid">
+</div><!-- /.ew-list-form -->
+@{ mtCrewCertificateGrid.CloseRecordset(); }
+@if (mtCrewCertificateGrid.ShowOtherOptions) {
+<div class="card-footer ew-grid-lower-panel">
+    @mtCrewCertificateGrid.OtherOptions.RenderBody("bottom")
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtCrewCertificateGrid.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@if (!mtCrewCertificateGrid.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTCrewCertificate");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}
+@{
+    // Close Recordset
+    mtCrewCertificateGrid.CloseRecordset(); // DN
+    // Clear CurrentGrid
+    CurrentGrid = null;
+}

@@ -1,0 +1,710 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtClothesSizeList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtClothesSizeList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtClothesSizeList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtClothesSizeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTClothesSize: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtClothesSizeList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtClothesSizeList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtClothesSizeList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtClothesSizeList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtClothesSizeList._Name.ToClientList(mtClothesSizeList)),
+            "CoverallSizeDescription": @Html.Raw(mtClothesSizeList.CoverallSizeDescription.ToClientList(mtClothesSizeList)),
+            "ShirtSizeDescription": @Html.Raw(mtClothesSizeList.ShirtSizeDescription.ToClientList(mtClothesSizeList)),
+            "TrouserSizeDescription": @Html.Raw(mtClothesSizeList.TrouserSizeDescription.ToClientList(mtClothesSizeList)),
+            "CreatedByUserID": @Html.Raw(mtClothesSizeList.CreatedByUserID.ToClientList(mtClothesSizeList)),
+            "CreatedDateTime": @Html.Raw(mtClothesSizeList.CreatedDateTime.ToClientList(mtClothesSizeList)),
+            "LastUpdatedByUserID": @Html.Raw(mtClothesSizeList.LastUpdatedByUserID.ToClientList(mtClothesSizeList)),
+            "LastUpdatedDateTime": @Html.Raw(mtClothesSizeList.LastUpdatedDateTime.ToClientList(mtClothesSizeList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtClothesSizeList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtClothesSizeList.TotalRecords > 0 && mtClothesSizeList.ExportOptions.Visible) {
+    mtClothesSizeList.ExportOptions.Render("body");
+}
+@if (mtClothesSizeList.ImportOptions.Visible) {
+    mtClothesSizeList.ImportOptions.Render("body");
+}
+@if (mtClothesSizeList.SearchOptions.Visible) {
+    mtClothesSizeList.SearchOptions.Render("body");
+}
+@if (mtClothesSizeList.FilterOptions.Visible) {
+    mtClothesSizeList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtClothesSizeList.ShowCurrentFilter) {
+    mtClothesSizeList.ShowFilterList();
+}
+@if (!mtClothesSizeList.IsModal) {
+<form name="fMTClothesSizesrch" id="fMTClothesSizesrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTClothesSizesrch_search_panel" class="mb-2 mb-sm-0 @(mtClothesSizeList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtClothesSizeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTClothesSize: currentTable } });
+var currentForm;
+var fMTClothesSizesrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTClothesSizesrch")
+        .setPageId("list")
+@if (mtClothesSizeList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["CoverallSizeDescription", [], fields.CoverallSizeDescription.isInvalid],
+            ["ShirtSizeDescription", [], fields.ShirtSizeDescription.isInvalid],
+            ["TrouserSizeDescription", [], fields.TrouserSizeDescription.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtClothesSizeList._Name.ToClientList(mtClothesSizeList)),
+            "CoverallSizeDescription": @Html.Raw(mtClothesSizeList.CoverallSizeDescription.ToClientList(mtClothesSizeList)),
+            "ShirtSizeDescription": @Html.Raw(mtClothesSizeList.ShirtSizeDescription.ToClientList(mtClothesSizeList)),
+            "TrouserSizeDescription": @Html.Raw(mtClothesSizeList.TrouserSizeDescription.ToClientList(mtClothesSizeList)),
+            "CreatedByUserID": @Html.Raw(mtClothesSizeList.CreatedByUserID.ToClientList(mtClothesSizeList)),
+            "CreatedDateTime": @Html.Raw(mtClothesSizeList.CreatedDateTime.ToClientList(mtClothesSizeList)),
+            "LastUpdatedByUserID": @Html.Raw(mtClothesSizeList.LastUpdatedByUserID.ToClientList(mtClothesSizeList)),
+            "LastUpdatedDateTime": @Html.Raw(mtClothesSizeList.LastUpdatedDateTime.ToClientList(mtClothesSizeList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtClothesSizeList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtClothesSizeList.IsExport() && Empty(mtClothesSizeList.CurrentAction) && mtClothesSizeList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtClothesSizeList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtClothesSizeList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtClothesSizeList.RowType = RowType.Search;
+    mtClothesSizeList.ResetAttributes();
+    await mtClothesSizeList.RenderRow();
+}
+@if (mtClothesSizeList._Name.Visible) { // mtClothesSizeList._Name.Visible (begin)
+    if (!mtClothesSizeList._Name.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtClothesSizeList._Name.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x__Name"
+            data-table="MTClothesSize"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList._Name.EditAttributes)>
+            @(mtClothesSizeList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTClothesSizesrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList._Name.Visible (end) *@
+@if (mtClothesSizeList.CoverallSizeDescription.Visible) { // mtClothesSizeList.CoverallSizeDescription.Visible (begin)
+    if (!mtClothesSizeList.CoverallSizeDescription.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs_CoverallSizeDescription" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList.CoverallSizeDescription.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CoverallSizeDescription"
+            name="x_CoverallSizeDescription[]"
+            class="form-control ew-select@(mtClothesSizeList.CoverallSizeDescription.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x_CoverallSizeDescription"
+            data-table="MTClothesSize"
+            data-field="x_CoverallSizeDescription"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList.CoverallSizeDescription.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList.CoverallSizeDescription.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList.CoverallSizeDescription.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList.CoverallSizeDescription.EditAttributes)>
+            @(mtClothesSizeList.CoverallSizeDescription.SelectOptionListHtml("x_CoverallSizeDescription", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList.CoverallSizeDescription.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x_CoverallSizeDescription",
+                selectId: "fMTClothesSizesrch_x_CoverallSizeDescription",
+                ajax: { id: "x_CoverallSizeDescription", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields.CoverallSizeDescription.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList.CoverallSizeDescription.Visible (end) *@
+@if (mtClothesSizeList.ShirtSizeDescription.Visible) { // mtClothesSizeList.ShirtSizeDescription.Visible (begin)
+    if (!mtClothesSizeList.ShirtSizeDescription.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs_ShirtSizeDescription" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList.ShirtSizeDescription.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ShirtSizeDescription"
+            name="x_ShirtSizeDescription[]"
+            class="form-control ew-select@(mtClothesSizeList.ShirtSizeDescription.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x_ShirtSizeDescription"
+            data-table="MTClothesSize"
+            data-field="x_ShirtSizeDescription"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList.ShirtSizeDescription.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList.ShirtSizeDescription.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList.ShirtSizeDescription.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList.ShirtSizeDescription.EditAttributes)>
+            @(mtClothesSizeList.ShirtSizeDescription.SelectOptionListHtml("x_ShirtSizeDescription", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList.ShirtSizeDescription.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x_ShirtSizeDescription",
+                selectId: "fMTClothesSizesrch_x_ShirtSizeDescription",
+                ajax: { id: "x_ShirtSizeDescription", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields.ShirtSizeDescription.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList.ShirtSizeDescription.Visible (end) *@
+@if (mtClothesSizeList.TrouserSizeDescription.Visible) { // mtClothesSizeList.TrouserSizeDescription.Visible (begin)
+    if (!mtClothesSizeList.TrouserSizeDescription.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs_TrouserSizeDescription" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList.TrouserSizeDescription.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_TrouserSizeDescription"
+            name="x_TrouserSizeDescription[]"
+            class="form-control ew-select@(mtClothesSizeList.TrouserSizeDescription.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x_TrouserSizeDescription"
+            data-table="MTClothesSize"
+            data-field="x_TrouserSizeDescription"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList.TrouserSizeDescription.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList.TrouserSizeDescription.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList.TrouserSizeDescription.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList.TrouserSizeDescription.EditAttributes)>
+            @(mtClothesSizeList.TrouserSizeDescription.SelectOptionListHtml("x_TrouserSizeDescription", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList.TrouserSizeDescription.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x_TrouserSizeDescription",
+                selectId: "fMTClothesSizesrch_x_TrouserSizeDescription",
+                ajax: { id: "x_TrouserSizeDescription", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields.TrouserSizeDescription.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList.TrouserSizeDescription.Visible (end) *@
+@if (mtClothesSizeList.CreatedByUserID.Visible) { // mtClothesSizeList.CreatedByUserID.Visible (begin)
+    if (!mtClothesSizeList.CreatedByUserID.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtClothesSizeList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x_CreatedByUserID"
+            data-table="MTClothesSize"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList.CreatedByUserID.EditAttributes)>
+            @(mtClothesSizeList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTClothesSizesrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList.CreatedByUserID.Visible (end) *@
+@if (mtClothesSizeList.CreatedDateTime.Visible) { // mtClothesSizeList.CreatedDateTime.Visible (begin)
+    if (!mtClothesSizeList.CreatedDateTime.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtClothesSizeList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x_CreatedDateTime"
+            data-table="MTClothesSize"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList.CreatedDateTime.EditAttributes)>
+            @(mtClothesSizeList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTClothesSizesrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList.CreatedDateTime.Visible (end) *@
+@if (mtClothesSizeList.LastUpdatedByUserID.Visible) { // mtClothesSizeList.LastUpdatedByUserID.Visible (begin)
+    if (!mtClothesSizeList.LastUpdatedByUserID.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtClothesSizeList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x_LastUpdatedByUserID"
+            data-table="MTClothesSize"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList.LastUpdatedByUserID.EditAttributes)>
+            @(mtClothesSizeList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTClothesSizesrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList.LastUpdatedByUserID.Visible (end) *@
+@if (mtClothesSizeList.LastUpdatedDateTime.Visible) { // mtClothesSizeList.LastUpdatedDateTime.Visible (begin)
+    if (!mtClothesSizeList.LastUpdatedDateTime.UseFilter) {
+        mtClothesSizeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtClothesSizeList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtClothesSizeList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTClothesSizesrch_x_LastUpdatedDateTime"
+            data-table="MTClothesSize"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtClothesSizeList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtClothesSizeList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtClothesSizeList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtClothesSizeList.LastUpdatedDateTime.EditAttributes)>
+            @(mtClothesSizeList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtClothesSizeList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTClothesSizesrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTClothesSizesrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTClothesSizesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTClothesSize.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtClothesSizeList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtClothesSizeList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtClothesSizeList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtClothesSizeList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtClothesSizeList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTClothesSizesrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtClothesSizeList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTClothesSizesrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtClothesSizeList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTClothesSizesrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtClothesSizeList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTClothesSizesrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtClothesSizeList.ShowPageHeader()
+@mtClothesSizeList.ShowMessages()
+<main class="list @(mtClothesSizeList.TotalRecords == 0 && !mtClothesSizeList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtClothesSizeList.TotalRecords > 0 || !Empty(mtClothesSizeList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtClothesSizeList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtClothesSizeList.TableGridClass)">
+<form name="@(mtClothesSizeList.FormName)" id="@(mtClothesSizeList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtClothesSizeList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtClothesSizeList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTClothesSize" class="card-body ew-grid-middle-panel @(mtClothesSizeList.TableContainerClass)" style="@(mtClothesSizeList.TableContainerStyle)">
+@if (mtClothesSizeList.TotalRecords > 0 || mtClothesSizeList.IsGridEdit || mtClothesSizeList.IsMultiEdit) {
+<table id="tbl_MTClothesSizelist" class="@(mtClothesSizeList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtClothesSizeList.RowType = RowType.Header;
+
+    // Render list options
+    await mtClothesSizeList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtClothesSizeList.ListOptions.RenderHeader("left")
+@if (mtClothesSizeList._Name.Visible) { // mtClothesSizeList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtClothesSizeList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize__Name" class="MTClothesSize__Name">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList._Name))</div></th>
+} @* mtClothesSizeList._Name.Visible (end) *@
+@if (mtClothesSizeList.CoverallSizeDescription.Visible) { // mtClothesSizeList.CoverallSizeDescription.Visible (begin)
+        <th data-name="CoverallSizeDescription" class="@(mtClothesSizeList.CoverallSizeDescription.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize_CoverallSizeDescription" class="MTClothesSize_CoverallSizeDescription">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList.CoverallSizeDescription))</div></th>
+} @* mtClothesSizeList.CoverallSizeDescription.Visible (end) *@
+@if (mtClothesSizeList.ShirtSizeDescription.Visible) { // mtClothesSizeList.ShirtSizeDescription.Visible (begin)
+        <th data-name="ShirtSizeDescription" class="@(mtClothesSizeList.ShirtSizeDescription.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize_ShirtSizeDescription" class="MTClothesSize_ShirtSizeDescription">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList.ShirtSizeDescription))</div></th>
+} @* mtClothesSizeList.ShirtSizeDescription.Visible (end) *@
+@if (mtClothesSizeList.TrouserSizeDescription.Visible) { // mtClothesSizeList.TrouserSizeDescription.Visible (begin)
+        <th data-name="TrouserSizeDescription" class="@(mtClothesSizeList.TrouserSizeDescription.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize_TrouserSizeDescription" class="MTClothesSize_TrouserSizeDescription">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList.TrouserSizeDescription))</div></th>
+} @* mtClothesSizeList.TrouserSizeDescription.Visible (end) *@
+@if (mtClothesSizeList.CreatedByUserID.Visible) { // mtClothesSizeList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtClothesSizeList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize_CreatedByUserID" class="MTClothesSize_CreatedByUserID">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList.CreatedByUserID))</div></th>
+} @* mtClothesSizeList.CreatedByUserID.Visible (end) *@
+@if (mtClothesSizeList.CreatedDateTime.Visible) { // mtClothesSizeList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtClothesSizeList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize_CreatedDateTime" class="MTClothesSize_CreatedDateTime">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList.CreatedDateTime))</div></th>
+} @* mtClothesSizeList.CreatedDateTime.Visible (end) *@
+@if (mtClothesSizeList.LastUpdatedByUserID.Visible) { // mtClothesSizeList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtClothesSizeList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize_LastUpdatedByUserID" class="MTClothesSize_LastUpdatedByUserID">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList.LastUpdatedByUserID))</div></th>
+} @* mtClothesSizeList.LastUpdatedByUserID.Visible (end) *@
+@if (mtClothesSizeList.LastUpdatedDateTime.Visible) { // mtClothesSizeList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtClothesSizeList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTClothesSize_LastUpdatedDateTime" class="MTClothesSize_LastUpdatedDateTime">@Html.Raw(mtClothesSizeList.RenderFieldHeader(mtClothesSizeList.LastUpdatedDateTime))</div></th>
+} @* mtClothesSizeList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtClothesSizeList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtClothesSizeList.PageNumber)">
+@{
+    await mtClothesSizeList.SetupGrid();
+    bool eof = mtClothesSizeList.Recordset == null; // DN
+}
+@while (mtClothesSizeList.RecordCount < mtClothesSizeList.StopRecord || SameString(mtClothesSizeList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtClothesSizeList.RowIndex, "$rowindex$") &&
+        (!mtClothesSizeList.IsGridAdd || mtClothesSizeList.CurrentMode == "copy") &&
+        (!((mtClothesSizeList.IsCopy || mtClothesSizeList.IsAdd) && mtClothesSizeList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtClothesSizeList.Recordset.ReadAsync();
+    mtClothesSizeList.RecordCount++;
+    if (mtClothesSizeList.RecordCount >= mtClothesSizeList.StartRecord) {
+        await mtClothesSizeList.SetupRow();
+    <tr @Html.Raw(mtClothesSizeList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtClothesSizeList.ListOptions.RenderBody("left", mtClothesSizeList.RowCount)
+    @if (mtClothesSizeList._Name.Visible) { // mtClothesSizeList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtClothesSizeList._Name.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize__Name" class="el_MTClothesSize__Name">
+<span @Html.Raw(mtClothesSizeList._Name.ViewAttributes)>
+@Html.Raw(mtClothesSizeList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList._Name.Visible (end) *@
+    @if (mtClothesSizeList.CoverallSizeDescription.Visible) { // mtClothesSizeList.CoverallSizeDescription.Visible (begin)
+        <td data-name="CoverallSizeDescription" @Html.Raw(mtClothesSizeList.CoverallSizeDescription.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize_CoverallSizeDescription" class="el_MTClothesSize_CoverallSizeDescription">
+<span @Html.Raw(mtClothesSizeList.CoverallSizeDescription.ViewAttributes)>
+@Html.Raw(mtClothesSizeList.CoverallSizeDescription.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList.CoverallSizeDescription.Visible (end) *@
+    @if (mtClothesSizeList.ShirtSizeDescription.Visible) { // mtClothesSizeList.ShirtSizeDescription.Visible (begin)
+        <td data-name="ShirtSizeDescription" @Html.Raw(mtClothesSizeList.ShirtSizeDescription.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize_ShirtSizeDescription" class="el_MTClothesSize_ShirtSizeDescription">
+<span @Html.Raw(mtClothesSizeList.ShirtSizeDescription.ViewAttributes)>
+@Html.Raw(mtClothesSizeList.ShirtSizeDescription.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList.ShirtSizeDescription.Visible (end) *@
+    @if (mtClothesSizeList.TrouserSizeDescription.Visible) { // mtClothesSizeList.TrouserSizeDescription.Visible (begin)
+        <td data-name="TrouserSizeDescription" @Html.Raw(mtClothesSizeList.TrouserSizeDescription.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize_TrouserSizeDescription" class="el_MTClothesSize_TrouserSizeDescription">
+<span @Html.Raw(mtClothesSizeList.TrouserSizeDescription.ViewAttributes)>
+@Html.Raw(mtClothesSizeList.TrouserSizeDescription.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList.TrouserSizeDescription.Visible (end) *@
+    @if (mtClothesSizeList.CreatedByUserID.Visible) { // mtClothesSizeList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtClothesSizeList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize_CreatedByUserID" class="el_MTClothesSize_CreatedByUserID">
+<span @Html.Raw(mtClothesSizeList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtClothesSizeList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList.CreatedByUserID.Visible (end) *@
+    @if (mtClothesSizeList.CreatedDateTime.Visible) { // mtClothesSizeList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtClothesSizeList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize_CreatedDateTime" class="el_MTClothesSize_CreatedDateTime">
+<span @Html.Raw(mtClothesSizeList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtClothesSizeList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList.CreatedDateTime.Visible (end) *@
+    @if (mtClothesSizeList.LastUpdatedByUserID.Visible) { // mtClothesSizeList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtClothesSizeList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize_LastUpdatedByUserID" class="el_MTClothesSize_LastUpdatedByUserID">
+<span @Html.Raw(mtClothesSizeList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtClothesSizeList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtClothesSizeList.LastUpdatedDateTime.Visible) { // mtClothesSizeList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtClothesSizeList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtClothesSizeList.RowCount)_MTClothesSize_LastUpdatedDateTime" class="el_MTClothesSize_LastUpdatedDateTime">
+<span @Html.Raw(mtClothesSizeList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtClothesSizeList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtClothesSizeList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtClothesSizeList.ListOptions.RenderBody("right", mtClothesSizeList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtClothesSizeList.RowIndex, "$rowindex$"))
+        mtClothesSizeList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtClothesSizeList.IsCopy || mtClothesSizeList.IsAdd) && mtClothesSizeList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtClothesSizeList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtClothesSizeList.CurrentAction) && !mtClothesSizeList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtClothesSizeList.CloseRecordset(); }
+@if (!mtClothesSizeList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtClothesSizeList.IsGridAdd && !(mtClothesSizeList.IsGridEdit && mtClothesSizeList.ModalGridEdit) && !mtClothesSizeList.IsMultiEdit) {
+@Html.Raw(mtClothesSizeList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtClothesSizeList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtClothesSizeList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtClothesSizeList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtClothesSizeList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTClothesSize");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

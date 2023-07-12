@@ -1,0 +1,258 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mcuResultView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mcuResultView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mcuResultView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mcuResultView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @mcuResultView.ExportOptions.RenderBody()
+    @mcuResultView.OtherOptions.RenderBody()
+</div>
+}
+@mcuResultView.ShowPageHeader()
+@mcuResultView.ShowMessages()
+<main class="view">
+<form name="fMcuResultview" id="fMcuResultview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (!mcuResultView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mcuResultView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { McuResult: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fMcuResultview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fMcuResultview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(mcuResultView.IsModal)">
+<table class="@(mcuResultView.TableClass)">
+@if (mcuResultView.MTCrew_ID.Visible) { // mcuResultView.MTCrew_ID.Visible (begin)
+    <tr id="r_MTCrew_ID" @Html.Raw(mcuResultView.MTCrew_ID.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_MTCrew_ID">@Html.Raw(mcuResultView.MTCrew_ID.Caption)</span></td>
+        <td data-name="MTCrew_ID" @Html.Raw(mcuResultView.MTCrew_ID.CellAttributes)>
+<span id="el_McuResult_MTCrew_ID">
+<span @Html.Raw(mcuResultView.MTCrew_ID.ViewAttributes)>
+@Html.Raw(mcuResultView.MTCrew_ID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.MTCrew_ID.Visible (end) *@
+@if (mcuResultView.IndividualCodeNumber.Visible) { // mcuResultView.IndividualCodeNumber.Visible (begin)
+    <tr id="r_IndividualCodeNumber" @Html.Raw(mcuResultView.IndividualCodeNumber.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_IndividualCodeNumber">@Html.Raw(mcuResultView.IndividualCodeNumber.Caption)</span></td>
+        <td data-name="IndividualCodeNumber" @Html.Raw(mcuResultView.IndividualCodeNumber.CellAttributes)>
+<span id="el_McuResult_IndividualCodeNumber">
+<span @Html.Raw(mcuResultView.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(mcuResultView.IndividualCodeNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.IndividualCodeNumber.Visible (end) *@
+@if (mcuResultView.FullName.Visible) { // mcuResultView.FullName.Visible (begin)
+    <tr id="r_FullName" @Html.Raw(mcuResultView.FullName.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_FullName">@Html.Raw(mcuResultView.FullName.Caption)</span></td>
+        <td data-name="FullName" @Html.Raw(mcuResultView.FullName.CellAttributes)>
+<span id="el_McuResult_FullName">
+<span @Html.Raw(mcuResultView.FullName.ViewAttributes)>
+@Html.Raw(mcuResultView.FullName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.FullName.Visible (end) *@
+@if (mcuResultView.RequiredPhoto.Visible) { // mcuResultView.RequiredPhoto.Visible (begin)
+    <tr id="r_RequiredPhoto" @Html.Raw(mcuResultView.RequiredPhoto.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_RequiredPhoto">@Html.Raw(mcuResultView.RequiredPhoto.Caption)</span></td>
+        <td data-name="RequiredPhoto" @Html.Raw(mcuResultView.RequiredPhoto.CellAttributes)>
+<span id="el_McuResult_RequiredPhoto">
+<span @Html.Raw(mcuResultView.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(mcuResultList.IndividualCodeNumber.GetViewValue())/@ConvertToString(mcuResultList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span></td>
+    </tr>
+} @* mcuResultView.RequiredPhoto.Visible (end) *@
+@if (mcuResultView.VisaPhoto.Visible) { // mcuResultView.VisaPhoto.Visible (begin)
+    <tr id="r_VisaPhoto" @Html.Raw(mcuResultView.VisaPhoto.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_VisaPhoto">@Html.Raw(mcuResultView.VisaPhoto.Caption)</span></td>
+        <td data-name="VisaPhoto" @Html.Raw(mcuResultView.VisaPhoto.CellAttributes)>
+<span id="el_McuResult_VisaPhoto">
+<span @Html.Raw(mcuResultView.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(mcuResultList.IndividualCodeNumber.GetViewValue())/@ConvertToString(mcuResultList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span></td>
+    </tr>
+} @* mcuResultView.VisaPhoto.Visible (end) *@
+@if (mcuResultView.Gender.Visible) { // mcuResultView.Gender.Visible (begin)
+    <tr id="r_Gender" @Html.Raw(mcuResultView.Gender.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_Gender">@Html.Raw(mcuResultView.Gender.Caption)</span></td>
+        <td data-name="Gender" @Html.Raw(mcuResultView.Gender.CellAttributes)>
+<span id="el_McuResult_Gender">
+<span @Html.Raw(mcuResultView.Gender.ViewAttributes)>
+@Html.Raw(mcuResultView.Gender.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.Gender.Visible (end) *@
+@if (mcuResultView.RankAppliedFor.Visible) { // mcuResultView.RankAppliedFor.Visible (begin)
+    <tr id="r_RankAppliedFor" @Html.Raw(mcuResultView.RankAppliedFor.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_RankAppliedFor">@Html.Raw(mcuResultView.RankAppliedFor.Caption)</span></td>
+        <td data-name="RankAppliedFor" @Html.Raw(mcuResultView.RankAppliedFor.CellAttributes)>
+<span id="el_McuResult_RankAppliedFor">
+<span @Html.Raw(mcuResultView.RankAppliedFor.ViewAttributes)>
+@Html.Raw(mcuResultView.RankAppliedFor.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.RankAppliedFor.Visible (end) *@
+@if (mcuResultView.WillAcceptLowRank.Visible) { // mcuResultView.WillAcceptLowRank.Visible (begin)
+    <tr id="r_WillAcceptLowRank" @Html.Raw(mcuResultView.WillAcceptLowRank.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_WillAcceptLowRank">@Html.Raw(mcuResultView.WillAcceptLowRank.Caption)</span></td>
+        <td data-name="WillAcceptLowRank" @Html.Raw(mcuResultView.WillAcceptLowRank.CellAttributes)>
+<span id="el_McuResult_WillAcceptLowRank">
+<span @Html.Raw(mcuResultView.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(mcuResultView.RowCount)" class="form-check-input" value="@(mcuResultView.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(mcuResultView.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(mcuResultView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* mcuResultView.WillAcceptLowRank.Visible (end) *@
+@if (mcuResultView.AvailableFrom.Visible) { // mcuResultView.AvailableFrom.Visible (begin)
+    <tr id="r_AvailableFrom" @Html.Raw(mcuResultView.AvailableFrom.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_AvailableFrom">@Html.Raw(mcuResultView.AvailableFrom.Caption)</span></td>
+        <td data-name="AvailableFrom" @Html.Raw(mcuResultView.AvailableFrom.CellAttributes)>
+<span id="el_McuResult_AvailableFrom">
+<span @Html.Raw(mcuResultView.AvailableFrom.ViewAttributes)>
+@Html.Raw(mcuResultView.AvailableFrom.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.AvailableFrom.Visible (end) *@
+@if (mcuResultView.AvailableUntil.Visible) { // mcuResultView.AvailableUntil.Visible (begin)
+    <tr id="r_AvailableUntil" @Html.Raw(mcuResultView.AvailableUntil.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_AvailableUntil">@Html.Raw(mcuResultView.AvailableUntil.Caption)</span></td>
+        <td data-name="AvailableUntil" @Html.Raw(mcuResultView.AvailableUntil.CellAttributes)>
+<span id="el_McuResult_AvailableUntil">
+<span @Html.Raw(mcuResultView.AvailableUntil.ViewAttributes)>
+@Html.Raw(mcuResultView.AvailableUntil.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.AvailableUntil.Visible (end) *@
+@if (mcuResultView.McuScheduleDate.Visible) { // mcuResultView.McuScheduleDate.Visible (begin)
+    <tr id="r_McuScheduleDate" @Html.Raw(mcuResultView.McuScheduleDate.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_McuScheduleDate">@Html.Raw(mcuResultView.McuScheduleDate.Caption)</span></td>
+        <td data-name="McuScheduleDate" @Html.Raw(mcuResultView.McuScheduleDate.CellAttributes)>
+<span id="el_McuResult_McuScheduleDate">
+<span @Html.Raw(mcuResultView.McuScheduleDate.ViewAttributes)>
+@Html.Raw(mcuResultView.McuScheduleDate.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.McuScheduleDate.Visible (end) *@
+@if (mcuResultView.McuDate.Visible) { // mcuResultView.McuDate.Visible (begin)
+    <tr id="r_McuDate" @Html.Raw(mcuResultView.McuDate.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_McuDate">@Html.Raw(mcuResultView.McuDate.Caption)</span></td>
+        <td data-name="McuDate" @Html.Raw(mcuResultView.McuDate.CellAttributes)>
+<span id="el_McuResult_McuDate">
+<span @Html.Raw(mcuResultView.McuDate.ViewAttributes)>
+@Html.Raw(mcuResultView.McuDate.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.McuDate.Visible (end) *@
+@if (mcuResultView.McuExpirationDate.Visible) { // mcuResultView.McuExpirationDate.Visible (begin)
+    <tr id="r_McuExpirationDate" @Html.Raw(mcuResultView.McuExpirationDate.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_McuExpirationDate">@Html.Raw(mcuResultView.McuExpirationDate.Caption)</span></td>
+        <td data-name="McuExpirationDate" @Html.Raw(mcuResultView.McuExpirationDate.CellAttributes)>
+<span id="el_McuResult_McuExpirationDate">
+<span @Html.Raw(mcuResultView.McuExpirationDate.ViewAttributes)>
+@Html.Raw(mcuResultView.McuExpirationDate.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.McuExpirationDate.Visible (end) *@
+@if (mcuResultView.HealthStatus.Visible) { // mcuResultView.HealthStatus.Visible (begin)
+    <tr id="r_HealthStatus" @Html.Raw(mcuResultView.HealthStatus.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_HealthStatus">@Html.Raw(mcuResultView.HealthStatus.Caption)</span></td>
+        <td data-name="HealthStatus" @Html.Raw(mcuResultView.HealthStatus.CellAttributes)>
+<span id="el_McuResult_HealthStatus">
+<span @Html.Raw(mcuResultView.HealthStatus.ViewAttributes)>
+@Html.Raw(mcuResultView.HealthStatus.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.HealthStatus.Visible (end) *@
+@if (mcuResultView.McuLocation.Visible) { // mcuResultView.McuLocation.Visible (begin)
+    <tr id="r_McuLocation" @Html.Raw(mcuResultView.McuLocation.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_McuLocation">@Html.Raw(mcuResultView.McuLocation.Caption)</span></td>
+        <td data-name="McuLocation" @Html.Raw(mcuResultView.McuLocation.CellAttributes)>
+<span id="el_McuResult_McuLocation">
+<span @Html.Raw(mcuResultView.McuLocation.ViewAttributes)>
+@Html.Raw(mcuResultView.McuLocation.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.McuLocation.Visible (end) *@
+@if (mcuResultView.McuAttachment.Visible) { // mcuResultView.McuAttachment.Visible (begin)
+    <tr id="r_McuAttachment" @Html.Raw(mcuResultView.McuAttachment.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_McuAttachment">@Html.Raw(mcuResultView.McuAttachment.Caption)</span></td>
+        <td data-name="McuAttachment" @Html.Raw(mcuResultView.McuAttachment.CellAttributes)>
+<span id="el_McuResult_McuAttachment">
+<span @Html.Raw(mcuResultView.McuAttachment.ViewAttributes)><a href="uploads/@ConvertToString(mcuResultList.IndividualCodeNumber.GetViewValue())/@ConvertToString(mcuResultList.McuAttachment.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span></td>
+    </tr>
+} @* mcuResultView.McuAttachment.Visible (end) *@
+@if (mcuResultView.McuRemark.Visible) { // mcuResultView.McuRemark.Visible (begin)
+    <tr id="r_McuRemark" @Html.Raw(mcuResultView.McuRemark.RowAttributes)>
+        <td class="@(mcuResultView.TableLeftColumnClass)"><span id="elh_McuResult_McuRemark">@Html.Raw(mcuResultView.McuRemark.Caption)</span></td>
+        <td data-name="McuRemark" @Html.Raw(mcuResultView.McuRemark.CellAttributes)>
+<span id="el_McuResult_McuRemark">
+<span @Html.Raw(mcuResultView.McuRemark.ViewAttributes)>
+@Html.Raw(mcuResultView.McuRemark.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* mcuResultView.McuRemark.Visible (end) *@
+</table>
+@{ mcuResultView.CloseRecordset(); }
+</form>
+</main>
+@mcuResultView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mcuResultView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

@@ -1,0 +1,950 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewMedicalHistoryForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewMedicalHistoryForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewMedicalHistoryForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalHistoryForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalHistoryForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewMedicalHistoryForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewMedicalHistoryForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewMedicalHistoryForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewMedicalHistoryForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewMedicalHistoryForAdminList.MTCrewID.ToClientList(crewMedicalHistoryForAdminList)),
+            "_Type": @Html.Raw(crewMedicalHistoryForAdminList._Type.ToClientList(crewMedicalHistoryForAdminList)),
+            "VesselName": @Html.Raw(crewMedicalHistoryForAdminList.VesselName.ToClientList(crewMedicalHistoryForAdminList)),
+            "DateOccurence": @Html.Raw(crewMedicalHistoryForAdminList.DateOccurence.ToClientList(crewMedicalHistoryForAdminList)),
+            "PlaceOccurence": @Html.Raw(crewMedicalHistoryForAdminList.PlaceOccurence.ToClientList(crewMedicalHistoryForAdminList)),
+            "PeriodOfDisability": @Html.Raw(crewMedicalHistoryForAdminList.PeriodOfDisability.ToClientList(crewMedicalHistoryForAdminList)),
+            "PresentCondition": @Html.Raw(crewMedicalHistoryForAdminList.PresentCondition.ToClientList(crewMedicalHistoryForAdminList)),
+            "Treatment": @Html.Raw(crewMedicalHistoryForAdminList.Treatment.ToClientList(crewMedicalHistoryForAdminList)),
+            "Details": @Html.Raw(crewMedicalHistoryForAdminList.Details.ToClientList(crewMedicalHistoryForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalHistoryForAdminList.CreatedByUserID.ToClientList(crewMedicalHistoryForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalHistoryForAdminList.CreatedDateTime.ToClientList(crewMedicalHistoryForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedByUserID.ToClientList(crewMedicalHistoryForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedDateTime.ToClientList(crewMedicalHistoryForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewMedicalHistoryForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewMedicalHistoryForAdminList.TotalRecords > 0 && crewMedicalHistoryForAdminList.ExportOptions.Visible) {
+    crewMedicalHistoryForAdminList.ExportOptions.Render("body");
+}
+@if (crewMedicalHistoryForAdminList.ImportOptions.Visible) {
+    crewMedicalHistoryForAdminList.ImportOptions.Render("body");
+}
+@if (crewMedicalHistoryForAdminList.SearchOptions.Visible) {
+    crewMedicalHistoryForAdminList.SearchOptions.Render("body");
+}
+@if (crewMedicalHistoryForAdminList.FilterOptions.Visible) {
+    crewMedicalHistoryForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewMedicalHistoryForAdminList.ShowCurrentFilter) {
+    crewMedicalHistoryForAdminList.ShowFilterList();
+}
+@if (!crewMedicalHistoryForAdminList.IsModal) {
+<form name="fCrewMedicalHistoryForAdminsrch" id="fCrewMedicalHistoryForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewMedicalHistoryForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewMedicalHistoryForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalHistoryForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalHistoryForAdmin: currentTable } });
+var currentForm;
+var fCrewMedicalHistoryForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewMedicalHistoryForAdminsrch")
+        .setPageId("list")
+@if (crewMedicalHistoryForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["_Type", [], fields._Type.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["DateOccurence", [], fields.DateOccurence.isInvalid],
+            ["PlaceOccurence", [], fields.PlaceOccurence.isInvalid],
+            ["PeriodOfDisability", [], fields.PeriodOfDisability.isInvalid],
+            ["PresentCondition", [], fields.PresentCondition.isInvalid],
+            ["Treatment", [], fields.Treatment.isInvalid],
+            ["Details", [], fields.Details.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewMedicalHistoryForAdminList.MTCrewID.ToClientList(crewMedicalHistoryForAdminList)),
+            "_Type": @Html.Raw(crewMedicalHistoryForAdminList._Type.ToClientList(crewMedicalHistoryForAdminList)),
+            "VesselName": @Html.Raw(crewMedicalHistoryForAdminList.VesselName.ToClientList(crewMedicalHistoryForAdminList)),
+            "DateOccurence": @Html.Raw(crewMedicalHistoryForAdminList.DateOccurence.ToClientList(crewMedicalHistoryForAdminList)),
+            "PlaceOccurence": @Html.Raw(crewMedicalHistoryForAdminList.PlaceOccurence.ToClientList(crewMedicalHistoryForAdminList)),
+            "PeriodOfDisability": @Html.Raw(crewMedicalHistoryForAdminList.PeriodOfDisability.ToClientList(crewMedicalHistoryForAdminList)),
+            "PresentCondition": @Html.Raw(crewMedicalHistoryForAdminList.PresentCondition.ToClientList(crewMedicalHistoryForAdminList)),
+            "Treatment": @Html.Raw(crewMedicalHistoryForAdminList.Treatment.ToClientList(crewMedicalHistoryForAdminList)),
+            "Details": @Html.Raw(crewMedicalHistoryForAdminList.Details.ToClientList(crewMedicalHistoryForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalHistoryForAdminList.CreatedByUserID.ToClientList(crewMedicalHistoryForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalHistoryForAdminList.CreatedDateTime.ToClientList(crewMedicalHistoryForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedByUserID.ToClientList(crewMedicalHistoryForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedDateTime.ToClientList(crewMedicalHistoryForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewMedicalHistoryForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewMedicalHistoryForAdminList.IsExport() && Empty(crewMedicalHistoryForAdminList.CurrentAction) && crewMedicalHistoryForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewMedicalHistoryForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewMedicalHistoryForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewMedicalHistoryForAdminList.RowType = RowType.Search;
+    crewMedicalHistoryForAdminList.ResetAttributes();
+    await crewMedicalHistoryForAdminList.RenderRow();
+}
+@if (crewMedicalHistoryForAdminList.MTCrewID.Visible) { // crewMedicalHistoryForAdminList.MTCrewID.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.MTCrewID.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_MTCrewID"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.MTCrewID.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.MTCrewID.Visible (end) *@
+@if (crewMedicalHistoryForAdminList._Type.Visible) { // crewMedicalHistoryForAdminList._Type.Visible (begin)
+    if (!crewMedicalHistoryForAdminList._Type.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs__Type" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList._Type.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Type"
+            name="x__Type[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList._Type.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x__Type"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x__Type"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList._Type.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList._Type.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList._Type.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList._Type.EditAttributes)>
+            @(crewMedicalHistoryForAdminList._Type.SelectOptionListHtml("x__Type", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList._Type.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x__Type",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x__Type",
+                ajax: { id: "x__Type", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields._Type.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList._Type.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.VesselName.Visible) { // crewMedicalHistoryForAdminList.VesselName.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.VesselName.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_VesselName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.VesselName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VesselName"
+            name="x_VesselName[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.VesselName.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_VesselName"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_VesselName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.VesselName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.VesselName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.VesselName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.VesselName.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.VesselName.SelectOptionListHtml("x_VesselName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.VesselName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_VesselName",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_VesselName",
+                ajax: { id: "x_VesselName", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.VesselName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.VesselName.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.DateOccurence.Visible) { // crewMedicalHistoryForAdminList.DateOccurence.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.DateOccurence.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateOccurence" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.DateOccurence.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOccurence"
+            name="x_DateOccurence[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.DateOccurence.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_DateOccurence"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_DateOccurence"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.DateOccurence.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.DateOccurence.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.DateOccurence.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.DateOccurence.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.DateOccurence.SelectOptionListHtml("x_DateOccurence", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.DateOccurence.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_DateOccurence",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_DateOccurence",
+                ajax: { id: "x_DateOccurence", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.DateOccurence.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.DateOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.PlaceOccurence.Visible) { // crewMedicalHistoryForAdminList.PlaceOccurence.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.PlaceOccurence.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOccurence" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.PlaceOccurence.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOccurence"
+            name="x_PlaceOccurence[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.PlaceOccurence.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_PlaceOccurence"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_PlaceOccurence"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.PlaceOccurence.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.PlaceOccurence.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.PlaceOccurence.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.PlaceOccurence.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.PlaceOccurence.SelectOptionListHtml("x_PlaceOccurence", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.PlaceOccurence.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_PlaceOccurence",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_PlaceOccurence",
+                ajax: { id: "x_PlaceOccurence", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.PlaceOccurence.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.PlaceOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.PeriodOfDisability.Visible) { // crewMedicalHistoryForAdminList.PeriodOfDisability.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.PeriodOfDisability.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_PeriodOfDisability" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.PeriodOfDisability.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PeriodOfDisability"
+            name="x_PeriodOfDisability[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.PeriodOfDisability.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_PeriodOfDisability"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_PeriodOfDisability"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.PeriodOfDisability.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.PeriodOfDisability.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.PeriodOfDisability.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.PeriodOfDisability.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.PeriodOfDisability.SelectOptionListHtml("x_PeriodOfDisability", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.PeriodOfDisability.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_PeriodOfDisability",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_PeriodOfDisability",
+                ajax: { id: "x_PeriodOfDisability", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.PeriodOfDisability.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.PeriodOfDisability.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.PresentCondition.Visible) { // crewMedicalHistoryForAdminList.PresentCondition.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.PresentCondition.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_PresentCondition" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.PresentCondition.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PresentCondition"
+            name="x_PresentCondition[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.PresentCondition.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_PresentCondition"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_PresentCondition"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.PresentCondition.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.PresentCondition.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.PresentCondition.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.PresentCondition.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.PresentCondition.SelectOptionListHtml("x_PresentCondition", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.PresentCondition.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_PresentCondition",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_PresentCondition",
+                ajax: { id: "x_PresentCondition", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.PresentCondition.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.PresentCondition.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.Treatment.Visible) { // crewMedicalHistoryForAdminList.Treatment.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.Treatment.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Treatment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.Treatment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Treatment"
+            name="x_Treatment[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.Treatment.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_Treatment"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_Treatment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.Treatment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.Treatment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.Treatment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.Treatment.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.Treatment.SelectOptionListHtml("x_Treatment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.Treatment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_Treatment",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_Treatment",
+                ajax: { id: "x_Treatment", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.Treatment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.Treatment.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.Details.Visible) { // crewMedicalHistoryForAdminList.Details.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.Details.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Details" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.Details.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Details"
+            name="x_Details[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.Details.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_Details"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_Details"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.Details.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.Details.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.Details.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.Details.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.Details.SelectOptionListHtml("x_Details", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.Details.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_Details",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_Details",
+                ajax: { id: "x_Details", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.Details.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.Details.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.CreatedByUserID.Visible) { // crewMedicalHistoryForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.CreatedByUserID.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_CreatedByUserID"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.CreatedDateTime.Visible) { // crewMedicalHistoryForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.CreatedDateTime.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_CreatedDateTime"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible) { // crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible) { // crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewMedicalHistoryForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewMedicalHistoryForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalHistoryForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewMedicalHistoryForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalHistoryForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewMedicalHistoryForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalHistoryForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalHistoryForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalHistoryForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewMedicalHistoryForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalHistoryForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewMedicalHistoryForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewMedicalHistoryForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalHistoryForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewMedicalHistoryForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewMedicalHistoryForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewMedicalHistoryForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewMedicalHistoryForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewMedicalHistoryForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewMedicalHistoryForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalHistoryForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewMedicalHistoryForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewMedicalHistoryForAdminList.ShowPageHeader()
+@crewMedicalHistoryForAdminList.ShowMessages()
+<main class="list @(crewMedicalHistoryForAdminList.TotalRecords == 0 && !crewMedicalHistoryForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewMedicalHistoryForAdminList.TotalRecords > 0 || !Empty(crewMedicalHistoryForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewMedicalHistoryForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewMedicalHistoryForAdminList.TableGridClass)">
+<form name="@(crewMedicalHistoryForAdminList.FormName)" id="@(crewMedicalHistoryForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewMedicalHistoryForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewMedicalHistoryForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewMedicalHistoryForAdmin" class="card-body ew-grid-middle-panel @(crewMedicalHistoryForAdminList.TableContainerClass)" style="@(crewMedicalHistoryForAdminList.TableContainerStyle)">
+@if (crewMedicalHistoryForAdminList.TotalRecords > 0 || crewMedicalHistoryForAdminList.IsGridEdit || crewMedicalHistoryForAdminList.IsMultiEdit) {
+<table id="tbl_CrewMedicalHistoryForAdminlist" class="@(crewMedicalHistoryForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewMedicalHistoryForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewMedicalHistoryForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewMedicalHistoryForAdminList.ListOptions.RenderHeader("left")
+@if (crewMedicalHistoryForAdminList.MTCrewID.Visible) { // crewMedicalHistoryForAdminList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewMedicalHistoryForAdminList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_MTCrewID" class="CrewMedicalHistoryForAdmin_MTCrewID">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.MTCrewID))</div></th>
+} @* crewMedicalHistoryForAdminList.MTCrewID.Visible (end) *@
+@if (crewMedicalHistoryForAdminList._Type.Visible) { // crewMedicalHistoryForAdminList._Type.Visible (begin)
+        <th data-name="_Type" class="@(crewMedicalHistoryForAdminList._Type.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin__Type" class="CrewMedicalHistoryForAdmin__Type">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList._Type))</div></th>
+} @* crewMedicalHistoryForAdminList._Type.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.VesselName.Visible) { // crewMedicalHistoryForAdminList.VesselName.Visible (begin)
+        <th data-name="VesselName" class="@(crewMedicalHistoryForAdminList.VesselName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_VesselName" class="CrewMedicalHistoryForAdmin_VesselName">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.VesselName))</div></th>
+} @* crewMedicalHistoryForAdminList.VesselName.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.DateOccurence.Visible) { // crewMedicalHistoryForAdminList.DateOccurence.Visible (begin)
+        <th data-name="DateOccurence" class="@(crewMedicalHistoryForAdminList.DateOccurence.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_DateOccurence" class="CrewMedicalHistoryForAdmin_DateOccurence">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.DateOccurence))</div></th>
+} @* crewMedicalHistoryForAdminList.DateOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.PlaceOccurence.Visible) { // crewMedicalHistoryForAdminList.PlaceOccurence.Visible (begin)
+        <th data-name="PlaceOccurence" class="@(crewMedicalHistoryForAdminList.PlaceOccurence.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_PlaceOccurence" class="CrewMedicalHistoryForAdmin_PlaceOccurence">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.PlaceOccurence))</div></th>
+} @* crewMedicalHistoryForAdminList.PlaceOccurence.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.PeriodOfDisability.Visible) { // crewMedicalHistoryForAdminList.PeriodOfDisability.Visible (begin)
+        <th data-name="PeriodOfDisability" class="@(crewMedicalHistoryForAdminList.PeriodOfDisability.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_PeriodOfDisability" class="CrewMedicalHistoryForAdmin_PeriodOfDisability">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.PeriodOfDisability))</div></th>
+} @* crewMedicalHistoryForAdminList.PeriodOfDisability.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.PresentCondition.Visible) { // crewMedicalHistoryForAdminList.PresentCondition.Visible (begin)
+        <th data-name="PresentCondition" class="@(crewMedicalHistoryForAdminList.PresentCondition.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_PresentCondition" class="CrewMedicalHistoryForAdmin_PresentCondition">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.PresentCondition))</div></th>
+} @* crewMedicalHistoryForAdminList.PresentCondition.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.Treatment.Visible) { // crewMedicalHistoryForAdminList.Treatment.Visible (begin)
+        <th data-name="Treatment" class="@(crewMedicalHistoryForAdminList.Treatment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_Treatment" class="CrewMedicalHistoryForAdmin_Treatment">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.Treatment))</div></th>
+} @* crewMedicalHistoryForAdminList.Treatment.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.Details.Visible) { // crewMedicalHistoryForAdminList.Details.Visible (begin)
+        <th data-name="Details" class="@(crewMedicalHistoryForAdminList.Details.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_Details" class="CrewMedicalHistoryForAdmin_Details">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.Details))</div></th>
+} @* crewMedicalHistoryForAdminList.Details.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.CreatedByUserID.Visible) { // crewMedicalHistoryForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewMedicalHistoryForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_CreatedByUserID" class="CrewMedicalHistoryForAdmin_CreatedByUserID">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.CreatedByUserID))</div></th>
+} @* crewMedicalHistoryForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.CreatedDateTime.Visible) { // crewMedicalHistoryForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewMedicalHistoryForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_CreatedDateTime" class="CrewMedicalHistoryForAdmin_CreatedDateTime">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.CreatedDateTime))</div></th>
+} @* crewMedicalHistoryForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible) { // crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewMedicalHistoryForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_LastUpdatedByUserID" class="CrewMedicalHistoryForAdmin_LastUpdatedByUserID">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible) { // crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewMedicalHistoryForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalHistoryForAdmin_LastUpdatedDateTime" class="CrewMedicalHistoryForAdmin_LastUpdatedDateTime">@Html.Raw(crewMedicalHistoryForAdminList.RenderFieldHeader(crewMedicalHistoryForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewMedicalHistoryForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewMedicalHistoryForAdminList.PageNumber)">
+@{
+    await crewMedicalHistoryForAdminList.SetupGrid();
+    bool eof = crewMedicalHistoryForAdminList.Recordset == null; // DN
+}
+@while (crewMedicalHistoryForAdminList.RecordCount < crewMedicalHistoryForAdminList.StopRecord || SameString(crewMedicalHistoryForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewMedicalHistoryForAdminList.RowIndex, "$rowindex$") &&
+        (!crewMedicalHistoryForAdminList.IsGridAdd || crewMedicalHistoryForAdminList.CurrentMode == "copy") &&
+        (!((crewMedicalHistoryForAdminList.IsCopy || crewMedicalHistoryForAdminList.IsAdd) && crewMedicalHistoryForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewMedicalHistoryForAdminList.Recordset.ReadAsync();
+    crewMedicalHistoryForAdminList.RecordCount++;
+    if (crewMedicalHistoryForAdminList.RecordCount >= crewMedicalHistoryForAdminList.StartRecord) {
+        await crewMedicalHistoryForAdminList.SetupRow();
+    <tr @Html.Raw(crewMedicalHistoryForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewMedicalHistoryForAdminList.ListOptions.RenderBody("left", crewMedicalHistoryForAdminList.RowCount)
+    @if (crewMedicalHistoryForAdminList.MTCrewID.Visible) { // crewMedicalHistoryForAdminList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewMedicalHistoryForAdminList.MTCrewID.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_MTCrewID" class="el_CrewMedicalHistoryForAdmin_MTCrewID">
+<span @Html.Raw(crewMedicalHistoryForAdminList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.MTCrewID.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList._Type.Visible) { // crewMedicalHistoryForAdminList._Type.Visible (begin)
+        <td data-name="_Type" @Html.Raw(crewMedicalHistoryForAdminList._Type.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin__Type" class="el_CrewMedicalHistoryForAdmin__Type">
+<span @Html.Raw(crewMedicalHistoryForAdminList._Type.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList._Type.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList._Type.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.VesselName.Visible) { // crewMedicalHistoryForAdminList.VesselName.Visible (begin)
+        <td data-name="VesselName" @Html.Raw(crewMedicalHistoryForAdminList.VesselName.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_VesselName" class="el_CrewMedicalHistoryForAdmin_VesselName">
+<span @Html.Raw(crewMedicalHistoryForAdminList.VesselName.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.VesselName.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.VesselName.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.DateOccurence.Visible) { // crewMedicalHistoryForAdminList.DateOccurence.Visible (begin)
+        <td data-name="DateOccurence" @Html.Raw(crewMedicalHistoryForAdminList.DateOccurence.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_DateOccurence" class="el_CrewMedicalHistoryForAdmin_DateOccurence">
+<span @Html.Raw(crewMedicalHistoryForAdminList.DateOccurence.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.DateOccurence.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.DateOccurence.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.PlaceOccurence.Visible) { // crewMedicalHistoryForAdminList.PlaceOccurence.Visible (begin)
+        <td data-name="PlaceOccurence" @Html.Raw(crewMedicalHistoryForAdminList.PlaceOccurence.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_PlaceOccurence" class="el_CrewMedicalHistoryForAdmin_PlaceOccurence">
+<span @Html.Raw(crewMedicalHistoryForAdminList.PlaceOccurence.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.PlaceOccurence.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.PlaceOccurence.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.PeriodOfDisability.Visible) { // crewMedicalHistoryForAdminList.PeriodOfDisability.Visible (begin)
+        <td data-name="PeriodOfDisability" @Html.Raw(crewMedicalHistoryForAdminList.PeriodOfDisability.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_PeriodOfDisability" class="el_CrewMedicalHistoryForAdmin_PeriodOfDisability">
+<span @Html.Raw(crewMedicalHistoryForAdminList.PeriodOfDisability.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.PeriodOfDisability.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.PeriodOfDisability.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.PresentCondition.Visible) { // crewMedicalHistoryForAdminList.PresentCondition.Visible (begin)
+        <td data-name="PresentCondition" @Html.Raw(crewMedicalHistoryForAdminList.PresentCondition.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_PresentCondition" class="el_CrewMedicalHistoryForAdmin_PresentCondition">
+<span @Html.Raw(crewMedicalHistoryForAdminList.PresentCondition.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.PresentCondition.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.PresentCondition.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.Treatment.Visible) { // crewMedicalHistoryForAdminList.Treatment.Visible (begin)
+        <td data-name="Treatment" @Html.Raw(crewMedicalHistoryForAdminList.Treatment.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_Treatment" class="el_CrewMedicalHistoryForAdmin_Treatment">
+<span @Html.Raw(crewMedicalHistoryForAdminList.Treatment.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.Treatment.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.Treatment.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.Details.Visible) { // crewMedicalHistoryForAdminList.Details.Visible (begin)
+        <td data-name="Details" @Html.Raw(crewMedicalHistoryForAdminList.Details.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_Details" class="el_CrewMedicalHistoryForAdmin_Details">
+<span @Html.Raw(crewMedicalHistoryForAdminList.Details.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.Details.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.Details.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.CreatedByUserID.Visible) { // crewMedicalHistoryForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewMedicalHistoryForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_CreatedByUserID" class="el_CrewMedicalHistoryForAdmin_CreatedByUserID">
+<span @Html.Raw(crewMedicalHistoryForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.CreatedDateTime.Visible) { // crewMedicalHistoryForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewMedicalHistoryForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_CreatedDateTime" class="el_CrewMedicalHistoryForAdmin_CreatedDateTime">
+<span @Html.Raw(crewMedicalHistoryForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible) { // crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_LastUpdatedByUserID" class="el_CrewMedicalHistoryForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible) { // crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewMedicalHistoryForAdminList.RowCount)_CrewMedicalHistoryForAdmin_LastUpdatedDateTime" class="el_CrewMedicalHistoryForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalHistoryForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalHistoryForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewMedicalHistoryForAdminList.ListOptions.RenderBody("right", crewMedicalHistoryForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewMedicalHistoryForAdminList.RowIndex, "$rowindex$"))
+        crewMedicalHistoryForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewMedicalHistoryForAdminList.IsCopy || crewMedicalHistoryForAdminList.IsAdd) && crewMedicalHistoryForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewMedicalHistoryForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewMedicalHistoryForAdminList.CurrentAction) && !crewMedicalHistoryForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewMedicalHistoryForAdminList.CloseRecordset(); }
+@if (!crewMedicalHistoryForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewMedicalHistoryForAdminList.IsGridAdd && !(crewMedicalHistoryForAdminList.IsGridEdit && crewMedicalHistoryForAdminList.ModalGridEdit) && !crewMedicalHistoryForAdminList.IsMultiEdit) {
+@Html.Raw(crewMedicalHistoryForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewMedicalHistoryForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewMedicalHistoryForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewMedicalHistoryForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewMedicalHistoryForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewMedicalHistoryForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

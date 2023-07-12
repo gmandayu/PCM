@@ -1,0 +1,410 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (homePageAdminPde.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!homePageAdminPde.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@homePageAdminPde.ShowMessages()
+@* START CUSTOM TEMPLATE *@
+<div class="container">
+    <h1>Welcome, <span id="admin_name">&nbsp;</span></h1>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="button-container">
+                <button class="button active disabled" style="border-color: #ffbb09; background-color: #ffbb09; font-weight: bold; box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);" id="employee-btn">Crew</button>
+                <button class="button disabled" style="border-color: white;">
+                    <i class="fas fa-users"></i>
+                    <span id="total_crew">&nbsp;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-md-3">
+            <a href="#" id="href_new_applicant" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #08adf0; filter: brightness(0.9);">
+                        <h5 style="color: white;">New Applicant @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #08adf0; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_new_applicant" style="font-size: 7vh; color: white; opacity: 0.8; text-align: left;">&nbsp;</span>
+                        <i class="fas fa-user-plus" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" id="href_waiting_pde_review" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #08adf0; filter: brightness(0.9);">
+                        <h5 style="color: white;">Waiting PDE Review @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #08adf0; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_waiting_pde_review" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-file-invoice" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" id="href_selection_checklist" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #08adf0; filter: brightness(0.9);">
+                        <h5 style="color: white;">Selection Checklist @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #08adf0; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_selection_checklist" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-list-check" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" id="href_waiting_mcu_result" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #08adf0; filter: brightness(0.9);">
+                        <h5 style="color: white;">Waiting MCU Result @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #08adf0; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_waiting_mcu_result" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-file-medical" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <a href="#" id="href_accepted" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #8eb148; filter: brightness(0.9);">
+                        <h5 style="color: white;">Accepted @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #8eb148; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_accepted" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-user-check" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" id="href_rejected" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #e75234; filter: brightness(0.9);">
+                        <h5 style="color: white;">Rejected @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #e75234; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_rejected" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-user-xmark" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" id="href_temporary_rejected" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #BBBBBB; filter: brightness(0.9);">
+                        <h5 style="color: white;">Temporary Rejected @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #BBBBBB; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_temporary_rejected" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-user-clock" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" id="href_blacklist" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #888888; filter: brightness(0.9);">
+                        <h5 style="color: white;">Blacklist @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #888888; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_blacklist" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-user-slash" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        const currentUrolObject = new URL(window.location.href);
+
+        const parentUrl = ew.PATH_BASE;
+
+        $(document).ready(function() {
+            // Nama admin disini
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-admin-name`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        var adminName = response.data;
+                        console.log('Admin Name: ' + adminName);
+                        $('#admin_name').text(adminName);
+                    } else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung total kru
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-count-total-crew`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        var crewCount = response.data;
+                        console.log('Total kru: ' + crewCount);
+                        $('#total_crew').text(' ' + crewCount);
+                    } else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Draft"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-count-candidate-draft-crew`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Draft'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Draft: ' + crewCount);
+                        $('#box_new_applicant').text(crewCount);
+                    } else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Submitted"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-count-candidate-submitted-crew`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Submitted'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Submitted: ' + crewCount);
+                        $('#box_waiting_pde_review').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Reviewed"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-count-checklist-crew`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Reviewed'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Reviewed: ' + crewCount);
+                        $('#box_selection_checklist').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - MCU"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-count-candidate-mcu-crew`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - MCU'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - MCU: ' + crewCount);
+                        $('#box_waiting_mcu_result').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Accepted"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-crew-count`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Accepted'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Accepted: ' + crewCount);
+                        $('#box_accepted').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Rejected"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-crew-count`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Rejected'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Rejected: ' + crewCount);
+                        $('#box_rejected').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Temporary Rejected"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-crew-count`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Temporary Rejected'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Temporary Rejected: ' + crewCount);
+                        $('#box_temporary_rejected').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Blacklist"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-crew-count`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Blacklist'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Blacklist: ' + crewCount);
+                        $('#box_blacklist').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Redirect to spesific page when card clicked.
+            $("a#href_new_applicant").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}RegistrationList`;
+            });
+            $("a#href_waiting_pde_review").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}VWaitingForPdeReviewList`;
+            });
+            $("a#href_selection_checklist").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}ChecklistList`;
+            });
+            $("a#href_waiting_mcu_result").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}McuResultList`;
+            });
+            $("a#href_accepted").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}vCrewAcceptedForAdminList`;
+            });
+            $("a#href_rejected").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}vCrewRejectedForAdminList`;
+            });
+            $("a#href_temporary_rejected").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}vCrewTemporaryRejectedForAdminList`;
+            });
+            $("a#href_blacklist").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}vCrewBlacklistForAdminList`;
+            });
+            
+        });
+    </script>
+</div>
+@Html.Raw(GetDebugMessage())

@@ -1,0 +1,1490 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (vWaitingForPdeReviewList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!vWaitingForPdeReviewList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!vWaitingForPdeReviewList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vWaitingForPdeReviewList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_WaitingForPDEReview: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(vWaitingForPdeReviewList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(vWaitingForPdeReviewList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(vWaitingForPdeReviewList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(vWaitingForPdeReviewList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(vWaitingForPdeReviewList.IndividualCodeNumber.ToClientList(vWaitingForPdeReviewList)),
+            "FullName": @Html.Raw(vWaitingForPdeReviewList.FullName.ToClientList(vWaitingForPdeReviewList)),
+            "RequiredPhoto": @Html.Raw(vWaitingForPdeReviewList.RequiredPhoto.ToClientList(vWaitingForPdeReviewList)),
+            "VisaPhoto": @Html.Raw(vWaitingForPdeReviewList.VisaPhoto.ToClientList(vWaitingForPdeReviewList)),
+            "Gender": @Html.Raw(vWaitingForPdeReviewList.Gender.ToClientList(vWaitingForPdeReviewList)),
+            "RankAppliedFor": @Html.Raw(vWaitingForPdeReviewList.RankAppliedFor.ToClientList(vWaitingForPdeReviewList)),
+            "WillAcceptLowRank": @Html.Raw(vWaitingForPdeReviewList.WillAcceptLowRank.ToClientList(vWaitingForPdeReviewList)),
+            "AvailableFrom": @Html.Raw(vWaitingForPdeReviewList.AvailableFrom.ToClientList(vWaitingForPdeReviewList)),
+            "AvailableUntil": @Html.Raw(vWaitingForPdeReviewList.AvailableUntil.ToClientList(vWaitingForPdeReviewList)),
+            "FormSubmittedDateTime": @Html.Raw(vWaitingForPdeReviewList.FormSubmittedDateTime.ToClientList(vWaitingForPdeReviewList)),
+            "CreatedBy": @Html.Raw(vWaitingForPdeReviewList.CreatedBy.ToClientList(vWaitingForPdeReviewList)),
+            "CreatedDateTime": @Html.Raw(vWaitingForPdeReviewList.CreatedDateTime.ToClientList(vWaitingForPdeReviewList)),
+            "LastUpdatedBy": @Html.Raw(vWaitingForPdeReviewList.LastUpdatedBy.ToClientList(vWaitingForPdeReviewList)),
+            "LastUpdatedDateTime": @Html.Raw(vWaitingForPdeReviewList.LastUpdatedDateTime.ToClientList(vWaitingForPdeReviewList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!vWaitingForPdeReviewList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (vWaitingForPdeReviewList.TotalRecords > 0 && vWaitingForPdeReviewList.ExportOptions.Visible) {
+    vWaitingForPdeReviewList.ExportOptions.Render("body");
+}
+@if (vWaitingForPdeReviewList.ImportOptions.Visible) {
+    vWaitingForPdeReviewList.ImportOptions.Render("body");
+}
+@if (vWaitingForPdeReviewList.SearchOptions.Visible) {
+    vWaitingForPdeReviewList.SearchOptions.Render("body");
+}
+@if (vWaitingForPdeReviewList.FilterOptions.Visible) {
+    vWaitingForPdeReviewList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (vWaitingForPdeReviewList.ShowCurrentFilter) {
+    vWaitingForPdeReviewList.ShowFilterList();
+}
+@if (!vWaitingForPdeReviewList.IsModal) {
+<form name="fv_WaitingForPDEReviewsrch" id="fv_WaitingForPDEReviewsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fv_WaitingForPDEReviewsrch_search_panel" class="mb-2 mb-sm-0 @(vWaitingForPdeReviewList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vWaitingForPdeReviewList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_WaitingForPDEReview: currentTable } });
+var currentForm;
+var fv_WaitingForPDEReviewsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fv_WaitingForPDEReviewsrch")
+        .setPageId("list")
+@if (vWaitingForPdeReviewList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [], fields.AvailableUntil.isInvalid],
+            ["FormSubmittedDateTime", [], fields.FormSubmittedDateTime.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedBy", [], fields.LastUpdatedBy.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(vWaitingForPdeReviewList.IndividualCodeNumber.ToClientList(vWaitingForPdeReviewList)),
+            "FullName": @Html.Raw(vWaitingForPdeReviewList.FullName.ToClientList(vWaitingForPdeReviewList)),
+            "RequiredPhoto": @Html.Raw(vWaitingForPdeReviewList.RequiredPhoto.ToClientList(vWaitingForPdeReviewList)),
+            "VisaPhoto": @Html.Raw(vWaitingForPdeReviewList.VisaPhoto.ToClientList(vWaitingForPdeReviewList)),
+            "Gender": @Html.Raw(vWaitingForPdeReviewList.Gender.ToClientList(vWaitingForPdeReviewList)),
+            "RankAppliedFor": @Html.Raw(vWaitingForPdeReviewList.RankAppliedFor.ToClientList(vWaitingForPdeReviewList)),
+            "WillAcceptLowRank": @Html.Raw(vWaitingForPdeReviewList.WillAcceptLowRank.ToClientList(vWaitingForPdeReviewList)),
+            "AvailableFrom": @Html.Raw(vWaitingForPdeReviewList.AvailableFrom.ToClientList(vWaitingForPdeReviewList)),
+            "AvailableUntil": @Html.Raw(vWaitingForPdeReviewList.AvailableUntil.ToClientList(vWaitingForPdeReviewList)),
+            "FormSubmittedDateTime": @Html.Raw(vWaitingForPdeReviewList.FormSubmittedDateTime.ToClientList(vWaitingForPdeReviewList)),
+            "CreatedBy": @Html.Raw(vWaitingForPdeReviewList.CreatedBy.ToClientList(vWaitingForPdeReviewList)),
+            "CreatedDateTime": @Html.Raw(vWaitingForPdeReviewList.CreatedDateTime.ToClientList(vWaitingForPdeReviewList)),
+            "LastUpdatedBy": @Html.Raw(vWaitingForPdeReviewList.LastUpdatedBy.ToClientList(vWaitingForPdeReviewList)),
+            "LastUpdatedDateTime": @Html.Raw(vWaitingForPdeReviewList.LastUpdatedDateTime.ToClientList(vWaitingForPdeReviewList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await vWaitingForPdeReviewList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!vWaitingForPdeReviewList.IsExport() && Empty(vWaitingForPdeReviewList.CurrentAction) && vWaitingForPdeReviewList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0 d-none@(vWaitingForPdeReviewList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + vWaitingForPdeReviewList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    vWaitingForPdeReviewList.RowType = RowType.Search;
+    vWaitingForPdeReviewList.ResetAttributes();
+    await vWaitingForPdeReviewList.RenderRow();
+}
+@if (vWaitingForPdeReviewList.IndividualCodeNumber.Visible) { // vWaitingForPdeReviewList.IndividualCodeNumber.Visible (begin)
+    if (!vWaitingForPdeReviewList.IndividualCodeNumber.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_IndividualCodeNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.IndividualCodeNumber.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IndividualCodeNumber"
+            name="x_IndividualCodeNumber[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.IndividualCodeNumber.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_IndividualCodeNumber"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_IndividualCodeNumber"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.IndividualCodeNumber.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.IndividualCodeNumber.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.IndividualCodeNumber.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.IndividualCodeNumber.EditAttributes)>
+            @(vWaitingForPdeReviewList.IndividualCodeNumber.SelectOptionListHtml("x_IndividualCodeNumber", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.IndividualCodeNumber.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_IndividualCodeNumber",
+                selectId: "fv_WaitingForPDEReviewsrch_x_IndividualCodeNumber",
+                ajax: { id: "x_IndividualCodeNumber", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.IndividualCodeNumber.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.IndividualCodeNumber.Visible (end) *@
+@if (vWaitingForPdeReviewList.FullName.Visible) { // vWaitingForPdeReviewList.FullName.Visible (begin)
+    if (!vWaitingForPdeReviewList.FullName.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FullName"
+            name="x_FullName[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.FullName.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_FullName"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_FullName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.FullName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.FullName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.FullName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.FullName.EditAttributes)>
+            @(vWaitingForPdeReviewList.FullName.SelectOptionListHtml("x_FullName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.FullName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_FullName",
+                selectId: "fv_WaitingForPDEReviewsrch_x_FullName",
+                ajax: { id: "x_FullName", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.FullName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.FullName.Visible (end) *@
+@if (vWaitingForPdeReviewList.RequiredPhoto.Visible) { // vWaitingForPdeReviewList.RequiredPhoto.Visible (begin)
+    if (!vWaitingForPdeReviewList.RequiredPhoto.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_RequiredPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.RequiredPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RequiredPhoto"
+            name="x_RequiredPhoto[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.RequiredPhoto.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_RequiredPhoto"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_RequiredPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.RequiredPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.RequiredPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.RequiredPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.RequiredPhoto.EditAttributes)>
+            @(vWaitingForPdeReviewList.RequiredPhoto.SelectOptionListHtml("x_RequiredPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.RequiredPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_RequiredPhoto",
+                selectId: "fv_WaitingForPDEReviewsrch_x_RequiredPhoto",
+                ajax: { id: "x_RequiredPhoto", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.RequiredPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.RequiredPhoto.Visible (end) *@
+@if (vWaitingForPdeReviewList.VisaPhoto.Visible) { // vWaitingForPdeReviewList.VisaPhoto.Visible (begin)
+    if (!vWaitingForPdeReviewList.VisaPhoto.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_VisaPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.VisaPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VisaPhoto"
+            name="x_VisaPhoto[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.VisaPhoto.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_VisaPhoto"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_VisaPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.VisaPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.VisaPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.VisaPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.VisaPhoto.EditAttributes)>
+            @(vWaitingForPdeReviewList.VisaPhoto.SelectOptionListHtml("x_VisaPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.VisaPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_VisaPhoto",
+                selectId: "fv_WaitingForPDEReviewsrch_x_VisaPhoto",
+                ajax: { id: "x_VisaPhoto", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.VisaPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.VisaPhoto.Visible (end) *@
+@if (vWaitingForPdeReviewList.Gender.Visible) { // vWaitingForPdeReviewList.Gender.Visible (begin)
+    if (!vWaitingForPdeReviewList.Gender.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_Gender" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.Gender.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Gender"
+            name="x_Gender[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.Gender.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_Gender"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_Gender"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.Gender.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.Gender.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.Gender.EditAttributes)>
+            @(vWaitingForPdeReviewList.Gender.SelectOptionListHtml("x_Gender", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.Gender.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_Gender",
+                selectId: "fv_WaitingForPDEReviewsrch_x_Gender",
+                ajax: { id: "x_Gender", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.Gender.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.Gender.Visible (end) *@
+@if (vWaitingForPdeReviewList.RankAppliedFor.Visible) { // vWaitingForPdeReviewList.RankAppliedFor.Visible (begin)
+    if (!vWaitingForPdeReviewList.RankAppliedFor.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_RankAppliedFor" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.RankAppliedFor.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RankAppliedFor"
+            name="x_RankAppliedFor[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.RankAppliedFor.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_RankAppliedFor"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_RankAppliedFor"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.RankAppliedFor.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.RankAppliedFor.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.RankAppliedFor.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.RankAppliedFor.EditAttributes)>
+            @(vWaitingForPdeReviewList.RankAppliedFor.SelectOptionListHtml("x_RankAppliedFor", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.RankAppliedFor.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_RankAppliedFor",
+                selectId: "fv_WaitingForPDEReviewsrch_x_RankAppliedFor",
+                ajax: { id: "x_RankAppliedFor", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.RankAppliedFor.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.RankAppliedFor.Visible (end) *@
+@if (vWaitingForPdeReviewList.WillAcceptLowRank.Visible) { // vWaitingForPdeReviewList.WillAcceptLowRank.Visible (begin)
+    if (!vWaitingForPdeReviewList.WillAcceptLowRank.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_WillAcceptLowRank" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.WillAcceptLowRank.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_WillAcceptLowRank"
+            name="x_WillAcceptLowRank[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.WillAcceptLowRank.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_WillAcceptLowRank"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_WillAcceptLowRank"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.WillAcceptLowRank.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.WillAcceptLowRank.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.WillAcceptLowRank.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.WillAcceptLowRank.EditAttributes)>
+            @(vWaitingForPdeReviewList.WillAcceptLowRank.SelectOptionListHtml("x_WillAcceptLowRank", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.WillAcceptLowRank.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_WillAcceptLowRank",
+                selectId: "fv_WaitingForPDEReviewsrch_x_WillAcceptLowRank",
+                ajax: { id: "x_WillAcceptLowRank", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.WillAcceptLowRank.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.WillAcceptLowRank.Visible (end) *@
+@if (vWaitingForPdeReviewList.AvailableFrom.Visible) { // vWaitingForPdeReviewList.AvailableFrom.Visible (begin)
+    if (!vWaitingForPdeReviewList.AvailableFrom.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableFrom" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.AvailableFrom.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableFrom"
+            name="x_AvailableFrom[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.AvailableFrom.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_AvailableFrom"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_AvailableFrom"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.AvailableFrom.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.AvailableFrom.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.AvailableFrom.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.AvailableFrom.EditAttributes)>
+            @(vWaitingForPdeReviewList.AvailableFrom.SelectOptionListHtml("x_AvailableFrom", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.AvailableFrom.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_AvailableFrom",
+                selectId: "fv_WaitingForPDEReviewsrch_x_AvailableFrom",
+                ajax: { id: "x_AvailableFrom", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.AvailableFrom.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.AvailableFrom.Visible (end) *@
+@if (vWaitingForPdeReviewList.AvailableUntil.Visible) { // vWaitingForPdeReviewList.AvailableUntil.Visible (begin)
+    if (!vWaitingForPdeReviewList.AvailableUntil.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableUntil" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.AvailableUntil.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableUntil"
+            name="x_AvailableUntil[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.AvailableUntil.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_AvailableUntil"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_AvailableUntil"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.AvailableUntil.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.AvailableUntil.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.AvailableUntil.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.AvailableUntil.EditAttributes)>
+            @(vWaitingForPdeReviewList.AvailableUntil.SelectOptionListHtml("x_AvailableUntil", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.AvailableUntil.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_AvailableUntil",
+                selectId: "fv_WaitingForPDEReviewsrch_x_AvailableUntil",
+                ajax: { id: "x_AvailableUntil", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.AvailableUntil.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.AvailableUntil.Visible (end) *@
+@if (vWaitingForPdeReviewList.FormSubmittedDateTime.Visible) { // vWaitingForPdeReviewList.FormSubmittedDateTime.Visible (begin)
+    if (!vWaitingForPdeReviewList.FormSubmittedDateTime.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_FormSubmittedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.FormSubmittedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FormSubmittedDateTime"
+            name="x_FormSubmittedDateTime[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.FormSubmittedDateTime.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_FormSubmittedDateTime"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_FormSubmittedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.FormSubmittedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.FormSubmittedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.FormSubmittedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.FormSubmittedDateTime.EditAttributes)>
+            @(vWaitingForPdeReviewList.FormSubmittedDateTime.SelectOptionListHtml("x_FormSubmittedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.FormSubmittedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_FormSubmittedDateTime",
+                selectId: "fv_WaitingForPDEReviewsrch_x_FormSubmittedDateTime",
+                ajax: { id: "x_FormSubmittedDateTime", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.FormSubmittedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.FormSubmittedDateTime.Visible (end) *@
+@if (vWaitingForPdeReviewList.CreatedBy.Visible) { // vWaitingForPdeReviewList.CreatedBy.Visible (begin)
+    if (!vWaitingForPdeReviewList.CreatedBy.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.CreatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedBy"
+            name="x_CreatedBy[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.CreatedBy.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_CreatedBy"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_CreatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.CreatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.CreatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.CreatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.CreatedBy.EditAttributes)>
+            @(vWaitingForPdeReviewList.CreatedBy.SelectOptionListHtml("x_CreatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.CreatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_CreatedBy",
+                selectId: "fv_WaitingForPDEReviewsrch_x_CreatedBy",
+                ajax: { id: "x_CreatedBy", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.CreatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.CreatedBy.Visible (end) *@
+@if (vWaitingForPdeReviewList.CreatedDateTime.Visible) { // vWaitingForPdeReviewList.CreatedDateTime.Visible (begin)
+    if (!vWaitingForPdeReviewList.CreatedDateTime.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_CreatedDateTime"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.CreatedDateTime.EditAttributes)>
+            @(vWaitingForPdeReviewList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fv_WaitingForPDEReviewsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.CreatedDateTime.Visible (end) *@
+@if (vWaitingForPdeReviewList.LastUpdatedBy.Visible) { // vWaitingForPdeReviewList.LastUpdatedBy.Visible (begin)
+    if (!vWaitingForPdeReviewList.LastUpdatedBy.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.LastUpdatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedBy"
+            name="x_LastUpdatedBy[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.LastUpdatedBy.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_LastUpdatedBy"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_LastUpdatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.LastUpdatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.LastUpdatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.LastUpdatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.LastUpdatedBy.EditAttributes)>
+            @(vWaitingForPdeReviewList.LastUpdatedBy.SelectOptionListHtml("x_LastUpdatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.LastUpdatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_LastUpdatedBy",
+                selectId: "fv_WaitingForPDEReviewsrch_x_LastUpdatedBy",
+                ajax: { id: "x_LastUpdatedBy", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.LastUpdatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.LastUpdatedBy.Visible (end) *@
+@if (vWaitingForPdeReviewList.LastUpdatedDateTime.Visible) { // vWaitingForPdeReviewList.LastUpdatedDateTime.Visible (begin)
+    if (!vWaitingForPdeReviewList.LastUpdatedDateTime.UseFilter) {
+        vWaitingForPdeReviewList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(vWaitingForPdeReviewList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(vWaitingForPdeReviewList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fv_WaitingForPDEReviewsrch_x_LastUpdatedDateTime"
+            data-table="v_WaitingForPDEReview"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(vWaitingForPdeReviewList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(vWaitingForPdeReviewList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(vWaitingForPdeReviewList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(vWaitingForPdeReviewList.LastUpdatedDateTime.EditAttributes)>
+            @(vWaitingForPdeReviewList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fv_WaitingForPDEReviewsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fv_WaitingForPDEReviewsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fv_WaitingForPDEReviewsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* vWaitingForPdeReviewList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div id="tpsd_v_WaitingForPDEReviewlist" class="ew-custom-template-search"></div>
+<template id="tpsm_v_WaitingForPDEReviewlist">
+<div id="v_WaitingForPDEReviewlist"><div id="schedule-modal-dialog" aria-hidden="true" aria-modal="true" class="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="schedule-modal-dialog-title" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="schedule-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-schedule" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_DocumentCheckDateTime" class="row">
+                        <label for="x_DocumentCheckDateTime" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Document Check Date Time" : "Tanggal Dan Jam Cek Dokumen")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckDateTime">
+                                    <div class="input-group" id="datetimepicker_DocumentCheckDateTime" data-target-input="nearest" data-td-target-toggle="nearest">
+                                        <input
+                                            type="text"
+                                            name="x_DocumentCheckDateTime"
+                                            id="x_DocumentCheckDateTime"
+                                            value=""
+                                            placeholder="Document Check Date Time"
+                                            data-format-pattern="yyyy-MM-dd HH:mm:sszzz"
+                                            class="form-control tempus-dominus-input"
+                                            data-target="#datetimepicker_DocumentCheckDateTime"
+                                        />
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="r_DocumentCheckNotes" class="row">
+                        <label for="x_DocumentCheckNotes" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckNotes">
+                                    <textarea
+                                        name="x_DocumentCheckNotes"
+                                        id="x_DocumentCheckNotes"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder=@(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary ew-btn" id="btn-add-schedule" type="button">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel-schedule" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- REVISE MODAL DIALOG. FIXME! -->
+<div id="revise-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Revise Crew Candidate" : "Tinjau Ulang Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="revise-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RevisedReason" class="row">
+                        <label for="x_RevisedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Revised Reason" : "Alasan Tinjau Ulang")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RevisedReason">
+                                    <textarea
+                                        name="x_RevisedReason"
+                                        id="x_RevisedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Revised Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-revise" type="button">
+                    @(CurrentLanguage == "en-US" ? "Revise" : "Tinjau Ulang")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="reject-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reject-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RejectedReason" class="row">
+                        <label for="x_RejectedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Rejected Reason" : "Alasan Ditolak")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RejectedReason">
+                                    <textarea
+                                        name="x_RejectedReason"
+                                        id="x_RejectedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Rejected Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-reject" type="button">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div></div>
+</template>
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(vWaitingForPdeReviewList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(vWaitingForPdeReviewList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(vWaitingForPdeReviewList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(vWaitingForPdeReviewList.BasicSearch.SessionType == "" ? " active" : "")" form="fv_WaitingForPDEReviewsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(vWaitingForPdeReviewList.BasicSearch.SessionType == "=" ? " active" : "")" form="fv_WaitingForPDEReviewsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(vWaitingForPdeReviewList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fv_WaitingForPDEReviewsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(vWaitingForPdeReviewList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fv_WaitingForPDEReviewsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+<script>
+loadjs.ready(ew.applyTemplateId, () => ew.applyTemplate("tpsd_v_WaitingForPDEReviewlist", "tpsm_v_WaitingForPDEReviewlist"));
+</script>
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@vWaitingForPdeReviewList.ShowPageHeader()
+@vWaitingForPdeReviewList.ShowMessages()
+<main class="list @(vWaitingForPdeReviewList.TotalRecords == 0 && !vWaitingForPdeReviewList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (vWaitingForPdeReviewList.TotalRecords > 0 || !Empty(vWaitingForPdeReviewList.CurrentAction)) {
+<div class="card ew-card ew-grid@(vWaitingForPdeReviewList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(vWaitingForPdeReviewList.TableGridClass)">
+<form name="@(vWaitingForPdeReviewList.FormName)" id="@(vWaitingForPdeReviewList.FormName)" class="ew-form ew-list-form" action="@AppPath(vWaitingForPdeReviewList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (vWaitingForPdeReviewList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_v_WaitingForPDEReview" class="card-body ew-grid-middle-panel @(vWaitingForPdeReviewList.TableContainerClass)" style="@(vWaitingForPdeReviewList.TableContainerStyle)">
+@if (vWaitingForPdeReviewList.TotalRecords > 0 || vWaitingForPdeReviewList.IsGridEdit || vWaitingForPdeReviewList.IsMultiEdit) {
+<table id="tbl_v_WaitingForPDEReviewlist" class="@(vWaitingForPdeReviewList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    vWaitingForPdeReviewList.RowType = RowType.Header;
+
+    // Render list options
+    await vWaitingForPdeReviewList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@vWaitingForPdeReviewList.ListOptions.RenderHeader("left")
+@if (vWaitingForPdeReviewList.IndividualCodeNumber.Visible) { // vWaitingForPdeReviewList.IndividualCodeNumber.Visible (begin)
+        <th data-name="IndividualCodeNumber" class="@(vWaitingForPdeReviewList.IndividualCodeNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_IndividualCodeNumber" class="v_WaitingForPDEReview_IndividualCodeNumber">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.IndividualCodeNumber))</div></th>
+} @* vWaitingForPdeReviewList.IndividualCodeNumber.Visible (end) *@
+@if (vWaitingForPdeReviewList.FullName.Visible) { // vWaitingForPdeReviewList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(vWaitingForPdeReviewList.FullName.HeaderCellClass)" style="min-width: 200px; white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_FullName" class="v_WaitingForPDEReview_FullName">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.FullName))</div></th>
+} @* vWaitingForPdeReviewList.FullName.Visible (end) *@
+@if (vWaitingForPdeReviewList.RequiredPhoto.Visible) { // vWaitingForPdeReviewList.RequiredPhoto.Visible (begin)
+        <th data-name="RequiredPhoto" class="@(vWaitingForPdeReviewList.RequiredPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_RequiredPhoto" class="v_WaitingForPDEReview_RequiredPhoto">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.RequiredPhoto))</div></th>
+} @* vWaitingForPdeReviewList.RequiredPhoto.Visible (end) *@
+@if (vWaitingForPdeReviewList.VisaPhoto.Visible) { // vWaitingForPdeReviewList.VisaPhoto.Visible (begin)
+        <th data-name="VisaPhoto" class="@(vWaitingForPdeReviewList.VisaPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_VisaPhoto" class="v_WaitingForPDEReview_VisaPhoto">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.VisaPhoto))</div></th>
+} @* vWaitingForPdeReviewList.VisaPhoto.Visible (end) *@
+@if (vWaitingForPdeReviewList.Gender.Visible) { // vWaitingForPdeReviewList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(vWaitingForPdeReviewList.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_Gender" class="v_WaitingForPDEReview_Gender">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.Gender))</div></th>
+} @* vWaitingForPdeReviewList.Gender.Visible (end) *@
+@if (vWaitingForPdeReviewList.RankAppliedFor.Visible) { // vWaitingForPdeReviewList.RankAppliedFor.Visible (begin)
+        <th data-name="RankAppliedFor" class="@(vWaitingForPdeReviewList.RankAppliedFor.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_RankAppliedFor" class="v_WaitingForPDEReview_RankAppliedFor">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.RankAppliedFor))</div></th>
+} @* vWaitingForPdeReviewList.RankAppliedFor.Visible (end) *@
+@if (vWaitingForPdeReviewList.WillAcceptLowRank.Visible) { // vWaitingForPdeReviewList.WillAcceptLowRank.Visible (begin)
+        <th data-name="WillAcceptLowRank" class="@(vWaitingForPdeReviewList.WillAcceptLowRank.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_WillAcceptLowRank" class="v_WaitingForPDEReview_WillAcceptLowRank">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.WillAcceptLowRank))</div></th>
+} @* vWaitingForPdeReviewList.WillAcceptLowRank.Visible (end) *@
+@if (vWaitingForPdeReviewList.AvailableFrom.Visible) { // vWaitingForPdeReviewList.AvailableFrom.Visible (begin)
+        <th data-name="AvailableFrom" class="@(vWaitingForPdeReviewList.AvailableFrom.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_AvailableFrom" class="v_WaitingForPDEReview_AvailableFrom">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.AvailableFrom))</div></th>
+} @* vWaitingForPdeReviewList.AvailableFrom.Visible (end) *@
+@if (vWaitingForPdeReviewList.AvailableUntil.Visible) { // vWaitingForPdeReviewList.AvailableUntil.Visible (begin)
+        <th data-name="AvailableUntil" class="@(vWaitingForPdeReviewList.AvailableUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_AvailableUntil" class="v_WaitingForPDEReview_AvailableUntil">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.AvailableUntil))</div></th>
+} @* vWaitingForPdeReviewList.AvailableUntil.Visible (end) *@
+@if (vWaitingForPdeReviewList.FormSubmittedDateTime.Visible) { // vWaitingForPdeReviewList.FormSubmittedDateTime.Visible (begin)
+        <th data-name="FormSubmittedDateTime" class="@(vWaitingForPdeReviewList.FormSubmittedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_FormSubmittedDateTime" class="v_WaitingForPDEReview_FormSubmittedDateTime">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.FormSubmittedDateTime))</div></th>
+} @* vWaitingForPdeReviewList.FormSubmittedDateTime.Visible (end) *@
+@if (vWaitingForPdeReviewList.CreatedBy.Visible) { // vWaitingForPdeReviewList.CreatedBy.Visible (begin)
+        <th data-name="CreatedBy" class="@(vWaitingForPdeReviewList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_CreatedBy" class="v_WaitingForPDEReview_CreatedBy">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.CreatedBy))</div></th>
+} @* vWaitingForPdeReviewList.CreatedBy.Visible (end) *@
+@if (vWaitingForPdeReviewList.CreatedDateTime.Visible) { // vWaitingForPdeReviewList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(vWaitingForPdeReviewList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_CreatedDateTime" class="v_WaitingForPDEReview_CreatedDateTime">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.CreatedDateTime))</div></th>
+} @* vWaitingForPdeReviewList.CreatedDateTime.Visible (end) *@
+@if (vWaitingForPdeReviewList.LastUpdatedBy.Visible) { // vWaitingForPdeReviewList.LastUpdatedBy.Visible (begin)
+        <th data-name="LastUpdatedBy" class="@(vWaitingForPdeReviewList.LastUpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_LastUpdatedBy" class="v_WaitingForPDEReview_LastUpdatedBy">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.LastUpdatedBy))</div></th>
+} @* vWaitingForPdeReviewList.LastUpdatedBy.Visible (end) *@
+@if (vWaitingForPdeReviewList.LastUpdatedDateTime.Visible) { // vWaitingForPdeReviewList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(vWaitingForPdeReviewList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_v_WaitingForPDEReview_LastUpdatedDateTime" class="v_WaitingForPDEReview_LastUpdatedDateTime">@Html.Raw(vWaitingForPdeReviewList.RenderFieldHeader(vWaitingForPdeReviewList.LastUpdatedDateTime))</div></th>
+} @* vWaitingForPdeReviewList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@vWaitingForPdeReviewList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(vWaitingForPdeReviewList.PageNumber)">
+@{
+    await vWaitingForPdeReviewList.SetupGrid();
+    bool eof = vWaitingForPdeReviewList.Recordset == null; // DN
+}
+@while (vWaitingForPdeReviewList.RecordCount < vWaitingForPdeReviewList.StopRecord || SameString(vWaitingForPdeReviewList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(vWaitingForPdeReviewList.RowIndex, "$rowindex$") &&
+        (!vWaitingForPdeReviewList.IsGridAdd || vWaitingForPdeReviewList.CurrentMode == "copy") &&
+        (!((vWaitingForPdeReviewList.IsCopy || vWaitingForPdeReviewList.IsAdd) && vWaitingForPdeReviewList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await vWaitingForPdeReviewList.Recordset.ReadAsync();
+    vWaitingForPdeReviewList.RecordCount++;
+    if (vWaitingForPdeReviewList.RecordCount >= vWaitingForPdeReviewList.StartRecord) {
+        await vWaitingForPdeReviewList.SetupRow();
+    <tr @Html.Raw(vWaitingForPdeReviewList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @vWaitingForPdeReviewList.ListOptions.RenderBody("left", vWaitingForPdeReviewList.RowCount)
+    @if (vWaitingForPdeReviewList.IndividualCodeNumber.Visible) { // vWaitingForPdeReviewList.IndividualCodeNumber.Visible (begin)
+        <td data-name="IndividualCodeNumber" @Html.Raw(vWaitingForPdeReviewList.IndividualCodeNumber.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_IndividualCodeNumber" class="el_v_WaitingForPDEReview_IndividualCodeNumber">
+<span @Html.Raw(vWaitingForPdeReviewList.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.IndividualCodeNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.IndividualCodeNumber.Visible (end) *@
+    @if (vWaitingForPdeReviewList.FullName.Visible) { // vWaitingForPdeReviewList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(vWaitingForPdeReviewList.FullName.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_FullName" class="el_v_WaitingForPDEReview_FullName">
+<span @Html.Raw(vWaitingForPdeReviewList.FullName.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.FullName.Visible (end) *@
+    @if (vWaitingForPdeReviewList.RequiredPhoto.Visible) { // vWaitingForPdeReviewList.RequiredPhoto.Visible (begin)
+        <td data-name="RequiredPhoto" @Html.Raw(vWaitingForPdeReviewList.RequiredPhoto.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_RequiredPhoto" class="el_v_WaitingForPDEReview_RequiredPhoto">
+<span @Html.Raw(vWaitingForPdeReviewList.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(vWaitingForPdeReviewList.IndividualCodeNumber.GetViewValue())/@ConvertToString(vWaitingForPdeReviewList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.RequiredPhoto.Visible (end) *@
+    @if (vWaitingForPdeReviewList.VisaPhoto.Visible) { // vWaitingForPdeReviewList.VisaPhoto.Visible (begin)
+        <td data-name="VisaPhoto" @Html.Raw(vWaitingForPdeReviewList.VisaPhoto.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_VisaPhoto" class="el_v_WaitingForPDEReview_VisaPhoto">
+<span @Html.Raw(vWaitingForPdeReviewList.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(vWaitingForPdeReviewList.IndividualCodeNumber.GetViewValue())/@ConvertToString(vWaitingForPdeReviewList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.VisaPhoto.Visible (end) *@
+    @if (vWaitingForPdeReviewList.Gender.Visible) { // vWaitingForPdeReviewList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(vWaitingForPdeReviewList.Gender.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_Gender" class="el_v_WaitingForPDEReview_Gender">
+<span @Html.Raw(vWaitingForPdeReviewList.Gender.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.Gender.Visible (end) *@
+    @if (vWaitingForPdeReviewList.RankAppliedFor.Visible) { // vWaitingForPdeReviewList.RankAppliedFor.Visible (begin)
+        <td data-name="RankAppliedFor" @Html.Raw(vWaitingForPdeReviewList.RankAppliedFor.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_RankAppliedFor" class="el_v_WaitingForPDEReview_RankAppliedFor">
+<span @Html.Raw(vWaitingForPdeReviewList.RankAppliedFor.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.RankAppliedFor.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.RankAppliedFor.Visible (end) *@
+    @if (vWaitingForPdeReviewList.WillAcceptLowRank.Visible) { // vWaitingForPdeReviewList.WillAcceptLowRank.Visible (begin)
+        <td data-name="WillAcceptLowRank" @Html.Raw(vWaitingForPdeReviewList.WillAcceptLowRank.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_WillAcceptLowRank" class="el_v_WaitingForPDEReview_WillAcceptLowRank">
+<span @Html.Raw(vWaitingForPdeReviewList.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(vWaitingForPdeReviewList.RowCount)" class="form-check-input" value="@(vWaitingForPdeReviewList.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(vWaitingForPdeReviewList.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(vWaitingForPdeReviewList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.WillAcceptLowRank.Visible (end) *@
+    @if (vWaitingForPdeReviewList.AvailableFrom.Visible) { // vWaitingForPdeReviewList.AvailableFrom.Visible (begin)
+        <td data-name="AvailableFrom" @Html.Raw(vWaitingForPdeReviewList.AvailableFrom.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_AvailableFrom" class="el_v_WaitingForPDEReview_AvailableFrom">
+<span @Html.Raw(vWaitingForPdeReviewList.AvailableFrom.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.AvailableFrom.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.AvailableFrom.Visible (end) *@
+    @if (vWaitingForPdeReviewList.AvailableUntil.Visible) { // vWaitingForPdeReviewList.AvailableUntil.Visible (begin)
+        <td data-name="AvailableUntil" @Html.Raw(vWaitingForPdeReviewList.AvailableUntil.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_AvailableUntil" class="el_v_WaitingForPDEReview_AvailableUntil">
+<span @Html.Raw(vWaitingForPdeReviewList.AvailableUntil.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.AvailableUntil.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.AvailableUntil.Visible (end) *@
+    @if (vWaitingForPdeReviewList.FormSubmittedDateTime.Visible) { // vWaitingForPdeReviewList.FormSubmittedDateTime.Visible (begin)
+        <td data-name="FormSubmittedDateTime" @Html.Raw(vWaitingForPdeReviewList.FormSubmittedDateTime.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_FormSubmittedDateTime" class="el_v_WaitingForPDEReview_FormSubmittedDateTime">
+<span @Html.Raw(vWaitingForPdeReviewList.FormSubmittedDateTime.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.FormSubmittedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.FormSubmittedDateTime.Visible (end) *@
+    @if (vWaitingForPdeReviewList.CreatedBy.Visible) { // vWaitingForPdeReviewList.CreatedBy.Visible (begin)
+        <td data-name="CreatedBy" @Html.Raw(vWaitingForPdeReviewList.CreatedBy.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_CreatedBy" class="el_v_WaitingForPDEReview_CreatedBy">
+<span @Html.Raw(vWaitingForPdeReviewList.CreatedBy.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.CreatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.CreatedBy.Visible (end) *@
+    @if (vWaitingForPdeReviewList.CreatedDateTime.Visible) { // vWaitingForPdeReviewList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(vWaitingForPdeReviewList.CreatedDateTime.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_CreatedDateTime" class="el_v_WaitingForPDEReview_CreatedDateTime">
+<span @Html.Raw(vWaitingForPdeReviewList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.CreatedDateTime.Visible (end) *@
+    @if (vWaitingForPdeReviewList.LastUpdatedBy.Visible) { // vWaitingForPdeReviewList.LastUpdatedBy.Visible (begin)
+        <td data-name="LastUpdatedBy" @Html.Raw(vWaitingForPdeReviewList.LastUpdatedBy.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_LastUpdatedBy" class="el_v_WaitingForPDEReview_LastUpdatedBy">
+<span @Html.Raw(vWaitingForPdeReviewList.LastUpdatedBy.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.LastUpdatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.LastUpdatedBy.Visible (end) *@
+    @if (vWaitingForPdeReviewList.LastUpdatedDateTime.Visible) { // vWaitingForPdeReviewList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(vWaitingForPdeReviewList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(vWaitingForPdeReviewList.RowCount)_v_WaitingForPDEReview_LastUpdatedDateTime" class="el_v_WaitingForPDEReview_LastUpdatedDateTime">
+<span @Html.Raw(vWaitingForPdeReviewList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(vWaitingForPdeReviewList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* vWaitingForPdeReviewList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @vWaitingForPdeReviewList.ListOptions.RenderBody("right", vWaitingForPdeReviewList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(vWaitingForPdeReviewList.RowIndex, "$rowindex$"))
+        vWaitingForPdeReviewList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((vWaitingForPdeReviewList.IsCopy || vWaitingForPdeReviewList.IsAdd) && vWaitingForPdeReviewList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        vWaitingForPdeReviewList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(vWaitingForPdeReviewList.CurrentAction) && !vWaitingForPdeReviewList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ vWaitingForPdeReviewList.CloseRecordset(); }
+@if (!vWaitingForPdeReviewList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!vWaitingForPdeReviewList.IsGridAdd && !(vWaitingForPdeReviewList.IsGridEdit && vWaitingForPdeReviewList.ModalGridEdit) && !vWaitingForPdeReviewList.IsMultiEdit) {
+@Html.Raw(vWaitingForPdeReviewList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@vWaitingForPdeReviewList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@vWaitingForPdeReviewList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@vWaitingForPdeReviewList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!vWaitingForPdeReviewList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("v_WaitingForPDEReview");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+    const invokeScheduleModalButton = $('<button/>', {
+        'class': 'btn btn-default ew-btn primary-green-bg ms-3 primary-white-clr',
+        'name': 'btn-invoke-schedule-modal',
+        'id': 'btn-invoke-schedule-modal',
+        'type': 'button',
+        'text': (selectedLanguage.id === 'en-US') ? 'Accept' : 'Terima'
+    });
+    const invokeRejectModalButton = $('<button/>', {
+        'class': 'btn btn-danger ew-btn ms-3 primary-white-clr',
+        'name': 'btn-invoke-reject-modal',
+        'id': 'btn-invoke-reject-modal',
+        'type': 'button',
+        'text': (selectedLanguage.id === 'en-US') ? 'Reject' : 'Tolak'
+    });
+    const invokeReviseModalButton = $('<button/>', {
+        'class': 'btn btn-primary ew-btn ms-3 primary-white-clr',
+        'name': 'btn-invoke-revise-modal',
+        'id': 'btn-invoke-revise-modal',
+        'type': 'button', 
+        'text': (selectedLanguage.id === 'en-US') ? 'Revise' : 'Tinjau'
+    });
+    $('#btn-submit').after(invokeScheduleModalButton);
+    $('#btn-invoke-schedule-modal').after(invokeReviseModalButton);
+    $('#btn-invoke-revise-modal').after(invokeRejectModalButton);
+    $('#btn-invoke-schedule-modal').click(function() {
+        var rowSelected = $(".ew-table-selected-row");
+        if (rowSelected.length == 0) {
+            ew.showToast("Data selection is required.");
+            return false;
+        } else {
+            $('#schedule-modal-dialog').modal('show');
+        }
+    });
+    $('#btn-invoke-revise-modal').click(function() {
+        var rowSelected = $(".ew-table-selected-row");
+        if (rowSelected.length == 0) {
+            ew.showToast("Data selection is required.");
+            return false;
+        } else {
+            $('#revise-modal-dialog').modal('show');
+        }
+    });
+    $('#btn-invoke-reject-modal').click(function() {
+        var rowSelected = $(".ew-table-selected-row");
+        if (rowSelected.length == 0) {
+            ew.showToast("Data selection is required.");
+            return false;
+        } else {
+            $('#reject-modal-dialog').modal('show');
+        }
+    });
+    $('table#tbl_v_WaitingForPDEReviewlist tbody tr td[data-name="view"] span button').each(function() {
+        const oldDataUrl = $(this).attr('data-url');
+        const newDataUrl = oldDataUrl.replace('VWaitingForPdeReviewView', 'CrewPersonalDataForAdminViewModeView');
+        $(this).attr('data-url', newDataUrl);
+    });
+    $('main.list.ew-no-record div#ew-list').remove();
+    $('div#ew-list div.card div.card-footer div.ew-list-other-options').remove();
+    $('#schedule-modal-dialog').on('hidden.bs.modal', function() {
+        $('#x_DocumentCheckDateTime').val(null);
+    });
+    $('#revise-modal-dialog').on('hidden.bs.modal', function() {
+        $('#x_RevisedReason').val(null);
+    });
+    $('#reject-modal-dialog').on('hidden.bs.modal', function() {
+        $('#x_RejectedReason').val(null);
+    });
+
+    // initialize date time picker
+    const format = "dd MMM yyyy HH:mm:00zzz";
+    const options = {
+        localization: {
+            locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+            hourCycle: format.match(/H/) ? "h24" : "h12",
+            format,
+            ...ew.language.phrase("datetimepicker")
+        },
+        display: {
+            icons: {
+                previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+            },
+            components: {
+                hours: !!format.match(/h/i),
+                minutes: !!format.match(/m/),
+                seconds: !!format.match(/s/i)
+            },
+            theme: ew.isDark() ? "dark" : "auto"
+        },
+        defaultDate: new Date(new Date().setHours(8, 0, 0)).toISOString(),
+    };
+    ew.createDateTimePicker("add-schedule", "x_DocumentCheckDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+    $('#x_DocumentCheckDateTime').val(replaceTimezoneOffset($('#x_DocumentCheckDateTime').val(), formatTimezoneOffset(new Date().getTimezoneOffset())));
+
+    // Listen for input changes
+    $('#x_DocumentCheckDateTime').on('change.td', function() {
+        const timezoneOffset = new Date().getTimezoneOffset();
+        const formattedTimezoneOffset = formatTimezoneOffset(timezoneOffset);
+        const currentValue = $(this).val();
+        const newValue = replaceTimezoneOffset(currentValue, formattedTimezoneOffset);
+        $(this).val(newValue);
+    });
+
+    // Format timezone offset as needed
+    function formatTimezoneOffset(offset) {
+        const hours = Math.floor(Math.abs(offset) / 60);
+        const sign = offset < 0 ? '+' : '-';
+        return ' GMT ' + sign + hours;
+    }
+
+    // Helper function to add leading zero to single-digit numbers
+    function addLeadingZero(num) {
+        return num < 10 ? '0' + num : num;
+    }
+
+    // Replace "zzz" with the formatted timezone offset
+    function replaceTimezoneOffset(str, offset) {
+        return str.replace('zzz', offset);
+    }
+
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    const parentUrl = ew.PATH_BASE;
+    const addDocumentCheckDateTimeApiUrl = "add-document-check-date-time";
+    $("#btn-add-schedule").click(function() {
+        const documentCheckDateTimeValue = $('#x_DocumentCheckDateTime').val();
+        const documentCheckDateTimeCaption = $(`label[for="x_DocumentCheckDateTime"]`).text();
+        if (documentCheckDateTimeValue == '') {
+            if (selectedLanguage.id === 'en-US') {
+                ew.showToast(`Please enter required field - ${documentCheckDateTimeCaption}`);
+            } else {
+                ew.showToast(`Masukkan input yang dibutuhkan - ${documentCheckDateTimeCaption}`);
+            }
+        } else {
+            const currentDate = new Date();
+            const documentCheckDateObject = new Date(documentCheckDateTimeValue);
+            if (isNaN(documentCheckDateObject)) {
+                if (selectedLanguage.id === 'en-US') {
+                    ew.showToast(`Invalid date time - ${documentCheckDateTimeCaption}`);
+                } else {
+                    ew.showToast(`Tanggal dan jam tidak valid - ${documentCheckDateTimeCaption}`);
+                }
+            } else if (documentCheckDateObject < currentDate) {
+                if (selectedLanguage.id === 'en-US') {
+                    ew.showToast(`${documentCheckDateTimeCaption} must be later or equal than today`);
+                } else {
+                    ew.showToast(`${documentCheckDateTimeCaption} harus setelah atau sama dengan hari ini`);
+                }
+            } else {
+                const rowSelected = $(".ew-table-selected-row");
+                const arrDataKey = new Array();
+                $.each(rowSelected, function (index) {
+                    arrDataKey[index] = $(this).attr("data-key");
+                });
+                const notesValue = $('#x_DocumentCheckNotes').val();
+                const notes = (notesValue !== '') ? notesValue : '';
+                const documentCheckDateTimeRequest = {
+                    scheduleDateTime: documentCheckDateTimeValue,
+                    notes: notes,
+                    crewIDArray: JSON.stringify(arrDataKey),
+                };
+                $.ajax({
+                    method: "POST",
+                    url: `${parentUrl}api/Registration/${addDocumentCheckDateTimeApiUrl}`,
+                    data: JSON.stringify(documentCheckDateTimeRequest),
+                    contentType: "application/json",
+                    success: function(response) {
+                        if (response.success) {
+                            $('#schedule-modal-dialog').modal('hide');
+                            let successMessage = '';
+                            if (selectedLanguage.id === 'en-US') {
+                                successMessage = `Add ${documentCheckDateTimeCaption} Successful`;
+                            } else {
+                                successMessage = `Menambahkan ${documentCheckDateTimeCaption} Berhasil`;
+                            }
+                            const baseUrl = new URL(window.location.href).origin;
+                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                            const params = new URLSearchParams(targetUrl.search);
+                            params.set('successMessage', encodedSuccessMessage);
+                            targetUrl.search = params.toString();
+                            window.location.href = targetUrl.href;
+                        } else {
+                            $('#schedule-modal-dialog').modal('hide');
+                            const errorMessage = response.errorMessage;
+                            ew.showToast(errorMessage);
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        $('#schedule-modal-dialog').modal('hide');
+                        ew.showToast(errorThrown);
+                    }
+                });
+            }
+        }
+    });
+    const successMessage = urlQueryParams.get('successMessage');
+    if (successMessage !== null) {
+        const decodedSuccessMessage = decodeURIComponent(successMessage);
+        ew.showToast(decodedSuccessMessage, 'success');
+        urlQueryParams.delete('successMessage');
+        currentUrlObject.search = urlQueryParams.toString();
+        history.pushState(null, '', currentUrlObject);
+    }
+    const reviseMultipleCrewApiUrl = "revise-multiple-crew";
+    $("#btn-revise").click(function() {
+        const revisedReasonValue = $('#x_RevisedReason').val();
+        const revisedReasonCaption = $(`label[for="x_RevisedReason"]`).text();
+        if(revisedReasonValue.trim() === '') {
+            if(selectedLanguage.id === 'en-US') {
+                ew.showToast(`Please enter required field - ${revisedReasonCaption}`);
+            } else {
+                ew.showToast(`Masukkan input yang dibutuhkan - ${revisedReasonCaption}`);
+            }
+        } else {
+            const rowSelected = $(".ew-table-selected-row");
+            const arrDataKey = new Array();
+            $.each(rowSelected, function (index) {
+                arrDataKey[index] = $(this).attr("data-key"); 
+            });
+            const revisedMultipleCrewRequest = {
+                revisedReason: revisedReasonValue,
+                crewIDArray: JSON.stringify(arrDataKey)
+            };
+            $.ajax({
+                method: "POST",
+                url: `${parentUrl}api/Registration/${reviseMultipleCrewApiUrl}`,
+                data: JSON.stringify(revisedMultipleCrewRequest),
+                contentType: "application/json",
+                success: function(response) {
+                    if(response.success) {
+                        $('#revise-modal-dialog').modal('hide');
+                        let successMessage = '';
+                        if(selectedLanguage.id === 'en-US') {
+                            successMessage = `Add ${revisedReasonCaption} Successful`;
+                        } else {
+                            successMessage = `Menambahkan ${revisedReasonCaption} Berhasil`;
+                        }
+                        const baseUrl = new URL(window.location.href).origin;
+                        const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                        const encodedSuccessMessage = encodeURIComponent(successMessage);
+                        const params = new URLSearchParams(targetUrl.search);
+                        params.set('successMessage', encodedSuccessMessage);
+                        targetUrl.search = params.toString();
+                        window.location.href = targetUrl.href;
+                    } else {
+                        $('#revise-modal-dialog').modal('hide');
+                        const errorMessage = response.errorMessage;
+                        ew.showToast(errorMessage);
+                    }  
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    $('#revise-modal-dialog').modal('hide');
+                    ew.showToast(errorThrown);
+                }
+            });
+        }
+    });
+    const rejectMultipleCrewApiUrl = "reject-multiple-crew";
+    $("#btn-reject").click(function() {
+        const rejectedReasonValue = $('#x_RejectedReason').val();
+        const rejectedReasonCaption = $(`label[for="x_RejectedReason"]`).text();
+        if (rejectedReasonValue == '') {
+            if (selectedLanguage.id === 'en-US') {
+                ew.showToast(`Please enter required field - ${rejectedReasonCaption}`);
+            } else {
+                ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
+            }
+        } else {
+            const rowSelected = $(".ew-table-selected-row");
+            const arrDataKey = new Array();
+            $.each(rowSelected, function (index) {
+                arrDataKey[index] = $(this).attr("data-key");
+            });
+            const rejectMultipleRequest = {
+                rejectReason: rejectedReasonValue,
+                crewIDArray: JSON.stringify(arrDataKey),
+            };
+            $.ajax({
+                method: "POST",
+                url: `${parentUrl}api/Registration/${rejectMultipleCrewApiUrl}`,
+                data: JSON.stringify(rejectMultipleRequest),
+                contentType: "application/json",
+                success: function(response) {
+                    if (response.success) {
+                        $('#reject-modal-dialog').modal('hide');
+                        let successMessage = '';
+                        if (selectedLanguage.id === 'en-US') {
+                            successMessage = `Add ${rejectedReasonCaption} Successful`;
+                        } else {
+                            successMessage = `Menambahkan ${rejectedReasonCaption} Berhasil`;
+                        }
+                        const baseUrl = new URL(window.location.href).origin;
+                        const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                        const encodedSuccessMessage = encodeURIComponent(successMessage);
+                        const params = new URLSearchParams(targetUrl.search);
+                        params.set('successMessage', encodedSuccessMessage);
+                        targetUrl.search = params.toString();
+                        window.location.href = targetUrl.href;
+                    } else {
+                        $('#reject-modal-dialog').modal('hide');
+                        const errorMessage = response.errorMessage;
+                        ew.showToast(errorMessage);
+                    }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    $('#reject-modal-dialog').modal('hide');
+                    ew.showToast(errorThrown);
+                }
+            });
+        }
+    });
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

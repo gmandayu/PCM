@@ -1,0 +1,460 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (checklistSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!checklistSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(checklistSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Checklist: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fChecklistsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fChecklistsearch")
+        .setPageId("search")
+@if (checklistSearch.IsModal && checklistSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["CreatedBy", [ew.Validators.integer], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedBy", [ew.Validators.integer], fields.LastUpdatedBy.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "WillAcceptLowRank": @Html.Raw(checklistSearch.WillAcceptLowRank.ToClientList(checklistSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (checklistSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@checklistSearch.ShowPageHeader()
+@checklistSearch.ShowMessages()
+<form name="fChecklistsearch" id="fChecklistsearch" class="@(checklistSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (checklistSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (checklistSearch.IndividualCodeNumber.Visible) { // checklistSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(checklistSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_IndividualCodeNumber">@Html.Raw(checklistSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="Checklist" data-field="x_IndividualCodeNumber" value="@Html.Raw(checklistSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(checklistSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(checklistSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(checklistSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.IndividualCodeNumber.Visible (end) *@
+@if (checklistSearch.FullName.Visible) { // checklistSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(checklistSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_FullName">@Html.Raw(checklistSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="Checklist" data-field="x_FullName" value="@Html.Raw(checklistSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(checklistSearch.FullName.PlaceHolder))" data-format-pattern="@(checklistSearch.FullName.FormatPattern)"@Html.Raw(checklistSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.FullName.Visible (end) *@
+@if (checklistSearch.RankAppliedFor.Visible) { // checklistSearch.RankAppliedFor.Visible (begin)
+    <div id="r_RankAppliedFor" class="row" @Html.Raw(checklistSearch.RankAppliedFor.RowAttributes)>
+        <label for="x_RankAppliedFor" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_RankAppliedFor">@Html.Raw(checklistSearch.RankAppliedFor.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RankAppliedFor" id="z_RankAppliedFor" value="LIKE">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.RankAppliedFor.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_RankAppliedFor" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.RankAppliedFor.InputTextType)" name="x_RankAppliedFor" id="x_RankAppliedFor" data-table="Checklist" data-field="x_RankAppliedFor" value="@Html.Raw(checklistSearch.RankAppliedFor.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistSearch.RankAppliedFor.PlaceHolder))" data-format-pattern="@(checklistSearch.RankAppliedFor.FormatPattern)"@Html.Raw(checklistSearch.RankAppliedFor.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.RankAppliedFor.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.RankAppliedFor.Visible (end) *@
+@if (checklistSearch.WillAcceptLowRank.Visible) { // checklistSearch.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" class="row" @Html.Raw(checklistSearch.WillAcceptLowRank.RowAttributes)>
+        <label class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_WillAcceptLowRank">@Html.Raw(checklistSearch.WillAcceptLowRank.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WillAcceptLowRank" id="z_WillAcceptLowRank" value="=">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.WillAcceptLowRank.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_WillAcceptLowRank" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(checklistSearch.WillAcceptLowRank.IsInvalidClass)" data-table="Checklist" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(checklistSearch.WillAcceptLowRank.AdvancedSearch.SearchValue)" @Html.Raw(checklistSearch.WillAcceptLowRank.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(checklistSearch.WillAcceptLowRank.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.WillAcceptLowRank.Visible (end) *@
+@if (checklistSearch.AvailableFrom.Visible) { // checklistSearch.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" class="row" @Html.Raw(checklistSearch.AvailableFrom.RowAttributes)>
+        <label for="x_AvailableFrom" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_AvailableFrom">@Html.Raw(checklistSearch.AvailableFrom.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableFrom" id="z_AvailableFrom" value="=">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.AvailableFrom.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_AvailableFrom" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="Checklist" data-field="x_AvailableFrom" value="@Html.Raw(checklistSearch.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistSearch.AvailableFrom.PlaceHolder))" data-format-pattern="@(checklistSearch.AvailableFrom.FormatPattern)"@Html.Raw(checklistSearch.AvailableFrom.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.AvailableFrom.GetErrorMessage(false))</div>
+@if (!checklistSearch.AvailableFrom.ReadOnly && !checklistSearch.AvailableFrom.Disabled && !checklistSearch.AvailableFrom.EditAttrs.Is("readonly") && !checklistSearch.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistsearch", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.AvailableFrom.Visible (end) *@
+@if (checklistSearch.AvailableUntil.Visible) { // checklistSearch.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" class="row" @Html.Raw(checklistSearch.AvailableUntil.RowAttributes)>
+        <label for="x_AvailableUntil" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_AvailableUntil">@Html.Raw(checklistSearch.AvailableUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableUntil" id="z_AvailableUntil" value="=">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.AvailableUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_AvailableUntil" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="Checklist" data-field="x_AvailableUntil" value="@Html.Raw(checklistSearch.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistSearch.AvailableUntil.PlaceHolder))" data-format-pattern="@(checklistSearch.AvailableUntil.FormatPattern)"@Html.Raw(checklistSearch.AvailableUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.AvailableUntil.GetErrorMessage(false))</div>
+@if (!checklistSearch.AvailableUntil.ReadOnly && !checklistSearch.AvailableUntil.Disabled && !checklistSearch.AvailableUntil.EditAttrs.Is("readonly") && !checklistSearch.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistsearch", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.AvailableUntil.Visible (end) *@
+@if (checklistSearch.CreatedBy.Visible) { // checklistSearch.CreatedBy.Visible (begin)
+    <div id="r_CreatedBy" class="row" @Html.Raw(checklistSearch.CreatedBy.RowAttributes)>
+        <label for="x_CreatedBy" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_CreatedBy">@Html.Raw(checklistSearch.CreatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedBy" id="z_CreatedBy" value="=">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.CreatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_CreatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="Checklist" data-field="x_CreatedBy" value="@Html.Raw(checklistSearch.CreatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistSearch.CreatedBy.PlaceHolder))" data-format-pattern="@(checklistSearch.CreatedBy.FormatPattern)"@Html.Raw(checklistSearch.CreatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.CreatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.CreatedBy.Visible (end) *@
+@if (checklistSearch.CreatedDateTime.Visible) { // checklistSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(checklistSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_CreatedDateTime">@Html.Raw(checklistSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="Checklist" data-field="x_CreatedDateTime" value="@Html.Raw(checklistSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(checklistSearch.CreatedDateTime.FormatPattern)"@Html.Raw(checklistSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!checklistSearch.CreatedDateTime.ReadOnly && !checklistSearch.CreatedDateTime.Disabled && !checklistSearch.CreatedDateTime.EditAttrs.Is("readonly") && !checklistSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.CreatedDateTime.Visible (end) *@
+@if (checklistSearch.LastUpdatedBy.Visible) { // checklistSearch.LastUpdatedBy.Visible (begin)
+    <div id="r_LastUpdatedBy" class="row" @Html.Raw(checklistSearch.LastUpdatedBy.RowAttributes)>
+        <label for="x_LastUpdatedBy" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_LastUpdatedBy">@Html.Raw(checklistSearch.LastUpdatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedBy" id="z_LastUpdatedBy" value="=">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.LastUpdatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_LastUpdatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.LastUpdatedBy.InputTextType)" name="x_LastUpdatedBy" id="x_LastUpdatedBy" data-table="Checklist" data-field="x_LastUpdatedBy" value="@Html.Raw(checklistSearch.LastUpdatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(checklistSearch.LastUpdatedBy.PlaceHolder))" data-format-pattern="@(checklistSearch.LastUpdatedBy.FormatPattern)"@Html.Raw(checklistSearch.LastUpdatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.LastUpdatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.LastUpdatedBy.Visible (end) *@
+@if (checklistSearch.LastUpdatedDateTime.Visible) { // checklistSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(checklistSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(checklistSearch.LeftColumnClass)"><span id="elh_Checklist_LastUpdatedDateTime">@Html.Raw(checklistSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(checklistSearch.RightColumnClass)">
+            <div @Html.Raw(checklistSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_Checklist_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(checklistSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="Checklist" data-field="x_LastUpdatedDateTime" value="@Html.Raw(checklistSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(checklistSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(checklistSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(checklistSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(checklistSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!checklistSearch.LastUpdatedDateTime.ReadOnly && !checklistSearch.LastUpdatedDateTime.Disabled && !checklistSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !checklistSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fChecklistsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fChecklistsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* checklistSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(checklistSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(checklistSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fChecklistsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (checklistSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fChecklistsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fChecklistsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(checklistSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@checklistSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Checklist");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

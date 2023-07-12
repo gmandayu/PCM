@@ -1,0 +1,358 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtDocumentSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtDocumentSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtDocumentSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTDocument: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTDocumentsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTDocumentsearch")
+        .setPageId("search")
+@if (mtDocumentSearch.IsModal && mtDocumentSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Type", [], fields._Type.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CreatedByUserID": @Html.Raw(mtDocumentSearch.CreatedByUserID.ToClientList(mtDocumentSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtDocumentSearch.LastUpdatedByUserID.ToClientList(mtDocumentSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtDocumentSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtDocumentSearch.ShowPageHeader()
+@mtDocumentSearch.ShowMessages()
+<form name="fMTDocumentsearch" id="fMTDocumentsearch" class="@(mtDocumentSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtDocumentSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtDocumentSearch._Type.Visible) { // mtDocumentSearch._Type.Visible (begin)
+    <div id="r__Type" class="row" @Html.Raw(mtDocumentSearch._Type.RowAttributes)>
+        <label for="x__Type" class="@(mtDocumentSearch.LeftColumnClass)"><span id="elh_MTDocument__Type">@Html.Raw(mtDocumentSearch._Type.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Type" id="z__Type" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtDocumentSearch.RightColumnClass)">
+            <div @Html.Raw(mtDocumentSearch._Type.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTDocument__Type" class="ew-search-field ew-search-field-single">
+<input type="@(mtDocumentSearch._Type.InputTextType)" name="x__Type" id="x__Type" data-table="MTDocument" data-field="x__Type" value="@Html.Raw(mtDocumentSearch._Type.EditValue)" size="30" maxlength="30" placeholder="@Html.Raw(HtmlEncode(mtDocumentSearch._Type.PlaceHolder))" data-format-pattern="@(mtDocumentSearch._Type.FormatPattern)"@Html.Raw(mtDocumentSearch._Type.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtDocumentSearch._Type.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtDocumentSearch._Type.Visible (end) *@
+@if (mtDocumentSearch.CreatedByUserID.Visible) { // mtDocumentSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtDocumentSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(mtDocumentSearch.LeftColumnClass)"><span id="elh_MTDocument_CreatedByUserID">@Html.Raw(mtDocumentSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtDocumentSearch.RightColumnClass)">
+            <div @Html.Raw(mtDocumentSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTDocument_CreatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_CreatedByUserID"
+        name="x_CreatedByUserID"
+        class="form-select ew-select@(mtDocumentSearch.CreatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTDocumentsearch_x_CreatedByUserID"
+        data-table="MTDocument"
+        data-field="x_CreatedByUserID"
+        data-value-separator="@(mtDocumentSearch.CreatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtDocumentSearch.CreatedByUserID.PlaceHolder))"
+        @Html.Raw(mtDocumentSearch.CreatedByUserID.EditAttributes)>
+        @(mtDocumentSearch.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtDocumentSearch.CreatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtDocumentSearch.CreatedByUserID.Lookup.GetParamTag(mtDocumentSearch, "p_x_CreatedByUserID"))
+<script>
+loadjs.ready("fMTDocumentsearch", function() {
+    var options = { name: "x_CreatedByUserID", selectId: "fMTDocumentsearch_x_CreatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTDocumentsearch.lists.CreatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_CreatedByUserID", form: "fMTDocumentsearch" };
+    } else {
+        options.ajax = { id: "x_CreatedByUserID", form: "fMTDocumentsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTDocument.fields.CreatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtDocumentSearch.CreatedByUserID.Visible (end) *@
+@if (mtDocumentSearch.CreatedDateTime.Visible) { // mtDocumentSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtDocumentSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtDocumentSearch.LeftColumnClass)"><span id="elh_MTDocument_CreatedDateTime">@Html.Raw(mtDocumentSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtDocumentSearch.RightColumnClass)">
+            <div @Html.Raw(mtDocumentSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTDocument_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtDocumentSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTDocument" data-field="x_CreatedDateTime" value="@Html.Raw(mtDocumentSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtDocumentSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtDocumentSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtDocumentSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtDocumentSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtDocumentSearch.CreatedDateTime.ReadOnly && !mtDocumentSearch.CreatedDateTime.Disabled && !mtDocumentSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtDocumentSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTDocumentsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTDocumentsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtDocumentSearch.CreatedDateTime.Visible (end) *@
+@if (mtDocumentSearch.LastUpdatedByUserID.Visible) { // mtDocumentSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtDocumentSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(mtDocumentSearch.LeftColumnClass)"><span id="elh_MTDocument_LastUpdatedByUserID">@Html.Raw(mtDocumentSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtDocumentSearch.RightColumnClass)">
+            <div @Html.Raw(mtDocumentSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTDocument_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_LastUpdatedByUserID"
+        name="x_LastUpdatedByUserID"
+        class="form-select ew-select@(mtDocumentSearch.LastUpdatedByUserID.IsInvalidClass)"
+        data-select2-id="fMTDocumentsearch_x_LastUpdatedByUserID"
+        data-table="MTDocument"
+        data-field="x_LastUpdatedByUserID"
+        data-value-separator="@(mtDocumentSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(mtDocumentSearch.LastUpdatedByUserID.PlaceHolder))"
+        @Html.Raw(mtDocumentSearch.LastUpdatedByUserID.EditAttributes)>
+        @(mtDocumentSearch.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(mtDocumentSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+@Html.Raw(mtDocumentSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtDocumentSearch, "p_x_LastUpdatedByUserID"))
+<script>
+loadjs.ready("fMTDocumentsearch", function() {
+    var options = { name: "x_LastUpdatedByUserID", selectId: "fMTDocumentsearch_x_LastUpdatedByUserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fMTDocumentsearch.lists.LastUpdatedByUserID?.lookupOptions.length) {
+        options.data = { id: "x_LastUpdatedByUserID", form: "fMTDocumentsearch" };
+    } else {
+        options.ajax = { id: "x_LastUpdatedByUserID", form: "fMTDocumentsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumInputLength = ew.selectMinimumInputLength;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.MTDocument.fields.LastUpdatedByUserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtDocumentSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtDocumentSearch.LastUpdatedDateTime.Visible) { // mtDocumentSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtDocumentSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtDocumentSearch.LeftColumnClass)"><span id="elh_MTDocument_LastUpdatedDateTime">@Html.Raw(mtDocumentSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtDocumentSearch.RightColumnClass)">
+            <div @Html.Raw(mtDocumentSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTDocument_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtDocumentSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTDocument" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtDocumentSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtDocumentSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtDocumentSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtDocumentSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtDocumentSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtDocumentSearch.LastUpdatedDateTime.ReadOnly && !mtDocumentSearch.LastUpdatedDateTime.Disabled && !mtDocumentSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtDocumentSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTDocumentsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTDocumentsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtDocumentSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtDocumentSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtDocumentSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTDocumentsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtDocumentSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTDocumentsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTDocumentsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtDocumentSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtDocumentSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTDocument");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

@@ -1,0 +1,560 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtReligionList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtReligionList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtReligionList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtReligionList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTReligion: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtReligionList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtReligionList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtReligionList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtReligionList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtReligionList._Name.ToClientList(mtReligionList)),
+            "CreatedByUserID": @Html.Raw(mtReligionList.CreatedByUserID.ToClientList(mtReligionList)),
+            "CreatedDateTime": @Html.Raw(mtReligionList.CreatedDateTime.ToClientList(mtReligionList)),
+            "LastUpdatedByUserID": @Html.Raw(mtReligionList.LastUpdatedByUserID.ToClientList(mtReligionList)),
+            "LastUpdatedDateTime": @Html.Raw(mtReligionList.LastUpdatedDateTime.ToClientList(mtReligionList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtReligionList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtReligionList.TotalRecords > 0 && mtReligionList.ExportOptions.Visible) {
+    mtReligionList.ExportOptions.Render("body");
+}
+@if (mtReligionList.ImportOptions.Visible) {
+    mtReligionList.ImportOptions.Render("body");
+}
+@if (mtReligionList.SearchOptions.Visible) {
+    mtReligionList.SearchOptions.Render("body");
+}
+@if (mtReligionList.FilterOptions.Visible) {
+    mtReligionList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtReligionList.ShowCurrentFilter) {
+    mtReligionList.ShowFilterList();
+}
+@if (!mtReligionList.IsModal) {
+<form name="fMTReligionsrch" id="fMTReligionsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTReligionsrch_search_panel" class="mb-2 mb-sm-0 @(mtReligionList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtReligionList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTReligion: currentTable } });
+var currentForm;
+var fMTReligionsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTReligionsrch")
+        .setPageId("list")
+@if (mtReligionList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtReligionList._Name.ToClientList(mtReligionList)),
+            "CreatedByUserID": @Html.Raw(mtReligionList.CreatedByUserID.ToClientList(mtReligionList)),
+            "CreatedDateTime": @Html.Raw(mtReligionList.CreatedDateTime.ToClientList(mtReligionList)),
+            "LastUpdatedByUserID": @Html.Raw(mtReligionList.LastUpdatedByUserID.ToClientList(mtReligionList)),
+            "LastUpdatedDateTime": @Html.Raw(mtReligionList.LastUpdatedDateTime.ToClientList(mtReligionList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtReligionList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtReligionList.IsExport() && Empty(mtReligionList.CurrentAction) && mtReligionList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtReligionList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtReligionList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtReligionList.RowType = RowType.Search;
+    mtReligionList.ResetAttributes();
+    await mtReligionList.RenderRow();
+}
+@if (mtReligionList._Name.Visible) { // mtReligionList._Name.Visible (begin)
+    if (!mtReligionList._Name.UseFilter) {
+        mtReligionList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtReligionList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtReligionList._Name.IsInvalidClass)"
+            data-select2-id="fMTReligionsrch_x__Name"
+            data-table="MTReligion"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtReligionList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtReligionList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtReligionList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtReligionList._Name.EditAttributes)>
+            @(mtReligionList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtReligionList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTReligionsrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTReligionsrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTReligionsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTReligion.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtReligionList._Name.Visible (end) *@
+@if (mtReligionList.CreatedByUserID.Visible) { // mtReligionList.CreatedByUserID.Visible (begin)
+    if (!mtReligionList.CreatedByUserID.UseFilter) {
+        mtReligionList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtReligionList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtReligionList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTReligionsrch_x_CreatedByUserID"
+            data-table="MTReligion"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtReligionList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtReligionList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtReligionList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtReligionList.CreatedByUserID.EditAttributes)>
+            @(mtReligionList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtReligionList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTReligionsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTReligionsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTReligionsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTReligion.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtReligionList.CreatedByUserID.Visible (end) *@
+@if (mtReligionList.CreatedDateTime.Visible) { // mtReligionList.CreatedDateTime.Visible (begin)
+    if (!mtReligionList.CreatedDateTime.UseFilter) {
+        mtReligionList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtReligionList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtReligionList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTReligionsrch_x_CreatedDateTime"
+            data-table="MTReligion"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtReligionList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtReligionList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtReligionList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtReligionList.CreatedDateTime.EditAttributes)>
+            @(mtReligionList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtReligionList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTReligionsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTReligionsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTReligionsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTReligion.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtReligionList.CreatedDateTime.Visible (end) *@
+@if (mtReligionList.LastUpdatedByUserID.Visible) { // mtReligionList.LastUpdatedByUserID.Visible (begin)
+    if (!mtReligionList.LastUpdatedByUserID.UseFilter) {
+        mtReligionList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtReligionList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtReligionList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTReligionsrch_x_LastUpdatedByUserID"
+            data-table="MTReligion"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtReligionList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtReligionList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtReligionList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtReligionList.LastUpdatedByUserID.EditAttributes)>
+            @(mtReligionList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtReligionList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTReligionsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTReligionsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTReligionsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTReligion.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtReligionList.LastUpdatedByUserID.Visible (end) *@
+@if (mtReligionList.LastUpdatedDateTime.Visible) { // mtReligionList.LastUpdatedDateTime.Visible (begin)
+    if (!mtReligionList.LastUpdatedDateTime.UseFilter) {
+        mtReligionList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtReligionList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtReligionList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTReligionsrch_x_LastUpdatedDateTime"
+            data-table="MTReligion"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtReligionList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtReligionList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtReligionList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtReligionList.LastUpdatedDateTime.EditAttributes)>
+            @(mtReligionList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtReligionList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTReligionsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTReligionsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTReligionsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTReligion.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtReligionList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtReligionList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtReligionList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtReligionList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtReligionList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTReligionsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtReligionList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTReligionsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtReligionList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTReligionsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtReligionList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTReligionsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtReligionList.ShowPageHeader()
+@mtReligionList.ShowMessages()
+<main class="list @(mtReligionList.TotalRecords == 0 && !mtReligionList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtReligionList.TotalRecords > 0 || !Empty(mtReligionList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtReligionList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtReligionList.TableGridClass)">
+<form name="@(mtReligionList.FormName)" id="@(mtReligionList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtReligionList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtReligionList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTReligion" class="card-body ew-grid-middle-panel @(mtReligionList.TableContainerClass)" style="@(mtReligionList.TableContainerStyle)">
+@if (mtReligionList.TotalRecords > 0 || mtReligionList.IsGridEdit || mtReligionList.IsMultiEdit) {
+<table id="tbl_MTReligionlist" class="@(mtReligionList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtReligionList.RowType = RowType.Header;
+
+    // Render list options
+    await mtReligionList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtReligionList.ListOptions.RenderHeader("left")
+@if (mtReligionList._Name.Visible) { // mtReligionList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtReligionList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTReligion__Name" class="MTReligion__Name">@Html.Raw(mtReligionList.RenderFieldHeader(mtReligionList._Name))</div></th>
+} @* mtReligionList._Name.Visible (end) *@
+@if (mtReligionList.CreatedByUserID.Visible) { // mtReligionList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtReligionList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTReligion_CreatedByUserID" class="MTReligion_CreatedByUserID">@Html.Raw(mtReligionList.RenderFieldHeader(mtReligionList.CreatedByUserID))</div></th>
+} @* mtReligionList.CreatedByUserID.Visible (end) *@
+@if (mtReligionList.CreatedDateTime.Visible) { // mtReligionList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtReligionList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTReligion_CreatedDateTime" class="MTReligion_CreatedDateTime">@Html.Raw(mtReligionList.RenderFieldHeader(mtReligionList.CreatedDateTime))</div></th>
+} @* mtReligionList.CreatedDateTime.Visible (end) *@
+@if (mtReligionList.LastUpdatedByUserID.Visible) { // mtReligionList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtReligionList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTReligion_LastUpdatedByUserID" class="MTReligion_LastUpdatedByUserID">@Html.Raw(mtReligionList.RenderFieldHeader(mtReligionList.LastUpdatedByUserID))</div></th>
+} @* mtReligionList.LastUpdatedByUserID.Visible (end) *@
+@if (mtReligionList.LastUpdatedDateTime.Visible) { // mtReligionList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtReligionList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTReligion_LastUpdatedDateTime" class="MTReligion_LastUpdatedDateTime">@Html.Raw(mtReligionList.RenderFieldHeader(mtReligionList.LastUpdatedDateTime))</div></th>
+} @* mtReligionList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtReligionList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtReligionList.PageNumber)">
+@{
+    await mtReligionList.SetupGrid();
+    bool eof = mtReligionList.Recordset == null; // DN
+}
+@while (mtReligionList.RecordCount < mtReligionList.StopRecord || SameString(mtReligionList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtReligionList.RowIndex, "$rowindex$") &&
+        (!mtReligionList.IsGridAdd || mtReligionList.CurrentMode == "copy") &&
+        (!((mtReligionList.IsCopy || mtReligionList.IsAdd) && mtReligionList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtReligionList.Recordset.ReadAsync();
+    mtReligionList.RecordCount++;
+    if (mtReligionList.RecordCount >= mtReligionList.StartRecord) {
+        await mtReligionList.SetupRow();
+    <tr @Html.Raw(mtReligionList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtReligionList.ListOptions.RenderBody("left", mtReligionList.RowCount)
+    @if (mtReligionList._Name.Visible) { // mtReligionList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtReligionList._Name.CellAttributes)>
+<span id="el@(mtReligionList.RowCount)_MTReligion__Name" class="el_MTReligion__Name">
+<span @Html.Raw(mtReligionList._Name.ViewAttributes)>
+@Html.Raw(mtReligionList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtReligionList._Name.Visible (end) *@
+    @if (mtReligionList.CreatedByUserID.Visible) { // mtReligionList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtReligionList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtReligionList.RowCount)_MTReligion_CreatedByUserID" class="el_MTReligion_CreatedByUserID">
+<span @Html.Raw(mtReligionList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtReligionList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtReligionList.CreatedByUserID.Visible (end) *@
+    @if (mtReligionList.CreatedDateTime.Visible) { // mtReligionList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtReligionList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtReligionList.RowCount)_MTReligion_CreatedDateTime" class="el_MTReligion_CreatedDateTime">
+<span @Html.Raw(mtReligionList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtReligionList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtReligionList.CreatedDateTime.Visible (end) *@
+    @if (mtReligionList.LastUpdatedByUserID.Visible) { // mtReligionList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtReligionList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtReligionList.RowCount)_MTReligion_LastUpdatedByUserID" class="el_MTReligion_LastUpdatedByUserID">
+<span @Html.Raw(mtReligionList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtReligionList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtReligionList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtReligionList.LastUpdatedDateTime.Visible) { // mtReligionList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtReligionList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtReligionList.RowCount)_MTReligion_LastUpdatedDateTime" class="el_MTReligion_LastUpdatedDateTime">
+<span @Html.Raw(mtReligionList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtReligionList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtReligionList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtReligionList.ListOptions.RenderBody("right", mtReligionList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtReligionList.RowIndex, "$rowindex$"))
+        mtReligionList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtReligionList.IsCopy || mtReligionList.IsAdd) && mtReligionList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtReligionList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtReligionList.CurrentAction) && !mtReligionList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtReligionList.CloseRecordset(); }
+@if (!mtReligionList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtReligionList.IsGridAdd && !(mtReligionList.IsGridEdit && mtReligionList.ModalGridEdit) && !mtReligionList.IsMultiEdit) {
+@Html.Raw(mtReligionList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtReligionList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtReligionList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtReligionList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtReligionList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTReligion");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

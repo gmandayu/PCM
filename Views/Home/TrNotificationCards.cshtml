@@ -1,0 +1,289 @@
+@if (trNotificationList.ModalGridAdd && trNotificationList.IsGridAdd || trNotificationList.ModalGridEdit && trNotificationList.IsGridEdit || trNotificationList.ModalMultiEdit && trNotificationList.IsMultiEdit) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trNotificationList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRNotification: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(trNotificationList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(trNotificationList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(trNotificationList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(trNotificationList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+}
+<form name="@(trNotificationList.FormName)" id="@(trNotificationList.FormName)" class="ew-form ew-list-form ew-multi-column-form" action="@AppPath(trNotificationList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (trNotificationList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="@(trNotificationList.GetMultiColumnRowClass())">
+@if (trNotificationList.TotalRecords > 0 || trNotificationList.IsGridEdit || trNotificationList.IsMultiEdit) {
+    await trNotificationList.SetupGrid();
+    bool eof = trNotificationList.Recordset == null; // DN
+while (trNotificationList.RecordCount < trNotificationList.StopRecord || SameString(trNotificationList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(trNotificationList.RowIndex, "$rowindex$") &&
+        (!trNotificationList.IsGridAdd || trNotificationList.CurrentMode == "copy") &&
+        (!((trNotificationList.IsCopy || trNotificationList.IsAdd) && trNotificationList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await trNotificationList.Recordset.ReadAsync();
+    trNotificationList.RecordCount++;
+    if (trNotificationList.RecordCount >= trNotificationList.StartRecord) {
+        await trNotificationList.SetupRow();
+<div class="@(trNotificationList.GetMultiColumnColClass())" @Html.Raw(trNotificationList.RowAttributes)>
+@if (!trNotificationList.IsAddOrEdit) { @* Show custom card layout *@
+<div class="card h-100">
+  <div class="row g-0">
+    <div class="col-md-12">
+      <div class="card-body">
+        <h5 class="card-title">
+<span @Html.Raw(trNotificationList.Subject.ViewAttributes)>
+@Html.Raw(trNotificationList.Subject.GetViewValue())</span>
+</h5>
+        <p class="card-text">
+<span @Html.Raw(trNotificationList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(trNotificationList.CreatedDateTime.GetViewValue())</span>
+</p>
+        <p class="card-text">
+<span @Html.Raw(trNotificationList.Body.ViewAttributes)>
+@Html.Raw(trNotificationList.Body.GetViewValue())</span>
+</p>
+      </div>
+    </div>
+  </div>
+</div>
+} else { @* Show normal card layout *@
+<div class="@(trNotificationList.MultiColumnCardClass)">
+    @if (trNotificationList.MultiColumnListOptionsPosition.StartsWith("top", StringComparison.InvariantCultureIgnoreCase)) {
+    <div class="card-header">
+        <div class="ew-multi-column-list-option ew-@(trNotificationList.MultiColumnListOptionsPosition)">
+@{
+    // Render list options (body, bottom)
+    trNotificationList.ListOptions.Tag = "div";
+    trNotificationList.ListOptions.RenderBody(trNotificationList.MultiColumnListOptionsPosition, trNotificationList.RowCount);
+}
+        </div><!-- /.ew-multi-column-list-option -->
+    </div>
+    }
+    <div class="card-body">
+    @if (trNotificationList.MTUserID.Visible) { // trNotificationList.MTUserID.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_MTUserID">
+            <div class="col col-sm-4 TRNotification_MTUserID" style="white-space: nowrap;">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.MTUserID))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.MTUserID.CellAttributes)>
+<span @Html.Raw(trNotificationList.MTUserID.ViewAttributes)>
+@Html.Raw(trNotificationList.MTUserID.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_MTUserID">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.MTUserID.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.MTUserID.CellAttributes)>
+<span @Html.Raw(trNotificationList.MTUserID.ViewAttributes)>
+@Html.Raw(trNotificationList.MTUserID.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (trNotificationList.Subject.Visible) { // trNotificationList.Subject.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_Subject">
+            <div class="col col-sm-4 TRNotification_Subject" style="white-space: nowrap;">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.Subject))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.Subject.CellAttributes)>
+<span @Html.Raw(trNotificationList.Subject.ViewAttributes)>
+@Html.Raw(trNotificationList.Subject.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_Subject">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.Subject.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.Subject.CellAttributes)>
+<span @Html.Raw(trNotificationList.Subject.ViewAttributes)>
+@Html.Raw(trNotificationList.Subject.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (trNotificationList.Body.Visible) { // trNotificationList.Body.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_Body">
+            <div class="col col-sm-4 TRNotification_Body" style="white-space: nowrap;">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.Body))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.Body.CellAttributes)>
+<span @Html.Raw(trNotificationList.Body.ViewAttributes)>
+@Html.Raw(trNotificationList.Body.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_Body">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.Body.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.Body.CellAttributes)>
+<span @Html.Raw(trNotificationList.Body.ViewAttributes)>
+@Html.Raw(trNotificationList.Body.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (trNotificationList.CreatedByUserID.Visible) { // trNotificationList.CreatedByUserID.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_CreatedByUserID">
+            <div class="col col-sm-4 TRNotification_CreatedByUserID" style="white-space: nowrap;">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.CreatedByUserID))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.CreatedByUserID.CellAttributes)>
+<span @Html.Raw(trNotificationList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(trNotificationList.CreatedByUserID.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_CreatedByUserID">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.CreatedByUserID.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.CreatedByUserID.CellAttributes)>
+<span @Html.Raw(trNotificationList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(trNotificationList.CreatedByUserID.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (trNotificationList.CreatedDateTime.Visible) { // trNotificationList.CreatedDateTime.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_CreatedDateTime">
+            <div class="col col-sm-4 TRNotification_CreatedDateTime" style="white-space: nowrap;">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.CreatedDateTime))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.CreatedDateTime.CellAttributes)>
+<span @Html.Raw(trNotificationList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(trNotificationList.CreatedDateTime.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_CreatedDateTime">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.CreatedDateTime.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.CreatedDateTime.CellAttributes)>
+<span @Html.Raw(trNotificationList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(trNotificationList.CreatedDateTime.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (trNotificationList.LastUpdatedByUserID.Visible) { // trNotificationList.LastUpdatedByUserID.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_LastUpdatedByUserID">
+            <div class="col col-sm-4 TRNotification_LastUpdatedByUserID" style="white-space: nowrap;">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.LastUpdatedByUserID))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.LastUpdatedByUserID.CellAttributes)>
+<span @Html.Raw(trNotificationList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(trNotificationList.LastUpdatedByUserID.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_LastUpdatedByUserID">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.LastUpdatedByUserID.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.LastUpdatedByUserID.CellAttributes)>
+<span @Html.Raw(trNotificationList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(trNotificationList.LastUpdatedByUserID.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (trNotificationList.LastUpdatedDateTime.Visible) { // trNotificationList.LastUpdatedDateTime.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_LastUpdatedDateTime">
+            <div class="col col-sm-4 TRNotification_LastUpdatedDateTime" style="white-space: nowrap;">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.LastUpdatedDateTime))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.LastUpdatedDateTime.CellAttributes)>
+<span @Html.Raw(trNotificationList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(trNotificationList.LastUpdatedDateTime.GetViewValue())</span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_LastUpdatedDateTime">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.LastUpdatedDateTime.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.LastUpdatedDateTime.CellAttributes)>
+<span @Html.Raw(trNotificationList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(trNotificationList.LastUpdatedDateTime.GetViewValue())</span>
+</div></div>
+        </div>
+        }
+    }
+    @if (trNotificationList.MarkAsRead.Visible) { // trNotificationList.MarkAsRead.Visible (begin)
+        if (trNotificationList.RowType == RowType.View) { // View record
+        <div class="row TRNotification_MarkAsRead">
+            <div class="col col-sm-4 TRNotification_MarkAsRead">@Html.Raw(trNotificationList.RenderFieldHeader(trNotificationList.MarkAsRead))</div>
+            <div class="col col-sm-8"><div @Html.Raw(trNotificationList.MarkAsRead.CellAttributes)>
+<span @Html.Raw(trNotificationList.MarkAsRead.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_MarkAsRead_@(trNotificationList.RowCount)" class="form-check-input" value="@(trNotificationList.MarkAsRead.GetViewValue())" disabled checked="@(ConvertToBool(trNotificationList.MarkAsRead.CurrentValue))">
+    <label class="form-check-label" for="x_MarkAsRead_@(trNotificationList.RowCount)"></label>
+</div></span>
+</div></div>
+        </div>
+        } else { // Add/edit record
+        <div class="row TRNotification_MarkAsRead">
+            <label class="@(trNotificationList.LeftColumnClass)">@Html.Raw(trNotificationList.MarkAsRead.Caption)</label>
+            <div class="@(trNotificationList.RightColumnClass)"><div @Html.Raw(trNotificationList.MarkAsRead.CellAttributes)>
+<span @Html.Raw(trNotificationList.MarkAsRead.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_MarkAsRead_@(trNotificationList.RowCount)" class="form-check-input" value="@(trNotificationList.MarkAsRead.GetViewValue())" disabled checked="@(ConvertToBool(trNotificationList.MarkAsRead.CurrentValue))">
+    <label class="form-check-label" for="x_MarkAsRead_@(trNotificationList.RowCount)"></label>
+</div></span>
+</div></div>
+        </div>
+        }
+    }
+    </div><!-- /.card-body -->
+@if (!trNotificationList.IsExport()) {
+    if (trNotificationList.MultiColumnListOptionsPosition.StartsWith("bottom", StringComparison.InvariantCultureIgnoreCase)) {
+    <div class="card-footer">
+        <div class="ew-multi-column-list-option ew-@(trNotificationList.MultiColumnListOptionsPosition)">
+@{
+    // Render list options (body, bottom)
+    trNotificationList.ListOptions.Tag = "div";
+}
+@trNotificationList.ListOptions.RenderBody(trNotificationList.MultiColumnListOptionsPosition, trNotificationList.RowCount)
+        </div><!-- /.ew-multi-column-list-option -->
+    </div><!-- /.card-footer -->
+    }
+}
+</div><!-- /.card -->
+} @* Show normal card layout (end) *@
+</div><!-- /.col-* -->
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(trNotificationList.RowIndex, "$rowindex$"))
+        trNotificationList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((trNotificationList.IsCopy || trNotificationList.IsAdd) && trNotificationList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        trNotificationList.RowIndex = 1;
+} @* End While *@
+} @* trNotificationList.TotalRecords > 0 (end) *@
+</div><!-- /.ew-multi-column-row -->
+@if (Empty(trNotificationList.CurrentAction) && !trNotificationList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ trNotificationList.CloseRecordset(); }
+@if (!trNotificationList.IsExport()) {
+<div>
+@if (!trNotificationList.IsGridAdd && !(trNotificationList.IsGridEdit && trNotificationList.ModalGridEdit) && !trNotificationList.IsMultiEdit) {
+@Html.Raw(trNotificationList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@trNotificationList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}

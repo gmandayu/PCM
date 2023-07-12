@@ -1,0 +1,560 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtDocumentList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtDocumentList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtDocumentList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtDocumentList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTDocument: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtDocumentList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtDocumentList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtDocumentList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtDocumentList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Type": @Html.Raw(mtDocumentList._Type.ToClientList(mtDocumentList)),
+            "CreatedByUserID": @Html.Raw(mtDocumentList.CreatedByUserID.ToClientList(mtDocumentList)),
+            "CreatedDateTime": @Html.Raw(mtDocumentList.CreatedDateTime.ToClientList(mtDocumentList)),
+            "LastUpdatedByUserID": @Html.Raw(mtDocumentList.LastUpdatedByUserID.ToClientList(mtDocumentList)),
+            "LastUpdatedDateTime": @Html.Raw(mtDocumentList.LastUpdatedDateTime.ToClientList(mtDocumentList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtDocumentList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtDocumentList.TotalRecords > 0 && mtDocumentList.ExportOptions.Visible) {
+    mtDocumentList.ExportOptions.Render("body");
+}
+@if (mtDocumentList.ImportOptions.Visible) {
+    mtDocumentList.ImportOptions.Render("body");
+}
+@if (mtDocumentList.SearchOptions.Visible) {
+    mtDocumentList.SearchOptions.Render("body");
+}
+@if (mtDocumentList.FilterOptions.Visible) {
+    mtDocumentList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtDocumentList.ShowCurrentFilter) {
+    mtDocumentList.ShowFilterList();
+}
+@if (!mtDocumentList.IsModal) {
+<form name="fMTDocumentsrch" id="fMTDocumentsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTDocumentsrch_search_panel" class="mb-2 mb-sm-0 @(mtDocumentList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtDocumentList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTDocument: currentTable } });
+var currentForm;
+var fMTDocumentsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTDocumentsrch")
+        .setPageId("list")
+@if (mtDocumentList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Type", [], fields._Type.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Type": @Html.Raw(mtDocumentList._Type.ToClientList(mtDocumentList)),
+            "CreatedByUserID": @Html.Raw(mtDocumentList.CreatedByUserID.ToClientList(mtDocumentList)),
+            "CreatedDateTime": @Html.Raw(mtDocumentList.CreatedDateTime.ToClientList(mtDocumentList)),
+            "LastUpdatedByUserID": @Html.Raw(mtDocumentList.LastUpdatedByUserID.ToClientList(mtDocumentList)),
+            "LastUpdatedDateTime": @Html.Raw(mtDocumentList.LastUpdatedDateTime.ToClientList(mtDocumentList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtDocumentList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtDocumentList.IsExport() && Empty(mtDocumentList.CurrentAction) && mtDocumentList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtDocumentList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtDocumentList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtDocumentList.RowType = RowType.Search;
+    mtDocumentList.ResetAttributes();
+    await mtDocumentList.RenderRow();
+}
+@if (mtDocumentList._Type.Visible) { // mtDocumentList._Type.Visible (begin)
+    if (!mtDocumentList._Type.UseFilter) {
+        mtDocumentList.SearchColumnCount++;
+    }
+    <div id="xs__Type" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtDocumentList._Type.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Type"
+            name="x__Type[]"
+            class="form-control ew-select@(mtDocumentList._Type.IsInvalidClass)"
+            data-select2-id="fMTDocumentsrch_x__Type"
+            data-table="MTDocument"
+            data-field="x__Type"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtDocumentList._Type.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtDocumentList._Type.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtDocumentList._Type.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtDocumentList._Type.EditAttributes)>
+            @(mtDocumentList._Type.SelectOptionListHtml("x__Type", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtDocumentList._Type.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTDocumentsrch", function() {
+            var options = {
+                name: "x__Type",
+                selectId: "fMTDocumentsrch_x__Type",
+                ajax: { id: "x__Type", form: "fMTDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTDocument.fields._Type.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtDocumentList._Type.Visible (end) *@
+@if (mtDocumentList.CreatedByUserID.Visible) { // mtDocumentList.CreatedByUserID.Visible (begin)
+    if (!mtDocumentList.CreatedByUserID.UseFilter) {
+        mtDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtDocumentList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtDocumentList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTDocumentsrch_x_CreatedByUserID"
+            data-table="MTDocument"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtDocumentList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtDocumentList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtDocumentList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtDocumentList.CreatedByUserID.EditAttributes)>
+            @(mtDocumentList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtDocumentList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTDocumentsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTDocumentsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTDocument.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtDocumentList.CreatedByUserID.Visible (end) *@
+@if (mtDocumentList.CreatedDateTime.Visible) { // mtDocumentList.CreatedDateTime.Visible (begin)
+    if (!mtDocumentList.CreatedDateTime.UseFilter) {
+        mtDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtDocumentList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtDocumentList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTDocumentsrch_x_CreatedDateTime"
+            data-table="MTDocument"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtDocumentList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtDocumentList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtDocumentList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtDocumentList.CreatedDateTime.EditAttributes)>
+            @(mtDocumentList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtDocumentList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTDocumentsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTDocumentsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTDocument.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtDocumentList.CreatedDateTime.Visible (end) *@
+@if (mtDocumentList.LastUpdatedByUserID.Visible) { // mtDocumentList.LastUpdatedByUserID.Visible (begin)
+    if (!mtDocumentList.LastUpdatedByUserID.UseFilter) {
+        mtDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtDocumentList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtDocumentList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTDocumentsrch_x_LastUpdatedByUserID"
+            data-table="MTDocument"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtDocumentList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtDocumentList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtDocumentList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtDocumentList.LastUpdatedByUserID.EditAttributes)>
+            @(mtDocumentList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtDocumentList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTDocumentsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTDocumentsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTDocument.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtDocumentList.LastUpdatedByUserID.Visible (end) *@
+@if (mtDocumentList.LastUpdatedDateTime.Visible) { // mtDocumentList.LastUpdatedDateTime.Visible (begin)
+    if (!mtDocumentList.LastUpdatedDateTime.UseFilter) {
+        mtDocumentList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtDocumentList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtDocumentList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTDocumentsrch_x_LastUpdatedDateTime"
+            data-table="MTDocument"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtDocumentList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtDocumentList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtDocumentList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtDocumentList.LastUpdatedDateTime.EditAttributes)>
+            @(mtDocumentList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtDocumentList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTDocumentsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTDocumentsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTDocumentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTDocument.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtDocumentList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtDocumentList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtDocumentList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtDocumentList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtDocumentList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTDocumentsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtDocumentList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTDocumentsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtDocumentList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTDocumentsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtDocumentList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTDocumentsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtDocumentList.ShowPageHeader()
+@mtDocumentList.ShowMessages()
+<main class="list @(mtDocumentList.TotalRecords == 0 && !mtDocumentList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtDocumentList.TotalRecords > 0 || !Empty(mtDocumentList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtDocumentList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtDocumentList.TableGridClass)">
+<form name="@(mtDocumentList.FormName)" id="@(mtDocumentList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtDocumentList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtDocumentList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTDocument" class="card-body ew-grid-middle-panel @(mtDocumentList.TableContainerClass)" style="@(mtDocumentList.TableContainerStyle)">
+@if (mtDocumentList.TotalRecords > 0 || mtDocumentList.IsGridEdit || mtDocumentList.IsMultiEdit) {
+<table id="tbl_MTDocumentlist" class="@(mtDocumentList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtDocumentList.RowType = RowType.Header;
+
+    // Render list options
+    await mtDocumentList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtDocumentList.ListOptions.RenderHeader("left")
+@if (mtDocumentList._Type.Visible) { // mtDocumentList._Type.Visible (begin)
+        <th data-name="_Type" class="@(mtDocumentList._Type.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTDocument__Type" class="MTDocument__Type">@Html.Raw(mtDocumentList.RenderFieldHeader(mtDocumentList._Type))</div></th>
+} @* mtDocumentList._Type.Visible (end) *@
+@if (mtDocumentList.CreatedByUserID.Visible) { // mtDocumentList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtDocumentList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTDocument_CreatedByUserID" class="MTDocument_CreatedByUserID">@Html.Raw(mtDocumentList.RenderFieldHeader(mtDocumentList.CreatedByUserID))</div></th>
+} @* mtDocumentList.CreatedByUserID.Visible (end) *@
+@if (mtDocumentList.CreatedDateTime.Visible) { // mtDocumentList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtDocumentList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTDocument_CreatedDateTime" class="MTDocument_CreatedDateTime">@Html.Raw(mtDocumentList.RenderFieldHeader(mtDocumentList.CreatedDateTime))</div></th>
+} @* mtDocumentList.CreatedDateTime.Visible (end) *@
+@if (mtDocumentList.LastUpdatedByUserID.Visible) { // mtDocumentList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtDocumentList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTDocument_LastUpdatedByUserID" class="MTDocument_LastUpdatedByUserID">@Html.Raw(mtDocumentList.RenderFieldHeader(mtDocumentList.LastUpdatedByUserID))</div></th>
+} @* mtDocumentList.LastUpdatedByUserID.Visible (end) *@
+@if (mtDocumentList.LastUpdatedDateTime.Visible) { // mtDocumentList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtDocumentList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTDocument_LastUpdatedDateTime" class="MTDocument_LastUpdatedDateTime">@Html.Raw(mtDocumentList.RenderFieldHeader(mtDocumentList.LastUpdatedDateTime))</div></th>
+} @* mtDocumentList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtDocumentList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtDocumentList.PageNumber)">
+@{
+    await mtDocumentList.SetupGrid();
+    bool eof = mtDocumentList.Recordset == null; // DN
+}
+@while (mtDocumentList.RecordCount < mtDocumentList.StopRecord || SameString(mtDocumentList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtDocumentList.RowIndex, "$rowindex$") &&
+        (!mtDocumentList.IsGridAdd || mtDocumentList.CurrentMode == "copy") &&
+        (!((mtDocumentList.IsCopy || mtDocumentList.IsAdd) && mtDocumentList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtDocumentList.Recordset.ReadAsync();
+    mtDocumentList.RecordCount++;
+    if (mtDocumentList.RecordCount >= mtDocumentList.StartRecord) {
+        await mtDocumentList.SetupRow();
+    <tr @Html.Raw(mtDocumentList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtDocumentList.ListOptions.RenderBody("left", mtDocumentList.RowCount)
+    @if (mtDocumentList._Type.Visible) { // mtDocumentList._Type.Visible (begin)
+        <td data-name="_Type" @Html.Raw(mtDocumentList._Type.CellAttributes)>
+<span id="el@(mtDocumentList.RowCount)_MTDocument__Type" class="el_MTDocument__Type">
+<span @Html.Raw(mtDocumentList._Type.ViewAttributes)>
+@Html.Raw(mtDocumentList._Type.GetViewValue())</span>
+</span>
+</td>
+    } @* mtDocumentList._Type.Visible (end) *@
+    @if (mtDocumentList.CreatedByUserID.Visible) { // mtDocumentList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtDocumentList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtDocumentList.RowCount)_MTDocument_CreatedByUserID" class="el_MTDocument_CreatedByUserID">
+<span @Html.Raw(mtDocumentList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtDocumentList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtDocumentList.CreatedByUserID.Visible (end) *@
+    @if (mtDocumentList.CreatedDateTime.Visible) { // mtDocumentList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtDocumentList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtDocumentList.RowCount)_MTDocument_CreatedDateTime" class="el_MTDocument_CreatedDateTime">
+<span @Html.Raw(mtDocumentList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtDocumentList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtDocumentList.CreatedDateTime.Visible (end) *@
+    @if (mtDocumentList.LastUpdatedByUserID.Visible) { // mtDocumentList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtDocumentList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtDocumentList.RowCount)_MTDocument_LastUpdatedByUserID" class="el_MTDocument_LastUpdatedByUserID">
+<span @Html.Raw(mtDocumentList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtDocumentList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtDocumentList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtDocumentList.LastUpdatedDateTime.Visible) { // mtDocumentList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtDocumentList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtDocumentList.RowCount)_MTDocument_LastUpdatedDateTime" class="el_MTDocument_LastUpdatedDateTime">
+<span @Html.Raw(mtDocumentList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtDocumentList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtDocumentList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtDocumentList.ListOptions.RenderBody("right", mtDocumentList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtDocumentList.RowIndex, "$rowindex$"))
+        mtDocumentList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtDocumentList.IsCopy || mtDocumentList.IsAdd) && mtDocumentList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtDocumentList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtDocumentList.CurrentAction) && !mtDocumentList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtDocumentList.CloseRecordset(); }
+@if (!mtDocumentList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtDocumentList.IsGridAdd && !(mtDocumentList.IsGridEdit && mtDocumentList.ModalGridEdit) && !mtDocumentList.IsMultiEdit) {
+@Html.Raw(mtDocumentList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtDocumentList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtDocumentList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtDocumentList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtDocumentList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTDocument");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

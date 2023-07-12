@@ -1,0 +1,832 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewMcuResultForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewMcuResultForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewMcuResultForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMcuResultForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMcuResultForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewMcuResultForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewMcuResultForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewMcuResultForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewMcuResultForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "McuDate": @Html.Raw(crewMcuResultForAdminList.McuDate.ToClientList(crewMcuResultForAdminList)),
+            "McuExpirationDate": @Html.Raw(crewMcuResultForAdminList.McuExpirationDate.ToClientList(crewMcuResultForAdminList)),
+            "HealthStatus": @Html.Raw(crewMcuResultForAdminList.HealthStatus.ToClientList(crewMcuResultForAdminList)),
+            "McuLocation": @Html.Raw(crewMcuResultForAdminList.McuLocation.ToClientList(crewMcuResultForAdminList)),
+            "McuAttachment": @Html.Raw(crewMcuResultForAdminList.McuAttachment.ToClientList(crewMcuResultForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewMcuResultForAdminList.CreatedByUserID.ToClientList(crewMcuResultForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewMcuResultForAdminList.CreatedDateTime.ToClientList(crewMcuResultForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMcuResultForAdminList.LastUpdatedByUserID.ToClientList(crewMcuResultForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMcuResultForAdminList.LastUpdatedDateTime.ToClientList(crewMcuResultForAdminList)),
+            "McuScheduleDate": @Html.Raw(crewMcuResultForAdminList.McuScheduleDate.ToClientList(crewMcuResultForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewMcuResultForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewMcuResultForAdminList.TotalRecords > 0 && crewMcuResultForAdminList.ExportOptions.Visible) {
+    crewMcuResultForAdminList.ExportOptions.Render("body");
+}
+@if (crewMcuResultForAdminList.ImportOptions.Visible) {
+    crewMcuResultForAdminList.ImportOptions.Render("body");
+}
+@if (crewMcuResultForAdminList.SearchOptions.Visible) {
+    crewMcuResultForAdminList.SearchOptions.Render("body");
+}
+@if (crewMcuResultForAdminList.FilterOptions.Visible) {
+    crewMcuResultForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewMcuResultForAdminList.ShowCurrentFilter) {
+    crewMcuResultForAdminList.ShowFilterList();
+}
+@if (!crewMcuResultForAdminList.IsModal) {
+<form name="fCrewMcuResultForAdminsrch" id="fCrewMcuResultForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewMcuResultForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewMcuResultForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMcuResultForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMcuResultForAdmin: currentTable } });
+var currentForm;
+var fCrewMcuResultForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewMcuResultForAdminsrch")
+        .setPageId("list")
+@if (crewMcuResultForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["McuDate", [], fields.McuDate.isInvalid],
+            ["McuExpirationDate", [], fields.McuExpirationDate.isInvalid],
+            ["HealthStatus", [], fields.HealthStatus.isInvalid],
+            ["McuLocation", [], fields.McuLocation.isInvalid],
+            ["McuAttachment", [], fields.McuAttachment.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid],
+            ["McuScheduleDate", [], fields.McuScheduleDate.isInvalid],
+            ["McuRemark", [], fields.McuRemark.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "McuDate": @Html.Raw(crewMcuResultForAdminList.McuDate.ToClientList(crewMcuResultForAdminList)),
+            "McuExpirationDate": @Html.Raw(crewMcuResultForAdminList.McuExpirationDate.ToClientList(crewMcuResultForAdminList)),
+            "HealthStatus": @Html.Raw(crewMcuResultForAdminList.HealthStatus.ToClientList(crewMcuResultForAdminList)),
+            "McuLocation": @Html.Raw(crewMcuResultForAdminList.McuLocation.ToClientList(crewMcuResultForAdminList)),
+            "McuAttachment": @Html.Raw(crewMcuResultForAdminList.McuAttachment.ToClientList(crewMcuResultForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewMcuResultForAdminList.CreatedByUserID.ToClientList(crewMcuResultForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewMcuResultForAdminList.CreatedDateTime.ToClientList(crewMcuResultForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMcuResultForAdminList.LastUpdatedByUserID.ToClientList(crewMcuResultForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMcuResultForAdminList.LastUpdatedDateTime.ToClientList(crewMcuResultForAdminList)),
+            "McuScheduleDate": @Html.Raw(crewMcuResultForAdminList.McuScheduleDate.ToClientList(crewMcuResultForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewMcuResultForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewMcuResultForAdminList.IsExport() && Empty(crewMcuResultForAdminList.CurrentAction) && crewMcuResultForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewMcuResultForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewMcuResultForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewMcuResultForAdminList.RowType = RowType.Search;
+    crewMcuResultForAdminList.ResetAttributes();
+    await crewMcuResultForAdminList.RenderRow();
+}
+@if (crewMcuResultForAdminList.McuDate.Visible) { // crewMcuResultForAdminList.McuDate.Visible (begin)
+    if (!crewMcuResultForAdminList.McuDate.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_McuDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.McuDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuDate"
+            name="x_McuDate[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.McuDate.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_McuDate"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_McuDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.McuDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.McuDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.McuDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.McuDate.EditAttributes)>
+            @(crewMcuResultForAdminList.McuDate.SelectOptionListHtml("x_McuDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.McuDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_McuDate",
+                selectId: "fCrewMcuResultForAdminsrch_x_McuDate",
+                ajax: { id: "x_McuDate", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.McuDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.McuDate.Visible (end) *@
+@if (crewMcuResultForAdminList.McuExpirationDate.Visible) { // crewMcuResultForAdminList.McuExpirationDate.Visible (begin)
+    if (!crewMcuResultForAdminList.McuExpirationDate.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_McuExpirationDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.McuExpirationDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuExpirationDate"
+            name="x_McuExpirationDate[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.McuExpirationDate.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_McuExpirationDate"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_McuExpirationDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.McuExpirationDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.McuExpirationDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.McuExpirationDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.McuExpirationDate.EditAttributes)>
+            @(crewMcuResultForAdminList.McuExpirationDate.SelectOptionListHtml("x_McuExpirationDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.McuExpirationDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_McuExpirationDate",
+                selectId: "fCrewMcuResultForAdminsrch_x_McuExpirationDate",
+                ajax: { id: "x_McuExpirationDate", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.McuExpirationDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.McuExpirationDate.Visible (end) *@
+@if (crewMcuResultForAdminList.HealthStatus.Visible) { // crewMcuResultForAdminList.HealthStatus.Visible (begin)
+    if (!crewMcuResultForAdminList.HealthStatus.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_HealthStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.HealthStatus.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_HealthStatus"
+            name="x_HealthStatus[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.HealthStatus.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_HealthStatus"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_HealthStatus"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.HealthStatus.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.HealthStatus.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.HealthStatus.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.HealthStatus.EditAttributes)>
+            @(crewMcuResultForAdminList.HealthStatus.SelectOptionListHtml("x_HealthStatus", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.HealthStatus.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_HealthStatus",
+                selectId: "fCrewMcuResultForAdminsrch_x_HealthStatus",
+                ajax: { id: "x_HealthStatus", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.HealthStatus.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.HealthStatus.Visible (end) *@
+@if (crewMcuResultForAdminList.McuLocation.Visible) { // crewMcuResultForAdminList.McuLocation.Visible (begin)
+    if (!crewMcuResultForAdminList.McuLocation.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_McuLocation" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.McuLocation.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuLocation"
+            name="x_McuLocation[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.McuLocation.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_McuLocation"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_McuLocation"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.McuLocation.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.McuLocation.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.McuLocation.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.McuLocation.EditAttributes)>
+            @(crewMcuResultForAdminList.McuLocation.SelectOptionListHtml("x_McuLocation", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.McuLocation.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_McuLocation",
+                selectId: "fCrewMcuResultForAdminsrch_x_McuLocation",
+                ajax: { id: "x_McuLocation", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.McuLocation.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.McuLocation.Visible (end) *@
+@if (crewMcuResultForAdminList.McuAttachment.Visible) { // crewMcuResultForAdminList.McuAttachment.Visible (begin)
+    if (!crewMcuResultForAdminList.McuAttachment.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_McuAttachment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.McuAttachment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuAttachment"
+            name="x_McuAttachment[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.McuAttachment.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_McuAttachment"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_McuAttachment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.McuAttachment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.McuAttachment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.McuAttachment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.McuAttachment.EditAttributes)>
+            @(crewMcuResultForAdminList.McuAttachment.SelectOptionListHtml("x_McuAttachment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.McuAttachment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_McuAttachment",
+                selectId: "fCrewMcuResultForAdminsrch_x_McuAttachment",
+                ajax: { id: "x_McuAttachment", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.McuAttachment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.McuAttachment.Visible (end) *@
+@if (crewMcuResultForAdminList.CreatedByUserID.Visible) { // crewMcuResultForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewMcuResultForAdminList.CreatedByUserID.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_CreatedByUserID"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewMcuResultForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewMcuResultForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewMcuResultForAdminList.CreatedDateTime.Visible) { // crewMcuResultForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewMcuResultForAdminList.CreatedDateTime.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_CreatedDateTime"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewMcuResultForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewMcuResultForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewMcuResultForAdminList.LastUpdatedByUserID.Visible) { // crewMcuResultForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewMcuResultForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewMcuResultForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewMcuResultForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMcuResultForAdminList.LastUpdatedDateTime.Visible) { // crewMcuResultForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewMcuResultForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewMcuResultForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewMcuResultForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.LastUpdatedDateTime.Visible (end) *@
+@if (crewMcuResultForAdminList.McuScheduleDate.Visible) { // crewMcuResultForAdminList.McuScheduleDate.Visible (begin)
+    if (!crewMcuResultForAdminList.McuScheduleDate.UseFilter) {
+        crewMcuResultForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_McuScheduleDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMcuResultForAdminList.McuScheduleDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_McuScheduleDate"
+            name="x_McuScheduleDate[]"
+            class="form-control ew-select@(crewMcuResultForAdminList.McuScheduleDate.IsInvalidClass)"
+            data-select2-id="fCrewMcuResultForAdminsrch_x_McuScheduleDate"
+            data-table="CrewMcuResultForAdmin"
+            data-field="x_McuScheduleDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMcuResultForAdminList.McuScheduleDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMcuResultForAdminList.McuScheduleDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMcuResultForAdminList.McuScheduleDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMcuResultForAdminList.McuScheduleDate.EditAttributes)>
+            @(crewMcuResultForAdminList.McuScheduleDate.SelectOptionListHtml("x_McuScheduleDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMcuResultForAdminList.McuScheduleDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMcuResultForAdminsrch", function() {
+            var options = {
+                name: "x_McuScheduleDate",
+                selectId: "fCrewMcuResultForAdminsrch_x_McuScheduleDate",
+                ajax: { id: "x_McuScheduleDate", form: "fCrewMcuResultForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.McuScheduleDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMcuResultForAdminList.McuScheduleDate.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewMcuResultForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewMcuResultForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewMcuResultForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewMcuResultForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewMcuResultForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewMcuResultForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewMcuResultForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewMcuResultForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewMcuResultForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewMcuResultForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewMcuResultForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewMcuResultForAdminList.ShowPageHeader()
+@crewMcuResultForAdminList.ShowMessages()
+<main class="list @(crewMcuResultForAdminList.TotalRecords == 0 && !crewMcuResultForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewMcuResultForAdminList.TotalRecords > 0 || !Empty(crewMcuResultForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewMcuResultForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewMcuResultForAdminList.TableGridClass)">
+<form name="@(crewMcuResultForAdminList.FormName)" id="@(crewMcuResultForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewMcuResultForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewMcuResultForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewMcuResultForAdmin" class="card-body ew-grid-middle-panel @(crewMcuResultForAdminList.TableContainerClass)" style="@(crewMcuResultForAdminList.TableContainerStyle)">
+@if (crewMcuResultForAdminList.TotalRecords > 0 || crewMcuResultForAdminList.IsGridEdit || crewMcuResultForAdminList.IsMultiEdit) {
+<table id="tbl_CrewMcuResultForAdminlist" class="@(crewMcuResultForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewMcuResultForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewMcuResultForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewMcuResultForAdminList.ListOptions.RenderHeader("left")
+@if (crewMcuResultForAdminList.McuDate.Visible) { // crewMcuResultForAdminList.McuDate.Visible (begin)
+        <th data-name="McuDate" class="@(crewMcuResultForAdminList.McuDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_McuDate" class="CrewMcuResultForAdmin_McuDate">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.McuDate))</div></th>
+} @* crewMcuResultForAdminList.McuDate.Visible (end) *@
+@if (crewMcuResultForAdminList.McuExpirationDate.Visible) { // crewMcuResultForAdminList.McuExpirationDate.Visible (begin)
+        <th data-name="McuExpirationDate" class="@(crewMcuResultForAdminList.McuExpirationDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_McuExpirationDate" class="CrewMcuResultForAdmin_McuExpirationDate">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.McuExpirationDate))</div></th>
+} @* crewMcuResultForAdminList.McuExpirationDate.Visible (end) *@
+@if (crewMcuResultForAdminList.HealthStatus.Visible) { // crewMcuResultForAdminList.HealthStatus.Visible (begin)
+        <th data-name="HealthStatus" class="@(crewMcuResultForAdminList.HealthStatus.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_HealthStatus" class="CrewMcuResultForAdmin_HealthStatus">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.HealthStatus))</div></th>
+} @* crewMcuResultForAdminList.HealthStatus.Visible (end) *@
+@if (crewMcuResultForAdminList.McuLocation.Visible) { // crewMcuResultForAdminList.McuLocation.Visible (begin)
+        <th data-name="McuLocation" class="@(crewMcuResultForAdminList.McuLocation.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_McuLocation" class="CrewMcuResultForAdmin_McuLocation">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.McuLocation))</div></th>
+} @* crewMcuResultForAdminList.McuLocation.Visible (end) *@
+@if (crewMcuResultForAdminList.McuAttachment.Visible) { // crewMcuResultForAdminList.McuAttachment.Visible (begin)
+        <th data-name="McuAttachment" class="@(crewMcuResultForAdminList.McuAttachment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_McuAttachment" class="CrewMcuResultForAdmin_McuAttachment">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.McuAttachment))</div></th>
+} @* crewMcuResultForAdminList.McuAttachment.Visible (end) *@
+@if (crewMcuResultForAdminList.CreatedByUserID.Visible) { // crewMcuResultForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewMcuResultForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_CreatedByUserID" class="CrewMcuResultForAdmin_CreatedByUserID">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.CreatedByUserID))</div></th>
+} @* crewMcuResultForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewMcuResultForAdminList.CreatedDateTime.Visible) { // crewMcuResultForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewMcuResultForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_CreatedDateTime" class="CrewMcuResultForAdmin_CreatedDateTime">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.CreatedDateTime))</div></th>
+} @* crewMcuResultForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewMcuResultForAdminList.LastUpdatedByUserID.Visible) { // crewMcuResultForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewMcuResultForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_LastUpdatedByUserID" class="CrewMcuResultForAdmin_LastUpdatedByUserID">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewMcuResultForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMcuResultForAdminList.LastUpdatedDateTime.Visible) { // crewMcuResultForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewMcuResultForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_LastUpdatedDateTime" class="CrewMcuResultForAdmin_LastUpdatedDateTime">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewMcuResultForAdminList.LastUpdatedDateTime.Visible (end) *@
+@if (crewMcuResultForAdminList.McuScheduleDate.Visible) { // crewMcuResultForAdminList.McuScheduleDate.Visible (begin)
+        <th data-name="McuScheduleDate" class="@(crewMcuResultForAdminList.McuScheduleDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_McuScheduleDate" class="CrewMcuResultForAdmin_McuScheduleDate">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.McuScheduleDate))</div></th>
+} @* crewMcuResultForAdminList.McuScheduleDate.Visible (end) *@
+@if (crewMcuResultForAdminList.McuRemark.Visible) { // crewMcuResultForAdminList.McuRemark.Visible (begin)
+        <th data-name="McuRemark" class="@(crewMcuResultForAdminList.McuRemark.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMcuResultForAdmin_McuRemark" class="CrewMcuResultForAdmin_McuRemark">@Html.Raw(crewMcuResultForAdminList.RenderFieldHeader(crewMcuResultForAdminList.McuRemark))</div></th>
+} @* crewMcuResultForAdminList.McuRemark.Visible (end) *@
+@* Render list options (header, right) *@
+@crewMcuResultForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewMcuResultForAdminList.PageNumber)">
+@{
+    await crewMcuResultForAdminList.SetupGrid();
+    bool eof = crewMcuResultForAdminList.Recordset == null; // DN
+}
+@while (crewMcuResultForAdminList.RecordCount < crewMcuResultForAdminList.StopRecord || SameString(crewMcuResultForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewMcuResultForAdminList.RowIndex, "$rowindex$") &&
+        (!crewMcuResultForAdminList.IsGridAdd || crewMcuResultForAdminList.CurrentMode == "copy") &&
+        (!((crewMcuResultForAdminList.IsCopy || crewMcuResultForAdminList.IsAdd) && crewMcuResultForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewMcuResultForAdminList.Recordset.ReadAsync();
+    crewMcuResultForAdminList.RecordCount++;
+    if (crewMcuResultForAdminList.RecordCount >= crewMcuResultForAdminList.StartRecord) {
+        await crewMcuResultForAdminList.SetupRow();
+    <tr @Html.Raw(crewMcuResultForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewMcuResultForAdminList.ListOptions.RenderBody("left", crewMcuResultForAdminList.RowCount)
+    @if (crewMcuResultForAdminList.McuDate.Visible) { // crewMcuResultForAdminList.McuDate.Visible (begin)
+        <td data-name="McuDate" @Html.Raw(crewMcuResultForAdminList.McuDate.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_McuDate" class="el_CrewMcuResultForAdmin_McuDate">
+<span @Html.Raw(crewMcuResultForAdminList.McuDate.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.McuDate.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.McuDate.Visible (end) *@
+    @if (crewMcuResultForAdminList.McuExpirationDate.Visible) { // crewMcuResultForAdminList.McuExpirationDate.Visible (begin)
+        <td data-name="McuExpirationDate" @Html.Raw(crewMcuResultForAdminList.McuExpirationDate.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_McuExpirationDate" class="el_CrewMcuResultForAdmin_McuExpirationDate">
+<span @Html.Raw(crewMcuResultForAdminList.McuExpirationDate.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.McuExpirationDate.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.McuExpirationDate.Visible (end) *@
+    @if (crewMcuResultForAdminList.HealthStatus.Visible) { // crewMcuResultForAdminList.HealthStatus.Visible (begin)
+        <td data-name="HealthStatus" @Html.Raw(crewMcuResultForAdminList.HealthStatus.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_HealthStatus" class="el_CrewMcuResultForAdmin_HealthStatus">
+<span @Html.Raw(crewMcuResultForAdminList.HealthStatus.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.HealthStatus.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.HealthStatus.Visible (end) *@
+    @if (crewMcuResultForAdminList.McuLocation.Visible) { // crewMcuResultForAdminList.McuLocation.Visible (begin)
+        <td data-name="McuLocation" @Html.Raw(crewMcuResultForAdminList.McuLocation.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_McuLocation" class="el_CrewMcuResultForAdmin_McuLocation">
+<span @Html.Raw(crewMcuResultForAdminList.McuLocation.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.McuLocation.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.McuLocation.Visible (end) *@
+    @if (crewMcuResultForAdminList.McuAttachment.Visible) { // crewMcuResultForAdminList.McuAttachment.Visible (begin)
+        <td data-name="McuAttachment" @Html.Raw(crewMcuResultForAdminList.McuAttachment.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_McuAttachment" class="el_CrewMcuResultForAdmin_McuAttachment">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewMcuResultForAdminList.McuAttachment, ConvertToString(crewMcuResultForAdminList.McuAttachment.GetViewValue()), false))
+</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.McuAttachment.Visible (end) *@
+    @if (crewMcuResultForAdminList.CreatedByUserID.Visible) { // crewMcuResultForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewMcuResultForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_CreatedByUserID" class="el_CrewMcuResultForAdmin_CreatedByUserID">
+<span @Html.Raw(crewMcuResultForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewMcuResultForAdminList.CreatedDateTime.Visible) { // crewMcuResultForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewMcuResultForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_CreatedDateTime" class="el_CrewMcuResultForAdmin_CreatedDateTime">
+<span @Html.Raw(crewMcuResultForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewMcuResultForAdminList.LastUpdatedByUserID.Visible) { // crewMcuResultForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewMcuResultForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_LastUpdatedByUserID" class="el_CrewMcuResultForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewMcuResultForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewMcuResultForAdminList.LastUpdatedDateTime.Visible) { // crewMcuResultForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewMcuResultForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_LastUpdatedDateTime" class="el_CrewMcuResultForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewMcuResultForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @if (crewMcuResultForAdminList.McuScheduleDate.Visible) { // crewMcuResultForAdminList.McuScheduleDate.Visible (begin)
+        <td data-name="McuScheduleDate" @Html.Raw(crewMcuResultForAdminList.McuScheduleDate.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_McuScheduleDate" class="el_CrewMcuResultForAdmin_McuScheduleDate">
+<span @Html.Raw(crewMcuResultForAdminList.McuScheduleDate.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.McuScheduleDate.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.McuScheduleDate.Visible (end) *@
+    @if (crewMcuResultForAdminList.McuRemark.Visible) { // crewMcuResultForAdminList.McuRemark.Visible (begin)
+        <td data-name="McuRemark" @Html.Raw(crewMcuResultForAdminList.McuRemark.CellAttributes)>
+<span id="el@(crewMcuResultForAdminList.RowCount)_CrewMcuResultForAdmin_McuRemark" class="el_CrewMcuResultForAdmin_McuRemark">
+<span @Html.Raw(crewMcuResultForAdminList.McuRemark.ViewAttributes)>
+@Html.Raw(crewMcuResultForAdminList.McuRemark.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMcuResultForAdminList.McuRemark.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewMcuResultForAdminList.ListOptions.RenderBody("right", crewMcuResultForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewMcuResultForAdminList.RowIndex, "$rowindex$"))
+        crewMcuResultForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewMcuResultForAdminList.IsCopy || crewMcuResultForAdminList.IsAdd) && crewMcuResultForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewMcuResultForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewMcuResultForAdminList.CurrentAction) && !crewMcuResultForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewMcuResultForAdminList.CloseRecordset(); }
+@if (!crewMcuResultForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewMcuResultForAdminList.IsGridAdd && !(crewMcuResultForAdminList.IsGridEdit && crewMcuResultForAdminList.ModalGridEdit) && !crewMcuResultForAdminList.IsMultiEdit) {
+@Html.Raw(crewMcuResultForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewMcuResultForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewMcuResultForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewMcuResultForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewMcuResultForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewMcuResultForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const uploadFolderName = "uploads";
+    const currentUrlObject = new URL(window.location.href);
+    const baseUrl = currentUrlObject.origin + ew.PATH_BASE;
+    $('table tbody tr td[data-name="Image"] span span a').each(function() {
+        const imageAnchorText = $(this).text();
+        const individualCodeNumber = imageAnchorText.split('-')[0];
+        const newImageUrl = `${baseUrl}${uploadFolderName}/${individualCodeNumber}/${imageAnchorText}`;
+        $(this).attr('href', newImageUrl);
+    });
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

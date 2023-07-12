@@ -1,0 +1,247 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trChecklistPerformanceSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!trChecklistPerformanceSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trChecklistPerformanceSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRChecklistPerformance: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fTRChecklistPerformancesearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fTRChecklistPerformancesearch")
+        .setPageId("search")
+@if (trChecklistPerformanceSearch.IsModal && trChecklistPerformanceSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["ManningAgent", [], fields.ManningAgent.isInvalid],
+            ["VesselName", [], fields.VesselName.isInvalid],
+            ["Performance", [], fields.Performance.isInvalid],
+            ["DateChecked", [ew.Validators.datetime(fields.DateChecked.clientFormatPattern)], fields.DateChecked.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+@if (trChecklistPerformanceSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@trChecklistPerformanceSearch.ShowPageHeader()
+@trChecklistPerformanceSearch.ShowMessages()
+<form name="fTRChecklistPerformancesearch" id="fTRChecklistPerformancesearch" class="@(trChecklistPerformanceSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (trChecklistPerformanceSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (trChecklistPerformanceSearch.ManningAgent.Visible) { // trChecklistPerformanceSearch.ManningAgent.Visible (begin)
+    <div id="r_ManningAgent" class="row" @Html.Raw(trChecklistPerformanceSearch.ManningAgent.RowAttributes)>
+        <label for="x_ManningAgent" class="@(trChecklistPerformanceSearch.LeftColumnClass)"><span id="elh_TRChecklistPerformance_ManningAgent">@Html.Raw(trChecklistPerformanceSearch.ManningAgent.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_ManningAgent" id="z_ManningAgent" value="LIKE">
+</span>
+        </label>
+        <div class="@(trChecklistPerformanceSearch.RightColumnClass)">
+            <div @Html.Raw(trChecklistPerformanceSearch.ManningAgent.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TRChecklistPerformance_ManningAgent" class="ew-search-field ew-search-field-single">
+<input type="@(trChecklistPerformanceSearch.ManningAgent.InputTextType)" name="x_ManningAgent" id="x_ManningAgent" data-table="TRChecklistPerformance" data-field="x_ManningAgent" value="@Html.Raw(trChecklistPerformanceSearch.ManningAgent.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceSearch.ManningAgent.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceSearch.ManningAgent.FormatPattern)"@Html.Raw(trChecklistPerformanceSearch.ManningAgent.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trChecklistPerformanceSearch.ManningAgent.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trChecklistPerformanceSearch.ManningAgent.Visible (end) *@
+@if (trChecklistPerformanceSearch.VesselName.Visible) { // trChecklistPerformanceSearch.VesselName.Visible (begin)
+    <div id="r_VesselName" class="row" @Html.Raw(trChecklistPerformanceSearch.VesselName.RowAttributes)>
+        <label for="x_VesselName" class="@(trChecklistPerformanceSearch.LeftColumnClass)"><span id="elh_TRChecklistPerformance_VesselName">@Html.Raw(trChecklistPerformanceSearch.VesselName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VesselName" id="z_VesselName" value="LIKE">
+</span>
+        </label>
+        <div class="@(trChecklistPerformanceSearch.RightColumnClass)">
+            <div @Html.Raw(trChecklistPerformanceSearch.VesselName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TRChecklistPerformance_VesselName" class="ew-search-field ew-search-field-single">
+<input type="@(trChecklistPerformanceSearch.VesselName.InputTextType)" name="x_VesselName" id="x_VesselName" data-table="TRChecklistPerformance" data-field="x_VesselName" value="@Html.Raw(trChecklistPerformanceSearch.VesselName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceSearch.VesselName.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceSearch.VesselName.FormatPattern)"@Html.Raw(trChecklistPerformanceSearch.VesselName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trChecklistPerformanceSearch.VesselName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trChecklistPerformanceSearch.VesselName.Visible (end) *@
+@if (trChecklistPerformanceSearch.Performance.Visible) { // trChecklistPerformanceSearch.Performance.Visible (begin)
+    <div id="r_Performance" class="row" @Html.Raw(trChecklistPerformanceSearch.Performance.RowAttributes)>
+        <label for="x_Performance" class="@(trChecklistPerformanceSearch.LeftColumnClass)"><span id="elh_TRChecklistPerformance_Performance">@Html.Raw(trChecklistPerformanceSearch.Performance.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Performance" id="z_Performance" value="LIKE">
+</span>
+        </label>
+        <div class="@(trChecklistPerformanceSearch.RightColumnClass)">
+            <div @Html.Raw(trChecklistPerformanceSearch.Performance.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TRChecklistPerformance_Performance" class="ew-search-field ew-search-field-single">
+<input type="@(trChecklistPerformanceSearch.Performance.InputTextType)" name="x_Performance" id="x_Performance" data-table="TRChecklistPerformance" data-field="x_Performance" value="@Html.Raw(trChecklistPerformanceSearch.Performance.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceSearch.Performance.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceSearch.Performance.FormatPattern)"@Html.Raw(trChecklistPerformanceSearch.Performance.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trChecklistPerformanceSearch.Performance.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trChecklistPerformanceSearch.Performance.Visible (end) *@
+@if (trChecklistPerformanceSearch.DateChecked.Visible) { // trChecklistPerformanceSearch.DateChecked.Visible (begin)
+    <div id="r_DateChecked" class="row" @Html.Raw(trChecklistPerformanceSearch.DateChecked.RowAttributes)>
+        <label for="x_DateChecked" class="@(trChecklistPerformanceSearch.LeftColumnClass)"><span id="elh_TRChecklistPerformance_DateChecked">@Html.Raw(trChecklistPerformanceSearch.DateChecked.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_DateChecked" id="z_DateChecked" value="=">
+</span>
+        </label>
+        <div class="@(trChecklistPerformanceSearch.RightColumnClass)">
+            <div @Html.Raw(trChecklistPerformanceSearch.DateChecked.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_TRChecklistPerformance_DateChecked" class="ew-search-field ew-search-field-single">
+<input type="@(trChecklistPerformanceSearch.DateChecked.InputTextType)" name="x_DateChecked" id="x_DateChecked" data-table="TRChecklistPerformance" data-field="x_DateChecked" value="@Html.Raw(trChecklistPerformanceSearch.DateChecked.EditValue)" maxlength="50" placeholder="@Html.Raw(HtmlEncode(trChecklistPerformanceSearch.DateChecked.PlaceHolder))" data-format-pattern="@(trChecklistPerformanceSearch.DateChecked.FormatPattern)"@Html.Raw(trChecklistPerformanceSearch.DateChecked.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(trChecklistPerformanceSearch.DateChecked.GetErrorMessage(false))</div>
+@if (!trChecklistPerformanceSearch.DateChecked.ReadOnly && !trChecklistPerformanceSearch.DateChecked.Disabled && !trChecklistPerformanceSearch.DateChecked.EditAttrs.Is("readonly") && !trChecklistPerformanceSearch.DateChecked.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fTRChecklistPerformancesearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fTRChecklistPerformancesearch", "x_DateChecked", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* trChecklistPerformanceSearch.DateChecked.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(trChecklistPerformanceSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(trChecklistPerformanceSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fTRChecklistPerformancesearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (trChecklistPerformanceSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fTRChecklistPerformancesearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fTRChecklistPerformancesearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(trChecklistPerformanceSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@trChecklistPerformanceSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TRChecklistPerformance");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

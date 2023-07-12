@@ -1,0 +1,207 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewChecklistForAdminSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewChecklistForAdminSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewChecklistForAdminSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewChecklistForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fCrewChecklistForAdminsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewChecklistForAdminsearch")
+        .setPageId("search")
+@if (crewChecklistForAdminSearch.IsModal && crewChecklistForAdminSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["ApprovedByUserID1", [ew.Validators.integer], fields.ApprovedByUserID1.isInvalid],
+            ["ApprovedByUserID2", [ew.Validators.integer], fields.ApprovedByUserID2.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "ApprovedByUserID1": @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID1.ToClientList(crewChecklistForAdminSearch)),
+            "ApprovedByUserID2": @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID2.ToClientList(crewChecklistForAdminSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (crewChecklistForAdminSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@crewChecklistForAdminSearch.ShowPageHeader()
+@crewChecklistForAdminSearch.ShowMessages()
+<form name="fCrewChecklistForAdminsearch" id="fCrewChecklistForAdminsearch" class="@(crewChecklistForAdminSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (crewChecklistForAdminSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (crewChecklistForAdminSearch.ApprovedByUserID1.Visible) { // crewChecklistForAdminSearch.ApprovedByUserID1.Visible (begin)
+    <div id="r_ApprovedByUserID1" class="row" @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID1.RowAttributes)>
+        <label class="@(crewChecklistForAdminSearch.LeftColumnClass)"><span id="elh_CrewChecklistForAdmin_ApprovedByUserID1">@Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID1.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ApprovedByUserID1" id="z_ApprovedByUserID1" value="=">
+</span>
+        </label>
+        <div class="@(crewChecklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID1.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewChecklistForAdmin_ApprovedByUserID1" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        crewChecklistForAdminSearch.ApprovedByUserID1.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_ApprovedByUserID1" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_ApprovedByUserID1" id="sv_x_ApprovedByUserID1" value="@(RemoveHtml(ConvertToString(crewChecklistForAdminSearch.ApprovedByUserID1.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(crewChecklistForAdminSearch.ApprovedByUserID1.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(crewChecklistForAdminSearch.ApprovedByUserID1.PlaceHolder))" data-format-pattern="@(crewChecklistForAdminSearch.ApprovedByUserID1.FormatPattern)" @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID1.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="CrewChecklistForAdmin" data-field="x_ApprovedByUserID1" data-input="sv_x_ApprovedByUserID1" data-value-separator="@(crewChecklistForAdminSearch.ApprovedByUserID1.DisplayValueSeparatorAttribute)" name="x_ApprovedByUserID1" id="x_ApprovedByUserID1" value="@(HtmlEncode(crewChecklistForAdminSearch.ApprovedByUserID1.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID1.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fCrewChecklistForAdminsearch"], function() {
+    fCrewChecklistForAdminsearch.createAutoSuggest(Object.assign({"id":"x_ApprovedByUserID1","forceSelect":false}, { lookupAllDisplayFields: @(crewChecklistForAdminSearch.ApprovedByUserID1.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.CrewChecklistForAdmin.fields.ApprovedByUserID1.autoSuggestOptions));
+});
+</script>
+@Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID1.Lookup.GetParamTag(crewChecklistForAdminSearch, "p_x_ApprovedByUserID1"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewChecklistForAdminSearch.ApprovedByUserID1.Visible (end) *@
+@if (crewChecklistForAdminSearch.ApprovedByUserID2.Visible) { // crewChecklistForAdminSearch.ApprovedByUserID2.Visible (begin)
+    <div id="r_ApprovedByUserID2" class="row" @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID2.RowAttributes)>
+        <label class="@(crewChecklistForAdminSearch.LeftColumnClass)"><span id="elh_CrewChecklistForAdmin_ApprovedByUserID2">@Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID2.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ApprovedByUserID2" id="z_ApprovedByUserID2" value="=">
+</span>
+        </label>
+        <div class="@(crewChecklistForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID2.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewChecklistForAdmin_ApprovedByUserID2" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        crewChecklistForAdminSearch.ApprovedByUserID2.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_ApprovedByUserID2" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_ApprovedByUserID2" id="sv_x_ApprovedByUserID2" value="@(RemoveHtml(ConvertToString(crewChecklistForAdminSearch.ApprovedByUserID2.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(crewChecklistForAdminSearch.ApprovedByUserID2.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(crewChecklistForAdminSearch.ApprovedByUserID2.PlaceHolder))" data-format-pattern="@(crewChecklistForAdminSearch.ApprovedByUserID2.FormatPattern)" @Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID2.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="CrewChecklistForAdmin" data-field="x_ApprovedByUserID2" data-input="sv_x_ApprovedByUserID2" data-value-separator="@(crewChecklistForAdminSearch.ApprovedByUserID2.DisplayValueSeparatorAttribute)" name="x_ApprovedByUserID2" id="x_ApprovedByUserID2" value="@(HtmlEncode(crewChecklistForAdminSearch.ApprovedByUserID2.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID2.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fCrewChecklistForAdminsearch"], function() {
+    fCrewChecklistForAdminsearch.createAutoSuggest(Object.assign({"id":"x_ApprovedByUserID2","forceSelect":false}, { lookupAllDisplayFields: @(crewChecklistForAdminSearch.ApprovedByUserID2.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.CrewChecklistForAdmin.fields.ApprovedByUserID2.autoSuggestOptions));
+});
+</script>
+@Html.Raw(crewChecklistForAdminSearch.ApprovedByUserID2.Lookup.GetParamTag(crewChecklistForAdminSearch, "p_x_ApprovedByUserID2"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewChecklistForAdminSearch.ApprovedByUserID2.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(crewChecklistForAdminSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(crewChecklistForAdminSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCrewChecklistForAdminsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (crewChecklistForAdminSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCrewChecklistForAdminsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fCrewChecklistForAdminsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(crewChecklistForAdminSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@crewChecklistForAdminSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewChecklistForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

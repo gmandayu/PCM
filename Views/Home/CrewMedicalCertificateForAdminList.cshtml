@@ -1,0 +1,851 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewMedicalCertificateForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewMedicalCertificateForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewMedicalCertificateForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalCertificateForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalCertificateForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewMedicalCertificateForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewMedicalCertificateForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewMedicalCertificateForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewMedicalCertificateForAdminList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTMedicalCertificateID": @Html.Raw(crewMedicalCertificateForAdminList.MTMedicalCertificateID.ToClientList(crewMedicalCertificateForAdminList)),
+            "Number": @Html.Raw(crewMedicalCertificateForAdminList.Number.ToClientList(crewMedicalCertificateForAdminList)),
+            "PlaceOfIssue": @Html.Raw(crewMedicalCertificateForAdminList.PlaceOfIssue.ToClientList(crewMedicalCertificateForAdminList)),
+            "DateOfIssue": @Html.Raw(crewMedicalCertificateForAdminList.DateOfIssue.ToClientList(crewMedicalCertificateForAdminList)),
+            "ExpirationDate": @Html.Raw(crewMedicalCertificateForAdminList.ExpirationDate.ToClientList(crewMedicalCertificateForAdminList)),
+            "Attachment": @Html.Raw(crewMedicalCertificateForAdminList.Attachment.ToClientList(crewMedicalCertificateForAdminList)),
+            "MTCrewID": @Html.Raw(crewMedicalCertificateForAdminList.MTCrewID.ToClientList(crewMedicalCertificateForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalCertificateForAdminList.CreatedByUserID.ToClientList(crewMedicalCertificateForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalCertificateForAdminList.CreatedDateTime.ToClientList(crewMedicalCertificateForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedByUserID.ToClientList(crewMedicalCertificateForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedDateTime.ToClientList(crewMedicalCertificateForAdminList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewMedicalCertificateForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewMedicalCertificateForAdminList.TotalRecords > 0 && crewMedicalCertificateForAdminList.ExportOptions.Visible) {
+    crewMedicalCertificateForAdminList.ExportOptions.Render("body");
+}
+@if (crewMedicalCertificateForAdminList.ImportOptions.Visible) {
+    crewMedicalCertificateForAdminList.ImportOptions.Render("body");
+}
+@if (crewMedicalCertificateForAdminList.SearchOptions.Visible) {
+    crewMedicalCertificateForAdminList.SearchOptions.Render("body");
+}
+@if (crewMedicalCertificateForAdminList.FilterOptions.Visible) {
+    crewMedicalCertificateForAdminList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewMedicalCertificateForAdminList.ShowCurrentFilter) {
+    crewMedicalCertificateForAdminList.ShowFilterList();
+}
+@if (!crewMedicalCertificateForAdminList.IsModal) {
+<form name="fCrewMedicalCertificateForAdminsrch" id="fCrewMedicalCertificateForAdminsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewMedicalCertificateForAdminsrch_search_panel" class="mb-2 mb-sm-0 @(crewMedicalCertificateForAdminList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewMedicalCertificateForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewMedicalCertificateForAdmin: currentTable } });
+var currentForm;
+var fCrewMedicalCertificateForAdminsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewMedicalCertificateForAdminsrch")
+        .setPageId("list")
+@if (crewMedicalCertificateForAdminList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["MTMedicalCertificateID", [], fields.MTMedicalCertificateID.isInvalid],
+            ["Number", [], fields.Number.isInvalid],
+            ["PlaceOfIssue", [], fields.PlaceOfIssue.isInvalid],
+            ["DateOfIssue", [], fields.DateOfIssue.isInvalid],
+            ["ExpirationDate", [], fields.ExpirationDate.isInvalid],
+            ["Attachment", [], fields.Attachment.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTMedicalCertificateID": @Html.Raw(crewMedicalCertificateForAdminList.MTMedicalCertificateID.ToClientList(crewMedicalCertificateForAdminList)),
+            "Number": @Html.Raw(crewMedicalCertificateForAdminList.Number.ToClientList(crewMedicalCertificateForAdminList)),
+            "PlaceOfIssue": @Html.Raw(crewMedicalCertificateForAdminList.PlaceOfIssue.ToClientList(crewMedicalCertificateForAdminList)),
+            "DateOfIssue": @Html.Raw(crewMedicalCertificateForAdminList.DateOfIssue.ToClientList(crewMedicalCertificateForAdminList)),
+            "ExpirationDate": @Html.Raw(crewMedicalCertificateForAdminList.ExpirationDate.ToClientList(crewMedicalCertificateForAdminList)),
+            "Attachment": @Html.Raw(crewMedicalCertificateForAdminList.Attachment.ToClientList(crewMedicalCertificateForAdminList)),
+            "MTCrewID": @Html.Raw(crewMedicalCertificateForAdminList.MTCrewID.ToClientList(crewMedicalCertificateForAdminList)),
+            "CreatedByUserID": @Html.Raw(crewMedicalCertificateForAdminList.CreatedByUserID.ToClientList(crewMedicalCertificateForAdminList)),
+            "CreatedDateTime": @Html.Raw(crewMedicalCertificateForAdminList.CreatedDateTime.ToClientList(crewMedicalCertificateForAdminList)),
+            "LastUpdatedByUserID": @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedByUserID.ToClientList(crewMedicalCertificateForAdminList)),
+            "LastUpdatedDateTime": @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedDateTime.ToClientList(crewMedicalCertificateForAdminList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewMedicalCertificateForAdminList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewMedicalCertificateForAdminList.IsExport() && Empty(crewMedicalCertificateForAdminList.CurrentAction) && crewMedicalCertificateForAdminList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(crewMedicalCertificateForAdminList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewMedicalCertificateForAdminList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewMedicalCertificateForAdminList.RowType = RowType.Search;
+    crewMedicalCertificateForAdminList.ResetAttributes();
+    await crewMedicalCertificateForAdminList.RenderRow();
+}
+@if (crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible) { // crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.MTMedicalCertificateID.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTMedicalCertificateID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.MTMedicalCertificateID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTMedicalCertificateID"
+            name="x_MTMedicalCertificateID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.MTMedicalCertificateID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_MTMedicalCertificateID"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_MTMedicalCertificateID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.MTMedicalCertificateID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.MTMedicalCertificateID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.MTMedicalCertificateID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.MTMedicalCertificateID.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.MTMedicalCertificateID.SelectOptionListHtml("x_MTMedicalCertificateID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.MTMedicalCertificateID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_MTMedicalCertificateID",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_MTMedicalCertificateID",
+                ajax: { id: "x_MTMedicalCertificateID", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.MTMedicalCertificateID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.Number.Visible) { // crewMedicalCertificateForAdminList.Number.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.Number.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Number" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.Number.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Number"
+            name="x_Number[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.Number.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_Number"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_Number"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.Number.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.Number.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.Number.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.Number.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.Number.SelectOptionListHtml("x_Number", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.Number.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_Number",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_Number",
+                ajax: { id: "x_Number", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.Number.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.Number.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.PlaceOfIssue.Visible) { // crewMedicalCertificateForAdminList.PlaceOfIssue.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.PlaceOfIssue.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.PlaceOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOfIssue"
+            name="x_PlaceOfIssue[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.PlaceOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_PlaceOfIssue"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_PlaceOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.PlaceOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.PlaceOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.PlaceOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.PlaceOfIssue.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.PlaceOfIssue.SelectOptionListHtml("x_PlaceOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.PlaceOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_PlaceOfIssue",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_PlaceOfIssue",
+                ajax: { id: "x_PlaceOfIssue", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.PlaceOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.PlaceOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.DateOfIssue.Visible) { // crewMedicalCertificateForAdminList.DateOfIssue.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.DateOfIssue.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.DateOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfIssue"
+            name="x_DateOfIssue[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.DateOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_DateOfIssue"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_DateOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.DateOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.DateOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.DateOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.DateOfIssue.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.DateOfIssue.SelectOptionListHtml("x_DateOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.DateOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_DateOfIssue",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_DateOfIssue",
+                ajax: { id: "x_DateOfIssue", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.DateOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.DateOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.ExpirationDate.Visible) { // crewMedicalCertificateForAdminList.ExpirationDate.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.ExpirationDate.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_ExpirationDate" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.ExpirationDate.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ExpirationDate"
+            name="x_ExpirationDate[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.ExpirationDate.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_ExpirationDate"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_ExpirationDate"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.ExpirationDate.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.ExpirationDate.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.ExpirationDate.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.ExpirationDate.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.ExpirationDate.SelectOptionListHtml("x_ExpirationDate", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.ExpirationDate.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_ExpirationDate",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_ExpirationDate",
+                ajax: { id: "x_ExpirationDate", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.ExpirationDate.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.ExpirationDate.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.Attachment.Visible) { // crewMedicalCertificateForAdminList.Attachment.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.Attachment.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_Attachment" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.Attachment.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Attachment"
+            name="x_Attachment[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.Attachment.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_Attachment"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_Attachment"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.Attachment.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.Attachment.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.Attachment.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.Attachment.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.Attachment.SelectOptionListHtml("x_Attachment", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.Attachment.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_Attachment",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_Attachment",
+                ajax: { id: "x_Attachment", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.Attachment.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.Attachment.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.MTCrewID.Visible) { // crewMedicalCertificateForAdminList.MTCrewID.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.MTCrewID.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_MTCrewID"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.MTCrewID.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.MTCrewID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.CreatedByUserID.Visible) { // crewMedicalCertificateForAdminList.CreatedByUserID.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.CreatedByUserID.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_CreatedByUserID"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.CreatedByUserID.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.CreatedDateTime.Visible) { // crewMedicalCertificateForAdminList.CreatedDateTime.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.CreatedDateTime.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_CreatedDateTime"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.CreatedDateTime.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible) { // crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.LastUpdatedByUserID.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_LastUpdatedByUserID"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedByUserID.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible) { // crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible (begin)
+    if (!crewMedicalCertificateForAdminList.LastUpdatedDateTime.UseFilter) {
+        crewMedicalCertificateForAdminList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewMedicalCertificateForAdminList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewMedicalCertificateForAdminList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewMedicalCertificateForAdminsrch_x_LastUpdatedDateTime"
+            data-table="CrewMedicalCertificateForAdmin"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewMedicalCertificateForAdminList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewMedicalCertificateForAdminList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewMedicalCertificateForAdminList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedDateTime.EditAttributes)>
+            @(crewMedicalCertificateForAdminList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewMedicalCertificateForAdminsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewMedicalCertificateForAdminsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewMedicalCertificateForAdminsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewMedicalCertificateForAdmin.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewMedicalCertificateForAdminList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewMedicalCertificateForAdminList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewMedicalCertificateForAdminList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewMedicalCertificateForAdminsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewMedicalCertificateForAdminsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewMedicalCertificateForAdminsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewMedicalCertificateForAdminList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewMedicalCertificateForAdminsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewMedicalCertificateForAdminList.ShowPageHeader()
+@crewMedicalCertificateForAdminList.ShowMessages()
+<main class="list @(crewMedicalCertificateForAdminList.TotalRecords == 0 && !crewMedicalCertificateForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewMedicalCertificateForAdminList.TotalRecords > 0 || !Empty(crewMedicalCertificateForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewMedicalCertificateForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewMedicalCertificateForAdminList.TableGridClass)">
+<form name="@(crewMedicalCertificateForAdminList.FormName)" id="@(crewMedicalCertificateForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewMedicalCertificateForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewMedicalCertificateForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewMedicalCertificateForAdmin" class="card-body ew-grid-middle-panel @(crewMedicalCertificateForAdminList.TableContainerClass)" style="@(crewMedicalCertificateForAdminList.TableContainerStyle)">
+@if (crewMedicalCertificateForAdminList.TotalRecords > 0 || crewMedicalCertificateForAdminList.IsGridEdit || crewMedicalCertificateForAdminList.IsMultiEdit) {
+<table id="tbl_CrewMedicalCertificateForAdminlist" class="@(crewMedicalCertificateForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewMedicalCertificateForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewMedicalCertificateForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewMedicalCertificateForAdminList.ListOptions.RenderHeader("left")
+@if (crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible) { // crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible (begin)
+        <th data-name="MTMedicalCertificateID" class="@(crewMedicalCertificateForAdminList.MTMedicalCertificateID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_MTMedicalCertificateID" class="CrewMedicalCertificateForAdmin_MTMedicalCertificateID">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.MTMedicalCertificateID))</div></th>
+} @* crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.Number.Visible) { // crewMedicalCertificateForAdminList.Number.Visible (begin)
+        <th data-name="Number" class="@(crewMedicalCertificateForAdminList.Number.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_Number" class="CrewMedicalCertificateForAdmin_Number">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.Number))</div></th>
+} @* crewMedicalCertificateForAdminList.Number.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.PlaceOfIssue.Visible) { // crewMedicalCertificateForAdminList.PlaceOfIssue.Visible (begin)
+        <th data-name="PlaceOfIssue" class="@(crewMedicalCertificateForAdminList.PlaceOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_PlaceOfIssue" class="CrewMedicalCertificateForAdmin_PlaceOfIssue">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.PlaceOfIssue))</div></th>
+} @* crewMedicalCertificateForAdminList.PlaceOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.DateOfIssue.Visible) { // crewMedicalCertificateForAdminList.DateOfIssue.Visible (begin)
+        <th data-name="DateOfIssue" class="@(crewMedicalCertificateForAdminList.DateOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_DateOfIssue" class="CrewMedicalCertificateForAdmin_DateOfIssue">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.DateOfIssue))</div></th>
+} @* crewMedicalCertificateForAdminList.DateOfIssue.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.ExpirationDate.Visible) { // crewMedicalCertificateForAdminList.ExpirationDate.Visible (begin)
+        <th data-name="ExpirationDate" class="@(crewMedicalCertificateForAdminList.ExpirationDate.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_ExpirationDate" class="CrewMedicalCertificateForAdmin_ExpirationDate">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.ExpirationDate))</div></th>
+} @* crewMedicalCertificateForAdminList.ExpirationDate.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.Attachment.Visible) { // crewMedicalCertificateForAdminList.Attachment.Visible (begin)
+        <th data-name="Attachment" class="@(crewMedicalCertificateForAdminList.Attachment.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_Attachment" class="CrewMedicalCertificateForAdmin_Attachment">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.Attachment))</div></th>
+} @* crewMedicalCertificateForAdminList.Attachment.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.MTCrewID.Visible) { // crewMedicalCertificateForAdminList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewMedicalCertificateForAdminList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_MTCrewID" class="CrewMedicalCertificateForAdmin_MTCrewID">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.MTCrewID))</div></th>
+} @* crewMedicalCertificateForAdminList.MTCrewID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.CreatedByUserID.Visible) { // crewMedicalCertificateForAdminList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewMedicalCertificateForAdminList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_CreatedByUserID" class="CrewMedicalCertificateForAdmin_CreatedByUserID">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.CreatedByUserID))</div></th>
+} @* crewMedicalCertificateForAdminList.CreatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.CreatedDateTime.Visible) { // crewMedicalCertificateForAdminList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewMedicalCertificateForAdminList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_CreatedDateTime" class="CrewMedicalCertificateForAdmin_CreatedDateTime">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.CreatedDateTime))</div></th>
+} @* crewMedicalCertificateForAdminList.CreatedDateTime.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible) { // crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewMedicalCertificateForAdminList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_LastUpdatedByUserID" class="CrewMedicalCertificateForAdmin_LastUpdatedByUserID">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.LastUpdatedByUserID))</div></th>
+} @* crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible (end) *@
+@if (crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible) { // crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewMedicalCertificateForAdminList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewMedicalCertificateForAdmin_LastUpdatedDateTime" class="CrewMedicalCertificateForAdmin_LastUpdatedDateTime">@Html.Raw(crewMedicalCertificateForAdminList.RenderFieldHeader(crewMedicalCertificateForAdminList.LastUpdatedDateTime))</div></th>
+} @* crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewMedicalCertificateForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewMedicalCertificateForAdminList.PageNumber)">
+@{
+    await crewMedicalCertificateForAdminList.SetupGrid();
+    bool eof = crewMedicalCertificateForAdminList.Recordset == null; // DN
+}
+@while (crewMedicalCertificateForAdminList.RecordCount < crewMedicalCertificateForAdminList.StopRecord || SameString(crewMedicalCertificateForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewMedicalCertificateForAdminList.RowIndex, "$rowindex$") &&
+        (!crewMedicalCertificateForAdminList.IsGridAdd || crewMedicalCertificateForAdminList.CurrentMode == "copy") &&
+        (!((crewMedicalCertificateForAdminList.IsCopy || crewMedicalCertificateForAdminList.IsAdd) && crewMedicalCertificateForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewMedicalCertificateForAdminList.Recordset.ReadAsync();
+    crewMedicalCertificateForAdminList.RecordCount++;
+    if (crewMedicalCertificateForAdminList.RecordCount >= crewMedicalCertificateForAdminList.StartRecord) {
+        await crewMedicalCertificateForAdminList.SetupRow();
+    <tr @Html.Raw(crewMedicalCertificateForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewMedicalCertificateForAdminList.ListOptions.RenderBody("left", crewMedicalCertificateForAdminList.RowCount)
+    @if (crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible) { // crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible (begin)
+        <td data-name="MTMedicalCertificateID" @Html.Raw(crewMedicalCertificateForAdminList.MTMedicalCertificateID.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_MTMedicalCertificateID" class="el_CrewMedicalCertificateForAdmin_MTMedicalCertificateID">
+<span @Html.Raw(crewMedicalCertificateForAdminList.MTMedicalCertificateID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.MTMedicalCertificateID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.MTMedicalCertificateID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.Number.Visible) { // crewMedicalCertificateForAdminList.Number.Visible (begin)
+        <td data-name="Number" @Html.Raw(crewMedicalCertificateForAdminList.Number.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_Number" class="el_CrewMedicalCertificateForAdmin_Number">
+<span @Html.Raw(crewMedicalCertificateForAdminList.Number.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.Number.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.Number.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.PlaceOfIssue.Visible) { // crewMedicalCertificateForAdminList.PlaceOfIssue.Visible (begin)
+        <td data-name="PlaceOfIssue" @Html.Raw(crewMedicalCertificateForAdminList.PlaceOfIssue.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_PlaceOfIssue" class="el_CrewMedicalCertificateForAdmin_PlaceOfIssue">
+<span @Html.Raw(crewMedicalCertificateForAdminList.PlaceOfIssue.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.PlaceOfIssue.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.PlaceOfIssue.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.DateOfIssue.Visible) { // crewMedicalCertificateForAdminList.DateOfIssue.Visible (begin)
+        <td data-name="DateOfIssue" @Html.Raw(crewMedicalCertificateForAdminList.DateOfIssue.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_DateOfIssue" class="el_CrewMedicalCertificateForAdmin_DateOfIssue">
+<span @Html.Raw(crewMedicalCertificateForAdminList.DateOfIssue.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.DateOfIssue.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.DateOfIssue.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.ExpirationDate.Visible) { // crewMedicalCertificateForAdminList.ExpirationDate.Visible (begin)
+        <td data-name="ExpirationDate" @Html.Raw(crewMedicalCertificateForAdminList.ExpirationDate.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_ExpirationDate" class="el_CrewMedicalCertificateForAdmin_ExpirationDate">
+<span @Html.Raw(crewMedicalCertificateForAdminList.ExpirationDate.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.ExpirationDate.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.ExpirationDate.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.Attachment.Visible) { // crewMedicalCertificateForAdminList.Attachment.Visible (begin)
+        <td data-name="Attachment" @Html.Raw(crewMedicalCertificateForAdminList.Attachment.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_Attachment" class="el_CrewMedicalCertificateForAdmin_Attachment">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewMedicalCertificateForAdminList.Attachment, ConvertToString(crewMedicalCertificateForAdminList.Attachment.GetViewValue()), false))
+</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.Attachment.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.MTCrewID.Visible) { // crewMedicalCertificateForAdminList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewMedicalCertificateForAdminList.MTCrewID.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_MTCrewID" class="el_CrewMedicalCertificateForAdmin_MTCrewID">
+<span @Html.Raw(crewMedicalCertificateForAdminList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.MTCrewID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.CreatedByUserID.Visible) { // crewMedicalCertificateForAdminList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewMedicalCertificateForAdminList.CreatedByUserID.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_CreatedByUserID" class="el_CrewMedicalCertificateForAdmin_CreatedByUserID">
+<span @Html.Raw(crewMedicalCertificateForAdminList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.CreatedByUserID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.CreatedDateTime.Visible) { // crewMedicalCertificateForAdminList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewMedicalCertificateForAdminList.CreatedDateTime.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_CreatedDateTime" class="el_CrewMedicalCertificateForAdmin_CreatedDateTime">
+<span @Html.Raw(crewMedicalCertificateForAdminList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.CreatedDateTime.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible) { // crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_LastUpdatedByUserID" class="el_CrewMedicalCertificateForAdmin_LastUpdatedByUserID">
+<span @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible) { // crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(crewMedicalCertificateForAdminList.RowCount)_CrewMedicalCertificateForAdmin_LastUpdatedDateTime" class="el_CrewMedicalCertificateForAdmin_LastUpdatedDateTime">
+<span @Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewMedicalCertificateForAdminList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* crewMedicalCertificateForAdminList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewMedicalCertificateForAdminList.ListOptions.RenderBody("right", crewMedicalCertificateForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewMedicalCertificateForAdminList.RowIndex, "$rowindex$"))
+        crewMedicalCertificateForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewMedicalCertificateForAdminList.IsCopy || crewMedicalCertificateForAdminList.IsAdd) && crewMedicalCertificateForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewMedicalCertificateForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewMedicalCertificateForAdminList.CurrentAction) && !crewMedicalCertificateForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewMedicalCertificateForAdminList.CloseRecordset(); }
+@if (!crewMedicalCertificateForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewMedicalCertificateForAdminList.IsGridAdd && !(crewMedicalCertificateForAdminList.IsGridEdit && crewMedicalCertificateForAdminList.ModalGridEdit) && !crewMedicalCertificateForAdminList.IsMultiEdit) {
+@Html.Raw(crewMedicalCertificateForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewMedicalCertificateForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewMedicalCertificateForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewMedicalCertificateForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewMedicalCertificateForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewMedicalCertificateForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

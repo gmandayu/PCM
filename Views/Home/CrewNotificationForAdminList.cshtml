@@ -1,0 +1,184 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewNotificationForAdminList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewNotificationForAdminList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewNotificationForAdminList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewNotificationForAdminList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewNotificationForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewNotificationForAdminList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewNotificationForAdminList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(crewNotificationForAdminList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(crewNotificationForAdminList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewNotificationForAdminList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewNotificationForAdminList.TotalRecords > 0 && crewNotificationForAdminList.ExportOptions.Visible) {
+    crewNotificationForAdminList.ExportOptions.Render("body");
+}
+@if (crewNotificationForAdminList.ImportOptions.Visible) {
+    crewNotificationForAdminList.ImportOptions.Render("body");
+}
+</div>
+}
+@if (!crewNotificationForAdminList.IsModal) {
+}
+@crewNotificationForAdminList.ShowPageHeader()
+@crewNotificationForAdminList.ShowMessages()
+<main class="list @(crewNotificationForAdminList.TotalRecords == 0 && !crewNotificationForAdminList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewNotificationForAdminList.TotalRecords > 0 || !Empty(crewNotificationForAdminList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewNotificationForAdminList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewNotificationForAdminList.TableGridClass)">
+<form name="@(crewNotificationForAdminList.FormName)" id="@(crewNotificationForAdminList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewNotificationForAdminList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewNotificationForAdminList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewNotificationForAdmin" class="card-body ew-grid-middle-panel @(crewNotificationForAdminList.TableContainerClass)" style="@(crewNotificationForAdminList.TableContainerStyle)">
+@if (crewNotificationForAdminList.TotalRecords > 0 || crewNotificationForAdminList.IsGridEdit || crewNotificationForAdminList.IsMultiEdit) {
+<table id="tbl_CrewNotificationForAdminlist" class="@(crewNotificationForAdminList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewNotificationForAdminList.RowType = RowType.Header;
+
+    // Render list options
+    await crewNotificationForAdminList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewNotificationForAdminList.ListOptions.RenderHeader("left")
+@* Render list options (header, right) *@
+@crewNotificationForAdminList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(crewNotificationForAdminList.PageNumber)">
+@{
+    await crewNotificationForAdminList.SetupGrid();
+    bool eof = crewNotificationForAdminList.Recordset == null; // DN
+}
+@while (crewNotificationForAdminList.RecordCount < crewNotificationForAdminList.StopRecord || SameString(crewNotificationForAdminList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewNotificationForAdminList.RowIndex, "$rowindex$") &&
+        (!crewNotificationForAdminList.IsGridAdd || crewNotificationForAdminList.CurrentMode == "copy") &&
+        (!((crewNotificationForAdminList.IsCopy || crewNotificationForAdminList.IsAdd) && crewNotificationForAdminList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewNotificationForAdminList.Recordset.ReadAsync();
+    crewNotificationForAdminList.RecordCount++;
+    if (crewNotificationForAdminList.RecordCount >= crewNotificationForAdminList.StartRecord) {
+        await crewNotificationForAdminList.SetupRow();
+    <tr @Html.Raw(crewNotificationForAdminList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewNotificationForAdminList.ListOptions.RenderBody("left", crewNotificationForAdminList.RowCount)
+    @* Render list options (body, right) *@
+    @crewNotificationForAdminList.ListOptions.RenderBody("right", crewNotificationForAdminList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewNotificationForAdminList.RowIndex, "$rowindex$"))
+        crewNotificationForAdminList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewNotificationForAdminList.IsCopy || crewNotificationForAdminList.IsAdd) && crewNotificationForAdminList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewNotificationForAdminList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewNotificationForAdminList.CurrentAction) && !crewNotificationForAdminList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewNotificationForAdminList.CloseRecordset(); }
+@if (!crewNotificationForAdminList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewNotificationForAdminList.IsGridAdd && !(crewNotificationForAdminList.IsGridEdit && crewNotificationForAdminList.ModalGridEdit) && !crewNotificationForAdminList.IsMultiEdit) {
+@Html.Raw(crewNotificationForAdminList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewNotificationForAdminList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewNotificationForAdminList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewNotificationForAdminList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewNotificationForAdminList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewNotificationForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

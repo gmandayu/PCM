@@ -1,0 +1,560 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (vWaitingForPdeReviewSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!vWaitingForPdeReviewSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(vWaitingForPdeReviewSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { v_WaitingForPDEReview: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fv_WaitingForPDEReviewsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fv_WaitingForPDEReviewsearch")
+        .setPageId("search")
+@if (vWaitingForPdeReviewSearch.IsModal && vWaitingForPdeReviewSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [ew.Validators.datetime(fields.AvailableFrom.clientFormatPattern)], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [ew.Validators.datetime(fields.AvailableUntil.clientFormatPattern)], fields.AvailableUntil.isInvalid],
+            ["FormSubmittedDateTime", [ew.Validators.datetime(fields.FormSubmittedDateTime.clientFormatPattern)], fields.FormSubmittedDateTime.isInvalid],
+            ["CreatedBy", [ew.Validators.integer], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedBy", [ew.Validators.integer], fields.LastUpdatedBy.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Gender": @Html.Raw(vWaitingForPdeReviewSearch.Gender.ToClientList(vWaitingForPdeReviewSearch)),
+            "WillAcceptLowRank": @Html.Raw(vWaitingForPdeReviewSearch.WillAcceptLowRank.ToClientList(vWaitingForPdeReviewSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (vWaitingForPdeReviewSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@vWaitingForPdeReviewSearch.ShowPageHeader()
+@vWaitingForPdeReviewSearch.ShowMessages()
+<form name="fv_WaitingForPDEReviewsearch" id="fv_WaitingForPDEReviewsearch" class="@(vWaitingForPdeReviewSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (vWaitingForPdeReviewSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (vWaitingForPdeReviewSearch.IndividualCodeNumber.Visible) { // vWaitingForPdeReviewSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(vWaitingForPdeReviewSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_IndividualCodeNumber">@Html.Raw(vWaitingForPdeReviewSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="v_WaitingForPDEReview" data-field="x_IndividualCodeNumber" value="@Html.Raw(vWaitingForPdeReviewSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.IndividualCodeNumber.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.FullName.Visible) { // vWaitingForPdeReviewSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(vWaitingForPdeReviewSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_FullName">@Html.Raw(vWaitingForPdeReviewSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="v_WaitingForPDEReview" data-field="x_FullName" value="@Html.Raw(vWaitingForPdeReviewSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.FullName.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.FullName.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.FullName.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.Gender.Visible) { // vWaitingForPdeReviewSearch.Gender.Visible (begin)
+    <div id="r_Gender" class="row" @Html.Raw(vWaitingForPdeReviewSearch.Gender.RowAttributes)>
+        <label for="x_Gender" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_Gender">@Html.Raw(vWaitingForPdeReviewSearch.Gender.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Gender" id="z_Gender" value="LIKE">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.Gender.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_Gender" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_Gender"
+        name="x_Gender"
+        class="form-select ew-select@(vWaitingForPdeReviewSearch.Gender.IsInvalidClass)"
+        data-select2-id="fv_WaitingForPDEReviewsearch_x_Gender"
+        data-table="v_WaitingForPDEReview"
+        data-field="x_Gender"
+        data-value-separator="@(vWaitingForPdeReviewSearch.Gender.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(vWaitingForPdeReviewSearch.Gender.PlaceHolder))"
+        @Html.Raw(vWaitingForPdeReviewSearch.Gender.EditAttributes)>
+        @(vWaitingForPdeReviewSearch.Gender.SelectOptionListHtml("x_Gender"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.Gender.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fv_WaitingForPDEReviewsearch", function() {
+    var options = { name: "x_Gender", selectId: "fv_WaitingForPDEReviewsearch_x_Gender" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fv_WaitingForPDEReviewsearch.lists.Gender?.lookupOptions.length) {
+        options.data = { id: "x_Gender", form: "fv_WaitingForPDEReviewsearch" };
+    } else {
+        options.ajax = { id: "x_Gender", form: "fv_WaitingForPDEReviewsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.v_WaitingForPDEReview.fields.Gender.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.Gender.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.RankAppliedFor.Visible) { // vWaitingForPdeReviewSearch.RankAppliedFor.Visible (begin)
+    <div id="r_RankAppliedFor" class="row" @Html.Raw(vWaitingForPdeReviewSearch.RankAppliedFor.RowAttributes)>
+        <label for="x_RankAppliedFor" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_RankAppliedFor">@Html.Raw(vWaitingForPdeReviewSearch.RankAppliedFor.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RankAppliedFor" id="z_RankAppliedFor" value="LIKE">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.RankAppliedFor.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_RankAppliedFor" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.RankAppliedFor.InputTextType)" name="x_RankAppliedFor" id="x_RankAppliedFor" data-table="v_WaitingForPDEReview" data-field="x_RankAppliedFor" value="@Html.Raw(vWaitingForPdeReviewSearch.RankAppliedFor.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.RankAppliedFor.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.RankAppliedFor.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.RankAppliedFor.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.RankAppliedFor.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.RankAppliedFor.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.WillAcceptLowRank.Visible) { // vWaitingForPdeReviewSearch.WillAcceptLowRank.Visible (begin)
+    <div id="r_WillAcceptLowRank" class="row" @Html.Raw(vWaitingForPdeReviewSearch.WillAcceptLowRank.RowAttributes)>
+        <label class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_WillAcceptLowRank">@Html.Raw(vWaitingForPdeReviewSearch.WillAcceptLowRank.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_WillAcceptLowRank" id="z_WillAcceptLowRank" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.WillAcceptLowRank.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_WillAcceptLowRank" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(vWaitingForPdeReviewSearch.WillAcceptLowRank.IsInvalidClass)" data-table="v_WaitingForPDEReview" data-field="x_WillAcceptLowRank" data-boolean name="x_WillAcceptLowRank" id="x_WillAcceptLowRank" value="1" checked="@ConvertToBool(vWaitingForPdeReviewSearch.WillAcceptLowRank.AdvancedSearch.SearchValue)" @Html.Raw(vWaitingForPdeReviewSearch.WillAcceptLowRank.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.WillAcceptLowRank.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.WillAcceptLowRank.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.AvailableFrom.Visible) { // vWaitingForPdeReviewSearch.AvailableFrom.Visible (begin)
+    <div id="r_AvailableFrom" class="row" @Html.Raw(vWaitingForPdeReviewSearch.AvailableFrom.RowAttributes)>
+        <label for="x_AvailableFrom" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_AvailableFrom">@Html.Raw(vWaitingForPdeReviewSearch.AvailableFrom.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableFrom" id="z_AvailableFrom" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.AvailableFrom.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_AvailableFrom" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.AvailableFrom.InputTextType)" name="x_AvailableFrom" id="x_AvailableFrom" data-table="v_WaitingForPDEReview" data-field="x_AvailableFrom" value="@Html.Raw(vWaitingForPdeReviewSearch.AvailableFrom.EditValue)" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.AvailableFrom.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.AvailableFrom.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.AvailableFrom.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.AvailableFrom.GetErrorMessage(false))</div>
+@if (!vWaitingForPdeReviewSearch.AvailableFrom.ReadOnly && !vWaitingForPdeReviewSearch.AvailableFrom.Disabled && !vWaitingForPdeReviewSearch.AvailableFrom.EditAttrs.Is("readonly") && !vWaitingForPdeReviewSearch.AvailableFrom.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_WaitingForPDEReviewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_WaitingForPDEReviewsearch", "x_AvailableFrom", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.AvailableFrom.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.AvailableUntil.Visible) { // vWaitingForPdeReviewSearch.AvailableUntil.Visible (begin)
+    <div id="r_AvailableUntil" class="row" @Html.Raw(vWaitingForPdeReviewSearch.AvailableUntil.RowAttributes)>
+        <label for="x_AvailableUntil" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_AvailableUntil">@Html.Raw(vWaitingForPdeReviewSearch.AvailableUntil.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_AvailableUntil" id="z_AvailableUntil" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.AvailableUntil.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_AvailableUntil" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.AvailableUntil.InputTextType)" name="x_AvailableUntil" id="x_AvailableUntil" data-table="v_WaitingForPDEReview" data-field="x_AvailableUntil" value="@Html.Raw(vWaitingForPdeReviewSearch.AvailableUntil.EditValue)" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.AvailableUntil.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.AvailableUntil.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.AvailableUntil.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.AvailableUntil.GetErrorMessage(false))</div>
+@if (!vWaitingForPdeReviewSearch.AvailableUntil.ReadOnly && !vWaitingForPdeReviewSearch.AvailableUntil.Disabled && !vWaitingForPdeReviewSearch.AvailableUntil.EditAttrs.Is("readonly") && !vWaitingForPdeReviewSearch.AvailableUntil.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_WaitingForPDEReviewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_WaitingForPDEReviewsearch", "x_AvailableUntil", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.AvailableUntil.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.FormSubmittedDateTime.Visible) { // vWaitingForPdeReviewSearch.FormSubmittedDateTime.Visible (begin)
+    <div id="r_FormSubmittedDateTime" class="row" @Html.Raw(vWaitingForPdeReviewSearch.FormSubmittedDateTime.RowAttributes)>
+        <label for="x_FormSubmittedDateTime" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_FormSubmittedDateTime">@Html.Raw(vWaitingForPdeReviewSearch.FormSubmittedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_FormSubmittedDateTime" id="z_FormSubmittedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.FormSubmittedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_FormSubmittedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.FormSubmittedDateTime.InputTextType)" name="x_FormSubmittedDateTime" id="x_FormSubmittedDateTime" data-table="v_WaitingForPDEReview" data-field="x_FormSubmittedDateTime" value="@Html.Raw(vWaitingForPdeReviewSearch.FormSubmittedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.FormSubmittedDateTime.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.FormSubmittedDateTime.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.FormSubmittedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.FormSubmittedDateTime.GetErrorMessage(false))</div>
+@if (!vWaitingForPdeReviewSearch.FormSubmittedDateTime.ReadOnly && !vWaitingForPdeReviewSearch.FormSubmittedDateTime.Disabled && !vWaitingForPdeReviewSearch.FormSubmittedDateTime.EditAttrs.Is("readonly") && !vWaitingForPdeReviewSearch.FormSubmittedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_WaitingForPDEReviewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_WaitingForPDEReviewsearch", "x_FormSubmittedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.FormSubmittedDateTime.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.CreatedBy.Visible) { // vWaitingForPdeReviewSearch.CreatedBy.Visible (begin)
+    <div id="r_CreatedBy" class="row" @Html.Raw(vWaitingForPdeReviewSearch.CreatedBy.RowAttributes)>
+        <label for="x_CreatedBy" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_CreatedBy">@Html.Raw(vWaitingForPdeReviewSearch.CreatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedBy" id="z_CreatedBy" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.CreatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_CreatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="v_WaitingForPDEReview" data-field="x_CreatedBy" value="@Html.Raw(vWaitingForPdeReviewSearch.CreatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.CreatedBy.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.CreatedBy.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.CreatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.CreatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.CreatedBy.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.CreatedDateTime.Visible) { // vWaitingForPdeReviewSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(vWaitingForPdeReviewSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_CreatedDateTime">@Html.Raw(vWaitingForPdeReviewSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="v_WaitingForPDEReview" data-field="x_CreatedDateTime" value="@Html.Raw(vWaitingForPdeReviewSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.CreatedDateTime.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!vWaitingForPdeReviewSearch.CreatedDateTime.ReadOnly && !vWaitingForPdeReviewSearch.CreatedDateTime.Disabled && !vWaitingForPdeReviewSearch.CreatedDateTime.EditAttrs.Is("readonly") && !vWaitingForPdeReviewSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_WaitingForPDEReviewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_WaitingForPDEReviewsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.CreatedDateTime.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.LastUpdatedBy.Visible) { // vWaitingForPdeReviewSearch.LastUpdatedBy.Visible (begin)
+    <div id="r_LastUpdatedBy" class="row" @Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedBy.RowAttributes)>
+        <label for="x_LastUpdatedBy" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_LastUpdatedBy">@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedBy.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedBy" id="z_LastUpdatedBy" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedBy.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_LastUpdatedBy" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.LastUpdatedBy.InputTextType)" name="x_LastUpdatedBy" id="x_LastUpdatedBy" data-table="v_WaitingForPDEReview" data-field="x_LastUpdatedBy" value="@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedBy.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.LastUpdatedBy.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.LastUpdatedBy.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedBy.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedBy.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.LastUpdatedBy.Visible (end) *@
+@if (vWaitingForPdeReviewSearch.LastUpdatedDateTime.Visible) { // vWaitingForPdeReviewSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(vWaitingForPdeReviewSearch.LeftColumnClass)"><span id="elh_v_WaitingForPDEReview_LastUpdatedDateTime">@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(vWaitingForPdeReviewSearch.RightColumnClass)">
+            <div @Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_v_WaitingForPDEReview_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(vWaitingForPdeReviewSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="v_WaitingForPDEReview" data-field="x_LastUpdatedDateTime" value="@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(vWaitingForPdeReviewSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(vWaitingForPdeReviewSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(vWaitingForPdeReviewSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!vWaitingForPdeReviewSearch.LastUpdatedDateTime.ReadOnly && !vWaitingForPdeReviewSearch.LastUpdatedDateTime.Disabled && !vWaitingForPdeReviewSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !vWaitingForPdeReviewSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fv_WaitingForPDEReviewsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fv_WaitingForPDEReviewsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* vWaitingForPdeReviewSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(vWaitingForPdeReviewSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(vWaitingForPdeReviewSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fv_WaitingForPDEReviewsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (vWaitingForPdeReviewSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fv_WaitingForPDEReviewsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fv_WaitingForPDEReviewsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(vWaitingForPdeReviewSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@vWaitingForPdeReviewSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("v_WaitingForPDEReview");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

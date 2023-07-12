@@ -1,0 +1,1003 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (registrationList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!registrationList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!registrationList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(registrationList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Registration: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(registrationList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(registrationList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(registrationList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(registrationList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(registrationList.IndividualCodeNumber.ToClientList(registrationList)),
+            "FullName": @Html.Raw(registrationList.FullName.ToClientList(registrationList)),
+            "RequiredPhoto": @Html.Raw(registrationList.RequiredPhoto.ToClientList(registrationList)),
+            "VisaPhoto": @Html.Raw(registrationList.VisaPhoto.ToClientList(registrationList)),
+            "Gender": @Html.Raw(registrationList.Gender.ToClientList(registrationList)),
+            "RankAppliedFor": @Html.Raw(registrationList.RankAppliedFor.ToClientList(registrationList)),
+            "WillAcceptLowRank": @Html.Raw(registrationList.WillAcceptLowRank.ToClientList(registrationList)),
+            "AvailableFrom": @Html.Raw(registrationList.AvailableFrom.ToClientList(registrationList)),
+            "AvailableUntil": @Html.Raw(registrationList.AvailableUntil.ToClientList(registrationList)),
+            "CreatedBy": @Html.Raw(registrationList.CreatedBy.ToClientList(registrationList)),
+            "CreatedDateTime": @Html.Raw(registrationList.CreatedDateTime.ToClientList(registrationList)),
+            "LastUpdatedBy": @Html.Raw(registrationList.LastUpdatedBy.ToClientList(registrationList)),
+            "LastUpdatedDateTime": @Html.Raw(registrationList.LastUpdatedDateTime.ToClientList(registrationList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!registrationList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (registrationList.TotalRecords > 0 && registrationList.ExportOptions.Visible) {
+    registrationList.ExportOptions.Render("body");
+}
+@if (registrationList.ImportOptions.Visible) {
+    registrationList.ImportOptions.Render("body");
+}
+@if (registrationList.SearchOptions.Visible) {
+    registrationList.SearchOptions.Render("body");
+}
+@if (registrationList.FilterOptions.Visible) {
+    registrationList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (registrationList.ShowCurrentFilter) {
+    registrationList.ShowFilterList();
+}
+@if (!registrationList.IsModal) {
+<form name="fRegistrationsrch" id="fRegistrationsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fRegistrationsrch_search_panel" class="mb-2 mb-sm-0 @(registrationList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(registrationList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Registration: currentTable } });
+var currentForm;
+var fRegistrationsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fRegistrationsrch")
+        .setPageId("list")
+@if (registrationList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["RankAppliedFor", [], fields.RankAppliedFor.isInvalid],
+            ["WillAcceptLowRank", [], fields.WillAcceptLowRank.isInvalid],
+            ["AvailableFrom", [], fields.AvailableFrom.isInvalid],
+            ["AvailableUntil", [], fields.AvailableUntil.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedBy", [], fields.LastUpdatedBy.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IndividualCodeNumber": @Html.Raw(registrationList.IndividualCodeNumber.ToClientList(registrationList)),
+            "FullName": @Html.Raw(registrationList.FullName.ToClientList(registrationList)),
+            "RequiredPhoto": @Html.Raw(registrationList.RequiredPhoto.ToClientList(registrationList)),
+            "VisaPhoto": @Html.Raw(registrationList.VisaPhoto.ToClientList(registrationList)),
+            "Gender": @Html.Raw(registrationList.Gender.ToClientList(registrationList)),
+            "RankAppliedFor": @Html.Raw(registrationList.RankAppliedFor.ToClientList(registrationList)),
+            "WillAcceptLowRank": @Html.Raw(registrationList.WillAcceptLowRank.ToClientList(registrationList)),
+            "AvailableFrom": @Html.Raw(registrationList.AvailableFrom.ToClientList(registrationList)),
+            "AvailableUntil": @Html.Raw(registrationList.AvailableUntil.ToClientList(registrationList)),
+            "CreatedBy": @Html.Raw(registrationList.CreatedBy.ToClientList(registrationList)),
+            "CreatedDateTime": @Html.Raw(registrationList.CreatedDateTime.ToClientList(registrationList)),
+            "LastUpdatedBy": @Html.Raw(registrationList.LastUpdatedBy.ToClientList(registrationList)),
+            "LastUpdatedDateTime": @Html.Raw(registrationList.LastUpdatedDateTime.ToClientList(registrationList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await registrationList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!registrationList.IsExport() && Empty(registrationList.CurrentAction) && registrationList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(registrationList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + registrationList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    registrationList.RowType = RowType.Search;
+    registrationList.ResetAttributes();
+    await registrationList.RenderRow();
+}
+@if (registrationList.IndividualCodeNumber.Visible) { // registrationList.IndividualCodeNumber.Visible (begin)
+    if (!registrationList.IndividualCodeNumber.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_IndividualCodeNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.IndividualCodeNumber.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IndividualCodeNumber"
+            name="x_IndividualCodeNumber[]"
+            class="form-control ew-select@(registrationList.IndividualCodeNumber.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_IndividualCodeNumber"
+            data-table="Registration"
+            data-field="x_IndividualCodeNumber"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.IndividualCodeNumber.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.IndividualCodeNumber.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.IndividualCodeNumber.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.IndividualCodeNumber.EditAttributes)>
+            @(registrationList.IndividualCodeNumber.SelectOptionListHtml("x_IndividualCodeNumber", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.IndividualCodeNumber.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_IndividualCodeNumber",
+                selectId: "fRegistrationsrch_x_IndividualCodeNumber",
+                ajax: { id: "x_IndividualCodeNumber", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.IndividualCodeNumber.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.IndividualCodeNumber.Visible (end) *@
+@if (registrationList.FullName.Visible) { // registrationList.FullName.Visible (begin)
+    if (!registrationList.FullName.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FullName"
+            name="x_FullName[]"
+            class="form-control ew-select@(registrationList.FullName.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_FullName"
+            data-table="Registration"
+            data-field="x_FullName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.FullName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.FullName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.FullName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.FullName.EditAttributes)>
+            @(registrationList.FullName.SelectOptionListHtml("x_FullName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.FullName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_FullName",
+                selectId: "fRegistrationsrch_x_FullName",
+                ajax: { id: "x_FullName", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.FullName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.FullName.Visible (end) *@
+@if (registrationList.RequiredPhoto.Visible) { // registrationList.RequiredPhoto.Visible (begin)
+    if (!registrationList.RequiredPhoto.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_RequiredPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.RequiredPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RequiredPhoto"
+            name="x_RequiredPhoto[]"
+            class="form-control ew-select@(registrationList.RequiredPhoto.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_RequiredPhoto"
+            data-table="Registration"
+            data-field="x_RequiredPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.RequiredPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.RequiredPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.RequiredPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.RequiredPhoto.EditAttributes)>
+            @(registrationList.RequiredPhoto.SelectOptionListHtml("x_RequiredPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.RequiredPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_RequiredPhoto",
+                selectId: "fRegistrationsrch_x_RequiredPhoto",
+                ajax: { id: "x_RequiredPhoto", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.RequiredPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.RequiredPhoto.Visible (end) *@
+@if (registrationList.VisaPhoto.Visible) { // registrationList.VisaPhoto.Visible (begin)
+    if (!registrationList.VisaPhoto.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_VisaPhoto" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.VisaPhoto.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_VisaPhoto"
+            name="x_VisaPhoto[]"
+            class="form-control ew-select@(registrationList.VisaPhoto.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_VisaPhoto"
+            data-table="Registration"
+            data-field="x_VisaPhoto"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.VisaPhoto.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.VisaPhoto.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.VisaPhoto.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.VisaPhoto.EditAttributes)>
+            @(registrationList.VisaPhoto.SelectOptionListHtml("x_VisaPhoto", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.VisaPhoto.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_VisaPhoto",
+                selectId: "fRegistrationsrch_x_VisaPhoto",
+                ajax: { id: "x_VisaPhoto", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.VisaPhoto.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.VisaPhoto.Visible (end) *@
+@if (registrationList.Gender.Visible) { // registrationList.Gender.Visible (begin)
+    if (!registrationList.Gender.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_Gender" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.Gender.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Gender"
+            name="x_Gender[]"
+            class="form-control ew-select@(registrationList.Gender.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_Gender"
+            data-table="Registration"
+            data-field="x_Gender"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.Gender.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.Gender.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.Gender.EditAttributes)>
+            @(registrationList.Gender.SelectOptionListHtml("x_Gender", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.Gender.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_Gender",
+                selectId: "fRegistrationsrch_x_Gender",
+                ajax: { id: "x_Gender", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.Gender.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.Gender.Visible (end) *@
+@if (registrationList.RankAppliedFor.Visible) { // registrationList.RankAppliedFor.Visible (begin)
+    if (!registrationList.RankAppliedFor.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_RankAppliedFor" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.RankAppliedFor.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_RankAppliedFor"
+            name="x_RankAppliedFor[]"
+            class="form-control ew-select@(registrationList.RankAppliedFor.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_RankAppliedFor"
+            data-table="Registration"
+            data-field="x_RankAppliedFor"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.RankAppliedFor.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.RankAppliedFor.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.RankAppliedFor.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.RankAppliedFor.EditAttributes)>
+            @(registrationList.RankAppliedFor.SelectOptionListHtml("x_RankAppliedFor", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.RankAppliedFor.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_RankAppliedFor",
+                selectId: "fRegistrationsrch_x_RankAppliedFor",
+                ajax: { id: "x_RankAppliedFor", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.RankAppliedFor.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.RankAppliedFor.Visible (end) *@
+@if (registrationList.WillAcceptLowRank.Visible) { // registrationList.WillAcceptLowRank.Visible (begin)
+    if (!registrationList.WillAcceptLowRank.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_WillAcceptLowRank" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.WillAcceptLowRank.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_WillAcceptLowRank"
+            name="x_WillAcceptLowRank[]"
+            class="form-control ew-select@(registrationList.WillAcceptLowRank.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_WillAcceptLowRank"
+            data-table="Registration"
+            data-field="x_WillAcceptLowRank"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.WillAcceptLowRank.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.WillAcceptLowRank.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.WillAcceptLowRank.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.WillAcceptLowRank.EditAttributes)>
+            @(registrationList.WillAcceptLowRank.SelectOptionListHtml("x_WillAcceptLowRank", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.WillAcceptLowRank.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_WillAcceptLowRank",
+                selectId: "fRegistrationsrch_x_WillAcceptLowRank",
+                ajax: { id: "x_WillAcceptLowRank", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.WillAcceptLowRank.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.WillAcceptLowRank.Visible (end) *@
+@if (registrationList.AvailableFrom.Visible) { // registrationList.AvailableFrom.Visible (begin)
+    if (!registrationList.AvailableFrom.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableFrom" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.AvailableFrom.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableFrom"
+            name="x_AvailableFrom[]"
+            class="form-control ew-select@(registrationList.AvailableFrom.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_AvailableFrom"
+            data-table="Registration"
+            data-field="x_AvailableFrom"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.AvailableFrom.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.AvailableFrom.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.AvailableFrom.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.AvailableFrom.EditAttributes)>
+            @(registrationList.AvailableFrom.SelectOptionListHtml("x_AvailableFrom", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.AvailableFrom.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_AvailableFrom",
+                selectId: "fRegistrationsrch_x_AvailableFrom",
+                ajax: { id: "x_AvailableFrom", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.AvailableFrom.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.AvailableFrom.Visible (end) *@
+@if (registrationList.AvailableUntil.Visible) { // registrationList.AvailableUntil.Visible (begin)
+    if (!registrationList.AvailableUntil.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_AvailableUntil" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.AvailableUntil.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AvailableUntil"
+            name="x_AvailableUntil[]"
+            class="form-control ew-select@(registrationList.AvailableUntil.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_AvailableUntil"
+            data-table="Registration"
+            data-field="x_AvailableUntil"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.AvailableUntil.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.AvailableUntil.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.AvailableUntil.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.AvailableUntil.EditAttributes)>
+            @(registrationList.AvailableUntil.SelectOptionListHtml("x_AvailableUntil", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.AvailableUntil.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_AvailableUntil",
+                selectId: "fRegistrationsrch_x_AvailableUntil",
+                ajax: { id: "x_AvailableUntil", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.AvailableUntil.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.AvailableUntil.Visible (end) *@
+@if (registrationList.CreatedBy.Visible) { // registrationList.CreatedBy.Visible (begin)
+    if (!registrationList.CreatedBy.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.CreatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedBy"
+            name="x_CreatedBy[]"
+            class="form-control ew-select@(registrationList.CreatedBy.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_CreatedBy"
+            data-table="Registration"
+            data-field="x_CreatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.CreatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.CreatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.CreatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.CreatedBy.EditAttributes)>
+            @(registrationList.CreatedBy.SelectOptionListHtml("x_CreatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.CreatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_CreatedBy",
+                selectId: "fRegistrationsrch_x_CreatedBy",
+                ajax: { id: "x_CreatedBy", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.CreatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.CreatedBy.Visible (end) *@
+@if (registrationList.CreatedDateTime.Visible) { // registrationList.CreatedDateTime.Visible (begin)
+    if (!registrationList.CreatedDateTime.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(registrationList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_CreatedDateTime"
+            data-table="Registration"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.CreatedDateTime.EditAttributes)>
+            @(registrationList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fRegistrationsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.CreatedDateTime.Visible (end) *@
+@if (registrationList.LastUpdatedBy.Visible) { // registrationList.LastUpdatedBy.Visible (begin)
+    if (!registrationList.LastUpdatedBy.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.LastUpdatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedBy"
+            name="x_LastUpdatedBy[]"
+            class="form-control ew-select@(registrationList.LastUpdatedBy.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_LastUpdatedBy"
+            data-table="Registration"
+            data-field="x_LastUpdatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.LastUpdatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.LastUpdatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.LastUpdatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.LastUpdatedBy.EditAttributes)>
+            @(registrationList.LastUpdatedBy.SelectOptionListHtml("x_LastUpdatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.LastUpdatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_LastUpdatedBy",
+                selectId: "fRegistrationsrch_x_LastUpdatedBy",
+                ajax: { id: "x_LastUpdatedBy", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.LastUpdatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.LastUpdatedBy.Visible (end) *@
+@if (registrationList.LastUpdatedDateTime.Visible) { // registrationList.LastUpdatedDateTime.Visible (begin)
+    if (!registrationList.LastUpdatedDateTime.UseFilter) {
+        registrationList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(registrationList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(registrationList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fRegistrationsrch_x_LastUpdatedDateTime"
+            data-table="Registration"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(registrationList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(registrationList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(registrationList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(registrationList.LastUpdatedDateTime.EditAttributes)>
+            @(registrationList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(registrationList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fRegistrationsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fRegistrationsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fRegistrationsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Registration.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* registrationList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(registrationList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(registrationList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(registrationList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(registrationList.BasicSearch.SessionType == "" ? " active" : "")" form="fRegistrationsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(registrationList.BasicSearch.SessionType == "=" ? " active" : "")" form="fRegistrationsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(registrationList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fRegistrationsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(registrationList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fRegistrationsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@registrationList.ShowPageHeader()
+@registrationList.ShowMessages()
+<main class="list @(registrationList.TotalRecords == 0 && !registrationList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (registrationList.TotalRecords > 0 || !Empty(registrationList.CurrentAction)) {
+<div class="card ew-card ew-grid@(registrationList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(registrationList.TableGridClass)">
+<form name="@(registrationList.FormName)" id="@(registrationList.FormName)" class="ew-form ew-list-form" action="@AppPath(registrationList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (registrationList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_Registration" class="card-body ew-grid-middle-panel @(registrationList.TableContainerClass)" style="@(registrationList.TableContainerStyle)">
+@if (registrationList.TotalRecords > 0 || registrationList.IsGridEdit || registrationList.IsMultiEdit) {
+<table id="tbl_Registrationlist" class="@(registrationList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    registrationList.RowType = RowType.Header;
+
+    // Render list options
+    await registrationList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@registrationList.ListOptions.RenderHeader("left")
+@if (registrationList.IndividualCodeNumber.Visible) { // registrationList.IndividualCodeNumber.Visible (begin)
+        <th data-name="IndividualCodeNumber" class="@(registrationList.IndividualCodeNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_IndividualCodeNumber" class="Registration_IndividualCodeNumber">@Html.Raw(registrationList.RenderFieldHeader(registrationList.IndividualCodeNumber))</div></th>
+} @* registrationList.IndividualCodeNumber.Visible (end) *@
+@if (registrationList.FullName.Visible) { // registrationList.FullName.Visible (begin)
+        <th data-name="FullName" class="@(registrationList.FullName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_FullName" class="Registration_FullName">@Html.Raw(registrationList.RenderFieldHeader(registrationList.FullName))</div></th>
+} @* registrationList.FullName.Visible (end) *@
+@if (registrationList.RequiredPhoto.Visible) { // registrationList.RequiredPhoto.Visible (begin)
+        <th data-name="RequiredPhoto" class="@(registrationList.RequiredPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_RequiredPhoto" class="Registration_RequiredPhoto">@Html.Raw(registrationList.RenderFieldHeader(registrationList.RequiredPhoto))</div></th>
+} @* registrationList.RequiredPhoto.Visible (end) *@
+@if (registrationList.VisaPhoto.Visible) { // registrationList.VisaPhoto.Visible (begin)
+        <th data-name="VisaPhoto" class="@(registrationList.VisaPhoto.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_VisaPhoto" class="Registration_VisaPhoto">@Html.Raw(registrationList.RenderFieldHeader(registrationList.VisaPhoto))</div></th>
+} @* registrationList.VisaPhoto.Visible (end) *@
+@if (registrationList.Gender.Visible) { // registrationList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(registrationList.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_Gender" class="Registration_Gender">@Html.Raw(registrationList.RenderFieldHeader(registrationList.Gender))</div></th>
+} @* registrationList.Gender.Visible (end) *@
+@if (registrationList.RankAppliedFor.Visible) { // registrationList.RankAppliedFor.Visible (begin)
+        <th data-name="RankAppliedFor" class="@(registrationList.RankAppliedFor.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_RankAppliedFor" class="Registration_RankAppliedFor">@Html.Raw(registrationList.RenderFieldHeader(registrationList.RankAppliedFor))</div></th>
+} @* registrationList.RankAppliedFor.Visible (end) *@
+@if (registrationList.WillAcceptLowRank.Visible) { // registrationList.WillAcceptLowRank.Visible (begin)
+        <th data-name="WillAcceptLowRank" class="@(registrationList.WillAcceptLowRank.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_WillAcceptLowRank" class="Registration_WillAcceptLowRank">@Html.Raw(registrationList.RenderFieldHeader(registrationList.WillAcceptLowRank))</div></th>
+} @* registrationList.WillAcceptLowRank.Visible (end) *@
+@if (registrationList.AvailableFrom.Visible) { // registrationList.AvailableFrom.Visible (begin)
+        <th data-name="AvailableFrom" class="@(registrationList.AvailableFrom.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_AvailableFrom" class="Registration_AvailableFrom">@Html.Raw(registrationList.RenderFieldHeader(registrationList.AvailableFrom))</div></th>
+} @* registrationList.AvailableFrom.Visible (end) *@
+@if (registrationList.AvailableUntil.Visible) { // registrationList.AvailableUntil.Visible (begin)
+        <th data-name="AvailableUntil" class="@(registrationList.AvailableUntil.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_AvailableUntil" class="Registration_AvailableUntil">@Html.Raw(registrationList.RenderFieldHeader(registrationList.AvailableUntil))</div></th>
+} @* registrationList.AvailableUntil.Visible (end) *@
+@if (registrationList.CreatedBy.Visible) { // registrationList.CreatedBy.Visible (begin)
+        <th data-name="CreatedBy" class="@(registrationList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_CreatedBy" class="Registration_CreatedBy">@Html.Raw(registrationList.RenderFieldHeader(registrationList.CreatedBy))</div></th>
+} @* registrationList.CreatedBy.Visible (end) *@
+@if (registrationList.CreatedDateTime.Visible) { // registrationList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(registrationList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_CreatedDateTime" class="Registration_CreatedDateTime">@Html.Raw(registrationList.RenderFieldHeader(registrationList.CreatedDateTime))</div></th>
+} @* registrationList.CreatedDateTime.Visible (end) *@
+@if (registrationList.LastUpdatedBy.Visible) { // registrationList.LastUpdatedBy.Visible (begin)
+        <th data-name="LastUpdatedBy" class="@(registrationList.LastUpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_LastUpdatedBy" class="Registration_LastUpdatedBy">@Html.Raw(registrationList.RenderFieldHeader(registrationList.LastUpdatedBy))</div></th>
+} @* registrationList.LastUpdatedBy.Visible (end) *@
+@if (registrationList.LastUpdatedDateTime.Visible) { // registrationList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(registrationList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Registration_LastUpdatedDateTime" class="Registration_LastUpdatedDateTime">@Html.Raw(registrationList.RenderFieldHeader(registrationList.LastUpdatedDateTime))</div></th>
+} @* registrationList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@registrationList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(registrationList.PageNumber)">
+@{
+    await registrationList.SetupGrid();
+    bool eof = registrationList.Recordset == null; // DN
+}
+@while (registrationList.RecordCount < registrationList.StopRecord || SameString(registrationList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(registrationList.RowIndex, "$rowindex$") &&
+        (!registrationList.IsGridAdd || registrationList.CurrentMode == "copy") &&
+        (!((registrationList.IsCopy || registrationList.IsAdd) && registrationList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await registrationList.Recordset.ReadAsync();
+    registrationList.RecordCount++;
+    if (registrationList.RecordCount >= registrationList.StartRecord) {
+        await registrationList.SetupRow();
+    <tr @Html.Raw(registrationList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @registrationList.ListOptions.RenderBody("left", registrationList.RowCount)
+    @if (registrationList.IndividualCodeNumber.Visible) { // registrationList.IndividualCodeNumber.Visible (begin)
+        <td data-name="IndividualCodeNumber" @Html.Raw(registrationList.IndividualCodeNumber.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_IndividualCodeNumber" class="el_Registration_IndividualCodeNumber">
+<span @Html.Raw(registrationList.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(registrationList.IndividualCodeNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.IndividualCodeNumber.Visible (end) *@
+    @if (registrationList.FullName.Visible) { // registrationList.FullName.Visible (begin)
+        <td data-name="FullName" @Html.Raw(registrationList.FullName.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_FullName" class="el_Registration_FullName">
+<span @Html.Raw(registrationList.FullName.ViewAttributes)>
+@Html.Raw(registrationList.FullName.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.FullName.Visible (end) *@
+    @if (registrationList.RequiredPhoto.Visible) { // registrationList.RequiredPhoto.Visible (begin)
+        <td data-name="RequiredPhoto" @Html.Raw(registrationList.RequiredPhoto.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_RequiredPhoto" class="el_Registration_RequiredPhoto">
+<span @Html.Raw(registrationList.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(registrationList.IndividualCodeNumber.GetViewValue())/@ConvertToString(registrationList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* registrationList.RequiredPhoto.Visible (end) *@
+    @if (registrationList.VisaPhoto.Visible) { // registrationList.VisaPhoto.Visible (begin)
+        <td data-name="VisaPhoto" @Html.Raw(registrationList.VisaPhoto.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_VisaPhoto" class="el_Registration_VisaPhoto">
+<span @Html.Raw(registrationList.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(registrationList.IndividualCodeNumber.GetViewValue())/@ConvertToString(registrationList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span>
+</td>
+    } @* registrationList.VisaPhoto.Visible (end) *@
+    @if (registrationList.Gender.Visible) { // registrationList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(registrationList.Gender.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_Gender" class="el_Registration_Gender">
+<span @Html.Raw(registrationList.Gender.ViewAttributes)>
+@Html.Raw(registrationList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.Gender.Visible (end) *@
+    @if (registrationList.RankAppliedFor.Visible) { // registrationList.RankAppliedFor.Visible (begin)
+        <td data-name="RankAppliedFor" @Html.Raw(registrationList.RankAppliedFor.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_RankAppliedFor" class="el_Registration_RankAppliedFor">
+<span @Html.Raw(registrationList.RankAppliedFor.ViewAttributes)>
+@Html.Raw(registrationList.RankAppliedFor.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.RankAppliedFor.Visible (end) *@
+    @if (registrationList.WillAcceptLowRank.Visible) { // registrationList.WillAcceptLowRank.Visible (begin)
+        <td data-name="WillAcceptLowRank" @Html.Raw(registrationList.WillAcceptLowRank.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_WillAcceptLowRank" class="el_Registration_WillAcceptLowRank">
+<span @Html.Raw(registrationList.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(registrationList.RowCount)" class="form-check-input" value="@(registrationList.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(registrationList.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(registrationList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* registrationList.WillAcceptLowRank.Visible (end) *@
+    @if (registrationList.AvailableFrom.Visible) { // registrationList.AvailableFrom.Visible (begin)
+        <td data-name="AvailableFrom" @Html.Raw(registrationList.AvailableFrom.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_AvailableFrom" class="el_Registration_AvailableFrom">
+<span @Html.Raw(registrationList.AvailableFrom.ViewAttributes)>
+@Html.Raw(registrationList.AvailableFrom.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.AvailableFrom.Visible (end) *@
+    @if (registrationList.AvailableUntil.Visible) { // registrationList.AvailableUntil.Visible (begin)
+        <td data-name="AvailableUntil" @Html.Raw(registrationList.AvailableUntil.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_AvailableUntil" class="el_Registration_AvailableUntil">
+<span @Html.Raw(registrationList.AvailableUntil.ViewAttributes)>
+@Html.Raw(registrationList.AvailableUntil.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.AvailableUntil.Visible (end) *@
+    @if (registrationList.CreatedBy.Visible) { // registrationList.CreatedBy.Visible (begin)
+        <td data-name="CreatedBy" @Html.Raw(registrationList.CreatedBy.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_CreatedBy" class="el_Registration_CreatedBy">
+<span @Html.Raw(registrationList.CreatedBy.ViewAttributes)>
+@Html.Raw(registrationList.CreatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.CreatedBy.Visible (end) *@
+    @if (registrationList.CreatedDateTime.Visible) { // registrationList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(registrationList.CreatedDateTime.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_CreatedDateTime" class="el_Registration_CreatedDateTime">
+<span @Html.Raw(registrationList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(registrationList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.CreatedDateTime.Visible (end) *@
+    @if (registrationList.LastUpdatedBy.Visible) { // registrationList.LastUpdatedBy.Visible (begin)
+        <td data-name="LastUpdatedBy" @Html.Raw(registrationList.LastUpdatedBy.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_LastUpdatedBy" class="el_Registration_LastUpdatedBy">
+<span @Html.Raw(registrationList.LastUpdatedBy.ViewAttributes)>
+@Html.Raw(registrationList.LastUpdatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.LastUpdatedBy.Visible (end) *@
+    @if (registrationList.LastUpdatedDateTime.Visible) { // registrationList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(registrationList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(registrationList.RowCount)_Registration_LastUpdatedDateTime" class="el_Registration_LastUpdatedDateTime">
+<span @Html.Raw(registrationList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(registrationList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* registrationList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @registrationList.ListOptions.RenderBody("right", registrationList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(registrationList.RowIndex, "$rowindex$"))
+        registrationList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((registrationList.IsCopy || registrationList.IsAdd) && registrationList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        registrationList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(registrationList.CurrentAction) && !registrationList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ registrationList.CloseRecordset(); }
+@if (!registrationList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!registrationList.IsGridAdd && !(registrationList.IsGridEdit && registrationList.ModalGridEdit) && !registrationList.IsMultiEdit) {
+@Html.Raw(registrationList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@registrationList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@registrationList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@registrationList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!registrationList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Registration");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    $('table#tbl_Registrationlist tbody tr td.ew-list-option-body.w-1 div.btn-group ul.ew-list-options li a.ew-row-link').each(function() {
+        const dataCaptionAttrValue = $(this).attr('data-caption');
+        if (dataCaptionAttrValue === ew.language.phrase("ViewLink")) {
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+            const newHref = `${ew.PATH_BASE}CrewPersonalDataForAdminViewModeView/${id}`;
+            $(this).attr('href', newHref);
+        } else if (dataCaptionAttrValue === ew.language.phrase("EditLink")) {
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+            const newHref = `${ew.PATH_BASE}CrewPersonalDataForAdminEdit/${id}`;
+            $(this).attr('href', newHref);
+        } else if (dataCaptionAttrValue === ew.language.phrase("DeleteLink")) {
+            const oldHref = $(this).attr('href');
+            const id = oldHref.split('/').pop();
+            const newHref = `${ew.PATH_BASE}CrewPersonalDataForAdminDelete/${id}`;
+            $(this).attr('href', newHref);
+        }
+    });
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+    const successMessage = urlQueryParams.get('successMessage');
+    if (successMessage !== null) {
+        const decodedSuccessMessage = decodeURIComponent(successMessage);
+        ew.showToast(decodedSuccessMessage, 'success');
+        urlQueryParams.delete('successMessage');
+        currentUrlObject.search = urlQueryParams.toString();
+        history.pushState(null, '', currentUrlObject);
+    }
+    const warningMessage = urlQueryParams.get('warningMessage');
+    if (warningMessage !== null) {
+        const decodedWarningMessage = decodeURIComponent(warningMessage);
+        ew.showToast(decodedWarningMessage, 'warning');
+        urlQueryParams.delete('warningMessage');
+        currentUrlObject.search = urlQueryParams.toString();
+        history.pushState(null, '', currentUrlObject);
+    }
+});
+</script>
+}

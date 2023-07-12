@@ -1,0 +1,747 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (checklistView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!checklistView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!checklistView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!checklistView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @checklistView.ExportOptions.RenderBody()
+    @checklistView.OtherOptions.RenderBody()
+</div>
+}
+@checklistView.ShowPageHeader()
+@checklistView.ShowMessages()
+<main class="view">
+<form name="fChecklistview" id="fChecklistview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (!checklistView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(checklistView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Checklist: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fChecklistview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fChecklistview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(checklistView.IsModal)">
+<table class="@(checklistView.TableClass)">
+@if (checklistView.MTCrewID.Visible) { // checklistView.MTCrewID.Visible (begin)
+    <tr id="r_MTCrewID" @Html.Raw(checklistView.MTCrewID.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_MTCrewID">@Html.Raw(checklistView.MTCrewID.Caption)</span></td>
+        <td data-name="MTCrewID" @Html.Raw(checklistView.MTCrewID.CellAttributes)>
+<span id="el_Checklist_MTCrewID">
+<span @Html.Raw(checklistView.MTCrewID.ViewAttributes)>
+@Html.Raw(checklistView.MTCrewID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.MTCrewID.Visible (end) *@
+@if (checklistView.IndividualCodeNumber.Visible) { // checklistView.IndividualCodeNumber.Visible (begin)
+    <tr id="r_IndividualCodeNumber" @Html.Raw(checklistView.IndividualCodeNumber.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_IndividualCodeNumber">@Html.Raw(checklistView.IndividualCodeNumber.Caption)</span></td>
+        <td data-name="IndividualCodeNumber" @Html.Raw(checklistView.IndividualCodeNumber.CellAttributes)>
+<span id="el_Checklist_IndividualCodeNumber">
+<span @Html.Raw(checklistView.IndividualCodeNumber.ViewAttributes)>
+@Html.Raw(checklistView.IndividualCodeNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.IndividualCodeNumber.Visible (end) *@
+@if (checklistView.FullName.Visible) { // checklistView.FullName.Visible (begin)
+    <tr id="r_FullName" @Html.Raw(checklistView.FullName.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_FullName">@Html.Raw(checklistView.FullName.Caption)</span></td>
+        <td data-name="FullName" @Html.Raw(checklistView.FullName.CellAttributes)>
+<span id="el_Checklist_FullName">
+<span @Html.Raw(checklistView.FullName.ViewAttributes)>
+@Html.Raw(checklistView.FullName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.FullName.Visible (end) *@
+@if (checklistView.RequiredPhoto.Visible) { // checklistView.RequiredPhoto.Visible (begin)
+    <tr id="r_RequiredPhoto" @Html.Raw(checklistView.RequiredPhoto.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RequiredPhoto">@Html.Raw(checklistView.RequiredPhoto.Caption)</span></td>
+        <td data-name="RequiredPhoto" @Html.Raw(checklistView.RequiredPhoto.CellAttributes)>
+<span id="el_Checklist_RequiredPhoto">
+<span @Html.Raw(checklistView.RequiredPhoto.ViewAttributes)><a href="uploads/@ConvertToString(checklistList.IndividualCodeNumber.GetViewValue())/@ConvertToString(checklistList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span></td>
+    </tr>
+} @* checklistView.RequiredPhoto.Visible (end) *@
+@if (checklistView.VisaPhoto.Visible) { // checklistView.VisaPhoto.Visible (begin)
+    <tr id="r_VisaPhoto" @Html.Raw(checklistView.VisaPhoto.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_VisaPhoto">@Html.Raw(checklistView.VisaPhoto.Caption)</span></td>
+        <td data-name="VisaPhoto" @Html.Raw(checklistView.VisaPhoto.CellAttributes)>
+<span id="el_Checklist_VisaPhoto">
+<span @Html.Raw(checklistView.VisaPhoto.ViewAttributes)><a href="uploads/@ConvertToString(checklistList.IndividualCodeNumber.GetViewValue())/@ConvertToString(checklistList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
+</span></td>
+    </tr>
+} @* checklistView.VisaPhoto.Visible (end) *@
+@if (checklistView.RankAppliedFor.Visible) { // checklistView.RankAppliedFor.Visible (begin)
+    <tr id="r_RankAppliedFor" @Html.Raw(checklistView.RankAppliedFor.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RankAppliedFor">@Html.Raw(checklistView.RankAppliedFor.Caption)</span></td>
+        <td data-name="RankAppliedFor" @Html.Raw(checklistView.RankAppliedFor.CellAttributes)>
+<span id="el_Checklist_RankAppliedFor">
+<span @Html.Raw(checklistView.RankAppliedFor.ViewAttributes)>
+@Html.Raw(checklistView.RankAppliedFor.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RankAppliedFor.Visible (end) *@
+@if (checklistView.WillAcceptLowRank.Visible) { // checklistView.WillAcceptLowRank.Visible (begin)
+    <tr id="r_WillAcceptLowRank" @Html.Raw(checklistView.WillAcceptLowRank.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_WillAcceptLowRank">@Html.Raw(checklistView.WillAcceptLowRank.Caption)</span></td>
+        <td data-name="WillAcceptLowRank" @Html.Raw(checklistView.WillAcceptLowRank.CellAttributes)>
+<span id="el_Checklist_WillAcceptLowRank">
+<span @Html.Raw(checklistView.WillAcceptLowRank.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_WillAcceptLowRank_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.WillAcceptLowRank.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.WillAcceptLowRank.CurrentValue))">
+    <label class="form-check-label" for="x_WillAcceptLowRank_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.WillAcceptLowRank.Visible (end) *@
+@if (checklistView.AvailableFrom.Visible) { // checklistView.AvailableFrom.Visible (begin)
+    <tr id="r_AvailableFrom" @Html.Raw(checklistView.AvailableFrom.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_AvailableFrom">@Html.Raw(checklistView.AvailableFrom.Caption)</span></td>
+        <td data-name="AvailableFrom" @Html.Raw(checklistView.AvailableFrom.CellAttributes)>
+<span id="el_Checklist_AvailableFrom">
+<span @Html.Raw(checklistView.AvailableFrom.ViewAttributes)>
+@Html.Raw(checklistView.AvailableFrom.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.AvailableFrom.Visible (end) *@
+@if (checklistView.AvailableUntil.Visible) { // checklistView.AvailableUntil.Visible (begin)
+    <tr id="r_AvailableUntil" @Html.Raw(checklistView.AvailableUntil.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_AvailableUntil">@Html.Raw(checklistView.AvailableUntil.Caption)</span></td>
+        <td data-name="AvailableUntil" @Html.Raw(checklistView.AvailableUntil.CellAttributes)>
+<span id="el_Checklist_AvailableUntil">
+<span @Html.Raw(checklistView.AvailableUntil.ViewAttributes)>
+@Html.Raw(checklistView.AvailableUntil.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.AvailableUntil.Visible (end) *@
+@if (checklistView.Activity10.Visible) { // checklistView.Activity10.Visible (begin)
+    <tr id="r_Activity10" @Html.Raw(checklistView.Activity10.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity10">@Html.Raw(checklistView.Activity10.Caption)</span></td>
+        <td data-name="Activity10" @Html.Raw(checklistView.Activity10.CellAttributes)>
+<span id="el_Checklist_Activity10">
+<span @Html.Raw(checklistView.Activity10.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity10_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity10.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity10.CurrentValue))">
+    <label class="form-check-label" for="x_Activity10_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity10.Visible (end) *@
+@if (checklistView.RemarkActivity10.Visible) { // checklistView.RemarkActivity10.Visible (begin)
+    <tr id="r_RemarkActivity10" @Html.Raw(checklistView.RemarkActivity10.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity10">@Html.Raw(checklistView.RemarkActivity10.Caption)</span></td>
+        <td data-name="RemarkActivity10" @Html.Raw(checklistView.RemarkActivity10.CellAttributes)>
+<span id="el_Checklist_RemarkActivity10">
+<span @Html.Raw(checklistView.RemarkActivity10.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity10.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity10.Visible (end) *@
+@if (checklistView.Activity11.Visible) { // checklistView.Activity11.Visible (begin)
+    <tr id="r_Activity11" @Html.Raw(checklistView.Activity11.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity11">@Html.Raw(checklistView.Activity11.Caption)</span></td>
+        <td data-name="Activity11" @Html.Raw(checklistView.Activity11.CellAttributes)>
+<span id="el_Checklist_Activity11">
+<span @Html.Raw(checklistView.Activity11.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity11_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity11.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity11.CurrentValue))">
+    <label class="form-check-label" for="x_Activity11_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity11.Visible (end) *@
+@if (checklistView.RemarkActivity11.Visible) { // checklistView.RemarkActivity11.Visible (begin)
+    <tr id="r_RemarkActivity11" @Html.Raw(checklistView.RemarkActivity11.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity11">@Html.Raw(checklistView.RemarkActivity11.Caption)</span></td>
+        <td data-name="RemarkActivity11" @Html.Raw(checklistView.RemarkActivity11.CellAttributes)>
+<span id="el_Checklist_RemarkActivity11">
+<span @Html.Raw(checklistView.RemarkActivity11.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity11.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity11.Visible (end) *@
+@if (checklistView.Activity12.Visible) { // checklistView.Activity12.Visible (begin)
+    <tr id="r_Activity12" @Html.Raw(checklistView.Activity12.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity12">@Html.Raw(checklistView.Activity12.Caption)</span></td>
+        <td data-name="Activity12" @Html.Raw(checklistView.Activity12.CellAttributes)>
+<span id="el_Checklist_Activity12">
+<span @Html.Raw(checklistView.Activity12.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity12_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity12.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity12.CurrentValue))">
+    <label class="form-check-label" for="x_Activity12_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity12.Visible (end) *@
+@if (checklistView.RemarkActivity12.Visible) { // checklistView.RemarkActivity12.Visible (begin)
+    <tr id="r_RemarkActivity12" @Html.Raw(checklistView.RemarkActivity12.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity12">@Html.Raw(checklistView.RemarkActivity12.Caption)</span></td>
+        <td data-name="RemarkActivity12" @Html.Raw(checklistView.RemarkActivity12.CellAttributes)>
+<span id="el_Checklist_RemarkActivity12">
+<span @Html.Raw(checklistView.RemarkActivity12.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity12.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity12.Visible (end) *@
+@if (checklistView.Activity13.Visible) { // checklistView.Activity13.Visible (begin)
+    <tr id="r_Activity13" @Html.Raw(checklistView.Activity13.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity13">@Html.Raw(checklistView.Activity13.Caption)</span></td>
+        <td data-name="Activity13" @Html.Raw(checklistView.Activity13.CellAttributes)>
+<span id="el_Checklist_Activity13">
+<span @Html.Raw(checklistView.Activity13.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity13_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity13.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity13.CurrentValue))">
+    <label class="form-check-label" for="x_Activity13_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity13.Visible (end) *@
+@if (checklistView.RemarkActivity13.Visible) { // checklistView.RemarkActivity13.Visible (begin)
+    <tr id="r_RemarkActivity13" @Html.Raw(checklistView.RemarkActivity13.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity13">@Html.Raw(checklistView.RemarkActivity13.Caption)</span></td>
+        <td data-name="RemarkActivity13" @Html.Raw(checklistView.RemarkActivity13.CellAttributes)>
+<span id="el_Checklist_RemarkActivity13">
+<span @Html.Raw(checklistView.RemarkActivity13.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity13.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity13.Visible (end) *@
+@if (checklistView.Activity14.Visible) { // checklistView.Activity14.Visible (begin)
+    <tr id="r_Activity14" @Html.Raw(checklistView.Activity14.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity14">@Html.Raw(checklistView.Activity14.Caption)</span></td>
+        <td data-name="Activity14" @Html.Raw(checklistView.Activity14.CellAttributes)>
+<span id="el_Checklist_Activity14">
+<span @Html.Raw(checklistView.Activity14.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity14_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity14.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity14.CurrentValue))">
+    <label class="form-check-label" for="x_Activity14_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity14.Visible (end) *@
+@if (checklistView.RemarkActivity14.Visible) { // checklistView.RemarkActivity14.Visible (begin)
+    <tr id="r_RemarkActivity14" @Html.Raw(checklistView.RemarkActivity14.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity14">@Html.Raw(checklistView.RemarkActivity14.Caption)</span></td>
+        <td data-name="RemarkActivity14" @Html.Raw(checklistView.RemarkActivity14.CellAttributes)>
+<span id="el_Checklist_RemarkActivity14">
+<span @Html.Raw(checklistView.RemarkActivity14.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity14.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity14.Visible (end) *@
+@if (checklistView.Activity14Attachment.Visible) { // checklistView.Activity14Attachment.Visible (begin)
+    <tr id="r_Activity14Attachment" @Html.Raw(checklistView.Activity14Attachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity14Attachment">@Html.Raw(checklistView.Activity14Attachment.Caption)</span></td>
+        <td data-name="Activity14Attachment" @Html.Raw(checklistView.Activity14Attachment.CellAttributes)>
+<span id="el_Checklist_Activity14Attachment">
+<span @Html.Raw(checklistView.Activity14Attachment.ViewAttributes)>
+@Html.Raw(checklistView.Activity14Attachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.Activity14Attachment.Visible (end) *@
+@if (checklistView.Activity20.Visible) { // checklistView.Activity20.Visible (begin)
+    <tr id="r_Activity20" @Html.Raw(checklistView.Activity20.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity20">@Html.Raw(checklistView.Activity20.Caption)</span></td>
+        <td data-name="Activity20" @Html.Raw(checklistView.Activity20.CellAttributes)>
+<span id="el_Checklist_Activity20">
+<span @Html.Raw(checklistView.Activity20.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity20_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity20.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity20.CurrentValue))">
+    <label class="form-check-label" for="x_Activity20_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity20.Visible (end) *@
+@if (checklistView.RemarkActivity20.Visible) { // checklistView.RemarkActivity20.Visible (begin)
+    <tr id="r_RemarkActivity20" @Html.Raw(checklistView.RemarkActivity20.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity20">@Html.Raw(checklistView.RemarkActivity20.Caption)</span></td>
+        <td data-name="RemarkActivity20" @Html.Raw(checklistView.RemarkActivity20.CellAttributes)>
+<span id="el_Checklist_RemarkActivity20">
+<span @Html.Raw(checklistView.RemarkActivity20.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity20.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity20.Visible (end) *@
+@if (checklistView.Activity20Attachment.Visible) { // checklistView.Activity20Attachment.Visible (begin)
+    <tr id="r_Activity20Attachment" @Html.Raw(checklistView.Activity20Attachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity20Attachment">@Html.Raw(checklistView.Activity20Attachment.Caption)</span></td>
+        <td data-name="Activity20Attachment" @Html.Raw(checklistView.Activity20Attachment.CellAttributes)>
+<span id="el_Checklist_Activity20Attachment">
+<span @Html.Raw(checklistView.Activity20Attachment.ViewAttributes)>
+@Html.Raw(checklistView.Activity20Attachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.Activity20Attachment.Visible (end) *@
+@if (checklistView.Activity30.Visible) { // checklistView.Activity30.Visible (begin)
+    <tr id="r_Activity30" @Html.Raw(checklistView.Activity30.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity30">@Html.Raw(checklistView.Activity30.Caption)</span></td>
+        <td data-name="Activity30" @Html.Raw(checklistView.Activity30.CellAttributes)>
+<span id="el_Checklist_Activity30">
+<span @Html.Raw(checklistView.Activity30.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity30_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity30.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity30.CurrentValue))">
+    <label class="form-check-label" for="x_Activity30_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity30.Visible (end) *@
+@if (checklistView.RemarkActivity30.Visible) { // checklistView.RemarkActivity30.Visible (begin)
+    <tr id="r_RemarkActivity30" @Html.Raw(checklistView.RemarkActivity30.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity30">@Html.Raw(checklistView.RemarkActivity30.Caption)</span></td>
+        <td data-name="RemarkActivity30" @Html.Raw(checklistView.RemarkActivity30.CellAttributes)>
+<span id="el_Checklist_RemarkActivity30">
+<span @Html.Raw(checklistView.RemarkActivity30.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity30.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity30.Visible (end) *@
+@if (checklistView.Activity30Attachment.Visible) { // checklistView.Activity30Attachment.Visible (begin)
+    <tr id="r_Activity30Attachment" @Html.Raw(checklistView.Activity30Attachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity30Attachment">@Html.Raw(checklistView.Activity30Attachment.Caption)</span></td>
+        <td data-name="Activity30Attachment" @Html.Raw(checklistView.Activity30Attachment.CellAttributes)>
+<span id="el_Checklist_Activity30Attachment">
+<span @Html.Raw(checklistView.Activity30Attachment.ViewAttributes)>
+@Html.Raw(checklistView.Activity30Attachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.Activity30Attachment.Visible (end) *@
+@if (checklistView.Activity40.Visible) { // checklistView.Activity40.Visible (begin)
+    <tr id="r_Activity40" @Html.Raw(checklistView.Activity40.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity40">@Html.Raw(checklistView.Activity40.Caption)</span></td>
+        <td data-name="Activity40" @Html.Raw(checklistView.Activity40.CellAttributes)>
+<span id="el_Checklist_Activity40">
+<span @Html.Raw(checklistView.Activity40.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity40_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity40.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity40.CurrentValue))">
+    <label class="form-check-label" for="x_Activity40_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity40.Visible (end) *@
+@if (checklistView.RemarkActivity40.Visible) { // checklistView.RemarkActivity40.Visible (begin)
+    <tr id="r_RemarkActivity40" @Html.Raw(checklistView.RemarkActivity40.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity40">@Html.Raw(checklistView.RemarkActivity40.Caption)</span></td>
+        <td data-name="RemarkActivity40" @Html.Raw(checklistView.RemarkActivity40.CellAttributes)>
+<span id="el_Checklist_RemarkActivity40">
+<span @Html.Raw(checklistView.RemarkActivity40.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity40.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity40.Visible (end) *@
+@if (checklistView.Activity50.Visible) { // checklistView.Activity50.Visible (begin)
+    <tr id="r_Activity50" @Html.Raw(checklistView.Activity50.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity50">@Html.Raw(checklistView.Activity50.Caption)</span></td>
+        <td data-name="Activity50" @Html.Raw(checklistView.Activity50.CellAttributes)>
+<span id="el_Checklist_Activity50">
+<span @Html.Raw(checklistView.Activity50.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity50_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity50.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity50.CurrentValue))">
+    <label class="form-check-label" for="x_Activity50_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity50.Visible (end) *@
+@if (checklistView.RemarkActivity50.Visible) { // checklistView.RemarkActivity50.Visible (begin)
+    <tr id="r_RemarkActivity50" @Html.Raw(checklistView.RemarkActivity50.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity50">@Html.Raw(checklistView.RemarkActivity50.Caption)</span></td>
+        <td data-name="RemarkActivity50" @Html.Raw(checklistView.RemarkActivity50.CellAttributes)>
+<span id="el_Checklist_RemarkActivity50">
+<span @Html.Raw(checklistView.RemarkActivity50.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity50.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity50.Visible (end) *@
+@if (checklistView.Activity50Attachment.Visible) { // checklistView.Activity50Attachment.Visible (begin)
+    <tr id="r_Activity50Attachment" @Html.Raw(checklistView.Activity50Attachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity50Attachment">@Html.Raw(checklistView.Activity50Attachment.Caption)</span></td>
+        <td data-name="Activity50Attachment" @Html.Raw(checklistView.Activity50Attachment.CellAttributes)>
+<span id="el_Checklist_Activity50Attachment">
+<span @Html.Raw(checklistView.Activity50Attachment.ViewAttributes)>
+@Html.Raw(checklistView.Activity50Attachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.Activity50Attachment.Visible (end) *@
+@if (checklistView.Activity60.Visible) { // checklistView.Activity60.Visible (begin)
+    <tr id="r_Activity60" @Html.Raw(checklistView.Activity60.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity60">@Html.Raw(checklistView.Activity60.Caption)</span></td>
+        <td data-name="Activity60" @Html.Raw(checklistView.Activity60.CellAttributes)>
+<span id="el_Checklist_Activity60">
+<span @Html.Raw(checklistView.Activity60.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity60_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity60.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity60.CurrentValue))">
+    <label class="form-check-label" for="x_Activity60_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity60.Visible (end) *@
+@if (checklistView.RemarkActivity60.Visible) { // checklistView.RemarkActivity60.Visible (begin)
+    <tr id="r_RemarkActivity60" @Html.Raw(checklistView.RemarkActivity60.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity60">@Html.Raw(checklistView.RemarkActivity60.Caption)</span></td>
+        <td data-name="RemarkActivity60" @Html.Raw(checklistView.RemarkActivity60.CellAttributes)>
+<span id="el_Checklist_RemarkActivity60">
+<span @Html.Raw(checklistView.RemarkActivity60.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity60.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity60.Visible (end) *@
+@if (checklistView.Activity70.Visible) { // checklistView.Activity70.Visible (begin)
+    <tr id="r_Activity70" @Html.Raw(checklistView.Activity70.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity70">@Html.Raw(checklistView.Activity70.Caption)</span></td>
+        <td data-name="Activity70" @Html.Raw(checklistView.Activity70.CellAttributes)>
+<span id="el_Checklist_Activity70">
+<span @Html.Raw(checklistView.Activity70.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Activity70_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.Activity70.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.Activity70.CurrentValue))">
+    <label class="form-check-label" for="x_Activity70_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.Activity70.Visible (end) *@
+@if (checklistView.RemarkActivity70.Visible) { // checklistView.RemarkActivity70.Visible (begin)
+    <tr id="r_RemarkActivity70" @Html.Raw(checklistView.RemarkActivity70.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_RemarkActivity70">@Html.Raw(checklistView.RemarkActivity70.Caption)</span></td>
+        <td data-name="RemarkActivity70" @Html.Raw(checklistView.RemarkActivity70.CellAttributes)>
+<span id="el_Checklist_RemarkActivity70">
+<span @Html.Raw(checklistView.RemarkActivity70.ViewAttributes)>
+@Html.Raw(checklistView.RemarkActivity70.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.RemarkActivity70.Visible (end) *@
+@if (checklistView.Activity70Attachment.Visible) { // checklistView.Activity70Attachment.Visible (begin)
+    <tr id="r_Activity70Attachment" @Html.Raw(checklistView.Activity70Attachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Activity70Attachment">@Html.Raw(checklistView.Activity70Attachment.Caption)</span></td>
+        <td data-name="Activity70Attachment" @Html.Raw(checklistView.Activity70Attachment.CellAttributes)>
+<span id="el_Checklist_Activity70Attachment">
+<span @Html.Raw(checklistView.Activity70Attachment.ViewAttributes)>
+@Html.Raw(checklistView.Activity70Attachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.Activity70Attachment.Visible (end) *@
+@if (checklistView.InterviewerComment.Visible) { // checklistView.InterviewerComment.Visible (begin)
+    <tr id="r_InterviewerComment" @Html.Raw(checklistView.InterviewerComment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewerComment">@Html.Raw(checklistView.InterviewerComment.Caption)</span></td>
+        <td data-name="InterviewerComment" @Html.Raw(checklistView.InterviewerComment.CellAttributes)>
+<span id="el_Checklist_InterviewerComment">
+<span @Html.Raw(checklistView.InterviewerComment.ViewAttributes)>
+@Html.Raw(checklistView.InterviewerComment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewerComment.Visible (end) *@
+@if (checklistView.InterviewDate.Visible) { // checklistView.InterviewDate.Visible (begin)
+    <tr id="r_InterviewDate" @Html.Raw(checklistView.InterviewDate.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewDate">@Html.Raw(checklistView.InterviewDate.Caption)</span></td>
+        <td data-name="InterviewDate" @Html.Raw(checklistView.InterviewDate.CellAttributes)>
+<span id="el_Checklist_InterviewDate">
+<span @Html.Raw(checklistView.InterviewDate.ViewAttributes)>
+@Html.Raw(checklistView.InterviewDate.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewDate.Visible (end) *@
+@if (checklistView.InterviewAttachment.Visible) { // checklistView.InterviewAttachment.Visible (begin)
+    <tr id="r_InterviewAttachment" @Html.Raw(checklistView.InterviewAttachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewAttachment">@Html.Raw(checklistView.InterviewAttachment.Caption)</span></td>
+        <td data-name="InterviewAttachment" @Html.Raw(checklistView.InterviewAttachment.CellAttributes)>
+<span id="el_Checklist_InterviewAttachment">
+<span @Html.Raw(checklistView.InterviewAttachment.ViewAttributes)>
+@Html.Raw(checklistView.InterviewAttachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewAttachment.Visible (end) *@
+@if (checklistView.InterviewedByPersonOneName.Visible) { // checklistView.InterviewedByPersonOneName.Visible (begin)
+    <tr id="r_InterviewedByPersonOneName" @Html.Raw(checklistView.InterviewedByPersonOneName.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewedByPersonOneName">@Html.Raw(checklistView.InterviewedByPersonOneName.Caption)</span></td>
+        <td data-name="InterviewedByPersonOneName" @Html.Raw(checklistView.InterviewedByPersonOneName.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonOneName">
+<span @Html.Raw(checklistView.InterviewedByPersonOneName.ViewAttributes)>
+@Html.Raw(checklistView.InterviewedByPersonOneName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewedByPersonOneName.Visible (end) *@
+@if (checklistView.InterviewedByPersonOneRank.Visible) { // checklistView.InterviewedByPersonOneRank.Visible (begin)
+    <tr id="r_InterviewedByPersonOneRank" @Html.Raw(checklistView.InterviewedByPersonOneRank.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewedByPersonOneRank">@Html.Raw(checklistView.InterviewedByPersonOneRank.Caption)</span></td>
+        <td data-name="InterviewedByPersonOneRank" @Html.Raw(checklistView.InterviewedByPersonOneRank.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonOneRank">
+<span @Html.Raw(checklistView.InterviewedByPersonOneRank.ViewAttributes)>
+@Html.Raw(checklistView.InterviewedByPersonOneRank.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewedByPersonOneRank.Visible (end) *@
+@if (checklistView.InterviewedByPersonTwoName.Visible) { // checklistView.InterviewedByPersonTwoName.Visible (begin)
+    <tr id="r_InterviewedByPersonTwoName" @Html.Raw(checklistView.InterviewedByPersonTwoName.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewedByPersonTwoName">@Html.Raw(checklistView.InterviewedByPersonTwoName.Caption)</span></td>
+        <td data-name="InterviewedByPersonTwoName" @Html.Raw(checklistView.InterviewedByPersonTwoName.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonTwoName">
+<span @Html.Raw(checklistView.InterviewedByPersonTwoName.ViewAttributes)>
+@Html.Raw(checklistView.InterviewedByPersonTwoName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewedByPersonTwoName.Visible (end) *@
+@if (checklistView.InterviewedByPersonTwoRank.Visible) { // checklistView.InterviewedByPersonTwoRank.Visible (begin)
+    <tr id="r_InterviewedByPersonTwoRank" @Html.Raw(checklistView.InterviewedByPersonTwoRank.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewedByPersonTwoRank">@Html.Raw(checklistView.InterviewedByPersonTwoRank.Caption)</span></td>
+        <td data-name="InterviewedByPersonTwoRank" @Html.Raw(checklistView.InterviewedByPersonTwoRank.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonTwoRank">
+<span @Html.Raw(checklistView.InterviewedByPersonTwoRank.ViewAttributes)>
+@Html.Raw(checklistView.InterviewedByPersonTwoRank.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewedByPersonTwoRank.Visible (end) *@
+@if (checklistView.InterviewedByPersonThreeName.Visible) { // checklistView.InterviewedByPersonThreeName.Visible (begin)
+    <tr id="r_InterviewedByPersonThreeName" @Html.Raw(checklistView.InterviewedByPersonThreeName.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewedByPersonThreeName">@Html.Raw(checklistView.InterviewedByPersonThreeName.Caption)</span></td>
+        <td data-name="InterviewedByPersonThreeName" @Html.Raw(checklistView.InterviewedByPersonThreeName.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonThreeName">
+<span @Html.Raw(checklistView.InterviewedByPersonThreeName.ViewAttributes)>
+@Html.Raw(checklistView.InterviewedByPersonThreeName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewedByPersonThreeName.Visible (end) *@
+@if (checklistView.InterviewedByPersonThreeRank.Visible) { // checklistView.InterviewedByPersonThreeRank.Visible (begin)
+    <tr id="r_InterviewedByPersonThreeRank" @Html.Raw(checklistView.InterviewedByPersonThreeRank.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_InterviewedByPersonThreeRank">@Html.Raw(checklistView.InterviewedByPersonThreeRank.Caption)</span></td>
+        <td data-name="InterviewedByPersonThreeRank" @Html.Raw(checklistView.InterviewedByPersonThreeRank.CellAttributes)>
+<span id="el_Checklist_InterviewedByPersonThreeRank">
+<span @Html.Raw(checklistView.InterviewedByPersonThreeRank.ViewAttributes)>
+@Html.Raw(checklistView.InterviewedByPersonThreeRank.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.InterviewedByPersonThreeRank.Visible (end) *@
+@if (checklistView.FinalInterviewComment.Visible) { // checklistView.FinalInterviewComment.Visible (begin)
+    <tr id="r_FinalInterviewComment" @Html.Raw(checklistView.FinalInterviewComment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_FinalInterviewComment">@Html.Raw(checklistView.FinalInterviewComment.Caption)</span></td>
+        <td data-name="FinalInterviewComment" @Html.Raw(checklistView.FinalInterviewComment.CellAttributes)>
+<span id="el_Checklist_FinalInterviewComment">
+<span @Html.Raw(checklistView.FinalInterviewComment.ViewAttributes)>
+@Html.Raw(checklistView.FinalInterviewComment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.FinalInterviewComment.Visible (end) *@
+@if (checklistView.FinalInterviewAttachment.Visible) { // checklistView.FinalInterviewAttachment.Visible (begin)
+    <tr id="r_FinalInterviewAttachment" @Html.Raw(checklistView.FinalInterviewAttachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_FinalInterviewAttachment">@Html.Raw(checklistView.FinalInterviewAttachment.Caption)</span></td>
+        <td data-name="FinalInterviewAttachment" @Html.Raw(checklistView.FinalInterviewAttachment.CellAttributes)>
+<span id="el_Checklist_FinalInterviewAttachment">
+<span @Html.Raw(checklistView.FinalInterviewAttachment.ViewAttributes)>
+@Html.Raw(checklistView.FinalInterviewAttachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.FinalInterviewAttachment.Visible (end) *@
+@if (checklistView.JobKnowledge.Visible) { // checklistView.JobKnowledge.Visible (begin)
+    <tr id="r_JobKnowledge" @Html.Raw(checklistView.JobKnowledge.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_JobKnowledge">@Html.Raw(checklistView.JobKnowledge.Caption)</span></td>
+        <td data-name="JobKnowledge" @Html.Raw(checklistView.JobKnowledge.CellAttributes)>
+<span id="el_Checklist_JobKnowledge">
+<span @Html.Raw(checklistView.JobKnowledge.ViewAttributes)>
+@Html.Raw(checklistView.JobKnowledge.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.JobKnowledge.Visible (end) *@
+@if (checklistView.SafetyAwareness.Visible) { // checklistView.SafetyAwareness.Visible (begin)
+    <tr id="r_SafetyAwareness" @Html.Raw(checklistView.SafetyAwareness.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_SafetyAwareness">@Html.Raw(checklistView.SafetyAwareness.Caption)</span></td>
+        <td data-name="SafetyAwareness" @Html.Raw(checklistView.SafetyAwareness.CellAttributes)>
+<span id="el_Checklist_SafetyAwareness">
+<span @Html.Raw(checklistView.SafetyAwareness.ViewAttributes)>
+@Html.Raw(checklistView.SafetyAwareness.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.SafetyAwareness.Visible (end) *@
+@if (checklistView.Personality.Visible) { // checklistView.Personality.Visible (begin)
+    <tr id="r_Personality" @Html.Raw(checklistView.Personality.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_Personality">@Html.Raw(checklistView.Personality.Caption)</span></td>
+        <td data-name="Personality" @Html.Raw(checklistView.Personality.CellAttributes)>
+<span id="el_Checklist_Personality">
+<span @Html.Raw(checklistView.Personality.ViewAttributes)>
+@Html.Raw(checklistView.Personality.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.Personality.Visible (end) *@
+@if (checklistView.EnglishProficiency.Visible) { // checklistView.EnglishProficiency.Visible (begin)
+    <tr id="r_EnglishProficiency" @Html.Raw(checklistView.EnglishProficiency.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_EnglishProficiency">@Html.Raw(checklistView.EnglishProficiency.Caption)</span></td>
+        <td data-name="EnglishProficiency" @Html.Raw(checklistView.EnglishProficiency.CellAttributes)>
+<span id="el_Checklist_EnglishProficiency">
+<span @Html.Raw(checklistView.EnglishProficiency.ViewAttributes)>
+@Html.Raw(checklistView.EnglishProficiency.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.EnglishProficiency.Visible (end) *@
+@if (checklistView.PrincipalComment.Visible) { // checklistView.PrincipalComment.Visible (begin)
+    <tr id="r_PrincipalComment" @Html.Raw(checklistView.PrincipalComment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_PrincipalComment">@Html.Raw(checklistView.PrincipalComment.Caption)</span></td>
+        <td data-name="PrincipalComment" @Html.Raw(checklistView.PrincipalComment.CellAttributes)>
+<span id="el_Checklist_PrincipalComment">
+<span @Html.Raw(checklistView.PrincipalComment.ViewAttributes)>
+@Html.Raw(checklistView.PrincipalComment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.PrincipalComment.Visible (end) *@
+@if (checklistView.PrincipalCommentAttachment.Visible) { // checklistView.PrincipalCommentAttachment.Visible (begin)
+    <tr id="r_PrincipalCommentAttachment" @Html.Raw(checklistView.PrincipalCommentAttachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_PrincipalCommentAttachment">@Html.Raw(checklistView.PrincipalCommentAttachment.Caption)</span></td>
+        <td data-name="PrincipalCommentAttachment" @Html.Raw(checklistView.PrincipalCommentAttachment.CellAttributes)>
+<span id="el_Checklist_PrincipalCommentAttachment">
+<span @Html.Raw(checklistView.PrincipalCommentAttachment.ViewAttributes)>
+@Html.Raw(checklistView.PrincipalCommentAttachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.PrincipalCommentAttachment.Visible (end) *@
+@if (checklistView.AssistantManagerPdeReviewed.Visible) { // checklistView.AssistantManagerPdeReviewed.Visible (begin)
+    <tr id="r_AssistantManagerPdeReviewed" @Html.Raw(checklistView.AssistantManagerPdeReviewed.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_AssistantManagerPdeReviewed">@Html.Raw(checklistView.AssistantManagerPdeReviewed.Caption)</span></td>
+        <td data-name="AssistantManagerPdeReviewed" @Html.Raw(checklistView.AssistantManagerPdeReviewed.CellAttributes)>
+<span id="el_Checklist_AssistantManagerPdeReviewed">
+<span @Html.Raw(checklistView.AssistantManagerPdeReviewed.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_AssistantManagerPdeReviewed_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.AssistantManagerPdeReviewed.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.AssistantManagerPdeReviewed.CurrentValue))">
+    <label class="form-check-label" for="x_AssistantManagerPdeReviewed_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.AssistantManagerPdeReviewed.Visible (end) *@
+@if (checklistView.AssistantManagerPdeReviewedDate.Visible) { // checklistView.AssistantManagerPdeReviewedDate.Visible (begin)
+    <tr id="r_AssistantManagerPdeReviewedDate" @Html.Raw(checklistView.AssistantManagerPdeReviewedDate.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_AssistantManagerPdeReviewedDate">@Html.Raw(checklistView.AssistantManagerPdeReviewedDate.Caption)</span></td>
+        <td data-name="AssistantManagerPdeReviewedDate" @Html.Raw(checklistView.AssistantManagerPdeReviewedDate.CellAttributes)>
+<span id="el_Checklist_AssistantManagerPdeReviewedDate">
+<span @Html.Raw(checklistView.AssistantManagerPdeReviewedDate.ViewAttributes)>
+@Html.Raw(checklistView.AssistantManagerPdeReviewedDate.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.AssistantManagerPdeReviewedDate.Visible (end) *@
+@if (checklistView.CrewingManagerApproval.Visible) { // checklistView.CrewingManagerApproval.Visible (begin)
+    <tr id="r_CrewingManagerApproval" @Html.Raw(checklistView.CrewingManagerApproval.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_CrewingManagerApproval">@Html.Raw(checklistView.CrewingManagerApproval.Caption)</span></td>
+        <td data-name="CrewingManagerApproval" @Html.Raw(checklistView.CrewingManagerApproval.CellAttributes)>
+<span id="el_Checklist_CrewingManagerApproval">
+<span @Html.Raw(checklistView.CrewingManagerApproval.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_CrewingManagerApproval_@(checklistView.RowCount)" class="form-check-input" value="@(checklistView.CrewingManagerApproval.GetViewValue())" disabled checked="@(ConvertToBool(checklistView.CrewingManagerApproval.CurrentValue))">
+    <label class="form-check-label" for="x_CrewingManagerApproval_@(checklistView.RowCount)"></label>
+</div></span>
+</span></td>
+    </tr>
+} @* checklistView.CrewingManagerApproval.Visible (end) *@
+@if (checklistView.CrewingManagerApprovalDate.Visible) { // checklistView.CrewingManagerApprovalDate.Visible (begin)
+    <tr id="r_CrewingManagerApprovalDate" @Html.Raw(checklistView.CrewingManagerApprovalDate.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_CrewingManagerApprovalDate">@Html.Raw(checklistView.CrewingManagerApprovalDate.Caption)</span></td>
+        <td data-name="CrewingManagerApprovalDate" @Html.Raw(checklistView.CrewingManagerApprovalDate.CellAttributes)>
+<span id="el_Checklist_CrewingManagerApprovalDate">
+<span @Html.Raw(checklistView.CrewingManagerApprovalDate.ViewAttributes)>
+@Html.Raw(checklistView.CrewingManagerApprovalDate.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.CrewingManagerApprovalDate.Visible (end) *@
+@if (checklistView.FormPrintoutAttachment.Visible) { // checklistView.FormPrintoutAttachment.Visible (begin)
+    <tr id="r_FormPrintoutAttachment" @Html.Raw(checklistView.FormPrintoutAttachment.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_FormPrintoutAttachment">@Html.Raw(checklistView.FormPrintoutAttachment.Caption)</span></td>
+        <td data-name="FormPrintoutAttachment" @Html.Raw(checklistView.FormPrintoutAttachment.CellAttributes)>
+<span id="el_Checklist_FormPrintoutAttachment">
+<span @Html.Raw(checklistView.FormPrintoutAttachment.ViewAttributes)>
+@Html.Raw(checklistView.FormPrintoutAttachment.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.FormPrintoutAttachment.Visible (end) *@
+@if (checklistView.CreatedBy.Visible) { // checklistView.CreatedBy.Visible (begin)
+    <tr id="r_CreatedBy" @Html.Raw(checklistView.CreatedBy.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_CreatedBy">@Html.Raw(checklistView.CreatedBy.Caption)</span></td>
+        <td data-name="CreatedBy" @Html.Raw(checklistView.CreatedBy.CellAttributes)>
+<span id="el_Checklist_CreatedBy">
+<span @Html.Raw(checklistView.CreatedBy.ViewAttributes)>
+@Html.Raw(checklistView.CreatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.CreatedBy.Visible (end) *@
+@if (checklistView.CreatedDateTime.Visible) { // checklistView.CreatedDateTime.Visible (begin)
+    <tr id="r_CreatedDateTime" @Html.Raw(checklistView.CreatedDateTime.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_CreatedDateTime">@Html.Raw(checklistView.CreatedDateTime.Caption)</span></td>
+        <td data-name="CreatedDateTime" @Html.Raw(checklistView.CreatedDateTime.CellAttributes)>
+<span id="el_Checklist_CreatedDateTime">
+<span @Html.Raw(checklistView.CreatedDateTime.ViewAttributes)>
+@Html.Raw(checklistView.CreatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.CreatedDateTime.Visible (end) *@
+@if (checklistView.LastUpdatedBy.Visible) { // checklistView.LastUpdatedBy.Visible (begin)
+    <tr id="r_LastUpdatedBy" @Html.Raw(checklistView.LastUpdatedBy.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_LastUpdatedBy">@Html.Raw(checklistView.LastUpdatedBy.Caption)</span></td>
+        <td data-name="LastUpdatedBy" @Html.Raw(checklistView.LastUpdatedBy.CellAttributes)>
+<span id="el_Checklist_LastUpdatedBy">
+<span @Html.Raw(checklistView.LastUpdatedBy.ViewAttributes)>
+@Html.Raw(checklistView.LastUpdatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.LastUpdatedBy.Visible (end) *@
+@if (checklistView.LastUpdatedDateTime.Visible) { // checklistView.LastUpdatedDateTime.Visible (begin)
+    <tr id="r_LastUpdatedDateTime" @Html.Raw(checklistView.LastUpdatedDateTime.RowAttributes)>
+        <td class="@(checklistView.TableLeftColumnClass)"><span id="elh_Checklist_LastUpdatedDateTime">@Html.Raw(checklistView.LastUpdatedDateTime.Caption)</span></td>
+        <td data-name="LastUpdatedDateTime" @Html.Raw(checklistView.LastUpdatedDateTime.CellAttributes)>
+<span id="el_Checklist_LastUpdatedDateTime">
+<span @Html.Raw(checklistView.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(checklistView.LastUpdatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* checklistView.LastUpdatedDateTime.Visible (end) *@
+</table>
+@{ checklistView.CloseRecordset(); }
+</form>
+</main>
+@checklistView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!checklistView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

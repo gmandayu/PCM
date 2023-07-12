@@ -1,0 +1,613 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtMedicalCertificateList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtMedicalCertificateList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtMedicalCertificateList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtMedicalCertificateList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTMedicalCertificate: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtMedicalCertificateList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtMedicalCertificateList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtMedicalCertificateList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtMedicalCertificateList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtMedicalCertificateList._Name.ToClientList(mtMedicalCertificateList)),
+            "Enabled": @Html.Raw(mtMedicalCertificateList.Enabled.ToClientList(mtMedicalCertificateList)),
+            "CreatedByUserID": @Html.Raw(mtMedicalCertificateList.CreatedByUserID.ToClientList(mtMedicalCertificateList)),
+            "CreatedDateTime": @Html.Raw(mtMedicalCertificateList.CreatedDateTime.ToClientList(mtMedicalCertificateList)),
+            "LastUpdatedByUserID": @Html.Raw(mtMedicalCertificateList.LastUpdatedByUserID.ToClientList(mtMedicalCertificateList)),
+            "LastUpdatedDateTime": @Html.Raw(mtMedicalCertificateList.LastUpdatedDateTime.ToClientList(mtMedicalCertificateList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtMedicalCertificateList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtMedicalCertificateList.TotalRecords > 0 && mtMedicalCertificateList.ExportOptions.Visible) {
+    mtMedicalCertificateList.ExportOptions.Render("body");
+}
+@if (mtMedicalCertificateList.ImportOptions.Visible) {
+    mtMedicalCertificateList.ImportOptions.Render("body");
+}
+@if (mtMedicalCertificateList.SearchOptions.Visible) {
+    mtMedicalCertificateList.SearchOptions.Render("body");
+}
+@if (mtMedicalCertificateList.FilterOptions.Visible) {
+    mtMedicalCertificateList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtMedicalCertificateList.ShowCurrentFilter) {
+    mtMedicalCertificateList.ShowFilterList();
+}
+@if (!mtMedicalCertificateList.IsModal) {
+<form name="fMTMedicalCertificatesrch" id="fMTMedicalCertificatesrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTMedicalCertificatesrch_search_panel" class="mb-2 mb-sm-0 @(mtMedicalCertificateList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtMedicalCertificateList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTMedicalCertificate: currentTable } });
+var currentForm;
+var fMTMedicalCertificatesrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTMedicalCertificatesrch")
+        .setPageId("list")
+@if (mtMedicalCertificateList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["_Name", [], fields._Name.isInvalid],
+            ["Enabled", [], fields.Enabled.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "_Name": @Html.Raw(mtMedicalCertificateList._Name.ToClientList(mtMedicalCertificateList)),
+            "Enabled": @Html.Raw(mtMedicalCertificateList.Enabled.ToClientList(mtMedicalCertificateList)),
+            "CreatedByUserID": @Html.Raw(mtMedicalCertificateList.CreatedByUserID.ToClientList(mtMedicalCertificateList)),
+            "CreatedDateTime": @Html.Raw(mtMedicalCertificateList.CreatedDateTime.ToClientList(mtMedicalCertificateList)),
+            "LastUpdatedByUserID": @Html.Raw(mtMedicalCertificateList.LastUpdatedByUserID.ToClientList(mtMedicalCertificateList)),
+            "LastUpdatedDateTime": @Html.Raw(mtMedicalCertificateList.LastUpdatedDateTime.ToClientList(mtMedicalCertificateList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtMedicalCertificateList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtMedicalCertificateList.IsExport() && Empty(mtMedicalCertificateList.CurrentAction) && mtMedicalCertificateList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtMedicalCertificateList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtMedicalCertificateList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtMedicalCertificateList.RowType = RowType.Search;
+    mtMedicalCertificateList.ResetAttributes();
+    await mtMedicalCertificateList.RenderRow();
+}
+@if (mtMedicalCertificateList._Name.Visible) { // mtMedicalCertificateList._Name.Visible (begin)
+    if (!mtMedicalCertificateList._Name.UseFilter) {
+        mtMedicalCertificateList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtMedicalCertificateList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtMedicalCertificateList._Name.IsInvalidClass)"
+            data-select2-id="fMTMedicalCertificatesrch_x__Name"
+            data-table="MTMedicalCertificate"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtMedicalCertificateList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtMedicalCertificateList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtMedicalCertificateList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtMedicalCertificateList._Name.EditAttributes)>
+            @(mtMedicalCertificateList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtMedicalCertificateList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTMedicalCertificatesrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTMedicalCertificatesrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTMedicalCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTMedicalCertificate.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtMedicalCertificateList._Name.Visible (end) *@
+@if (mtMedicalCertificateList.Enabled.Visible) { // mtMedicalCertificateList.Enabled.Visible (begin)
+    if (!mtMedicalCertificateList.Enabled.UseFilter) {
+        mtMedicalCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_Enabled" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtMedicalCertificateList.Enabled.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Enabled"
+            name="x_Enabled[]"
+            class="form-control ew-select@(mtMedicalCertificateList.Enabled.IsInvalidClass)"
+            data-select2-id="fMTMedicalCertificatesrch_x_Enabled"
+            data-table="MTMedicalCertificate"
+            data-field="x_Enabled"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtMedicalCertificateList.Enabled.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtMedicalCertificateList.Enabled.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtMedicalCertificateList.Enabled.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtMedicalCertificateList.Enabled.EditAttributes)>
+            @(mtMedicalCertificateList.Enabled.SelectOptionListHtml("x_Enabled", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtMedicalCertificateList.Enabled.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTMedicalCertificatesrch", function() {
+            var options = {
+                name: "x_Enabled",
+                selectId: "fMTMedicalCertificatesrch_x_Enabled",
+                ajax: { id: "x_Enabled", form: "fMTMedicalCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTMedicalCertificate.fields.Enabled.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtMedicalCertificateList.Enabled.Visible (end) *@
+@if (mtMedicalCertificateList.CreatedByUserID.Visible) { // mtMedicalCertificateList.CreatedByUserID.Visible (begin)
+    if (!mtMedicalCertificateList.CreatedByUserID.UseFilter) {
+        mtMedicalCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtMedicalCertificateList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtMedicalCertificateList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTMedicalCertificatesrch_x_CreatedByUserID"
+            data-table="MTMedicalCertificate"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtMedicalCertificateList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtMedicalCertificateList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtMedicalCertificateList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtMedicalCertificateList.CreatedByUserID.EditAttributes)>
+            @(mtMedicalCertificateList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtMedicalCertificateList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTMedicalCertificatesrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTMedicalCertificatesrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTMedicalCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTMedicalCertificate.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtMedicalCertificateList.CreatedByUserID.Visible (end) *@
+@if (mtMedicalCertificateList.CreatedDateTime.Visible) { // mtMedicalCertificateList.CreatedDateTime.Visible (begin)
+    if (!mtMedicalCertificateList.CreatedDateTime.UseFilter) {
+        mtMedicalCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtMedicalCertificateList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtMedicalCertificateList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTMedicalCertificatesrch_x_CreatedDateTime"
+            data-table="MTMedicalCertificate"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtMedicalCertificateList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtMedicalCertificateList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtMedicalCertificateList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtMedicalCertificateList.CreatedDateTime.EditAttributes)>
+            @(mtMedicalCertificateList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtMedicalCertificateList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTMedicalCertificatesrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTMedicalCertificatesrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTMedicalCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTMedicalCertificate.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtMedicalCertificateList.CreatedDateTime.Visible (end) *@
+@if (mtMedicalCertificateList.LastUpdatedByUserID.Visible) { // mtMedicalCertificateList.LastUpdatedByUserID.Visible (begin)
+    if (!mtMedicalCertificateList.LastUpdatedByUserID.UseFilter) {
+        mtMedicalCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtMedicalCertificateList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtMedicalCertificateList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTMedicalCertificatesrch_x_LastUpdatedByUserID"
+            data-table="MTMedicalCertificate"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtMedicalCertificateList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtMedicalCertificateList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtMedicalCertificateList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtMedicalCertificateList.LastUpdatedByUserID.EditAttributes)>
+            @(mtMedicalCertificateList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtMedicalCertificateList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTMedicalCertificatesrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTMedicalCertificatesrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTMedicalCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTMedicalCertificate.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtMedicalCertificateList.LastUpdatedByUserID.Visible (end) *@
+@if (mtMedicalCertificateList.LastUpdatedDateTime.Visible) { // mtMedicalCertificateList.LastUpdatedDateTime.Visible (begin)
+    if (!mtMedicalCertificateList.LastUpdatedDateTime.UseFilter) {
+        mtMedicalCertificateList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtMedicalCertificateList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtMedicalCertificateList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTMedicalCertificatesrch_x_LastUpdatedDateTime"
+            data-table="MTMedicalCertificate"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtMedicalCertificateList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtMedicalCertificateList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtMedicalCertificateList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtMedicalCertificateList.LastUpdatedDateTime.EditAttributes)>
+            @(mtMedicalCertificateList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtMedicalCertificateList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTMedicalCertificatesrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTMedicalCertificatesrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTMedicalCertificatesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTMedicalCertificate.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtMedicalCertificateList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtMedicalCertificateList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtMedicalCertificateList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtMedicalCertificateList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtMedicalCertificateList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTMedicalCertificatesrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtMedicalCertificateList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTMedicalCertificatesrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtMedicalCertificateList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTMedicalCertificatesrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtMedicalCertificateList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTMedicalCertificatesrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtMedicalCertificateList.ShowPageHeader()
+@mtMedicalCertificateList.ShowMessages()
+<main class="list @(mtMedicalCertificateList.TotalRecords == 0 && !mtMedicalCertificateList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtMedicalCertificateList.TotalRecords > 0 || !Empty(mtMedicalCertificateList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtMedicalCertificateList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtMedicalCertificateList.TableGridClass)">
+<form name="@(mtMedicalCertificateList.FormName)" id="@(mtMedicalCertificateList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtMedicalCertificateList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtMedicalCertificateList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTMedicalCertificate" class="card-body ew-grid-middle-panel @(mtMedicalCertificateList.TableContainerClass)" style="@(mtMedicalCertificateList.TableContainerStyle)">
+@if (mtMedicalCertificateList.TotalRecords > 0 || mtMedicalCertificateList.IsGridEdit || mtMedicalCertificateList.IsMultiEdit) {
+<table id="tbl_MTMedicalCertificatelist" class="@(mtMedicalCertificateList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtMedicalCertificateList.RowType = RowType.Header;
+
+    // Render list options
+    await mtMedicalCertificateList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtMedicalCertificateList.ListOptions.RenderHeader("left")
+@if (mtMedicalCertificateList._Name.Visible) { // mtMedicalCertificateList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtMedicalCertificateList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTMedicalCertificate__Name" class="MTMedicalCertificate__Name">@Html.Raw(mtMedicalCertificateList.RenderFieldHeader(mtMedicalCertificateList._Name))</div></th>
+} @* mtMedicalCertificateList._Name.Visible (end) *@
+@if (mtMedicalCertificateList.Enabled.Visible) { // mtMedicalCertificateList.Enabled.Visible (begin)
+        <th data-name="Enabled" class="@(mtMedicalCertificateList.Enabled.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTMedicalCertificate_Enabled" class="MTMedicalCertificate_Enabled">@Html.Raw(mtMedicalCertificateList.RenderFieldHeader(mtMedicalCertificateList.Enabled))</div></th>
+} @* mtMedicalCertificateList.Enabled.Visible (end) *@
+@if (mtMedicalCertificateList.CreatedByUserID.Visible) { // mtMedicalCertificateList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtMedicalCertificateList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTMedicalCertificate_CreatedByUserID" class="MTMedicalCertificate_CreatedByUserID">@Html.Raw(mtMedicalCertificateList.RenderFieldHeader(mtMedicalCertificateList.CreatedByUserID))</div></th>
+} @* mtMedicalCertificateList.CreatedByUserID.Visible (end) *@
+@if (mtMedicalCertificateList.CreatedDateTime.Visible) { // mtMedicalCertificateList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtMedicalCertificateList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTMedicalCertificate_CreatedDateTime" class="MTMedicalCertificate_CreatedDateTime">@Html.Raw(mtMedicalCertificateList.RenderFieldHeader(mtMedicalCertificateList.CreatedDateTime))</div></th>
+} @* mtMedicalCertificateList.CreatedDateTime.Visible (end) *@
+@if (mtMedicalCertificateList.LastUpdatedByUserID.Visible) { // mtMedicalCertificateList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtMedicalCertificateList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTMedicalCertificate_LastUpdatedByUserID" class="MTMedicalCertificate_LastUpdatedByUserID">@Html.Raw(mtMedicalCertificateList.RenderFieldHeader(mtMedicalCertificateList.LastUpdatedByUserID))</div></th>
+} @* mtMedicalCertificateList.LastUpdatedByUserID.Visible (end) *@
+@if (mtMedicalCertificateList.LastUpdatedDateTime.Visible) { // mtMedicalCertificateList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtMedicalCertificateList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_MTMedicalCertificate_LastUpdatedDateTime" class="MTMedicalCertificate_LastUpdatedDateTime">@Html.Raw(mtMedicalCertificateList.RenderFieldHeader(mtMedicalCertificateList.LastUpdatedDateTime))</div></th>
+} @* mtMedicalCertificateList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtMedicalCertificateList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtMedicalCertificateList.PageNumber)">
+@{
+    await mtMedicalCertificateList.SetupGrid();
+    bool eof = mtMedicalCertificateList.Recordset == null; // DN
+}
+@while (mtMedicalCertificateList.RecordCount < mtMedicalCertificateList.StopRecord || SameString(mtMedicalCertificateList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtMedicalCertificateList.RowIndex, "$rowindex$") &&
+        (!mtMedicalCertificateList.IsGridAdd || mtMedicalCertificateList.CurrentMode == "copy") &&
+        (!((mtMedicalCertificateList.IsCopy || mtMedicalCertificateList.IsAdd) && mtMedicalCertificateList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtMedicalCertificateList.Recordset.ReadAsync();
+    mtMedicalCertificateList.RecordCount++;
+    if (mtMedicalCertificateList.RecordCount >= mtMedicalCertificateList.StartRecord) {
+        await mtMedicalCertificateList.SetupRow();
+    <tr @Html.Raw(mtMedicalCertificateList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtMedicalCertificateList.ListOptions.RenderBody("left", mtMedicalCertificateList.RowCount)
+    @if (mtMedicalCertificateList._Name.Visible) { // mtMedicalCertificateList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtMedicalCertificateList._Name.CellAttributes)>
+<span id="el@(mtMedicalCertificateList.RowCount)_MTMedicalCertificate__Name" class="el_MTMedicalCertificate__Name">
+<span @Html.Raw(mtMedicalCertificateList._Name.ViewAttributes)>
+@Html.Raw(mtMedicalCertificateList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtMedicalCertificateList._Name.Visible (end) *@
+    @if (mtMedicalCertificateList.Enabled.Visible) { // mtMedicalCertificateList.Enabled.Visible (begin)
+        <td data-name="Enabled" @Html.Raw(mtMedicalCertificateList.Enabled.CellAttributes)>
+<span id="el@(mtMedicalCertificateList.RowCount)_MTMedicalCertificate_Enabled" class="el_MTMedicalCertificate_Enabled">
+<span @Html.Raw(mtMedicalCertificateList.Enabled.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Enabled_@(mtMedicalCertificateList.RowCount)" class="form-check-input" value="@(mtMedicalCertificateList.Enabled.GetViewValue())" disabled checked="@(ConvertToBool(mtMedicalCertificateList.Enabled.CurrentValue))">
+    <label class="form-check-label" for="x_Enabled_@(mtMedicalCertificateList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* mtMedicalCertificateList.Enabled.Visible (end) *@
+    @if (mtMedicalCertificateList.CreatedByUserID.Visible) { // mtMedicalCertificateList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtMedicalCertificateList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtMedicalCertificateList.RowCount)_MTMedicalCertificate_CreatedByUserID" class="el_MTMedicalCertificate_CreatedByUserID">
+<span @Html.Raw(mtMedicalCertificateList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtMedicalCertificateList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtMedicalCertificateList.CreatedByUserID.Visible (end) *@
+    @if (mtMedicalCertificateList.CreatedDateTime.Visible) { // mtMedicalCertificateList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtMedicalCertificateList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtMedicalCertificateList.RowCount)_MTMedicalCertificate_CreatedDateTime" class="el_MTMedicalCertificate_CreatedDateTime">
+<span @Html.Raw(mtMedicalCertificateList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtMedicalCertificateList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtMedicalCertificateList.CreatedDateTime.Visible (end) *@
+    @if (mtMedicalCertificateList.LastUpdatedByUserID.Visible) { // mtMedicalCertificateList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtMedicalCertificateList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtMedicalCertificateList.RowCount)_MTMedicalCertificate_LastUpdatedByUserID" class="el_MTMedicalCertificate_LastUpdatedByUserID">
+<span @Html.Raw(mtMedicalCertificateList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtMedicalCertificateList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtMedicalCertificateList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtMedicalCertificateList.LastUpdatedDateTime.Visible) { // mtMedicalCertificateList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtMedicalCertificateList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtMedicalCertificateList.RowCount)_MTMedicalCertificate_LastUpdatedDateTime" class="el_MTMedicalCertificate_LastUpdatedDateTime">
+<span @Html.Raw(mtMedicalCertificateList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtMedicalCertificateList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtMedicalCertificateList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtMedicalCertificateList.ListOptions.RenderBody("right", mtMedicalCertificateList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtMedicalCertificateList.RowIndex, "$rowindex$"))
+        mtMedicalCertificateList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtMedicalCertificateList.IsCopy || mtMedicalCertificateList.IsAdd) && mtMedicalCertificateList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtMedicalCertificateList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtMedicalCertificateList.CurrentAction) && !mtMedicalCertificateList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtMedicalCertificateList.CloseRecordset(); }
+@if (!mtMedicalCertificateList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtMedicalCertificateList.IsGridAdd && !(mtMedicalCertificateList.IsGridEdit && mtMedicalCertificateList.ModalGridEdit) && !mtMedicalCertificateList.IsMultiEdit) {
+@Html.Raw(mtMedicalCertificateList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtMedicalCertificateList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtMedicalCertificateList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtMedicalCertificateList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtMedicalCertificateList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTMedicalCertificate");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+});
+</script>
+}

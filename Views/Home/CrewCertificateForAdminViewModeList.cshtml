@@ -1,0 +1,1908 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewCertificateForAdminViewModeList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewCertificateForAdminViewModeList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!crewCertificateForAdminViewModeList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewCertificateForAdminViewModeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewCertificateForAdminViewMode: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(crewCertificateForAdminViewModeList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(crewCertificateForAdminViewModeList.FormName)")
+        .setPageId("list")
+        .setFormKeyCountName("@(crewCertificateForAdminViewModeList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewCertificateForAdminViewModeList.MTCrewID.ToClientList(crewCertificateForAdminViewModeList)),
+            "MTCertificateID": @Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.ToClientList(crewCertificateForAdminViewModeList)),
+            "CountryOfIssue_CountryID": @Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.ToClientList(crewCertificateForAdminViewModeList)),
+            "Number": @Html.Raw(crewCertificateForAdminViewModeList.Number.ToClientList(crewCertificateForAdminViewModeList)),
+            "DateOfIssue": @Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.ToClientList(crewCertificateForAdminViewModeList)),
+            "DateOfExpiry": @Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.ToClientList(crewCertificateForAdminViewModeList)),
+            "PlaceOfIssue": @Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.ToClientList(crewCertificateForAdminViewModeList)),
+            "IssuingAuthority": @Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.ToClientList(crewCertificateForAdminViewModeList)),
+            "Level": @Html.Raw(crewCertificateForAdminViewModeList.Level.ToClientList(crewCertificateForAdminViewModeList)),
+            "PaxVesselType": @Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.ToClientList(crewCertificateForAdminViewModeList)),
+            "Image": @Html.Raw(crewCertificateForAdminViewModeList.Image.ToClientList(crewCertificateForAdminViewModeList)),
+            "CreatedByUserID": @Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.ToClientList(crewCertificateForAdminViewModeList)),
+            "CreatedDateTime": @Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.ToClientList(crewCertificateForAdminViewModeList)),
+            "LastUpdatedByUserID": @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.ToClientList(crewCertificateForAdminViewModeList)),
+            "LastUpdatedDateTime": @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.ToClientList(crewCertificateForAdminViewModeList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!crewCertificateForAdminViewModeList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (crewCertificateForAdminViewModeList.TotalRecords > 0 && crewCertificateForAdminViewModeList.ExportOptions.Visible) {
+    crewCertificateForAdminViewModeList.ExportOptions.Render("body");
+}
+@if (crewCertificateForAdminViewModeList.ImportOptions.Visible) {
+    crewCertificateForAdminViewModeList.ImportOptions.Render("body");
+}
+@if (crewCertificateForAdminViewModeList.SearchOptions.Visible) {
+    crewCertificateForAdminViewModeList.SearchOptions.Render("body");
+}
+@if (crewCertificateForAdminViewModeList.FilterOptions.Visible) {
+    crewCertificateForAdminViewModeList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (crewCertificateForAdminViewModeList.ShowCurrentFilter) {
+    crewCertificateForAdminViewModeList.ShowFilterList();
+}
+@if (!crewCertificateForAdminViewModeList.IsModal) {
+<form name="fCrewCertificateForAdminViewModesrch" id="fCrewCertificateForAdminViewModesrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fCrewCertificateForAdminViewModesrch_search_panel" class="mb-2 mb-sm-0 @(crewCertificateForAdminViewModeList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewCertificateForAdminViewModeList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewCertificateForAdminViewMode: currentTable } });
+var currentForm;
+var fCrewCertificateForAdminViewModesrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewCertificateForAdminViewModesrch")
+        .setPageId("list")
+
+        // Add fields
+        .setFields([
+
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["MTCertificateID", [], fields.MTCertificateID.isInvalid],
+            ["CountryOfIssue_CountryID", [], fields.CountryOfIssue_CountryID.isInvalid],
+            ["Number", [], fields.Number.isInvalid],
+            ["DateOfIssue", [], fields.DateOfIssue.isInvalid],
+            ["DateOfExpiry", [], fields.DateOfExpiry.isInvalid],
+            ["PlaceOfIssue", [], fields.PlaceOfIssue.isInvalid],
+            ["IssuingAuthority", [], fields.IssuingAuthority.isInvalid],
+            ["Level", [], fields.Level.isInvalid],
+            ["PaxVesselType", [], fields.PaxVesselType.isInvalid],
+            ["Image", [], fields.Image.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "MTCrewID": @Html.Raw(crewCertificateForAdminViewModeList.MTCrewID.ToClientList(crewCertificateForAdminViewModeList)),
+            "MTCertificateID": @Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.ToClientList(crewCertificateForAdminViewModeList)),
+            "CountryOfIssue_CountryID": @Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.ToClientList(crewCertificateForAdminViewModeList)),
+            "Number": @Html.Raw(crewCertificateForAdminViewModeList.Number.ToClientList(crewCertificateForAdminViewModeList)),
+            "DateOfIssue": @Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.ToClientList(crewCertificateForAdminViewModeList)),
+            "DateOfExpiry": @Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.ToClientList(crewCertificateForAdminViewModeList)),
+            "PlaceOfIssue": @Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.ToClientList(crewCertificateForAdminViewModeList)),
+            "IssuingAuthority": @Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.ToClientList(crewCertificateForAdminViewModeList)),
+            "Level": @Html.Raw(crewCertificateForAdminViewModeList.Level.ToClientList(crewCertificateForAdminViewModeList)),
+            "PaxVesselType": @Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.ToClientList(crewCertificateForAdminViewModeList)),
+            "Image": @Html.Raw(crewCertificateForAdminViewModeList.Image.ToClientList(crewCertificateForAdminViewModeList)),
+            "CreatedByUserID": @Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.ToClientList(crewCertificateForAdminViewModeList)),
+            "CreatedDateTime": @Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.ToClientList(crewCertificateForAdminViewModeList)),
+            "LastUpdatedByUserID": @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.ToClientList(crewCertificateForAdminViewModeList)),
+            "LastUpdatedDateTime": @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.ToClientList(crewCertificateForAdminViewModeList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await crewCertificateForAdminViewModeList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!crewCertificateForAdminViewModeList.IsExport() && Empty(crewCertificateForAdminViewModeList.CurrentAction) && crewCertificateForAdminViewModeList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0 d-none@(crewCertificateForAdminViewModeList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + crewCertificateForAdminViewModeList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    crewCertificateForAdminViewModeList.RowType = RowType.Search;
+    crewCertificateForAdminViewModeList.ResetAttributes();
+    await crewCertificateForAdminViewModeList.RenderRow();
+}
+@if (crewCertificateForAdminViewModeList.MTCrewID.Visible) { // crewCertificateForAdminViewModeList.MTCrewID.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.MTCrewID.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_MTCrewID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.MTCrewID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCrewID"
+            name="x_MTCrewID[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.MTCrewID.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_MTCrewID"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_MTCrewID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.MTCrewID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.MTCrewID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.MTCrewID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.MTCrewID.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.MTCrewID.SelectOptionListHtml("x_MTCrewID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.MTCrewID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_MTCrewID",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_MTCrewID",
+                ajax: { id: "x_MTCrewID", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.MTCrewID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.MTCrewID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.MTCertificateID.Visible) { // crewCertificateForAdminViewModeList.MTCertificateID.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.MTCertificateID.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_MTCertificateID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.MTCertificateID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MTCertificateID"
+            name="x_MTCertificateID[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.MTCertificateID.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_MTCertificateID"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_MTCertificateID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.MTCertificateID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.MTCertificateID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.MTCertificateID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.MTCertificateID.SelectOptionListHtml("x_MTCertificateID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_MTCertificateID",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_MTCertificateID",
+                ajax: { id: "x_MTCertificateID", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.MTCertificateID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.MTCertificateID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible) { // crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_CountryOfIssue_CountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CountryOfIssue_CountryID"
+            name="x_CountryOfIssue_CountryID[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_CountryOfIssue_CountryID"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_CountryOfIssue_CountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.SelectOptionListHtml("x_CountryOfIssue_CountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_CountryOfIssue_CountryID",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_CountryOfIssue_CountryID",
+                ajax: { id: "x_CountryOfIssue_CountryID", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.CountryOfIssue_CountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.Number.Visible) { // crewCertificateForAdminViewModeList.Number.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.Number.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_Number" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.Number.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Number"
+            name="x_Number[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.Number.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_Number"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_Number"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.Number.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.Number.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.Number.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.Number.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.Number.SelectOptionListHtml("x_Number", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.Number.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_Number",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_Number",
+                ajax: { id: "x_Number", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.Number.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.Number.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.DateOfIssue.Visible) { // crewCertificateForAdminViewModeList.DateOfIssue.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.DateOfIssue.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.DateOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfIssue"
+            name="x_DateOfIssue[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.DateOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_DateOfIssue"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_DateOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.DateOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.DateOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.DateOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.DateOfIssue.SelectOptionListHtml("x_DateOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_DateOfIssue",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_DateOfIssue",
+                ajax: { id: "x_DateOfIssue", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.DateOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.DateOfIssue.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.DateOfExpiry.Visible) { // crewCertificateForAdminViewModeList.DateOfExpiry.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.DateOfExpiry.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_DateOfExpiry" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.DateOfExpiry.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_DateOfExpiry"
+            name="x_DateOfExpiry[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.DateOfExpiry.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_DateOfExpiry"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_DateOfExpiry"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.DateOfExpiry.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.DateOfExpiry.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.DateOfExpiry.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.DateOfExpiry.SelectOptionListHtml("x_DateOfExpiry", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_DateOfExpiry",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_DateOfExpiry",
+                ajax: { id: "x_DateOfExpiry", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.DateOfExpiry.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.DateOfExpiry.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.PlaceOfIssue.Visible) { // crewCertificateForAdminViewModeList.PlaceOfIssue.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.PlaceOfIssue.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOfIssue" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.PlaceOfIssue.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOfIssue"
+            name="x_PlaceOfIssue[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.PlaceOfIssue.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_PlaceOfIssue"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_PlaceOfIssue"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.PlaceOfIssue.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.PlaceOfIssue.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.PlaceOfIssue.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.PlaceOfIssue.SelectOptionListHtml("x_PlaceOfIssue", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_PlaceOfIssue",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_PlaceOfIssue",
+                ajax: { id: "x_PlaceOfIssue", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.PlaceOfIssue.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.PlaceOfIssue.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.IssuingAuthority.Visible) { // crewCertificateForAdminViewModeList.IssuingAuthority.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.IssuingAuthority.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_IssuingAuthority" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.IssuingAuthority.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IssuingAuthority"
+            name="x_IssuingAuthority[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.IssuingAuthority.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_IssuingAuthority"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_IssuingAuthority"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.IssuingAuthority.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.IssuingAuthority.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.IssuingAuthority.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.IssuingAuthority.SelectOptionListHtml("x_IssuingAuthority", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_IssuingAuthority",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_IssuingAuthority",
+                ajax: { id: "x_IssuingAuthority", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.IssuingAuthority.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.IssuingAuthority.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.Level.Visible) { // crewCertificateForAdminViewModeList.Level.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.Level.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_Level" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.Level.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Level"
+            name="x_Level[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.Level.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_Level"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_Level"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.Level.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.Level.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.Level.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.Level.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.Level.SelectOptionListHtml("x_Level", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.Level.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_Level",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_Level",
+                ajax: { id: "x_Level", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.Level.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.Level.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.PaxVesselType.Visible) { // crewCertificateForAdminViewModeList.PaxVesselType.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.PaxVesselType.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_PaxVesselType" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.PaxVesselType.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PaxVesselType"
+            name="x_PaxVesselType[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.PaxVesselType.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_PaxVesselType"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_PaxVesselType"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.PaxVesselType.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.PaxVesselType.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.PaxVesselType.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.PaxVesselType.SelectOptionListHtml("x_PaxVesselType", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_PaxVesselType",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_PaxVesselType",
+                ajax: { id: "x_PaxVesselType", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.PaxVesselType.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.PaxVesselType.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.Image.Visible) { // crewCertificateForAdminViewModeList.Image.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.Image.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_Image" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.Image.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Image"
+            name="x_Image[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.Image.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_Image"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_Image"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.Image.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.Image.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.Image.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.Image.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.Image.SelectOptionListHtml("x_Image", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.Image.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_Image",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_Image",
+                ajax: { id: "x_Image", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.Image.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.Image.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.CreatedByUserID.Visible) { // crewCertificateForAdminViewModeList.CreatedByUserID.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.CreatedByUserID.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_CreatedByUserID"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.CreatedByUserID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.CreatedDateTime.Visible) { // crewCertificateForAdminViewModeList.CreatedDateTime.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.CreatedDateTime.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_CreatedDateTime"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.CreatedDateTime.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.LastUpdatedByUserID.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_LastUpdatedByUserID"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+    if (!crewCertificateForAdminViewModeList.LastUpdatedDateTime.UseFilter) {
+        crewCertificateForAdminViewModeList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(crewCertificateForAdminViewModeList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(crewCertificateForAdminViewModeList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fCrewCertificateForAdminViewModesrch_x_LastUpdatedDateTime"
+            data-table="CrewCertificateForAdminViewMode"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(crewCertificateForAdminViewModeList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(crewCertificateForAdminViewModeList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(crewCertificateForAdminViewModeList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.EditAttributes)>
+            @(crewCertificateForAdminViewModeList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCrewCertificateForAdminViewModesrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fCrewCertificateForAdminViewModesrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fCrewCertificateForAdminViewModesrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.CrewCertificateForAdminViewMode.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div id="tpsd_CrewCertificateForAdminViewModelist" class="ew-custom-template-search"></div>
+<template id="tpsm_CrewCertificateForAdminViewModelist">
+<div id="CrewCertificateForAdminViewModelist"><div id="schedule-modal-dialog" aria-hidden="true" aria-modal="true" class="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="schedule-modal-dialog-title" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="schedule-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-schedule" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_DocumentCheckDateTime" class="row">
+                        <label for="x_DocumentCheckDateTime" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Document Check Date Time" : "Tanggal Dan Jam Cek Dokumen")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckDateTime">
+                                    <div class="input-group" id="datetimepicker_DocumentCheckDateTime" data-target-input="nearest" data-td-target-toggle="nearest">
+                                        <input
+                                            type="text"
+                                            name="x_DocumentCheckDateTime"
+                                            id="x_DocumentCheckDateTime"
+                                            value=""
+                                            placeholder="Document Check Date Time"
+                                            data-format-pattern="yyyy-MM-dd HH:mm:sszzz"
+                                            class="form-control tempus-dominus-input"
+                                            data-target="#datetimepicker_DocumentCheckDateTime"
+                                        />
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="r_DocumentCheckNotes" class="row">
+                        <label for="x_DocumentCheckNotes" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_DocumentCheckNotes">
+                                    <textarea
+                                        name="x_DocumentCheckNotes"
+                                        id="x_DocumentCheckNotes"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder=@(CurrentLanguage == "en-US" ? "Notes" : "Catatan")
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary ew-btn" id="btn-add-schedule" type="button">
+                    @(CurrentLanguage == "en-US" ? "Create Document Check Schedule" : "Tambah Jadwal Cek Dokumen")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel-schedule" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- REVISE MODAL DIALOG. FIXME! -->
+<div id="revise-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Revise Crew Candidate" : "Tinjau Ulang Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="revise-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RevisedReason" class="row">
+                        <label for="x_RevisedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Revised Reason" : "Alasan Tinjau Ulang")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RevisedReason">
+                                    <textarea
+                                        name="x_RevisedReason"
+                                        id="x_RevisedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Revised Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-revise" type="button">
+                    @(CurrentLanguage == "en-US" ? "Revise" : "Tinjau Ulang")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="reject-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reject-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RejectedReason" class="row">
+                        <label for="x_RejectedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Rejected Reason" : "Alasan Ditolak")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RejectedReason">
+                                    <textarea
+                                        name="x_RejectedReason"
+                                        id="x_RejectedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Rejected Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-reject" type="button">
+                    @(CurrentLanguage == "en-US" ? "Reject Crew Candidate" : "Tolak Kandidat Kru")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewPersonalDataForAdminViewModeView")">
+                @(CurrentLanguage == "en-US" ? "PERSONAL DATA" : "DATA PERSONAL")
+            </a>     
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewDocumentForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "DOCUMENTS" : "DOKUMEN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewBankAccountForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "BANK ACCOUNT" : "REKENING BANK")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFamilyForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "FAMILY" : "KELUARGA")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewFormalEducationForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "FORMAL EDUCATION" : "PENDIDIKAN FORMAL")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalCertificateForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL CERTIFICATE / TEST" : "SERTIFIKAT / TES MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewCertificateForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "CERTIFICATES AND QUALIFICATIONS" : "SERTIFIKAT DAN KUALIFIKASI")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewExperienceForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "SEA EXPERIENCE" : "PENGALAMAN BERLAYAR")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewAppraisalForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "APPRAISALS" : "PENILAIAN")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewMedicalHistoryForAdminViewModeList")">
+                @(CurrentLanguage == "en-US" ? "MEDICAL HISTORY" : "RIWAYAT MEDIS")
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@string.Concat(AppPath(), "CrewGeneralDataForAdminViewModeView")">
+                @(CurrentLanguage == "en-US" ? "GENERAL" : "UMUM")
+            </a>
+        </li>
+    </ul>  
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm ew-table table-head-fixed" id="ForAdminTable" data-isset="true">
+            <thead>
+                <tr class="ew-table-header">
+                    <th class="ew-list-option-header w-1" data-name="button"></th>
+                    <th class="ew-list-option-header text-nowrap" data-name="sequence"><span></span></th>
+                    <th data-name="MTCertificateID" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.Caption)
+                    </th>
+                    <th data-name="PaxVesselType" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.Caption)
+                    </th>
+                    <th data-name="Level" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.Level.Caption)
+                    </th>              
+                    <th data-name="CountryOfIssue_CountryID" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Caption)
+                    </th>
+                    <th data-name="Number" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.Number.Caption)
+                    </th>
+                    <th data-name="DateOfIssue" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.Caption)
+                    </th>
+                    <th data-name="DateOfExpiry" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.Caption)
+                    </th>              
+                    <th data-name="PlaceOfIssue" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.Caption)
+                    </th>
+                    <th data-name="IssuingAuthority" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.Caption)
+                    </th>
+                    <th data-name="Image" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.Image.Caption)
+                    </th>
+                    <th data-name="CreatedByUserID" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.Caption)
+                    </th>
+                    <th data-name="CreatedDateTime" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.Caption)
+                    </th>
+                    <th data-name="LastUpdatedByUserID" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.Caption)
+                    </th>
+                    <th data-name="LastUpdatedDateTime" class="ew-table-header-cell">
+                        @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.Caption)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div></div>
+</template>
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(crewCertificateForAdminViewModeList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(crewCertificateForAdminViewModeList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(crewCertificateForAdminViewModeList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(crewCertificateForAdminViewModeList.BasicSearch.SessionType == "" ? " active" : "")" form="fCrewCertificateForAdminViewModesrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(crewCertificateForAdminViewModeList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCrewCertificateForAdminViewModesrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(crewCertificateForAdminViewModeList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCrewCertificateForAdminViewModesrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(crewCertificateForAdminViewModeList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCrewCertificateForAdminViewModesrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+<script>
+loadjs.ready(ew.applyTemplateId, () => ew.applyTemplate("tpsd_CrewCertificateForAdminViewModelist", "tpsm_CrewCertificateForAdminViewModelist"));
+</script>
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@crewCertificateForAdminViewModeList.ShowPageHeader()
+@crewCertificateForAdminViewModeList.ShowMessages()
+<main class="list @(crewCertificateForAdminViewModeList.TotalRecords == 0 && !crewCertificateForAdminViewModeList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (crewCertificateForAdminViewModeList.TotalRecords > 0 || !Empty(crewCertificateForAdminViewModeList.CurrentAction)) {
+<div class="card ew-card ew-grid@(crewCertificateForAdminViewModeList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(crewCertificateForAdminViewModeList.TableGridClass)">
+<form name="@(crewCertificateForAdminViewModeList.FormName)" id="@(crewCertificateForAdminViewModeList.FormName)" class="ew-form ew-list-form" action="@AppPath(crewCertificateForAdminViewModeList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (crewCertificateForAdminViewModeList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_CrewCertificateForAdminViewMode" class="card-body ew-grid-middle-panel @(crewCertificateForAdminViewModeList.TableContainerClass)" style="@(crewCertificateForAdminViewModeList.TableContainerStyle)">
+@if (crewCertificateForAdminViewModeList.TotalRecords > 0 || crewCertificateForAdminViewModeList.IsGridEdit || crewCertificateForAdminViewModeList.IsMultiEdit) {
+<table id="tbl_CrewCertificateForAdminViewModelist" class="@(crewCertificateForAdminViewModeList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    crewCertificateForAdminViewModeList.RowType = RowType.Header;
+
+    // Render list options
+    await crewCertificateForAdminViewModeList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@crewCertificateForAdminViewModeList.ListOptions.RenderHeader("left", "", "block", crewCertificateForAdminViewModeList.TableVar, "CrewCertificateForAdminViewModelist")
+@if (crewCertificateForAdminViewModeList.MTCrewID.Visible) { // crewCertificateForAdminViewModeList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(crewCertificateForAdminViewModeList.MTCrewID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_MTCrewID" class="CrewCertificateForAdminViewMode_MTCrewID">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.MTCrewID))</div></th>
+} @* crewCertificateForAdminViewModeList.MTCrewID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.MTCertificateID.Visible) { // crewCertificateForAdminViewModeList.MTCertificateID.Visible (begin)
+        <th data-name="MTCertificateID" class="@(crewCertificateForAdminViewModeList.MTCertificateID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_MTCertificateID" class="CrewCertificateForAdminViewMode_MTCertificateID">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.MTCertificateID))</div></th>
+} @* crewCertificateForAdminViewModeList.MTCertificateID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible) { // crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible (begin)
+        <th data-name="CountryOfIssue_CountryID" class="@(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_CountryOfIssue_CountryID" class="CrewCertificateForAdminViewMode_CountryOfIssue_CountryID">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID))</div></th>
+} @* crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.Number.Visible) { // crewCertificateForAdminViewModeList.Number.Visible (begin)
+        <th data-name="Number" class="@(crewCertificateForAdminViewModeList.Number.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_Number" class="CrewCertificateForAdminViewMode_Number">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.Number))</div></th>
+} @* crewCertificateForAdminViewModeList.Number.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.DateOfIssue.Visible) { // crewCertificateForAdminViewModeList.DateOfIssue.Visible (begin)
+        <th data-name="DateOfIssue" class="@(crewCertificateForAdminViewModeList.DateOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_DateOfIssue" class="CrewCertificateForAdminViewMode_DateOfIssue">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.DateOfIssue))</div></th>
+} @* crewCertificateForAdminViewModeList.DateOfIssue.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.DateOfExpiry.Visible) { // crewCertificateForAdminViewModeList.DateOfExpiry.Visible (begin)
+        <th data-name="DateOfExpiry" class="@(crewCertificateForAdminViewModeList.DateOfExpiry.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_DateOfExpiry" class="CrewCertificateForAdminViewMode_DateOfExpiry">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.DateOfExpiry))</div></th>
+} @* crewCertificateForAdminViewModeList.DateOfExpiry.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.PlaceOfIssue.Visible) { // crewCertificateForAdminViewModeList.PlaceOfIssue.Visible (begin)
+        <th data-name="PlaceOfIssue" class="@(crewCertificateForAdminViewModeList.PlaceOfIssue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_PlaceOfIssue" class="CrewCertificateForAdminViewMode_PlaceOfIssue">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.PlaceOfIssue))</div></th>
+} @* crewCertificateForAdminViewModeList.PlaceOfIssue.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.IssuingAuthority.Visible) { // crewCertificateForAdminViewModeList.IssuingAuthority.Visible (begin)
+        <th data-name="IssuingAuthority" class="@(crewCertificateForAdminViewModeList.IssuingAuthority.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_IssuingAuthority" class="CrewCertificateForAdminViewMode_IssuingAuthority">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.IssuingAuthority))</div></th>
+} @* crewCertificateForAdminViewModeList.IssuingAuthority.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.Level.Visible) { // crewCertificateForAdminViewModeList.Level.Visible (begin)
+        <th data-name="Level" class="@(crewCertificateForAdminViewModeList.Level.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_Level" class="CrewCertificateForAdminViewMode_Level">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.Level))</div></th>
+} @* crewCertificateForAdminViewModeList.Level.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.PaxVesselType.Visible) { // crewCertificateForAdminViewModeList.PaxVesselType.Visible (begin)
+        <th data-name="PaxVesselType" class="@(crewCertificateForAdminViewModeList.PaxVesselType.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_PaxVesselType" class="CrewCertificateForAdminViewMode_PaxVesselType">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.PaxVesselType))</div></th>
+} @* crewCertificateForAdminViewModeList.PaxVesselType.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.Image.Visible) { // crewCertificateForAdminViewModeList.Image.Visible (begin)
+        <th data-name="Image" class="@(crewCertificateForAdminViewModeList.Image.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_Image" class="CrewCertificateForAdminViewMode_Image">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.Image))</div></th>
+} @* crewCertificateForAdminViewModeList.Image.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.CreatedByUserID.Visible) { // crewCertificateForAdminViewModeList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(crewCertificateForAdminViewModeList.CreatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_CreatedByUserID" class="CrewCertificateForAdminViewMode_CreatedByUserID">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.CreatedByUserID))</div></th>
+} @* crewCertificateForAdminViewModeList.CreatedByUserID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.CreatedDateTime.Visible) { // crewCertificateForAdminViewModeList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(crewCertificateForAdminViewModeList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_CreatedDateTime" class="CrewCertificateForAdminViewMode_CreatedDateTime">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.CreatedDateTime))</div></th>
+} @* crewCertificateForAdminViewModeList.CreatedDateTime.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(crewCertificateForAdminViewModeList.LastUpdatedByUserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_LastUpdatedByUserID" class="CrewCertificateForAdminViewMode_LastUpdatedByUserID">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.LastUpdatedByUserID))</div></th>
+} @* crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+@if (crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(crewCertificateForAdminViewModeList.LastUpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_CrewCertificateForAdminViewMode_LastUpdatedDateTime" class="CrewCertificateForAdminViewMode_LastUpdatedDateTime">@Html.Raw(crewCertificateForAdminViewModeList.RenderFieldHeader(crewCertificateForAdminViewModeList.LastUpdatedDateTime))</div></th>
+} @* crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@crewCertificateForAdminViewModeList.ListOptions.RenderHeader("right", "", "block", crewCertificateForAdminViewModeList.TableVar, "CrewCertificateForAdminViewModelist")
+    </tr>
+</thead>
+<tbody data-page="@(crewCertificateForAdminViewModeList.PageNumber)">
+@{
+    await crewCertificateForAdminViewModeList.SetupGrid();
+    bool eof = crewCertificateForAdminViewModeList.Recordset == null; // DN
+}
+@while (crewCertificateForAdminViewModeList.RecordCount < crewCertificateForAdminViewModeList.StopRecord || SameString(crewCertificateForAdminViewModeList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(crewCertificateForAdminViewModeList.RowIndex, "$rowindex$") &&
+        (!crewCertificateForAdminViewModeList.IsGridAdd || crewCertificateForAdminViewModeList.CurrentMode == "copy") &&
+        (!((crewCertificateForAdminViewModeList.IsCopy || crewCertificateForAdminViewModeList.IsAdd) && crewCertificateForAdminViewModeList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await crewCertificateForAdminViewModeList.Recordset.ReadAsync();
+    crewCertificateForAdminViewModeList.RecordCount++;
+    if (crewCertificateForAdminViewModeList.RecordCount >= crewCertificateForAdminViewModeList.StartRecord) {
+        await crewCertificateForAdminViewModeList.SetupRow();
+    <tr @Html.Raw(crewCertificateForAdminViewModeList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @crewCertificateForAdminViewModeList.ListOptions.RenderBody("left", crewCertificateForAdminViewModeList.RowCount, "block", crewCertificateForAdminViewModeList.TableVar, "CrewCertificateForAdminViewModelist")
+    @if (crewCertificateForAdminViewModeList.MTCrewID.Visible) { // crewCertificateForAdminViewModeList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(crewCertificateForAdminViewModeList.MTCrewID.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_MTCrewID"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_MTCrewID" class="el_CrewCertificateForAdminViewMode_MTCrewID">
+<span @Html.Raw(crewCertificateForAdminViewModeList.MTCrewID.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.MTCrewID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.MTCrewID.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.MTCertificateID.Visible) { // crewCertificateForAdminViewModeList.MTCertificateID.Visible (begin)
+        <td data-name="MTCertificateID" @Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_MTCertificateID"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_MTCertificateID" class="el_CrewCertificateForAdminViewMode_MTCertificateID">
+<span @Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.MTCertificateID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.MTCertificateID.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible) { // crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible (begin)
+        <td data-name="CountryOfIssue_CountryID" @Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_CountryOfIssue_CountryID"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_CountryOfIssue_CountryID" class="el_CrewCertificateForAdminViewMode_CountryOfIssue_CountryID">
+<span @Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.CountryOfIssue_CountryID.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.Number.Visible) { // crewCertificateForAdminViewModeList.Number.Visible (begin)
+        <td data-name="Number" @Html.Raw(crewCertificateForAdminViewModeList.Number.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_Number"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_Number" class="el_CrewCertificateForAdminViewMode_Number">
+<span @Html.Raw(crewCertificateForAdminViewModeList.Number.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.Number.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.Number.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.DateOfIssue.Visible) { // crewCertificateForAdminViewModeList.DateOfIssue.Visible (begin)
+        <td data-name="DateOfIssue" @Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_DateOfIssue"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_DateOfIssue" class="el_CrewCertificateForAdminViewMode_DateOfIssue">
+<span @Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.DateOfIssue.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.DateOfIssue.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.DateOfExpiry.Visible) { // crewCertificateForAdminViewModeList.DateOfExpiry.Visible (begin)
+        <td data-name="DateOfExpiry" @Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_DateOfExpiry"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_DateOfExpiry" class="el_CrewCertificateForAdminViewMode_DateOfExpiry">
+<span @Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.DateOfExpiry.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.DateOfExpiry.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.PlaceOfIssue.Visible) { // crewCertificateForAdminViewModeList.PlaceOfIssue.Visible (begin)
+        <td data-name="PlaceOfIssue" @Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_PlaceOfIssue"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_PlaceOfIssue" class="el_CrewCertificateForAdminViewMode_PlaceOfIssue">
+<span @Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.PlaceOfIssue.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.PlaceOfIssue.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.IssuingAuthority.Visible) { // crewCertificateForAdminViewModeList.IssuingAuthority.Visible (begin)
+        <td data-name="IssuingAuthority" @Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_IssuingAuthority"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_IssuingAuthority" class="el_CrewCertificateForAdminViewMode_IssuingAuthority">
+<span @Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.IssuingAuthority.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.IssuingAuthority.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.Level.Visible) { // crewCertificateForAdminViewModeList.Level.Visible (begin)
+        <td data-name="Level" @Html.Raw(crewCertificateForAdminViewModeList.Level.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_Level"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_Level" class="el_CrewCertificateForAdminViewMode_Level">
+<span @Html.Raw(crewCertificateForAdminViewModeList.Level.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.Level.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.Level.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.PaxVesselType.Visible) { // crewCertificateForAdminViewModeList.PaxVesselType.Visible (begin)
+        <td data-name="PaxVesselType" @Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_PaxVesselType"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_PaxVesselType" class="el_CrewCertificateForAdminViewMode_PaxVesselType">
+<span @Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.PaxVesselType.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.PaxVesselType.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.Image.Visible) { // crewCertificateForAdminViewModeList.Image.Visible (begin)
+        <td data-name="Image" @Html.Raw(crewCertificateForAdminViewModeList.Image.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_Image"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_Image" class="el_CrewCertificateForAdminViewMode_Image">
+<span>
+@Html.Raw(await GetFileViewTag((DbField)crewCertificateForAdminViewModeList.Image, ConvertToString(crewCertificateForAdminViewModeList.Image.GetViewValue()), false))
+</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.Image.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.CreatedByUserID.Visible) { // crewCertificateForAdminViewModeList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_CreatedByUserID"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_CreatedByUserID" class="el_CrewCertificateForAdminViewMode_CreatedByUserID">
+<span @Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.CreatedByUserID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.CreatedByUserID.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.CreatedDateTime.Visible) { // crewCertificateForAdminViewModeList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_CreatedDateTime"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_CreatedDateTime" class="el_CrewCertificateForAdminViewMode_CreatedDateTime">
+<span @Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.CreatedDateTime.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.CreatedDateTime.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible) { // crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_LastUpdatedByUserID"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_LastUpdatedByUserID" class="el_CrewCertificateForAdminViewMode_LastUpdatedByUserID">
+<span @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedByUserID.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.LastUpdatedByUserID.Visible (end) *@
+    @if (crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible) { // crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.CellAttributes)>
+<template id="tpx@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_LastUpdatedDateTime"><span id="el@(crewCertificateForAdminViewModeList.RowCount)_CrewCertificateForAdminViewMode_LastUpdatedDateTime" class="el_CrewCertificateForAdminViewMode_LastUpdatedDateTime">
+<span @Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(crewCertificateForAdminViewModeList.LastUpdatedDateTime.GetViewValue())</span>
+</span></template>
+</td>
+    } @* crewCertificateForAdminViewModeList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @crewCertificateForAdminViewModeList.ListOptions.RenderBody("right", crewCertificateForAdminViewModeList.RowCount, "block", crewCertificateForAdminViewModeList.TableVar, "CrewCertificateForAdminViewModelist")
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(crewCertificateForAdminViewModeList.RowIndex, "$rowindex$"))
+        crewCertificateForAdminViewModeList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((crewCertificateForAdminViewModeList.IsCopy || crewCertificateForAdminViewModeList.IsAdd) && crewCertificateForAdminViewModeList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        crewCertificateForAdminViewModeList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+<div id="tpd_CrewCertificateForAdminViewModelist" class="ew-custom-template"></div>
+<template id="tpm_CrewCertificateForAdminViewModelist">
+<div id="ct_crewCertificateForAdminViewModeList">@if (crewCertificateForAdminViewModeList.RowCount > 0) {
+<table class="table table-bordered table-sm ew-table d-none">
+    <thead>
+    </thead>
+    <tbody>@for (int i = crewCertificateForAdminViewModeList.StartRowCount; i <= crewCertificateForAdminViewModeList.RowCount; i++) {
+<tr>
+</tr>
+}
+</tbody></table>
+}
+</div>
+</template>
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(crewCertificateForAdminViewModeList.CurrentAction) && !crewCertificateForAdminViewModeList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ crewCertificateForAdminViewModeList.CloseRecordset(); }
+@if (!crewCertificateForAdminViewModeList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!crewCertificateForAdminViewModeList.IsGridAdd && !(crewCertificateForAdminViewModeList.IsGridEdit && crewCertificateForAdminViewModeList.ModalGridEdit) && !crewCertificateForAdminViewModeList.IsMultiEdit) {
+@Html.Raw(crewCertificateForAdminViewModeList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@crewCertificateForAdminViewModeList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+<script class="ew-apply-template">
+loadjs.ready(ew.applyTemplateId, function() {
+    var $ = jQuery;
+    ew.templateData = { rows: @Html.Raw(ConvertToJson(crewCertificateForAdminViewModeList.Rows)) };
+    ew.applyTemplate("tpd_CrewCertificateForAdminViewModelist", "tpm_CrewCertificateForAdminViewModelist", "CrewCertificateForAdminViewModelist", "@(crewCertificateForAdminViewModeList.Export)", "CrewCertificateForAdminViewMode", ew.templateData, @(crewCertificateForAdminViewModeList.IsModal ? "true" : "false"));
+    loadjs.done("customtemplate");
+});
+</script>
+} else { // Show other options
+<div class="ew-list-other-options">
+@crewCertificateForAdminViewModeList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@crewCertificateForAdminViewModeList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!crewCertificateForAdminViewModeList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewCertificateForAdminViewMode");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // get the current URL without Add or Edit for assigning active class in tabs
+    const currentUrlWithoutAddEditListView = currentUrlObject.href.replace(/Add|Edit|List|View/g, "");
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    // Extract the value of the crewID query parameter
+    const currentlyEditedCrewID = urlQueryParams.get('crewID');
+
+    // Iterate over each anchor element inside the nav-tabs
+    $(".nav-tabs .nav-item a").each(function() {
+        const href = $(this).attr("href");
+        const hrefWithoutAddEditListView = href.replace(/Add|Edit|List|View/g, "");
+        // Check if the href contains current page's url
+        if (currentUrlWithoutAddEditListView.includes(hrefWithoutAddEditListView)) {
+            // add class and attribute
+            $(this).addClass("active");
+            $(this).attr("aria-current", "page");
+        }
+        // Check if the href contains "Edit" or "Add"
+        if (href.includes("ViewModeView")) {
+            // Add "/" and the currently edited crew ID to the href
+            const newHref = href + "/" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        } else if (href.includes("ViewModeList")) {
+            // Add "?crewID=" and the currently edited crew ID to the href
+            const newHref = href + "?crewID=" + currentlyEditedCrewID;
+            // Set the updated href attribute value
+            $(this).attr("href", newHref);
+        }
+    });
+
+    // Target the ol element that has breadcrumb class
+    const $breadCrumbOl = $('.breadcrumb').first();
+
+    // Delete the ol element that has breadcrumb class
+    $breadCrumbOl.remove();
+    $('div.btn-toolbar.ew-toolbar').remove();
+    $('div.ew-extended-search div.mb-0').remove();
+    $('div#ew-list div.crew-certificate-for-admin-view-mode').removeClass('card ew-card ew-grid');
+    $('div.card-footer').remove();
+    $('main.list.ew-no-record div#ew-list').remove();
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+    const parentUrl = ew.PATH_BASE;
+    const adminAndEmployeeStatusApi = 'get-admin-and-employee-status';
+    $.ajax({
+        url: `${parentUrl}api/Registration/${adminAndEmployeeStatusApi}`,
+        method: 'GET',
+        data: {
+            crewID: currentlyEditedCrewID
+        },
+        success: function(response) {
+            if (response.success) {
+                // Parse the data in the response
+                const isAdmin = response.data.IsAdmin;
+                const employeeStatus = response.data.EmployeeStatus;
+                if (currentlyEditedCrewID === null) {
+                    if (isAdmin) {
+                        // redirect to list page with error message: record not found
+                        if (employeeStatus === 'Candidate - Draft') {
+                            window.location.replace(`${ew.PATH_BASE}RegistrationEdit/-1`);
+                        } else if (employeeStatus === 'Candidate - Submitted') {
+                            window.location.replace(`${ew.PATH_BASE}VWaitingForPdeReviewView/-1`);
+                        }
+                    } else {
+                        window.location.replace(`${ew.PATH_BASE}index`);
+                    }
+                }
+                if (employeeStatus === 'Candidate - Draft') {
+                    const addButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Add" : "Tambah",
+                        class: "btn btn-default ew-btn me-auto primary-black-clr gray-bg",
+                        id: "btn-add",
+                        name: "btn-add",
+                        href: `${parentUrl}CrewCertificateForAdminViewModeAdd?crewID=${currentlyEditedCrewID}`,
+                    });
+                    const backButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
+                        class: "btn btn-default ew-btn ms-auto primary-red-bg primary-white-clr",
+                        id: "btn-back",
+                        name: "btn-back",
+                        href: `${parentUrl}RegistrationList`,
+                    });
+                    const flexDiv = $("<div class='d-flex mb-3'></div>");
+                    flexDiv.append(addButton);
+                    if (isAdmin) {
+                        flexDiv.append(backButton);
+                    }
+                    const buttonsDiv = $("<div class='row mt-3 ew-buttons'></div>");
+                    buttonsDiv.append(flexDiv);
+                    $('div#CrewCertificateForAdminViewModelist').append(buttonsDiv);
+                    const errorMessage = urlQueryParams.get('errorMessage');
+                    if (errorMessage !== null) {
+                        const decodedErrorMessage = decodeURIComponent(errorMessage);
+                        ew.showToast(decodedErrorMessage);
+                        urlQueryParams.delete('errorMessage');
+                        currentUrlObject.search = urlQueryParams.toString();
+                        history.pushState(null, '', currentUrlObject);
+                    }
+                } else if (employeeStatus === 'Candidate - Submitted') {
+                    const invokeScheduleModalButton = $('<button/>', {
+                        'class': 'btn btn-default ew-btn primary-green-bg primary-white-clr',
+                        'name': 'btn-invoke-schedule-modal',
+                        'id': 'btn-invoke-schedule-modal',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Accept' : 'Terima'
+                    });
+                    const invokeReviseModalButton = $('<button/>', {
+                        'class': 'btn btn-primary ew-btn ms-3 primary-white-clr',
+                        'name': 'btn-invoke-revise-modal',
+                        'id': 'btn-invoke-revise-modal',
+                        'type': 'button', 
+                        'text': (selectedLanguage.id === 'en-US') ? 'Revise' : 'Tinjau'
+                    });
+                    const invokeRejectModalButton = $('<button/>', {
+                        'class': 'btn btn-danger ew-btn ms-3 me-auto primary-white-clr',
+                        'name': 'btn-invoke-reject-modal',
+                        'id': 'btn-invoke-reject-modal',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Reject' : 'Tolak'
+                    });
+                    const backButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
+                        class: "btn btn-default ew-btn primary-black-clr gray-bg",
+                        id: "btn-back",
+                        name: "btn-back",
+                        href: `${parentUrl}VWaitingForPdeReviewList`,
+                    });
+                    const flexDiv = $("<div class='d-flex mb-3'></div>");
+                    if (isAdmin) {
+                        flexDiv.append(invokeScheduleModalButton);
+                        flexDiv.append(invokeReviseModalButton);
+                        flexDiv.append(invokeRejectModalButton);
+                        flexDiv.append(backButton);
+                    }
+                    const buttonsDiv = $("<div class='row mt-3 ew-buttons'></div>");
+                    buttonsDiv.append(flexDiv);
+                    $('div#CrewCertificateForAdminViewModelist').append(buttonsDiv);
+                    if (isAdmin) {
+                        $('#btn-invoke-schedule-modal').click(function() {
+                            $('#schedule-modal-dialog').modal('show');
+                        });
+                        $('#btn-invoke-revise-modal').click(function() {
+                            $('#revise-modal-dialog').modal('show');
+                        });
+                        $('#btn-invoke-reject-modal').click(function() {
+                            $('#reject-modal-dialog').modal('show');
+                        });
+                        $('#schedule-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_DocumentCheckDateTime').val(null);
+                        });
+                        $('#revise-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RevisedReason').val(null);
+                        });
+                        $('#reject-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RejectedReason').val(null);
+                        });
+
+                        // initialize date time picker
+                        const format = "dd MMM yyyy HH:mm:00zzz";
+                        const options = {
+                            localization: {
+                                locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                                hourCycle: format.match(/H/) ? "h24" : "h12",
+                                format,
+                                ...ew.language.phrase("datetimepicker")
+                            },
+                            display: {
+                                icons: {
+                                    previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                                    next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                                },
+                                components: {
+                                    hours: !!format.match(/h/i),
+                                    minutes: !!format.match(/m/),
+                                    seconds: !!format.match(/s/i)
+                                },
+                                theme: ew.isDark() ? "dark" : "auto"
+                            },
+                            defaultDate: new Date(new Date().setHours(8, 0, 0)).toISOString(),
+                        };
+                        ew.createDateTimePicker("add-schedule", "x_DocumentCheckDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+                        $('#x_DocumentCheckDateTime').val(replaceTimezoneOffset($('#x_DocumentCheckDateTime').val(), formatTimezoneOffset(new Date().getTimezoneOffset())));
+
+                        // Listen for input changes
+                        $('#x_DocumentCheckDateTime').on('change.td', function() {
+                            const timezoneOffset = new Date().getTimezoneOffset();
+                            const formattedTimezoneOffset = formatTimezoneOffset(timezoneOffset);
+                            const currentValue = $(this).val();
+                            const newValue = replaceTimezoneOffset(currentValue, formattedTimezoneOffset);
+                            $(this).val(newValue);
+                        });
+
+                        // Format timezone offset as needed
+                        function formatTimezoneOffset(offset) {
+                            const hours = Math.floor(Math.abs(offset) / 60);
+                            const sign = offset < 0 ? '+' : '-';
+                            return ' GMT ' + sign + hours;
+                        }
+
+                        // Helper function to add leading zero to single-digit numbers
+                        function addLeadingZero(num) {
+                            return num < 10 ? '0' + num : num;
+                        }
+
+                        // Replace "zzz" with the formatted timezone offset
+                        function replaceTimezoneOffset(str, offset) {
+                            return str.replace('zzz', offset);
+                        }
+                        const addDocumentCheckDateTimeApiUrl = "add-document-check-date-time";
+                        $("#btn-add-schedule").click(function() {
+                            const documentCheckDateTimeValue = $('#x_DocumentCheckDateTime').val();
+                            const documentCheckDateTimeCaption = $(`label[for="x_DocumentCheckDateTime"]`).text();
+                            if (documentCheckDateTimeValue == '') {
+                                if (selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${documentCheckDateTimeCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${documentCheckDateTimeCaption}`);
+                                }
+                            } else {
+                                const currentDate = new Date();
+                                const documentCheckDateObject = new Date(documentCheckDateTimeValue);
+                                if (isNaN(documentCheckDateObject)) {
+                                    if (selectedLanguage.id === 'en-US') {
+                                        ew.showToast(`Invalid date time - ${documentCheckDateTimeCaption}`);
+                                    } else {
+                                        ew.showToast(`Tanggal dan jam tidak valid - ${documentCheckDateTimeCaption}`);
+                                    }
+                                } else if (documentCheckDateObject < currentDate) {
+                                    if (selectedLanguage.id === 'en-US') {
+                                        ew.showToast(`${documentCheckDateTimeCaption} must be later or equal than today`);
+                                    } else {
+                                        ew.showToast(`${documentCheckDateTimeCaption} harus setelah atau sama dengan hari ini`);
+                                    }
+                                } else {
+                                    const arrDataKey = [currentlyEditedCrewID];
+                                    const notesValue = $('#x_DocumentCheckNotes').val();
+                                    const notes = (notesValue !== '') ? notesValue : '';
+                                    const documentCheckDateTimeRequest = {
+                                        scheduleDateTime: documentCheckDateTimeValue,
+                                        notes: notes,
+                                        crewIDArray: JSON.stringify(arrDataKey),
+                                    };
+                                    $.ajax({
+                                        method: "POST",
+                                        url: `${parentUrl}api/Registration/${addDocumentCheckDateTimeApiUrl}`,
+                                        data: JSON.stringify(documentCheckDateTimeRequest),
+                                        contentType: "application/json",
+                                        success: function(response) {
+                                            if (response.success) {
+                                                $('#schedule-modal-dialog').modal('hide');
+                                                let successMessage = '';
+                                                if (selectedLanguage.id === 'en-US') {
+                                                    successMessage = `Add ${documentCheckDateTimeCaption} Successful`;
+                                                } else {
+                                                    successMessage = `Menambahkan ${documentCheckDateTimeCaption} Berhasil`;
+                                                }
+                                                const baseUrl = new URL(window.location.href).origin;
+                                                const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                                const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                                const params = new URLSearchParams(targetUrl.search);
+                                                params.set('successMessage', encodedSuccessMessage);
+                                                targetUrl.search = params.toString();
+                                                window.location.href = targetUrl.href;
+                                            } else {
+                                                $('#schedule-modal-dialog').modal('hide');
+                                                const errorMessage = response.errorMessage;
+                                                ew.showToast(errorMessage);
+                                            }
+                                        },
+                                        error: function(xhr, textStatus, errorThrown) {
+                                            $('#schedule-modal-dialog').modal('hide');
+                                            ew.showToast(errorThrown);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        const rejectMultipleCrewApiUrl = "reject-multiple-crew";
+                        $("#btn-reject").click(function() {
+                            const rejectedReasonValue = $('#x_RejectedReason').val();
+                            const rejectedReasonCaption = $(`label[for="x_RejectedReason"]`).text();
+                            if (rejectedReasonValue == '') {
+                                if (selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${rejectedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
+                                }
+                            } else {
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const rejectMultipleRequest = {
+                                    rejectReason: rejectedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey),
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${rejectMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(rejectMultipleRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if (response.success) {
+                                            $('#reject-modal-dialog').modal('hide');
+                                            let successMessage = '';
+                                            if (selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${rejectedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${rejectedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#reject-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#reject-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                        const reviseMultipleCrewApiUrl = "revise-multiple-crew";
+                        $("#btn-revise").click(function() {
+                            const revisedReasonValue = $('#x_RevisedReason').val();
+                            const revisedReasonCaption = $(`label[for="x_RevisedReason"]`).text();
+                            if(revisedReasonValue.trim() === '') {
+                                if(selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${revisedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${revisedReasonCaption}`);
+                                }
+                            } else {
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const revisedMultipleCrewRequest = {
+                                    revisedReason: revisedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey)
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${reviseMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(revisedMultipleCrewRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if(response.success) {
+                                            $('#revise-modal-dialog').modal('hide');
+                                            let successMessage = '';
+                                            if(selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${revisedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${revisedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#revise-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }  
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#revise-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+
+                // get list of crew certificates via API
+                const uploadFolderName = "uploads";
+                const baseUrl = currentUrlObject.origin + ew.PATH_BASE;
+                const apiEndpoint = 'crew-certificate-for-admin';
+                $.ajax({
+                    url: `${parentUrl}api/Registration/${apiEndpoint}`,
+                    method: 'GET',
+                    data: {
+                        crewID: currentlyEditedCrewID
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Parse the data in the response
+                            const dataArray = response.data;
+                            const tbody = $('#ForAdminTable tbody'); // select the tbody element
+                            if (dataArray.length > 0) {
+                                const tableName = 'CrewCertificateForAdminViewMode';
+                                for (let rowIndex = 0; rowIndex < dataArray.length; rowIndex++) {
+                                    const row = dataArray[rowIndex];
+                                    const rowID = row['ID'];
+                                    delete row['ID']; // delete ID for easier looping for table columns
+                                    const tr = $('<tr>'); // create a new tr element 
+
+                                    // first td for dropdown
+                                    const buttonsTd = $('<td>').addClass('ew-list-option-body w-1');
+                                    const buttonDropdownDiv = $('<div>').addClass('btn-group btn-group-sm ew-btn-dropdown');
+                                    const dropdownButton = $('<button>')
+                                        .addClass('btn-default btn dropdown-toggle')
+                                        .attr('type', 'button')
+                                        .attr('data-title', 'Options')
+                                        .attr('data-bs-toggle', 'dropdown')
+                                        .attr('data-bs-auto-close', 'true');
+                                    const dropdownButtonIcon = $('<i>').addClass('fa-solid fa-bars ew-icon').attr('data-phrase', 'ButtonListOptions');
+                                    const dropdownButtonIconSpan = $('<span>').addClass('visually-hidden').text('Options');
+                                    const dropdownUl = $('<ul>').addClass('dropdown-menu ew-dropdown-menu ew-list-options');
+                                    const firstDropdownLi = $('<li>');
+                                    const viewAnchor = $('<a>')
+                                        .addClass('ew-row-link ew-view dropdown-item')
+                                        .attr('data-caption', 'View')
+                                        .attr('href', `${parentUrl}${tableName}View/${rowID}?crewID=${currentlyEditedCrewID}`);
+                                    const viewAnchorIcon = $('<i>').addClass('icon-view ew-icon me-2').attr('data-phrase', 'ViewLink');
+                                    const viewAnchorSpan = $('<span>').addClass('visually-hidden').text('View');
+                                    const viewAnchorText = 'View';
+                                    viewAnchorIcon.append(viewAnchorSpan);
+                                    viewAnchor.append(viewAnchorIcon);
+                                    viewAnchor.append(viewAnchorText);
+                                    firstDropdownLi.append(viewAnchor);
+                                    dropdownUl.append(firstDropdownLi);
+                                    if (employeeStatus === 'Candidate - Draft') {
+                                        const secondDropdownLi = $('<li>');
+                                        const editAnchor = $('<a>')
+                                            .addClass('ew-row-link ew-edit dropdown-item')
+                                            .attr('data-caption', 'Edit')
+                                            .attr('href', `${parentUrl}${tableName}Edit/${rowID}?crewID=${currentlyEditedCrewID}`);
+                                        const editAnchorIcon = $('<i>').addClass('fa-solid fa-pen ew-icon me-2').attr('data-phrase', 'EditLink');
+                                        const editAnchorSpan = $('<span>').addClass('visually-hidden').text('Edit');
+                                        const editAnchorText = 'Edit';
+                                        const thirdDropdownLi = $('<li>');
+                                        const deleteAnchor = $('<a>')
+                                            .addClass('ew-row-link ew-delete dropdown-item')
+                                            .attr('data-ew-action', 'inline-delete')
+                                            .attr('data-caption', 'Delete')
+                                            .attr('href', `${parentUrl}${tableName}Delete/${rowID}`);
+                                        const deleteAnchorIcon = $('<i>').addClass('fa-solid fa-trash ew-icon me-2').attr('data-phrase', 'DeleteLink');
+                                        const deleteAnchorSpan = $('<span>').addClass('visually-hidden').text('Delete');
+                                        const deleteAnchorText = 'Delete';
+                                        deleteAnchorIcon.append(deleteAnchorSpan);
+                                        deleteAnchor.append(deleteAnchorIcon);
+                                        deleteAnchor.append(deleteAnchorText);
+                                        thirdDropdownLi.append(deleteAnchor);
+                                        editAnchorIcon.append(editAnchorSpan);
+                                        editAnchor.append(editAnchorIcon);
+                                        editAnchor.append(editAnchorText);
+                                        secondDropdownLi.append(editAnchor);
+                                        dropdownUl.append(secondDropdownLi);
+                                        dropdownUl.append(thirdDropdownLi);
+                                    }
+                                    dropdownButtonIcon.append(dropdownButtonIconSpan);
+                                    dropdownButton.append(dropdownButtonIcon);
+                                    buttonDropdownDiv.append(dropdownButton);
+                                    buttonDropdownDiv.append(dropdownUl);
+                                    buttonsTd.append(buttonDropdownDiv);
+                                    tr.append(buttonsTd);
+
+                                    // second td for sequence
+                                    const sequenceTd = $('<td>').addClass('ew-list-option-body text-nowrap').attr('data-name', 'sequence');
+                                    const sequenceNumberString = (rowIndex + 1).toString() + '.';
+                                    const sequenceSpan = $('<span>').text(sequenceNumberString);
+                                    sequenceTd.append(sequenceSpan);
+                                    tr.append(sequenceTd);
+
+                                    // remaining td for each column
+                                    for (const columnName of Object.keys(row)) {
+                                        const dataTd = $('<td>');
+                                        const columnValue = row[columnName];
+                                        if (columnName === "Image") {
+                                            dataTd.addClass("text-center");
+                                            if (columnValue !== null) {
+                                                const individualCodeNumber = columnValue.split('-')[0];
+                                                const imageUrl = `${baseUrl}${uploadFolderName}/${individualCodeNumber}/${columnValue}`;
+                                                const anchorLink = $('<a>', {
+                                                    href: imageUrl,
+                                                    target: '_blank'
+                                                });
+                                                anchorLink.text("Image");
+                                                dataTd.append(anchorLink);
+                                            } else {
+                                                const dataSpan = $('<span>').text(columnValue);
+                                                dataTd.append(dataSpan);
+                                            }
+                                        } else if (columnName === "DateOfIssue" || columnName === "DateOfExpiry") {
+                                            const dataSpan = $('<span class="text-nowrap">').text(columnValue);
+                                            dataTd.append(dataSpan);
+                                        } else {
+                                            const dataSpan = $('<span>').text(columnValue);
+                                            dataTd.append(dataSpan);
+                                        }
+                                        tr.append(dataTd);
+                                    }
+                                    tbody.append(tr);
+                                }
+                            } else {
+                                const columnsCount = $('#ForAdminTable th.ew-table-header-cell').length;
+                                for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+                                    const tr = $('<tr>'); // create a new tr element 
+
+                                    // 1 is for buttons dropdown(for edit) column and 1 for sequence number column
+                                    const emptyTdWithColspan = $('<td>').html('&nbsp;').attr('colspan', 2);
+                                    tr.append(emptyTdWithColspan);
+                                    for (let columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
+                                        const emptyTd = $('<td>').html('&nbsp;');
+                                        tr.append(emptyTd);
+                                    }
+                                    tbody.append(tr);
+                                }
+                            }
+                        } else {
+                            // Handle the error
+                            ew.showToast(response.errorMessage);
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        // Handle the error
+                        ew.showToast(errorThrown);
+                    }
+                });
+            } else {
+                // Handle the error
+                ew.showToast(response.errorMessage);
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            // Handle the error
+            ew.showToast(errorThrown);
+        }
+    });
+
+    // gmandayu: notification need to read.
+    const getUnreadNotificationUrl = `${parentUrl}api/Notification/unread-notification`;
+    function loadPage() {
+        $.ajax({
+            url: getUnreadNotificationUrl,
+            method: 'GET',
+            success: function(response) {
+                const notificationIcon = document.querySelector('.nav-icon.fa-bell');
+                if(response.success)
+                {
+                    notificationIcon.classList.add('animate');
+                }
+                else 
+                {
+                    notificationIcon.classList.remove('animate');
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Kesalahan saat memuat notifikasi:', errorThrown);
+            }
+        });
+    }
+    $(document).ready(function() {
+        loadPage();
+    });
+});
+</script>
+}

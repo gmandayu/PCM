@@ -1,0 +1,452 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (crewFormalEducationForAdminSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!crewFormalEducationForAdminSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(crewFormalEducationForAdminSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { CrewFormalEducationForAdmin: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fCrewFormalEducationForAdminsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCrewFormalEducationForAdminsearch")
+        .setPageId("search")
+@if (crewFormalEducationForAdminSearch.IsModal && crewFormalEducationForAdminSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["EducationLevel", [], fields.EducationLevel.isInvalid],
+            ["SchoolName", [], fields.SchoolName.isInvalid],
+            ["City", [], fields.City.isInvalid],
+            ["Attachment", [], fields.Attachment.isInvalid],
+            ["StartDate", [], fields.StartDate.isInvalid],
+            ["EndDate", [], fields.EndDate.isInvalid],
+            ["MTCrewID", [], fields.MTCrewID.isInvalid],
+            ["CreatedByUserID", [ew.Validators.integer], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [ew.Validators.integer], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "EducationLevel": @Html.Raw(crewFormalEducationForAdminSearch.EducationLevel.ToClientList(crewFormalEducationForAdminSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (crewFormalEducationForAdminSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@crewFormalEducationForAdminSearch.ShowPageHeader()
+@crewFormalEducationForAdminSearch.ShowMessages()
+<form name="fCrewFormalEducationForAdminsearch" id="fCrewFormalEducationForAdminsearch" class="@(crewFormalEducationForAdminSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (crewFormalEducationForAdminSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (crewFormalEducationForAdminSearch.EducationLevel.Visible) { // crewFormalEducationForAdminSearch.EducationLevel.Visible (begin)
+    <div id="r_EducationLevel" class="row" @Html.Raw(crewFormalEducationForAdminSearch.EducationLevel.RowAttributes)>
+        <label for="x_EducationLevel" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_EducationLevel">@Html.Raw(crewFormalEducationForAdminSearch.EducationLevel.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EducationLevel" id="z_EducationLevel" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.EducationLevel.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_EducationLevel" class="ew-search-field ew-search-field-single">
+    <select
+        id="x_EducationLevel"
+        name="x_EducationLevel"
+        class="form-select ew-select@(crewFormalEducationForAdminSearch.EducationLevel.IsInvalidClass)"
+        data-select2-id="fCrewFormalEducationForAdminsearch_x_EducationLevel"
+        data-table="CrewFormalEducationForAdmin"
+        data-field="x_EducationLevel"
+        data-value-separator="@(crewFormalEducationForAdminSearch.EducationLevel.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(crewFormalEducationForAdminSearch.EducationLevel.PlaceHolder))"
+        @Html.Raw(crewFormalEducationForAdminSearch.EducationLevel.EditAttributes)>
+        @(crewFormalEducationForAdminSearch.EducationLevel.SelectOptionListHtml("x_EducationLevel"))
+    </select>
+    <div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.EducationLevel.GetErrorMessage(false))</div>
+<script>
+loadjs.ready("fCrewFormalEducationForAdminsearch", function() {
+    var options = { name: "x_EducationLevel", selectId: "fCrewFormalEducationForAdminsearch_x_EducationLevel" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCrewFormalEducationForAdminsearch.lists.EducationLevel?.lookupOptions.length) {
+        options.data = { id: "x_EducationLevel", form: "fCrewFormalEducationForAdminsearch" };
+    } else {
+        options.ajax = { id: "x_EducationLevel", form: "fCrewFormalEducationForAdminsearch", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewFormalEducationForAdmin.fields.EducationLevel.selectOptions);
+    ew.createSelect(options);
+});
+</script>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.EducationLevel.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.SchoolName.Visible) { // crewFormalEducationForAdminSearch.SchoolName.Visible (begin)
+    <div id="r_SchoolName" class="row" @Html.Raw(crewFormalEducationForAdminSearch.SchoolName.RowAttributes)>
+        <label for="x_SchoolName" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_SchoolName">@Html.Raw(crewFormalEducationForAdminSearch.SchoolName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_SchoolName" id="z_SchoolName" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.SchoolName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_SchoolName" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.SchoolName.InputTextType)" name="x_SchoolName" id="x_SchoolName" data-table="CrewFormalEducationForAdmin" data-field="x_SchoolName" value="@Html.Raw(crewFormalEducationForAdminSearch.SchoolName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.SchoolName.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.SchoolName.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.SchoolName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.SchoolName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.SchoolName.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.City.Visible) { // crewFormalEducationForAdminSearch.City.Visible (begin)
+    <div id="r_City" class="row" @Html.Raw(crewFormalEducationForAdminSearch.City.RowAttributes)>
+        <label for="x_City" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_City">@Html.Raw(crewFormalEducationForAdminSearch.City.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_City" id="z_City" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.City.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_City" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.City.InputTextType)" name="x_City" id="x_City" data-table="CrewFormalEducationForAdmin" data-field="x_City" value="@Html.Raw(crewFormalEducationForAdminSearch.City.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.City.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.City.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.City.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.City.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.City.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.Attachment.Visible) { // crewFormalEducationForAdminSearch.Attachment.Visible (begin)
+    <div id="r_Attachment" class="row" @Html.Raw(crewFormalEducationForAdminSearch.Attachment.RowAttributes)>
+        <label class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_Attachment">@Html.Raw(crewFormalEducationForAdminSearch.Attachment.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Attachment" id="z_Attachment" value="LIKE">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.Attachment.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_Attachment" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.Attachment.InputTextType)" name="x_Attachment" id="x_Attachment" data-table="CrewFormalEducationForAdmin" data-field="x_Attachment" value="@Html.Raw(crewFormalEducationForAdminSearch.Attachment.EditValue)" size="30" maxlength="150" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.Attachment.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.Attachment.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.Attachment.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.Attachment.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.Attachment.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.StartDate.Visible) { // crewFormalEducationForAdminSearch.StartDate.Visible (begin)
+    <div id="r_StartDate" class="row" @Html.Raw(crewFormalEducationForAdminSearch.StartDate.RowAttributes)>
+        <label for="x_StartDate" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_StartDate">@Html.Raw(crewFormalEducationForAdminSearch.StartDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_StartDate" id="z_StartDate" value="=">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.StartDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_StartDate" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.StartDate.InputTextType)" name="x_StartDate" id="x_StartDate" data-table="CrewFormalEducationForAdmin" data-field="x_StartDate" value="@Html.Raw(crewFormalEducationForAdminSearch.StartDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.StartDate.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.StartDate.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.StartDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.StartDate.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.StartDate.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.EndDate.Visible) { // crewFormalEducationForAdminSearch.EndDate.Visible (begin)
+    <div id="r_EndDate" class="row" @Html.Raw(crewFormalEducationForAdminSearch.EndDate.RowAttributes)>
+        <label for="x_EndDate" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_EndDate">@Html.Raw(crewFormalEducationForAdminSearch.EndDate.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_EndDate" id="z_EndDate" value="=">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.EndDate.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_EndDate" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.EndDate.InputTextType)" name="x_EndDate" id="x_EndDate" data-table="CrewFormalEducationForAdmin" data-field="x_EndDate" value="@Html.Raw(crewFormalEducationForAdminSearch.EndDate.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.EndDate.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.EndDate.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.EndDate.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.EndDate.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.EndDate.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.MTCrewID.Visible) { // crewFormalEducationForAdminSearch.MTCrewID.Visible (begin)
+    <div id="r_MTCrewID" class="row" @Html.Raw(crewFormalEducationForAdminSearch.MTCrewID.RowAttributes)>
+        <label for="x_MTCrewID" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_MTCrewID">@Html.Raw(crewFormalEducationForAdminSearch.MTCrewID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_MTCrewID" id="z_MTCrewID" value="=">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.MTCrewID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_MTCrewID" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.MTCrewID.InputTextType)" name="x_MTCrewID" id="x_MTCrewID" data-table="CrewFormalEducationForAdmin" data-field="x_MTCrewID" value="@Html.Raw(crewFormalEducationForAdminSearch.MTCrewID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.MTCrewID.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.MTCrewID.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.MTCrewID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.MTCrewID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.MTCrewID.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.CreatedByUserID.Visible) { // crewFormalEducationForAdminSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(crewFormalEducationForAdminSearch.CreatedByUserID.RowAttributes)>
+        <label for="x_CreatedByUserID" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_CreatedByUserID">@Html.Raw(crewFormalEducationForAdminSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_CreatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.CreatedByUserID.InputTextType)" name="x_CreatedByUserID" id="x_CreatedByUserID" data-table="CrewFormalEducationForAdmin" data-field="x_CreatedByUserID" value="@Html.Raw(crewFormalEducationForAdminSearch.CreatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.CreatedByUserID.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.CreatedByUserID.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.CreatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.CreatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.CreatedByUserID.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.CreatedDateTime.Visible) { // crewFormalEducationForAdminSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(crewFormalEducationForAdminSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_CreatedDateTime">@Html.Raw(crewFormalEducationForAdminSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="CrewFormalEducationForAdmin" data-field="x_CreatedDateTime" value="@Html.Raw(crewFormalEducationForAdminSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.CreatedDateTime.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!crewFormalEducationForAdminSearch.CreatedDateTime.ReadOnly && !crewFormalEducationForAdminSearch.CreatedDateTime.Disabled && !crewFormalEducationForAdminSearch.CreatedDateTime.EditAttrs.Is("readonly") && !crewFormalEducationForAdminSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewFormalEducationForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewFormalEducationForAdminsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.CreatedDateTime.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.LastUpdatedByUserID.Visible) { // crewFormalEducationForAdminSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedByUserID.RowAttributes)>
+        <label for="x_LastUpdatedByUserID" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_LastUpdatedByUserID">@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.LastUpdatedByUserID.InputTextType)" name="x_LastUpdatedByUserID" id="x_LastUpdatedByUserID" data-table="CrewFormalEducationForAdmin" data-field="x_LastUpdatedByUserID" value="@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedByUserID.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.LastUpdatedByUserID.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.LastUpdatedByUserID.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedByUserID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.LastUpdatedByUserID.Visible (end) *@
+@if (crewFormalEducationForAdminSearch.LastUpdatedDateTime.Visible) { // crewFormalEducationForAdminSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(crewFormalEducationForAdminSearch.LeftColumnClass)"><span id="elh_CrewFormalEducationForAdmin_LastUpdatedDateTime">@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(crewFormalEducationForAdminSearch.RightColumnClass)">
+            <div @Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_CrewFormalEducationForAdmin_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(crewFormalEducationForAdminSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="CrewFormalEducationForAdmin" data-field="x_LastUpdatedDateTime" value="@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(crewFormalEducationForAdminSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(crewFormalEducationForAdminSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(crewFormalEducationForAdminSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!crewFormalEducationForAdminSearch.LastUpdatedDateTime.ReadOnly && !crewFormalEducationForAdminSearch.LastUpdatedDateTime.Disabled && !crewFormalEducationForAdminSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !crewFormalEducationForAdminSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCrewFormalEducationForAdminsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCrewFormalEducationForAdminsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* crewFormalEducationForAdminSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(crewFormalEducationForAdminSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(crewFormalEducationForAdminSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCrewFormalEducationForAdminsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (crewFormalEducationForAdminSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCrewFormalEducationForAdminsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fCrewFormalEducationForAdminsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(crewFormalEducationForAdminSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@crewFormalEducationForAdminSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("CrewFormalEducationForAdmin");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
