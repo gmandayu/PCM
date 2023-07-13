@@ -623,6 +623,18 @@ public class RejectSingleRequest
     public int crewID { get; set; }
 }
 
+/* Gmandayu: reject from MCU page.
+ * Code Updated: 13 July 2023
+ */
+public class RejectFinalRequest
+{
+    public string rejectReason { get; set; }
+
+    public string healthStatus { get; set; }
+
+    public int crewID { get; set; }
+}
+
 public class PersonalDataDerivedColumnResponse
 {
     public string Age { get; set; }
@@ -634,11 +646,11 @@ public class PersonalDataDerivedColumnResponse
     public dynamic[] SeaExperiences { get; set; }
 }
 
-public class CreateNotificationRequest
+public class InviteCrewRequest
 {
-    public string subject { get; set; }
+    public string inviteDateTime { get; set; }
 
-    public string body { get; set; }
+    public string notes { get; set; }
 
     public int crewID { get; set; }
 }
@@ -2079,6 +2091,45 @@ public partial class RegistrationController : ApiController
                                 jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
                                 return Json(jsonResponse);
                             }
+
+                            // send email start
+                            var emailTemplateCategory = "Crew Form 560 Submitted Succesfully";
+                            var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName, MTRank.Name AS RankAppliedFor FROM MTCrew INNER JOIN MTRank ON MTCrew.RankAppliedFor_RankID = MTRank.ID WHERE MTCrew.ID = '" + crewID.ToString() + "'");
+                            if (crewInfo["Email"] == null || crewInfo["FullName"] == null || crewInfo["RankAppliedFor"] == null)
+                            {
+                                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name, and rank applied for cannot be empty" : "Email, nama lengkap, dan rank yang akan dipilih crew tidak boleh kosong";
+                                return Json(jsonResponse);
+                            }
+                            var email = new Email();
+                            email.Sender = Config.SenderEmail;
+                            email.Recipient = crewInfo["Email"].ToString();
+                            var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                            if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                            {
+                                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                                return Json(jsonResponse);
+                            }
+                            email.Subject = emailTemplate["Subject"].ToString();
+                            email.Content = emailTemplate["Message"].ToString();
+                            email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                            email.ReplaceContent("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+                            if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                            {
+                                var smtpClient = new SmtpClient();
+                                smtpClient.CheckCertificateRevocation = false;
+                                Email.Mailer = smtpClient;
+                            }
+                            bool isEmailSent = false;
+                            Task.Run(async () =>
+                            {
+                                isEmailSent = await email.SendAsync();
+                            }).GetAwaiter().GetResult();
+                            if (!isEmailSent)
+                            {
+                                jsonResponse.errorMessage = email.SendError;
+                                return Json(jsonResponse);
+                            }
+                            // send email end
                             jsonResponse.success = true;
                             return Json(jsonResponse);
                         }
@@ -2237,13 +2288,24 @@ public partial class RegistrationController : ApiController
             string scheduleDateTime = documentCheckDateTimeRequest.scheduleDateTime;
             string notes = documentCheckDateTimeRequest.notes;
             IEnumerable<dynamic> deserializedCrewIDArray = (IEnumerable<dynamic>) JsonConvert.DeserializeObject(documentCheckDateTimeRequest.crewIDArray);
+            CultureInfo enCI = new CultureInfo("en-US", false);
+            CultureInfo idCI = new CultureInfo("id-ID", false);
+            DateTimeOffset dateTimeOffset;
+            var currentCI = (CurrentLanguage == "en-US") ? enCI : idCI;
+            if (!DateTimeOffset.TryParseExact(scheduleDateTime, "dd MMM yyyy HH:mm:sszzz", currentCI, DateTimeStyles.None, out dateTimeOffset))
+            {
+                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Date time must be in format dd MMM yyyy HH:mm:sszzz" : "Tanggal dan jam harus dalam format dd MMM yyyy HH:mm:sszzz";
+                return Json(jsonResponse);
+            }
+            string date = dateTimeOffset.ToString("dddd, dd MMMM yyyy", idCI);
+            string time = dateTimeOffset.ToString("HH.mm", idCI);
             try
             {
                 foreach (dynamic crewIDDynamic in deserializedCrewIDArray)
                 {
                     string crewID = crewIDDynamic.ToString();
                     string subject = "Checklist Invitation";
-                    string body = "Please come on " + scheduleDateTime + " for checklist process.";
+                    string body = "Please come on " + date + ", " + time + " at Patra Jasa Office Tower Lantai 22 Wing 3, Jl. Jend Gatot Subroto Kav. 32-34 Jaksel for the checklist process.";
                     if (notes != "")
                     {
                         body += " Notes: " + notes;
@@ -2320,6 +2382,46 @@ public partial class RegistrationController : ApiController
                         jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Create Crew Checklist" : "Gagal Membuat Daftar Seleksi Kru";
                         return Json(jsonResponse);
                     }
+
+                    // send email start
+                    var emailTemplateCategory = "Crew Checklist";
+                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName FROM MTCrew WHERE MTCrew.ID = '" + crewID + "'");
+                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name cannot be empty" : "Email, nama lengkap crew tidak boleh kosong";
+                        return Json(jsonResponse);
+                    }
+                    var email = new Email();
+                    email.Sender = Config.SenderEmail;
+                    email.Recipient = crewInfo["Email"].ToString();
+                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                        return Json(jsonResponse);
+                    }
+                    email.Subject = emailTemplate["Subject"].ToString();
+                    email.Content = emailTemplate["Message"].ToString();
+                    email.ReplaceContent("{{crew_fullname}}", crewInfo["FullName"].ToString());
+                    email.ReplaceContent("{{date}}", date);
+                    email.ReplaceContent("{{time}}", "Pukul " + time + " s/d Selesai");
+                    if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                    {
+                        var smtpClient = new SmtpClient();
+                        smtpClient.CheckCertificateRevocation = false;
+                        Email.Mailer = smtpClient;
+                    }
+                    bool isEmailSent = false;
+                    Task.Run(async () =>
+                    {
+                        isEmailSent = await email.SendAsync();
+                    }).GetAwaiter().GetResult();
+                    if (!isEmailSent)
+                    {
+                        jsonResponse.errorMessage = email.SendError;
+                        return Json(jsonResponse);
+                    }
+                    // send email end
                 }
                 jsonResponse.success = true;
                 return Json(jsonResponse);
@@ -2414,6 +2516,44 @@ public partial class RegistrationController : ApiController
                         jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
                         return Json(jsonResponse);
                     }
+                    // send email start
+                    var emailTemplateCategory = "Crew Permanently Rejected";
+                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName, MTRank.Name AS RankAppliedFor FROM MTCrew INNER JOIN MTRank ON MTCrew.RankAppliedFor_RankID = MTRank.ID WHERE MTCrew.ID = '" + crewID + "'");
+                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null || crewInfo["RankAppliedFor"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name, and rank applied for cannot be empty" : "Email, nama lengkap, dan rank yang akan dipilih crew tidak boleh kosong";
+                        return Json(jsonResponse);
+                    }
+                    var email = new Email();
+                    email.Sender = Config.SenderEmail;
+                    email.Recipient = crewInfo["Email"].ToString();
+                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                        return Json(jsonResponse);
+                    }
+                    email.Subject = emailTemplate["Subject"].ToString();
+                    email.Content = emailTemplate["Message"].ToString();
+                    email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                    email.ReplaceContent("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+                    if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                    {
+                        var smtpClient = new SmtpClient();
+                        smtpClient.CheckCertificateRevocation = false;
+                        Email.Mailer = smtpClient;
+                    }
+                    bool isEmailSent = false;
+                    Task.Run(async () =>
+                    {
+                        isEmailSent = await email.SendAsync();
+                    }).GetAwaiter().GetResult();
+                    if (!isEmailSent)
+                    {
+                        jsonResponse.errorMessage = email.SendError;
+                        return Json(jsonResponse);
+                    }
+                    // send email end
                 }
                 jsonResponse.success = true;
                 return Json(jsonResponse);
@@ -2447,6 +2587,17 @@ public partial class RegistrationController : ApiController
             try
             {
                 int affectedRows = 0;
+                CultureInfo enCI = new CultureInfo("en-US", false);
+                CultureInfo idCI = new CultureInfo("id-ID", false);
+                DateTimeOffset dateTimeOffset;
+                var currentCI = (CurrentLanguage == "en-US") ? enCI : idCI;
+                if (!DateTimeOffset.TryParseExact(mcuScheduleDateTime, "dd MMM yyyy HH:mm:sszzz", currentCI, DateTimeStyles.None, out dateTimeOffset))
+                {
+                    jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Date time must be in format dd MMM yyyy HH:mm:sszzz" : "Tanggal dan jam harus dalam format dd MMM yyyy HH:mm:sszzz";
+                    return Json(jsonResponse);
+                }
+                string date = dateTimeOffset.ToString("dddd, dd MMMM yyyy", idCI);
+                string time = dateTimeOffset.ToString("HH.mm", idCI);
                 affectedRows = Execute(
                     "UPDATE MTCrew " +
                     "SET EmployeeStatus = 'Candidate - MCU', " +
@@ -2491,7 +2642,7 @@ public partial class RegistrationController : ApiController
                     {
                         CrewID = crewID,
                         MTUserID = CurrentUserID(),
-                        McuScheduleDate = mcuScheduleDateTime,
+                        McuScheduleDate = dateTimeOffset,
                         McuLocation = mcuLocation,
                         CreatedByUserID = CurrentUserID(),
                         CreatedDateTime = DateTimeOffset.Now,
@@ -2505,7 +2656,7 @@ public partial class RegistrationController : ApiController
                     return Json(jsonResponse);
                 }
                 string subject = "MCU Invitation";
-                string body = "Please come on " + mcuScheduleDateTime + " at " + mcuLocation + " for MCU(Medical Check Up) process.";
+                string body = "Please come on " + date + ", " + time + " at " + mcuLocation + " for MCU(Medical Check Up) process.";
                 var row = ExecuteRow("SELECT MTUserID FROM MTCrew WHERE ID = '" + crewID + "'");
                 if (row.ContainsKey("MTUserID") && row["MTUserID"] != null)
                 {
@@ -2530,6 +2681,45 @@ public partial class RegistrationController : ApiController
                     jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
                     return Json(jsonResponse);
                 }
+
+                // send email start
+                var emailTemplateCategory = "Crew Medical Checkup Scheduling";
+                var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName FROM MTCrew WHERE MTCrew.ID = '" + crewID.ToString() + "'");
+                if (crewInfo["Email"] == null || crewInfo["FullName"] == null)
+                {
+                    jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name cannot be empty" : "Email, nama lengkap crew tidak boleh kosong";
+                    return Json(jsonResponse);
+                }
+                var email = new Email();
+                email.Sender = Config.SenderEmail;
+                email.Recipient = crewInfo["Email"].ToString();
+                var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                {
+                    jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                    return Json(jsonResponse);
+                }
+                email.Subject = emailTemplate["Subject"].ToString();
+                email.Content = emailTemplate["Message"].ToString();
+                email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                email.ReplaceContent("{{mcuDate}}", date + ", " + time + ", at " + mcuLocation);
+                if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                {
+                    var smtpClient = new SmtpClient();
+                    smtpClient.CheckCertificateRevocation = false;
+                    Email.Mailer = smtpClient;
+                }
+                bool isEmailSent = false;
+                Task.Run(async () =>
+                {
+                    isEmailSent = await email.SendAsync();
+                }).GetAwaiter().GetResult();
+                if (!isEmailSent)
+                {
+                    jsonResponse.errorMessage = email.SendError;
+                    return Json(jsonResponse);
+                }
+                // send email end
                 jsonResponse.success = true;
                 return Json(jsonResponse);
             }
@@ -2624,6 +2814,45 @@ public partial class RegistrationController : ApiController
                         jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
                         return Json(jsonResponse);
                     }
+
+                    // send email start
+                    var emailTemplateCategory = "Crew Permanently Rejected";
+                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName, MTRank.Name AS RankAppliedFor FROM MTCrew INNER JOIN MTRank ON MTCrew.RankAppliedFor_RankID = MTRank.ID WHERE MTCrew.ID = '" + crewID.ToString() + "'");
+                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null || crewInfo["RankAppliedFor"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name, and rank applied for cannot be empty" : "Email, nama lengkap, dan rank yang akan dipilih crew tidak boleh kosong";
+                        return Json(jsonResponse);
+                    }
+                    var email = new Email();
+                    email.Sender = Config.SenderEmail;
+                    email.Recipient = crewInfo["Email"].ToString();
+                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                        return Json(jsonResponse);
+                    }
+                    email.Subject = emailTemplate["Subject"].ToString();
+                    email.Content = emailTemplate["Message"].ToString();
+                    email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                    email.ReplaceContent("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+                    if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                    {
+                        var smtpClient = new SmtpClient();
+                        smtpClient.CheckCertificateRevocation = false;
+                        Email.Mailer = smtpClient;
+                    }
+                    bool isEmailSent = false;
+                    Task.Run(async () =>
+                    {
+                        isEmailSent = await email.SendAsync();
+                    }).GetAwaiter().GetResult();
+                    if (!isEmailSent)
+                    {
+                        jsonResponse.errorMessage = email.SendError;
+                        return Json(jsonResponse);
+                    }
+                    // send email end
                     jsonResponse.success = true;
                     return Json(jsonResponse);
                 }
@@ -2640,6 +2869,128 @@ public partial class RegistrationController : ApiController
             }
         }
         else
+        {
+            jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Not authorized" : "Tidak diizinkan";
+            return Json(jsonResponse);
+        }
+    }
+
+    /* 
+     * Gmandayu: reject crew from MCU page
+     * Code updated: 13 July 2023
+     */
+    [HttpPost("reject-final-crew")]
+    public IActionResult RejectFinal([FromBody] RejectFinalRequest rejectFinalRequest)
+    {
+        JsonResponse jsonResponse = new();
+        jsonResponse.success = false;
+        jsonResponse.data = new object();
+        jsonResponse.errorMessage = "";
+        if (IsLoggedIn())
+        {
+            string rejectReason = rejectFinalRequest.rejectReason;
+            string healthStatus = rejectFinalRequest.healthStatus;
+            int crewID = rejectFinalRequest.crewID;
+            try
+            {
+                int affectedRows = 0; string notificationSubject = "", notificationBody = "", currentStatus = "";
+                var row = ExecuteRow("SELECT EmployeeStatus FROM MTCrew WHERE ID = '" + crewID.ToString() + "'");
+                if (row.ContainsKey("EmployeeStatus") && row["EmployeeStatus"] != null)
+                {
+                    var oldEmployeeStatus = row["EmployeeStatus"].ToString();
+                    switch (healthStatus)
+                    {
+                        case "UnfitTemporary":
+                            affectedRows += Execute("UPDATE MTCrew " +
+                                "SET RejectedReason = @RejectedReason, " +
+                                "    RejectedDateTime = @RejectedDateTime, " +
+                                "    EmployeeStatus = 'Candidate - Temporary Rejected', " +
+                                "    LastUpdatedByUserID = @LastUpdatedByUserID, " +
+                                "    LastUpdatedDateTime = @LastUpdatedDateTime " +
+                                "WHERE ID = @CrewID;",
+                                new
+                                {
+                                    RejectedReason = rejectReason,
+                                    RejectedDateTime = DateTimeOffset.Now,
+                                    LastUpdatedByUserID = CurrentUserID(),
+                                    LastUpdatedDateTime = DateTimeOffset.Now,
+                                    CrewID = crewID
+                                }
+                            );
+                            notificationSubject = "Temporary Rejection Notification";
+                            notificationBody = "Thank you for taking the time to apply at our company. " +
+                                "\nAfter careful consideration, we regret to inform you that your application has not been successful for a moment. " +
+                                "\nRejected Reason: <b>" + rejectReason + "</b> " +
+                                "\nPlease wait for futher information. " +
+                                "\nThank you once again for your interest in joining our company.";
+                            currentStatus = "Candidate - Temporary Rejected";
+                            if (affectedRows == 0)
+                            {
+                                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Reject Crew" : "Gagal Menolak Kru";
+                                return Json(jsonResponse);
+                            }
+                            break;
+                        case "UnfitPermanent":
+                            affectedRows += Execute("UPDATE MTCrew " +
+                                "SET RejectedReason = @RejectedReason, " +
+                                "    RejectedDateTime = @RejectedDateTime, " +
+                                "    EmployeeStatus = 'Candidate - Rejected', " +
+                                "    LastUpdatedByUserID = @LastUpdatedByUserID, " +
+                                "    LastUpdatedDateTime = @LastUpdatedDateTime " +
+                                "WHERE ID = @CrewID;",
+                                new
+                                {
+                                    RejectedReason = rejectReason,
+                                    RejectedDateTime = DateTimeOffset.Now,
+                                    LastUpdatedByUserID = CurrentUserID(),
+                                    LastUpdatedDateTime = DateTimeOffset.Now,
+                                    CrewID = crewID
+                                }
+                            );
+                            notificationSubject = "Rejection Notification";
+                            notificationBody = "Thank you for taking the time to apply at our company. " +
+                                "After careful consideration, we regret to inform you that your application has not been successful. " +
+                                "We genuinely appreciate the effort and time you invested in applying for our company. " +
+                                "Thank you once again for your interest in joining our company.";
+                            currentStatus = "Candidate - Rejected";
+                            if (affectedRows == 0)
+                            {
+                                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Reject Crew" : "Gagal Menolak Kru";
+                                return Json(jsonResponse);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    affectedRows += QueryBuilder("TREmployeeStatus").Insert(new
+                    {
+                        MTCrewID = crewID,
+                        MTUserID = CurrentUserID(),
+                        PreviousStatus = oldEmployeeStatus,
+                        CurrentStatus = currentStatus,
+                        ChangedDateTime = DateTimeOffset.Now,
+                    });
+                    if (affectedRows == 0)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Update Crew Employee Status History" : "Gagal Mengubah Data Histori Status Karyawan Kru";
+                        return Json(jsonResponse);
+                    }
+                    jsonResponse.success = true;
+                    return Json(jsonResponse);
+                }
+                else 
+                {
+                    jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
+                    return Json(jsonResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                jsonResponse.errorMessage = ex.Message;
+                return Json(jsonResponse);
+            }
+        }
+        else 
         {
             jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Not authorized" : "Tidak diizinkan";
             return Json(jsonResponse);
@@ -3298,8 +3649,8 @@ public partial class RegistrationController : ApiController
     }
 
     // create new notification
-    [HttpPost("create-notification")]
-    public IActionResult CreateNotification([FromBody] CreateNotificationRequest createNotificationRequest)
+    [HttpPost("invite-crew")]
+    public IActionResult InviteCrew([FromBody] InviteCrewRequest inviteCrewRequest)
     {
         JsonResponse jsonResponse = new JsonResponse();
         jsonResponse.success = false;
@@ -3307,19 +3658,32 @@ public partial class RegistrationController : ApiController
         jsonResponse.errorMessage = "";
         if (IsLoggedIn())
         {
-            string subject = createNotificationRequest.subject;
-            string body = createNotificationRequest.body;
-            int crewID = createNotificationRequest.crewID;
+            string inviteDateTime = inviteCrewRequest.inviteDateTime;
+            string notes = inviteCrewRequest.notes;
+            int crewID = inviteCrewRequest.crewID;
             try
             {
                 int affectedRows = 0;
+                CultureInfo enCI = new CultureInfo("en-US", false);
+                CultureInfo idCI = new CultureInfo("id-ID", false);
+                DateTimeOffset dateTimeOffset;
+                var currentCI = (CurrentLanguage == "en-US") ? enCI : idCI;
+                if (!DateTimeOffset.TryParseExact(inviteDateTime, "dd MMM yyyy HH:mm:sszzz", currentCI, DateTimeStyles.None, out dateTimeOffset))
+                {
+                    jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Date time must be in format dd MMM yyyy HH:mm:sszzz" : "Tanggal dan jam harus dalam format dd MMM yyyy HH:mm:sszzz";
+                    return Json(jsonResponse);
+                }
+                string date = dateTimeOffset.ToString("dddd, dd MMMM yyyy", idCI);
+                string time = dateTimeOffset.ToString("HH.mm", idCI);
+                string body = "Please come on " + date + ", " + time + " at Patra Jasa Office Tower Lantai 22 Wing 3, Jl. Jend Gatot Subroto Kav. 32-34 Jaksel to continue the checklist process.";
+                body += (notes != "") ? "Notes: " + notes : "";
                 var row = ExecuteRow("SELECT MTUserID FROM MTCrew WHERE ID = '" + crewID.ToString() + "'");
                 if (row.ContainsKey("MTUserID") && row["MTUserID"] != null)
                 {
                     var userID = Convert.ToInt32(row["MTUserID"]);
                     affectedRows = QueryBuilder("TRNotification").Insert(new {
                         MTUserID = userID,
-                        Subject = subject,
+                        Subject = "Checklist Invitation",
                         Body = body,
                         CreatedByUserID = CurrentUserID(),
                         CreatedDateTime = DateTimeOffset.Now,
@@ -3331,6 +3695,45 @@ public partial class RegistrationController : ApiController
                         jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Create Notification" : "Gagal Membuat Notifikasi";
                         return Json(jsonResponse);
                     }
+
+                    // send email start
+                    var emailTemplateCategory = "Crew Checklist Invite";
+                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName FROM MTCrew WHERE MTCrew.ID = '" + crewID.ToString() + "'");
+                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name cannot be empty" : "Email, nama lengkap crew tidak boleh kosong";
+                        return Json(jsonResponse);
+                    }
+                    var email = new Email();
+                    email.Sender = Config.SenderEmail;
+                    email.Recipient = crewInfo["Email"].ToString();
+                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                        return Json(jsonResponse);
+                    }
+                    email.Subject = emailTemplate["Subject"].ToString();
+                    email.Content = emailTemplate["Message"].ToString();
+                    email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                    email.ReplaceContent("{{Checklist Invitation Date Time}}", date + ", " + time);
+                    if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                    {
+                        var smtpClient = new SmtpClient();
+                        smtpClient.CheckCertificateRevocation = false;
+                        Email.Mailer = smtpClient;
+                    }
+                    bool isEmailSent = false;
+                    Task.Run(async () =>
+                    {
+                        isEmailSent = await email.SendAsync();
+                    }).GetAwaiter().GetResult();
+                    if (!isEmailSent)
+                    {
+                        jsonResponse.errorMessage = email.SendError;
+                        return Json(jsonResponse);
+                    }
+                    // send email end
                     jsonResponse.success = true;
                     return Json(jsonResponse);
                 }
@@ -3660,8 +4063,8 @@ public partial class RegistrationController : ApiController
                     // gmandayu: code ends here
 
                     // FIXME:
-                    string subject = "Final Acceptence Ceremonial Invitation";
-                    string body = "Please come on Final Acceptence Ceremonial Invitation process.";
+                    string subject = "Final Acceptance Ceremonial Invitation";
+                    string body = "Please come on Final Acceptance Ceremonial Invitation process.";
                     var row = ExecuteRow("SELECT MTUserID FROM MTCrew WHERE ID = '" + crewID + "'");
                     if (row.ContainsKey("MTUserID") && row["MTUserID"] != null)
                     {
@@ -3687,6 +4090,46 @@ public partial class RegistrationController : ApiController
                         jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
                         return Json(jsonResponse);
                     }
+
+                    // send email start
+                    var emailTemplateCategory = "Crew Accepted";
+                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName, MTRank.Name AS RankAppliedFor FROM MTCrew INNER JOIN MTRank ON MTCrew.RankAppliedFor_RankID = MTRank.ID WHERE MTCrew.ID = '" + crewID + "'");
+                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null || crewInfo["RankAppliedFor"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name, and rank applied for cannot be empty" : "Email, nama lengkap, dan rank yang akan dipilih crew tidak boleh kosong";
+                        return Json(jsonResponse);
+                    }
+                    var email = new Email();
+                    email.Sender = Config.SenderEmail;
+                    email.Recipient = crewInfo["Email"].ToString();
+                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                        return Json(jsonResponse);
+                    }
+                    email.Subject = emailTemplate["Subject"].ToString();
+                    email.Subject = email.Subject.Replace("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+                    email.Content = emailTemplate["Message"].ToString();
+                    email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                    email.ReplaceContent("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+                    if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                    {
+                        var smtpClient = new SmtpClient();
+                        smtpClient.CheckCertificateRevocation = false;
+                        Email.Mailer = smtpClient;
+                    }
+                    bool isEmailSent = false;
+                    Task.Run(async () =>
+                    {
+                        isEmailSent = await email.SendAsync();
+                    }).GetAwaiter().GetResult();
+                    if (!isEmailSent)
+                    {
+                        jsonResponse.errorMessage = email.SendError;
+                        return Json(jsonResponse);
+                    }
+                    // send email end
 
                     // endpoint return
                     jsonResponse.success = true;
@@ -3795,6 +4238,45 @@ public partial class RegistrationController : ApiController
                         jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Update Crew Employee Status History" : "Gagal Mengubah Data Histori Status Karyawan Kru";
                         return Json(jsonResponse);
                     }
+
+                    // send email start
+                    var emailTemplateCategory = "Crew Form 560 Need to Revised";
+                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, MTCrew.FullName FROM MTCrew WHERE MTCrew.ID = '" + crewId.ToString() + "'");
+                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew email, full name cannot be empty" : "Email, nama lengkap crew tidak boleh kosong";
+                        return Json(jsonResponse);
+                    }
+                    var email = new Email();
+                    email.Sender = Config.SenderEmail;
+                    email.Recipient = crewInfo["Email"].ToString();
+                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                    {
+                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Email template not found or the subject and message column is empty" : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                        return Json(jsonResponse);
+                    }
+                    email.Subject = emailTemplate["Subject"].ToString();
+                    email.Content = emailTemplate["Message"].ToString();
+                    email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                    email.ReplaceContent("{{revised note}}", revisedReason);
+                    if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+                    {
+                        var smtpClient = new SmtpClient();
+                        smtpClient.CheckCertificateRevocation = false;
+                        Email.Mailer = smtpClient;
+                    }
+                    bool isEmailSent = false;
+                    Task.Run(async () =>
+                    {
+                        isEmailSent = await email.SendAsync();
+                    }).GetAwaiter().GetResult();
+                    if (!isEmailSent)
+                    {
+                        jsonResponse.errorMessage = email.SendError;
+                        return Json(jsonResponse);
+                    }
+                    // send email end
                 }
                 jsonResponse.success = true;
                 return Json(jsonResponse);

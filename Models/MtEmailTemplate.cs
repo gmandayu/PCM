@@ -59,6 +59,8 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> _Message;
 
+        public readonly DbField<SqlDbType> Description;
+
         // Constructor
         public MtEmailTemplate()
         {
@@ -171,6 +173,27 @@ public partial class PCM {
                 IsUpload = false
             };
             Fields.Add("Message", _Message);
+
+            // Description
+            Description = new (this, "x_Description", 203, SqlDbType.NText) {
+                Name = "Description",
+                Expression = "[Description]",
+                BasicSearchExpression = "[Description]",
+                DateTimeFormat = -1,
+                VirtualExpression = "[Description]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXTAREA",
+                InputTextType = "text",
+                Sortable = false, // Allow sort
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("MTEmailTemplate", "Description", "CustomMsg"),
+                IsUpload = false
+            };
+            Fields.Add("Description", Description);
 
             // Call Table Load event
             TableLoad();
@@ -715,6 +738,7 @@ public partial class PCM {
                 Category.DbValue = row["Category"]; // Set DB value only
                 Subject.DbValue = row["Subject"]; // Set DB value only
                 _Message.DbValue = row["Message"]; // Set DB value only
+                Description.DbValue = row["Description"]; // Set DB value only
             } catch {}
         }
 
@@ -1036,6 +1060,7 @@ public partial class PCM {
             Category.SetDbValue(dr["Category"]);
             Subject.SetDbValue(dr["Subject"]);
             _Message.SetDbValue(dr["Message"]);
+            Description.SetDbValue(dr["Description"]);
         }
 
         // Render list content
@@ -1070,6 +1095,8 @@ public partial class PCM {
 
             // Message
 
+            // Description
+
             // Id
             Id.ViewValue = Id.CurrentValue;
             Id.ViewValue = FormatNumber(Id.ViewValue, Id.FormatPattern);
@@ -1087,6 +1114,10 @@ public partial class PCM {
             _Message.ViewValue = _Message.CurrentValue;
             _Message.ViewCustomAttributes = "";
 
+            // Description
+            Description.ViewValue = Description.CurrentValue;
+            Description.ViewCustomAttributes = "";
+
             // Id
             Id.HrefValue = "";
             Id.TooltipValue = "";
@@ -1102,6 +1133,10 @@ public partial class PCM {
             // Message
             _Message.HrefValue = "";
             _Message.TooltipValue = "";
+
+            // Description
+            Description.HrefValue = "";
+            Description.TooltipValue = "";
 
             // Call Row Rendered event
             RowRendered();
@@ -1142,6 +1177,11 @@ public partial class PCM {
             _Message.EditValue = _Message.CurrentValue; // DN
             _Message.PlaceHolder = RemoveHtml(_Message.Caption);
 
+            // Description
+            Description.SetupEditAttributes();
+            Description.EditValue = Description.CurrentValue; // DN
+            Description.PlaceHolder = RemoveHtml(Description.Caption);
+
             // Call Row Rendered event
             RowRendered();
         }
@@ -1178,6 +1218,7 @@ public partial class PCM {
                         doc.ExportCaption(Category);
                         doc.ExportCaption(Subject);
                         doc.ExportCaption(_Message);
+                        doc.ExportCaption(Description);
                     } else {
                         doc.ExportCaption(Id);
                         doc.ExportCaption(Category);
@@ -1222,6 +1263,7 @@ public partial class PCM {
                             await doc.ExportField(Category);
                             await doc.ExportField(Subject);
                             await doc.ExportField(_Message);
+                            await doc.ExportField(Description);
                         } else {
                             await doc.ExportField(Id);
                             await doc.ExportField(Category);

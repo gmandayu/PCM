@@ -4787,7 +4787,7 @@ public partial class PCM {
                             LastUpdatedDateTime = DateTimeOffset.Now,
                         });
                 }
-                if (item.AssistantManagerPdeReviewed && CrewingManagerApproval)
+                if (item.AssistantManagerPdeReviewed && item.CrewingManagerApproval)
                 {
                     flag = 1; flagDescription = "Selesai";
                     affectedRows = QueryBuilder("MTRecruitmentStatusTracking")

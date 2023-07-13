@@ -2080,14 +2080,20 @@ loadjs.ready("load", function() {
                                             return str.replace('zzz', offset);
                                         }
                                         $('#invite-modal-dialog').on('hidden.bs.modal', function() {
-                                            $('#x_InviteDateTime').val(null);
-                                            $('#x_InviteNotes').val(null);
+                                            // $('#x_InviteDateTime').val(null);
+                                            // $('#x_InviteNotes').val(null);
                                         });
-                                        const createNotificationUrl = "create-notification";
+                                        const inviteCrewUrl = "invite-crew";
                                         $("#btn-add-invite-datetime").click(function() {
                                             const inviteDateTimeValue = $('#x_InviteDateTime').val();
+                                            const inviteDateTimeFormattedValue = inviteDateTimeValue.replace(/\sGMT ([+\-]\d+)/g, function(match, offset) {
+                                                const hours = parseInt(offset);
+                                                const sign = hours >= 0 ? '+' : '-';
+                                                const formattedOffset = sign + Math.abs(hours).toString().padStart(2, '0') + ':00';
+                                                return formattedOffset;
+                                            });
                                             const inviteDateTimeCaption = $(`label[for="x_InviteDateTime"]`).text();
-                                            if (inviteDateTimeValue == '') {
+                                            if (inviteDateTimeFormattedValue == '') {
                                                 if (selectedLanguage.id === 'en-US') {
                                                     ew.showToast(`Please enter required field - ${inviteDateTimeCaption}`);
                                                 } else {
@@ -2096,7 +2102,7 @@ loadjs.ready("load", function() {
                                                 return;
                                             }
                                             const currentDate = new Date();
-                                            const inviteDateObject = new Date(inviteDateTimeValue);
+                                            const inviteDateObject = new Date(inviteDateTimeFormattedValue);
                                             if (isNaN(inviteDateObject)) {
                                                 if (selectedLanguage.id === 'en-US') {
                                                     ew.showToast(`Invalid date time - ${inviteDateTimeCaption}`);
@@ -2113,19 +2119,16 @@ loadjs.ready("load", function() {
                                                 }
                                                 return;
                                             }
-                                            const createNotificationRequest = {
-                                                subject: `Checklist Invitation`,
-                                                body: `Please come on ${inviteDateTimeValue} for checklist process.`,
+                                            const inviteNotesValue = ($('#x_InviteNotes').val() !== '') ? $('#x_InviteNotes').val() : '';
+                                            const inviteCrewRequest = {
+                                                inviteDateTime: inviteDateTimeFormattedValue,
+                                                notes: inviteNotesValue,
                                                 crewID: parseInt(crewData.ID),
                                             };
-                                            const inviteNotesValue = $('#x_InviteNotes').val();
-                                            if (inviteNotesValue !== '') {
-                                                createNotificationRequest.body += ` Notes: ${inviteNotesValue}`;
-                                            }
                                             $.ajax({
                                                 method: "POST",
-                                                url: `${parentUrl}api/Registration/${createNotificationUrl}`,
-                                                data: JSON.stringify(createNotificationRequest),
+                                                url: `${parentUrl}api/Registration/${inviteCrewUrl}`,
+                                                data: JSON.stringify(inviteCrewRequest),
                                                 contentType: "application/json",
                                                 success: function(response) {
                                                     if (response.success) {
@@ -2206,8 +2209,8 @@ loadjs.ready("load", function() {
                                             $('#mcu-modal-dialog').modal('show');
                                         });
                                         $('#mcu-modal-dialog').on('hidden.bs.modal', function() {
-                                            $('#x_MCUScheduleDateTime').val(null);
-                                            $('#x_MCULocation').val(null);
+                                            // $('#x_MCUScheduleDateTime').val(null);
+                                            // $('#x_MCULocation').val(null);
                                         });
                                         $('#btn-invoke-reject-modal').click(function() {
                                             $('#reject-modal-dialog').modal('show');

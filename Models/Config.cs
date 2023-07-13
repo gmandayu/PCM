@@ -78,13 +78,13 @@ public partial class PCM {
 
         public const string ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}"; // Project ID (GUID)
 
-        public static string RandomKey = "rgCbl9EiMDrKOrdE"; // Random key for encryption
+        public static string RandomKey = "Hml7Bl1mar2D9dON"; // Random key for encryption
 
         public static string EncryptionKey = ""; // Encryption key for data protection
 
         public static string ProjectStylesheetFilename = "css/PCM.css"; // Project stylesheet file name (relative to wwwroot)
 
-        public static bool UseCompressedStylesheet = false; // Compressed stylesheet
+        public static bool UseCompressedStylesheet = true; // Compressed stylesheet
 
         public static string FontAwesomeStylesheet = "plugins/fontawesome-free/css/all.min.css"; // Font Awesome Free stylesheet
 
@@ -615,7 +615,7 @@ public partial class PCM {
 
         public static string SmtpServerPassword = ""; // SMTP server password
 
-        public static string SenderEmail = "noreply@pertamina.co.id"; // Sender email
+        public static string SenderEmail = "martinus@mitral.co.id"; // Sender email
 
         public static string RecipientEmail = ""; // Recipient email
 

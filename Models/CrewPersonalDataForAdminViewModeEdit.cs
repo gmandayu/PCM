@@ -4379,6 +4379,26 @@ public partial class PCM {
                     return JsonBoolResult.FalseResult;
                 }
             }
+
+            // Check field with unique index (Email)
+            if (!Empty(_Email.CurrentValue)) {
+                string filterChk = "(dbo.MTCrew.Email = '" + AdjustSql(_Email.CurrentValue, DbId) + "')";
+                filterChk = filterChk + " AND NOT (" + filter + ")";
+                try {
+                    using var rschk = await LoadReader(filterChk);
+                    if (rschk?.HasRows ?? false) {
+                        var idxErrMsg = Language.Phrase("DupIndex").Replace("%f", _Email.Caption);
+                        idxErrMsg = idxErrMsg.Replace("%v", ConvertToString(_Email.CurrentValue));
+                        FailureMessage = idxErrMsg;
+                        return JsonBoolResult.FalseResult;
+                    }
+                } catch (Exception e) {
+                    if (Config.Debug)
+                        throw;
+                    FailureMessage = e.Message;
+                    return JsonBoolResult.FalseResult;
+                }
+            }
             if (SocialSecurityImage.Visible && !SocialSecurityImage.Upload.KeepFile) {
                 SocialSecurityImage.UploadPath = SocialSecurityImage.GetUploadPath();
                 List<string> oldFiles = Empty(SocialSecurityImage.Upload.DbValue) ? new () : new () { SocialSecurityImage.HtmlDecode(SocialSecurityImage.Upload.DbValue) };

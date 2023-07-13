@@ -1382,7 +1382,7 @@ loadjs.ready("load", function() {
                             $('#reject-modal-dialog').modal('show');
                         });
                         $('#schedule-modal-dialog').on('hidden.bs.modal', function() {
-                            $('#x_DocumentCheckDateTime').val(null);
+                            // $('#x_DocumentCheckDateTime').val(null);
                         });
                         $('#revise-modal-dialog').on('hidden.bs.modal', function() {
                             $('#x_RevisedReason').val(null);
@@ -1445,8 +1445,14 @@ loadjs.ready("load", function() {
                         const addDocumentCheckDateTimeApiUrl = "add-document-check-date-time";
                         $("#btn-add-schedule").click(function() {
                             const documentCheckDateTimeValue = $('#x_DocumentCheckDateTime').val();
+                            const documentCheckDateTimeFormattedValue = documentCheckDateTimeValue.replace(/\sGMT ([+\-]\d+)/g, function(match, offset) {
+                                const hours = parseInt(offset);
+                                const sign = hours >= 0 ? '+' : '-';
+                                const formattedOffset = sign + Math.abs(hours).toString().padStart(2, '0') + ':00';
+                                return formattedOffset;
+                            });
                             const documentCheckDateTimeCaption = $(`label[for="x_DocumentCheckDateTime"]`).text();
-                            if (documentCheckDateTimeValue == '') {
+                            if (documentCheckDateTimeFormattedValue == '') {
                                 if (selectedLanguage.id === 'en-US') {
                                     ew.showToast(`Please enter required field - ${documentCheckDateTimeCaption}`);
                                 } else {
@@ -1454,7 +1460,7 @@ loadjs.ready("load", function() {
                                 }
                             } else {
                                 const currentDate = new Date();
-                                const documentCheckDateObject = new Date(documentCheckDateTimeValue);
+                                const documentCheckDateObject = new Date(documentCheckDateTimeFormattedValue);
                                 if (isNaN(documentCheckDateObject)) {
                                     if (selectedLanguage.id === 'en-US') {
                                         ew.showToast(`Invalid date time - ${documentCheckDateTimeCaption}`);
@@ -1472,7 +1478,7 @@ loadjs.ready("load", function() {
                                     const notesValue = $('#x_DocumentCheckNotes').val();
                                     const notes = (notesValue !== '') ? notesValue : '';
                                     const documentCheckDateTimeRequest = {
-                                        scheduleDateTime: documentCheckDateTimeValue,
+                                        scheduleDateTime: documentCheckDateTimeFormattedValue,
                                         notes: notes,
                                         crewIDArray: JSON.stringify(arrDataKey),
                                     };
