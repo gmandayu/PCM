@@ -78,7 +78,7 @@ public partial class PCM {
 
         public const string ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}"; // Project ID (GUID)
 
-        public static string RandomKey = "Hml7Bl1mar2D9dON"; // Random key for encryption
+        public static string RandomKey = "gu6kvNwICOSqypGs"; // Random key for encryption
 
         public static string EncryptionKey = ""; // Encryption key for data protection
 

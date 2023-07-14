@@ -630,8 +630,6 @@ public class RejectFinalRequest
 {
     public string rejectReason { get; set; }
 
-    public string healthStatus { get; set; }
-
     public int crewID { get; set; }
 }
 
@@ -2882,119 +2880,208 @@ public partial class RegistrationController : ApiController
     [HttpPost("reject-final-crew")]
     public IActionResult RejectFinal([FromBody] RejectFinalRequest rejectFinalRequest)
     {
-        JsonResponse jsonResponse = new();
-        jsonResponse.success = false;
-        jsonResponse.data = new object();
-        jsonResponse.errorMessage = "";
-        if (IsLoggedIn())
+        JsonResponse jsonResponse = new()
         {
-            string rejectReason = rejectFinalRequest.rejectReason;
-            string healthStatus = rejectFinalRequest.healthStatus;
-            int crewID = rejectFinalRequest.crewID;
-            try
-            {
-                int affectedRows = 0; string notificationSubject = "", notificationBody = "", currentStatus = "";
-                var row = ExecuteRow("SELECT EmployeeStatus FROM MTCrew WHERE ID = '" + crewID.ToString() + "'");
-                if (row.ContainsKey("EmployeeStatus") && row["EmployeeStatus"] != null)
-                {
-                    var oldEmployeeStatus = row["EmployeeStatus"].ToString();
-                    switch (healthStatus)
-                    {
-                        case "UnfitTemporary":
-                            affectedRows += Execute("UPDATE MTCrew " +
-                                "SET RejectedReason = @RejectedReason, " +
-                                "    RejectedDateTime = @RejectedDateTime, " +
-                                "    EmployeeStatus = 'Candidate - Temporary Rejected', " +
-                                "    LastUpdatedByUserID = @LastUpdatedByUserID, " +
-                                "    LastUpdatedDateTime = @LastUpdatedDateTime " +
-                                "WHERE ID = @CrewID;",
-                                new
-                                {
-                                    RejectedReason = rejectReason,
-                                    RejectedDateTime = DateTimeOffset.Now,
-                                    LastUpdatedByUserID = CurrentUserID(),
-                                    LastUpdatedDateTime = DateTimeOffset.Now,
-                                    CrewID = crewID
-                                }
-                            );
-                            notificationSubject = "Temporary Rejection Notification";
-                            notificationBody = "Thank you for taking the time to apply at our company. " +
-                                "\nAfter careful consideration, we regret to inform you that your application has not been successful for a moment. " +
-                                "\nRejected Reason: <b>" + rejectReason + "</b> " +
-                                "\nPlease wait for futher information. " +
-                                "\nThank you once again for your interest in joining our company.";
-                            currentStatus = "Candidate - Temporary Rejected";
-                            if (affectedRows == 0)
-                            {
-                                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Reject Crew" : "Gagal Menolak Kru";
-                                return Json(jsonResponse);
-                            }
-                            break;
-                        case "UnfitPermanent":
-                            affectedRows += Execute("UPDATE MTCrew " +
-                                "SET RejectedReason = @RejectedReason, " +
-                                "    RejectedDateTime = @RejectedDateTime, " +
-                                "    EmployeeStatus = 'Candidate - Rejected', " +
-                                "    LastUpdatedByUserID = @LastUpdatedByUserID, " +
-                                "    LastUpdatedDateTime = @LastUpdatedDateTime " +
-                                "WHERE ID = @CrewID;",
-                                new
-                                {
-                                    RejectedReason = rejectReason,
-                                    RejectedDateTime = DateTimeOffset.Now,
-                                    LastUpdatedByUserID = CurrentUserID(),
-                                    LastUpdatedDateTime = DateTimeOffset.Now,
-                                    CrewID = crewID
-                                }
-                            );
-                            notificationSubject = "Rejection Notification";
-                            notificationBody = "Thank you for taking the time to apply at our company. " +
-                                "After careful consideration, we regret to inform you that your application has not been successful. " +
-                                "We genuinely appreciate the effort and time you invested in applying for our company. " +
-                                "Thank you once again for your interest in joining our company.";
-                            currentStatus = "Candidate - Rejected";
-                            if (affectedRows == 0)
-                            {
-                                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Reject Crew" : "Gagal Menolak Kru";
-                                return Json(jsonResponse);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    affectedRows += QueryBuilder("TREmployeeStatus").Insert(new
-                    {
-                        MTCrewID = crewID,
-                        MTUserID = CurrentUserID(),
-                        PreviousStatus = oldEmployeeStatus,
-                        CurrentStatus = currentStatus,
-                        ChangedDateTime = DateTimeOffset.Now,
-                    });
-                    if (affectedRows == 0)
-                    {
-                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Update Crew Employee Status History" : "Gagal Mengubah Data Histori Status Karyawan Kru";
-                        return Json(jsonResponse);
-                    }
-                    jsonResponse.success = true;
-                    return Json(jsonResponse);
-                }
-                else 
-                {
-                    jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
-                    return Json(jsonResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                jsonResponse.errorMessage = ex.Message;
-                return Json(jsonResponse);
-            }
-        }
-        else 
+            success = false,
+            data = new object(),
+            errorMessage = ""
+        };
+        if (!IsLoggedIn())
         {
             jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Not authorized" : "Tidak diizinkan";
             return Json(jsonResponse);
         }
+        string rejectReason = rejectFinalRequest.rejectReason;
+        int crewID = rejectFinalRequest.crewID;
+        try
+        {
+            int affectedRows = 0;
+            string notificationSubject = "", notificationBody = "", currentStatus = "";
+            var row = ExecuteRow("SELECT EmployeeStatus FROM MTCrew WHERE ID = '" + crewID.ToString() + "'");
+            var getHealthStatus = ExecuteRow("SELECT HealthStatus FROM TRMCUResult WHERE MTCrew_ID = '" + crewID.ToString() + "'");
+            if (!row.ContainsKey("EmployeeStatus") && row["EmployeeStatus"] != null)
+            {
+                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
+                return Json(jsonResponse);
+            }
+            if (!getHealthStatus.ContainsKey("HealthStatus") || getHealthStatus["HealthStatus"] == null)
+            {
+                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Health Status must not be empty" : "Status kesehatan tidak boleh kosong";
+                return Json(jsonResponse);
+            }
+            var oldEmployeeStatus = row["EmployeeStatus"].ToString();
+            var healthStatus = getHealthStatus["HealthStatus"].ToString();
+            switch (healthStatus)
+            {
+                case "UnfitTemporary":
+                    affectedRows += Execute("UPDATE MTCrew " +
+                        "SET RejectedReason = @RejectedReason, " +
+                        "    RejectedDateTime = @RejectedDateTime, " +
+                        "    EmployeeStatus = 'Candidate - Temporary Rejected', " +
+                        "    LastUpdatedByUserID = @LastUpdatedByUserID, " +
+                        "    LastUpdatedDateTime = @LastUpdatedDateTime " +
+                        "WHERE ID = @CrewID;",
+                        new
+                        {
+                            RejectedReason = rejectReason,
+                            RejectedDateTime = DateTimeOffset.Now,
+                            LastUpdatedByUserID = CurrentUserID(),
+                            LastUpdatedDateTime = DateTimeOffset.Now,
+                            CrewID = crewID
+                        }
+                    );
+                    notificationSubject = "Temporary Rejection Notification";
+                    notificationBody = "Thank you for taking the time to apply at our company. " +
+                        "<br>After careful consideration, we regret to inform you that your application has not been successful at the moment. " +
+                        "<br>Rejected Reason: <b>" + rejectReason + "</b> " +
+                        "<br>Please wait for further information. " +
+                        "<br>Thank you once again for your interest in joining our company.";
+                    currentStatus = "Candidate - Temporary Rejected";
+                    break;
+                case "UnfitPermanent":
+                    affectedRows += Execute("UPDATE MTCrew " +
+                        "SET RejectedReason = @RejectedReason, " +
+                        "    RejectedDateTime = @RejectedDateTime, " +
+                        "    EmployeeStatus = 'Candidate - Rejected', " +
+                        "    LastUpdatedByUserID = @LastUpdatedByUserID, " +
+                        "    LastUpdatedDateTime = @LastUpdatedDateTime " +
+                        "WHERE ID = @CrewID;",
+                        new
+                        {
+                            RejectedReason = rejectReason,
+                            RejectedDateTime = DateTimeOffset.Now,
+                            LastUpdatedByUserID = CurrentUserID(),
+                            LastUpdatedDateTime = DateTimeOffset.Now,
+                            CrewID = crewID
+                        }
+                    );
+                    notificationSubject = "Rejection Notification";
+                    notificationBody = "Thank you for taking the time to apply at our company. " +
+                        "<br>After careful consideration, we regret to inform you that your application has not been successful. " +
+                        "<br>We genuinely appreciate the effort and time you invested in applying for our company. " +
+                        "<br>Rejected Reason: <b>" + rejectReason + "</b> " +
+                        "<br>Thank you once again for your interest in joining our company.";
+                    currentStatus = "Candidate - Rejected";
+                    break;
+                default:
+                    jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Reject Crew" : "Gagal Menolak Kru";
+                    return Json(jsonResponse);
+            }
+            affectedRows += QueryBuilder("TREmployeeStatus").Insert(new
+            {
+                MTCrewID = crewID,
+                MTUserID = CurrentUserID(),
+                PreviousStatus = oldEmployeeStatus,
+                CurrentStatus = currentStatus,
+                ChangedDateTime = DateTimeOffset.Now,
+            });
+            if (affectedRows == 0)
+            {
+                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Update Crew Employee Status History" : "Gagal Mengubah Data Histori Status Karyawan Kru";
+                return Json(jsonResponse);
+            }
+            SendFinalRejectionNotification(crewID, notificationSubject, notificationBody, jsonResponse);
+            SendEmailNotification(crewID, currentStatus, jsonResponse);
+            jsonResponse.success = true;
+            return Json(jsonResponse);
+        }
+        catch (Exception ex)
+        {
+            jsonResponse.errorMessage = ex.Message;
+            return Json(jsonResponse);
+        }
+    }
+
+    private static JsonResponse SendFinalRejectionNotification(int crewID, string notificationSubject, string notificationBody, JsonResponse jsonResponse)
+    {
+        var userIDRow = ExecuteRow("SELECT MTUserID FROM MTCrew WHERE ID ='" + crewID + "'");
+        if (userIDRow.ContainsKey("MTUserID") && userIDRow["MTUserID"] != null)
+        {
+            int affectedRows = 0;
+            var userID = Convert.ToInt32(userIDRow["MTUserID"]);
+            affectedRows += QueryBuilder("TRNotification").Insert(new
+            {
+                MTUserID = userID,
+                Subject = notificationSubject,
+                Body = notificationBody,
+                CreatedByUserID = CurrentUserID(),
+                CreatedDateTime = DateTimeOffset.Now,
+                LastUpdatedByUserID = CurrentUserID(),
+                LastUpdatedDateTime = DateTimeOffset.Now,
+            });
+            if (affectedRows == 0)
+            {
+                jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Failed to Create Rejection Notification" : "Gagal Membuat Notifikasi Penolakan";
+            }
+        }
+        else
+        {
+            jsonResponse.errorMessage = (CurrentLanguage == "en-US") ? "Crew Not Found" : "Kru Tidak Ditemukan";
+        }
+        return jsonResponse;
+    }
+
+    private static JsonResponse SendEmailNotification(int crewID, string employeeStatus, JsonResponse jsonResponse)
+    {
+        var emailTemplateCategory = "";
+        if (employeeStatus == "Candidate - Temporary Rejected")
+        {
+            emailTemplateCategory = "Crew Temporary Rejected";
+        }
+        else if (employeeStatus == "Candidate - Rejected")
+        {
+            emailTemplateCategory = "Crew Permanently Rejected";
+        }
+        else
+        {
+            jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                ? "Invalid employee status for sending email notification"
+                : "Status karyawan yang tidak valid untuk mengirim notifikasi email";
+            return jsonResponse;
+        }
+        var crewInfo = ExecuteRow("SELECT " +
+            "MTCrew.Email, " +
+            "MTCrew.FullName, " +
+            "MTRank.Name AS RankAppliedFor " +
+            "FROM MTCrew INNER JOIN MTRank " +
+            "ON MTCrew.RankAppliedFor_RankID = MTRank.ID " +
+            "WHERE MTCrew.ID = '" + crewID.ToString() + "'");
+        if (crewInfo["Email"] == null || crewInfo["FullName"] == null || crewInfo["RankAppliedFor"] == null)
+        {
+            jsonResponse.errorMessage = (CurrentLanguage == "en-US") 
+                ? "Crew email, full name, and rank applied for cannot be empty" 
+                : "Email, nama lengkap, dan rank yang akan dipilih crew tidak boleh kosong";
+            return jsonResponse;
+        }
+        var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '" + emailTemplateCategory + "';");
+        if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+        {
+            jsonResponse.errorMessage = (CurrentLanguage == "en-US") 
+                ? "Email template not found or the subject and message column is empty" 
+                : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+            return jsonResponse;
+        }
+        var email = new Email();
+        email.Sender = Config.SenderEmail;
+        email.Recipient = crewInfo["Email"].ToString();
+        email.Subject = emailTemplate["Subject"].ToString();
+        email.Content = emailTemplate["Message"].ToString();
+        email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+        email.ReplaceContent("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+        if (Email.Mailer == null || Email.Mailer.CheckCertificateRevocation)
+        {
+            var smtpClient = new SmtpClient();
+            smtpClient.CheckCertificateRevocation = false;
+            Email.Mailer = smtpClient;
+        }
+        bool isEmailSent = false;
+        Task.Run(async () => {
+            isEmailSent = await email.SendAsync();
+        }).GetAwaiter().GetResult();
+        if (!isEmailSent) {
+            jsonResponse.errorMessage = email.SendError;
+        }
+        return jsonResponse;
     }
 
     // get isAdmin() and crew's employee status
@@ -4417,7 +4504,7 @@ public partial class RegistrationController : ApiController
         return Ok("Data berhasil disimpan");
     }
 
-    private JsonResponse UpdateRecruitmentStatusTracking(int crewID, string employeeStatus, JsonResponse jsonResponse)
+    private static JsonResponse UpdateRecruitmentStatusTracking(int crewID, string employeeStatus, JsonResponse jsonResponse)
     {
         try
         {
