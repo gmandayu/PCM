@@ -1516,6 +1516,8 @@ public partial class PCM {
 
             // McuAttachment
             if (!IsNull(McuAttachment.Upload.DbValue)) {
+                McuAttachment.ImageWidth = 120;
+                McuAttachment.ImageHeight = 0;
                 McuAttachment.ImageAlt = McuAttachment.Alt;
                 McuAttachment.ImageCssClass = "ew-image";
                 McuAttachment.ViewValue = McuAttachment.Upload.DbValue;
@@ -1685,6 +1687,8 @@ public partial class PCM {
             McuAttachment.SetupEditAttributes();
             McuAttachment.EditAttrs["accept"] = "jpeg,jpg,png,pdf";
             if (!IsNull(McuAttachment.Upload.DbValue)) {
+                McuAttachment.ImageWidth = 120;
+                McuAttachment.ImageHeight = 0;
                 McuAttachment.ImageAlt = McuAttachment.Alt;
                 McuAttachment.ImageCssClass = "ew-image";
                 McuAttachment.EditValue = McuAttachment.Upload.DbValue;
@@ -1720,8 +1724,9 @@ public partial class PCM {
 
             // McuScheduleDate
             McuScheduleDate.SetupEditAttributes();
-            McuScheduleDate.EditValue = FormatDateTime(McuScheduleDate.CurrentValue, McuScheduleDate.FormatPattern); // DN
-            McuScheduleDate.PlaceHolder = RemoveHtml(McuScheduleDate.Caption);
+            McuScheduleDate.EditValue = McuScheduleDate.CurrentValue;
+            McuScheduleDate.EditValue = FormatDateTime(McuScheduleDate.EditValue, McuScheduleDate.FormatPattern);
+            McuScheduleDate.ViewCustomAttributes = "";
 
             // MTUserID
             MTUserID.SetupEditAttributes();

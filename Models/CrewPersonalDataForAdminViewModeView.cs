@@ -311,6 +311,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.SetVisibility();
             NomineeAddressHomeTelCode_CountryID.SetVisibility();
             NomineeMobileNumberCode_CountryID.SetVisibility();
+            MTManningAgentID.SetVisibility();
         }
 
         // Constructor
@@ -874,6 +875,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.SetDbValue(row["AlternativeAddressHomeTelCode_CountryID"]);
             NomineeAddressHomeTelCode_CountryID.SetDbValue(row["NomineeAddressHomeTelCode_CountryID"]);
             NomineeMobileNumberCode_CountryID.SetDbValue(row["NomineeMobileNumberCode_CountryID"]);
+            MTManningAgentID.SetDbValue(row["MTManningAgentID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -954,6 +956,7 @@ public partial class PCM {
             row.Add("AlternativeAddressHomeTelCode_CountryID", AlternativeAddressHomeTelCode_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeAddressHomeTelCode_CountryID", NomineeAddressHomeTelCode_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeMobileNumberCode_CountryID", NomineeMobileNumberCode_CountryID.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTManningAgentID", MTManningAgentID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -1115,6 +1118,8 @@ public partial class PCM {
             // NomineeAddressHomeTelCode_CountryID
 
             // NomineeMobileNumberCode_CountryID
+
+            // MTManningAgentID
 
             // View row
             if (RowType == RowType.View) {
@@ -1780,6 +1785,10 @@ public partial class PCM {
                 }
                 NomineeMobileNumberCode_CountryID.ViewCustomAttributes = "";
 
+                // MTManningAgentID
+                MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+                MTManningAgentID.ViewCustomAttributes = "";
+
                 // IndividualCodeNumber
                 IndividualCodeNumber.HrefValue = "";
                 IndividualCodeNumber.TooltipValue = "";
@@ -2139,6 +2148,10 @@ public partial class PCM {
                 // NomineeMobileNumberCode_CountryID
                 NomineeMobileNumberCode_CountryID.HrefValue = "";
                 NomineeMobileNumberCode_CountryID.TooltipValue = "";
+
+                // MTManningAgentID
+                MTManningAgentID.HrefValue = "";
+                MTManningAgentID.TooltipValue = "";
             }
 
             // Call Row Rendered event

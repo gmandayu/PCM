@@ -282,7 +282,7 @@ public partial class PCM {
         // Get person data
         protected async Task<IActionResult> PersonalDataResult() {
             var result = new Dictionary<string, object>();
-            var fldNames = new string[] {"Email", "Password", "FullName", "SeafarerID", "IdentificationImage", "CrewAgency"};
+            var fldNames = new string[] {"Email", "Password", "FullName", "SeafarerID", "IdentificationImage", "MTManningAgentID"};
             string filter = GetUserFilter(Config.LoginUsernameFieldName, CurrentUserName());
             string sql = UserTable.GetSql(filter); // DN
             var row = await UserTableConn.GetRowAsync(sql);

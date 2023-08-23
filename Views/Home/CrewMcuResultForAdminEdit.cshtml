@@ -56,6 +56,7 @@ loadjs.ready(["wrapper", "head"], function () {
             ["HealthStatus", [fields.HealthStatus.visible && fields.HealthStatus.required ? ew.Validators.required(fields.HealthStatus.caption) : null], fields.HealthStatus.isInvalid],
             ["McuLocation", [fields.McuLocation.visible && fields.McuLocation.required ? ew.Validators.required(fields.McuLocation.caption) : null], fields.McuLocation.isInvalid],
             ["McuAttachment", [fields.McuAttachment.visible && fields.McuAttachment.required ? ew.Validators.fileRequired(fields.McuAttachment.caption) : null], fields.McuAttachment.isInvalid],
+            ["McuScheduleDate", [fields.McuScheduleDate.visible && fields.McuScheduleDate.required ? ew.Validators.required(fields.McuScheduleDate.caption) : null], fields.McuScheduleDate.isInvalid],
             ["McuRemark", [fields.McuRemark.visible && fields.McuRemark.required ? ew.Validators.required(fields.McuRemark.caption) : null], fields.McuRemark.isInvalid]
         ])
 
@@ -213,7 +214,7 @@ loadjs.ready("fCrewMcuResultForAdminedit", function() {
     if (fCrewMcuResultForAdminedit.lists.HealthStatus?.lookupOptions.length) {
         options.data = { id: "x_HealthStatus", form: "fCrewMcuResultForAdminedit" };
     } else {
-        options.ajax = { id: "x_HealthStatus", form: "fCrewMcuResultForAdminedit", limit: ew.LOOKUP_PAGE_SIZE };
+        options.ajax = { id: "x_HealthStatus", form: "fCrewMcuResultForAdminedit", limit: 5 };
     }
     options.minimumResultsForSearch = Infinity;
     options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.CrewMcuResultForAdmin.fields.HealthStatus.selectOptions);
@@ -271,6 +272,18 @@ loadjs.ready("fCrewMcuResultForAdminedit", function() {
 </div></div>
     </div>
 } @* crewMcuResultForAdminEdit.McuAttachment.Visible (end) *@
+@if (crewMcuResultForAdminEdit.McuScheduleDate.Visible) { // crewMcuResultForAdminEdit.McuScheduleDate.Visible (begin)
+    <div id="r_McuScheduleDate" @Html.Raw(crewMcuResultForAdminEdit.McuScheduleDate.RowAttributes)>
+        <label id="elh_CrewMcuResultForAdmin_McuScheduleDate" for="x_McuScheduleDate" class="@(crewMcuResultForAdminEdit.LeftColumnClass)"><template id="tpc_CrewMcuResultForAdmin_McuScheduleDate">@Html.Raw(crewMcuResultForAdminEdit.McuScheduleDate.Caption)@Html.Raw(crewMcuResultForAdminEdit.McuScheduleDate.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
+        <div class="@(crewMcuResultForAdminEdit.RightColumnClass)"><div @Html.Raw(crewMcuResultForAdminEdit.McuScheduleDate.CellAttributes)>
+<template id="tpx_CrewMcuResultForAdmin_McuScheduleDate"><span id="el_CrewMcuResultForAdmin_McuScheduleDate">
+<span @Html.Raw(crewMcuResultForAdminEdit.McuScheduleDate.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(crewMcuResultForAdminEdit.McuScheduleDate.EditValue)))"></span>
+<input type="hidden" data-table="CrewMcuResultForAdmin" data-field="x_McuScheduleDate" data-hidden="1" name="x_McuScheduleDate" id="x_McuScheduleDate" value="@Html.Raw(HtmlEncode(crewMcuResultForAdminEdit.McuScheduleDate.CurrentValue))">
+</span></template>
+</div></div>
+    </div>
+} @* crewMcuResultForAdminEdit.McuScheduleDate.Visible (end) *@
 @if (crewMcuResultForAdminEdit.McuRemark.Visible) { // crewMcuResultForAdminEdit.McuRemark.Visible (begin)
     <div id="r_McuRemark" @Html.Raw(crewMcuResultForAdminEdit.McuRemark.RowAttributes)>
         <label id="elh_CrewMcuResultForAdmin_McuRemark" for="x_McuRemark" class="@(crewMcuResultForAdminEdit.LeftColumnClass)"><template id="tpc_CrewMcuResultForAdmin_McuRemark">@Html.Raw(crewMcuResultForAdminEdit.McuRemark.Caption)@Html.Raw(crewMcuResultForAdminEdit.McuRemark.Required ? Language.Phrase("FieldRequiredIndicator") : "")</template></label>
@@ -393,9 +406,9 @@ loadjs.ready("fCrewMcuResultForAdminedit", function() {
                             @(CurrentLanguage == "en-US" ? "Medical Checkup Schedule" : "Jadual Pemeriksaan Medis")
                         </label>
                         <div></div>
-                        @* <div>
+                        <div>
                             <slot class="ew-slot" name="tpx_CrewMcuResultForAdmin_McuScheduleDate"></slot>
-                        </div> *@
+                        </div>
                     </div>
                 </div>
                 <div class="col-sm-4">
@@ -682,11 +695,6 @@ loadjs.ready("load", function() {
                 } else {
                     $('div#r_crew_AvailableUntil div').append($('<span>').html('&nbsp;'));
                 }
-                if (crewData.McuScheduleDateTime !== '') {
-                    $('div#r_crew_McuScheduleDateTime div').append($('<span>').text(crewData.McuScheduleDateTime));
-                } else {
-                    $('div#r_crew_McuScheduleDateTime div').append($('<span>').html('&nbsp;'));
-                }
                 if(crewData.RankAppliedFor !== '' && crewData.EmployeeStatus !== '' && crewData.MTCrew_ID !== '') {
                     // initialize date time picker
                     const format = "dd MMM yyyy HH:mm:00zzz";
@@ -752,6 +760,25 @@ loadjs.ready("load", function() {
                     $('#btn-invoke-reject-modal').click(function () {
                         $('#reject-modal-dialog').modal('show');
                     });
+
+                    // Pengecekan untuk tombol Accept dan Reject aktif atau nonaktif.
+                    const healthStatusCheck =  document.getElementById("select2-x_HealthStatus-container").innerText;
+                    const mcuExpirationDateCheck = document.getElementById("x_McuExpirationDate").value;
+                    const mcuDateCheck = document.getElementById("x_McuDate").value;
+                    const mcuLocationCheck = document.getElementById("x_McuLocation").value;
+                    if(mcuExpirationDateCheck === '' || mcuDateCheck === '' || mcuLocationCheck === '') {
+                        $("#btn-invoke-final-accept-modal").prop("disabled", true);
+                        $("#btn-invoke-reject-modal").prop("disabled", true);
+                    }
+                    else {
+                        $("#btn-invoke-final-accept-modal").prop("disabled", false);
+                        $("#btn-invoke-reject-modal").prop("disabled", false);
+                        if (healthStatusCheck === "Unfit Temporary" || healthStatusCheck === "Unfit Permanent") {
+                            $("#btn-invoke-final-accept-modal").prop("disabled", true);
+                        } else if (healthStatusCheck === "Fit To Work" || healthStatusCheck === "Fit With Note") {
+                            $("#btn-invoke-reject-modal").prop("disabled", true);
+                        }
+                    }
                     const acceptFinalCrewApiUrl = "accept-single-crew-final";
                     $("#btn-accept").click(function() {
                         const currentDate = new Date();
@@ -793,7 +820,7 @@ loadjs.ready("load", function() {
                             }
                         });
                     });
-                    const rejectSingleCrewApiUrl = "reject-single-crew";
+                    const rejectCrewFinalApiUrl = "reject-final-crew";
                     $("#btn-reject").click(function() {
                         const rejectedReasonValue = $('#x_RejectedReason').val();
                         const rejectedReasonCaption = $(`label[for="x_RejectedReason"]`).text();
@@ -804,14 +831,14 @@ loadjs.ready("load", function() {
                                 ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
                             }
                         } else {
-                            const rejectSingleRequest = {
+                            const rejectFinalRequest = {
                                 rejectReason: rejectedReasonValue,
                                 crewID: parseInt(crewData.ID),
                             };
                             $.ajax({
                                 method: "POST",
-                                url: `${parentUrl}api/Registration/${rejectSingleCrewApiUrl}`,
-                                data: JSON.stringify(rejectSingleRequest),
+                                url: `${parentUrl}api/Registration/${rejectCrewFinalApiUrl}`,
+                                data: JSON.stringify(rejectFinalRequest),
                                 contentType: "application/json",
                                 success: function(response) {
                                     if (response.success) {

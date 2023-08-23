@@ -237,12 +237,6 @@ public partial class PCM {
             CreatedDateTime.SetVisibility();
             LastUpdatedByUserID.SetVisibility();
             LastUpdatedDateTime.SetVisibility();
-            PassportValidUntil.Visible = false;
-            PassportPlaceIssued.Visible = false;
-            PassportDateIssued.Visible = false;
-            PassportNumber.Visible = false;
-            FirstName.Visible = false;
-            LastName.Visible = false;
             MTUserID.Visible = false;
         }
 
@@ -1878,12 +1872,6 @@ public partial class PCM {
             CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
             LastUpdatedByUserID.SetDbValue(row["LastUpdatedByUserID"]);
             LastUpdatedDateTime.SetDbValue(row["LastUpdatedDateTime"]);
-            PassportValidUntil.SetDbValue(row["PassportValidUntil"]);
-            PassportPlaceIssued.SetDbValue(row["PassportPlaceIssued"]);
-            PassportDateIssued.SetDbValue(row["PassportDateIssued"]);
-            PassportNumber.SetDbValue(row["PassportNumber"]);
-            FirstName.SetDbValue(row["FirstName"]);
-            LastName.SetDbValue(row["LastName"]);
             MTUserID.SetDbValue(row["MTUserID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
@@ -1908,12 +1896,6 @@ public partial class PCM {
             row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedByUserID", LastUpdatedByUserID.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedDateTime", LastUpdatedDateTime.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportValidUntil", PassportValidUntil.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportPlaceIssued", PassportPlaceIssued.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportDateIssued", PassportDateIssued.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportNumber", PassportNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("FirstName", FirstName.DefaultValue ?? DbNullValue); // DN
-            row.Add("LastName", LastName.DefaultValue ?? DbNullValue); // DN
             row.Add("MTUserID", MTUserID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
@@ -1991,24 +1973,6 @@ public partial class PCM {
 
             // LastUpdatedDateTime
             LastUpdatedDateTime.CellCssStyle = "white-space: nowrap;";
-
-            // PassportValidUntil
-            PassportValidUntil.CellCssStyle = "white-space: nowrap;";
-
-            // PassportPlaceIssued
-            PassportPlaceIssued.CellCssStyle = "white-space: nowrap;";
-
-            // PassportDateIssued
-            PassportDateIssued.CellCssStyle = "white-space: nowrap;";
-
-            // PassportNumber
-            PassportNumber.CellCssStyle = "white-space: nowrap;";
-
-            // FirstName
-            FirstName.CellCssStyle = "white-space: nowrap;";
-
-            // LastName
-            LastName.CellCssStyle = "white-space: nowrap;";
 
             // MTUserID
             MTUserID.CellCssStyle = "white-space: nowrap;";
@@ -2137,32 +2101,6 @@ public partial class PCM {
                 LastUpdatedDateTime.ViewValue = LastUpdatedDateTime.CurrentValue;
                 LastUpdatedDateTime.ViewValue = FormatDateTime(LastUpdatedDateTime.ViewValue, LastUpdatedDateTime.FormatPattern);
                 LastUpdatedDateTime.ViewCustomAttributes = "";
-
-                // PassportValidUntil
-                PassportValidUntil.ViewValue = PassportValidUntil.CurrentValue;
-                PassportValidUntil.ViewValue = FormatDateTime(PassportValidUntil.ViewValue, PassportValidUntil.FormatPattern);
-                PassportValidUntil.ViewCustomAttributes = "";
-
-                // PassportPlaceIssued
-                PassportPlaceIssued.ViewValue = ConvertToString(PassportPlaceIssued.CurrentValue); // DN
-                PassportPlaceIssued.ViewCustomAttributes = "";
-
-                // PassportDateIssued
-                PassportDateIssued.ViewValue = PassportDateIssued.CurrentValue;
-                PassportDateIssued.ViewValue = FormatDateTime(PassportDateIssued.ViewValue, PassportDateIssued.FormatPattern);
-                PassportDateIssued.ViewCustomAttributes = "";
-
-                // PassportNumber
-                PassportNumber.ViewValue = ConvertToString(PassportNumber.CurrentValue); // DN
-                PassportNumber.ViewCustomAttributes = "";
-
-                // FirstName
-                FirstName.ViewValue = ConvertToString(FirstName.CurrentValue); // DN
-                FirstName.ViewCustomAttributes = "";
-
-                // LastName
-                LastName.ViewValue = ConvertToString(LastName.CurrentValue); // DN
-                LastName.ViewCustomAttributes = "";
 
                 // MTCrewID
                 MTCrewID.HrefValue = "";

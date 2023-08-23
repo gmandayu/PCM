@@ -216,7 +216,7 @@ public partial class PCM {
             CreatedDateTime.Visible = false;
             LastUpdatedByUserID.Visible = false;
             LastUpdatedDateTime.Visible = false;
-            McuScheduleDate.Visible = false;
+            McuScheduleDate.SetVisibility();
             MTUserID.Visible = false;
             McuRemark.SetVisibility();
         }
@@ -774,6 +774,16 @@ public partial class PCM {
                     McuLocation.SetFormValue(val);
             }
 
+            // Check field name 'McuScheduleDate' before field var 'x_McuScheduleDate'
+            val = CurrentForm.HasValue("McuScheduleDate") ? CurrentForm.GetValue("McuScheduleDate") : CurrentForm.GetValue("x_McuScheduleDate");
+            if (!McuScheduleDate.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("McuScheduleDate") && !CurrentForm.HasValue("x_McuScheduleDate")) // DN
+                    McuScheduleDate.Visible = false; // Disable update for API request
+                else
+                    McuScheduleDate.SetFormValue(val);
+                McuScheduleDate.CurrentValue = UnformatDateTime(McuScheduleDate.CurrentValue, McuScheduleDate.FormatPattern);
+            }
+
             // Check field name 'McuRemark' before field var 'x_McuRemark'
             val = CurrentForm.HasValue("McuRemark") ? CurrentForm.GetValue("McuRemark") : CurrentForm.GetValue("x_McuRemark");
             if (!McuRemark.IsDetailKey) {
@@ -802,6 +812,8 @@ public partial class PCM {
             McuExpirationDate.CurrentValue = UnformatDateTime(McuExpirationDate.CurrentValue, McuExpirationDate.FormatPattern);
             HealthStatus.CurrentValue = HealthStatus.FormValue;
             McuLocation.CurrentValue = McuLocation.FormValue;
+            McuScheduleDate.CurrentValue = McuScheduleDate.FormValue;
+            McuScheduleDate.CurrentValue = UnformatDateTime(McuScheduleDate.CurrentValue, McuScheduleDate.FormatPattern);
             McuRemark.CurrentValue = McuRemark.FormValue;
         }
 
@@ -984,6 +996,8 @@ public partial class PCM {
 
                 // McuAttachment
                 if (!IsNull(McuAttachment.Upload.DbValue)) {
+                    McuAttachment.ImageWidth = 120;
+                    McuAttachment.ImageHeight = 0;
                     McuAttachment.ImageAlt = McuAttachment.Alt;
                     McuAttachment.ImageCssClass = "ew-image";
                     McuAttachment.ViewValue = McuAttachment.Upload.DbValue;
@@ -1047,6 +1061,10 @@ public partial class PCM {
                 }
                 McuAttachment.ExportHrefValue = McuAttachment.UploadPath + McuAttachment.Upload.DbValue;
 
+                // McuScheduleDate
+                McuScheduleDate.HrefValue = "";
+                McuScheduleDate.TooltipValue = "";
+
                 // McuRemark
                 McuRemark.HrefValue = "";
             } else if (RowType == RowType.Edit) {
@@ -1083,6 +1101,8 @@ public partial class PCM {
                 McuAttachment.SetupEditAttributes();
                 McuAttachment.EditAttrs["accept"] = "jpeg,jpg,png,pdf";
                 if (!IsNull(McuAttachment.Upload.DbValue)) {
+                    McuAttachment.ImageWidth = 120;
+                    McuAttachment.ImageHeight = 0;
                     McuAttachment.ImageAlt = McuAttachment.Alt;
                     McuAttachment.ImageCssClass = "ew-image";
                     McuAttachment.EditValue = McuAttachment.Upload.DbValue;
@@ -1093,6 +1113,12 @@ public partial class PCM {
                         McuAttachment.Upload.FileName = ConvertToString(McuAttachment.CurrentValue);
                 if (IsShow && !EventCancelled)
                     await RenderUploadField(McuAttachment);
+
+                // McuScheduleDate
+                McuScheduleDate.SetupEditAttributes();
+                McuScheduleDate.EditValue = McuScheduleDate.CurrentValue;
+                McuScheduleDate.EditValue = FormatDateTime(McuScheduleDate.EditValue, McuScheduleDate.FormatPattern);
+                McuScheduleDate.ViewCustomAttributes = "";
 
                 // McuRemark
                 McuRemark.SetupEditAttributes();
@@ -1128,6 +1154,10 @@ public partial class PCM {
                     McuAttachment.HrefValue = "";
                 }
                 McuAttachment.ExportHrefValue = McuAttachment.UploadPath + McuAttachment.Upload.DbValue;
+
+                // McuScheduleDate
+                McuScheduleDate.HrefValue = "";
+                McuScheduleDate.TooltipValue = "";
 
                 // McuRemark
                 McuRemark.HrefValue = "";
@@ -1186,6 +1216,11 @@ public partial class PCM {
             if (McuAttachment.Required) {
                 if (McuAttachment.Upload.FileName == "" && !McuAttachment.Upload.KeepFile) {
                     McuAttachment.AddErrorMessage(ConvertToString(McuAttachment.RequiredErrorMessage).Replace("%s", McuAttachment.Caption));
+                }
+            }
+            if (McuScheduleDate.Required) {
+                if (!McuScheduleDate.IsDetailKey && Empty(McuScheduleDate.FormValue)) {
+                    McuScheduleDate.AddErrorMessage(ConvertToString(McuScheduleDate.RequiredErrorMessage).Replace("%s", McuScheduleDate.Caption));
                 }
             }
             if (McuRemark.Required) {

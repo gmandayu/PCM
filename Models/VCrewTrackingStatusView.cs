@@ -245,7 +245,8 @@ public partial class PCM {
             EmployeeStatus.SetVisibility();
             Draft.SetVisibility();
             Submitted.SetVisibility();
-            Reviewed.SetVisibility();
+            AgencyReviewed.SetVisibility();
+            PDEReviewed.SetVisibility();
             RegistrationForm.SetVisibility();
             PreScreeningInterview.SetVisibility();
             MinimumRecruitmentCheck.SetVisibility();
@@ -427,7 +428,9 @@ public partial class PCM {
             if (IsAddOrEdit)
                 Submitted.Visible = false;
             if (IsAddOrEdit)
-                Reviewed.Visible = false;
+                AgencyReviewed.Visible = false;
+            if (IsAddOrEdit)
+                PDEReviewed.Visible = false;
             if (IsAddOrEdit)
                 RegistrationForm.Visible = false;
             if (IsAddOrEdit)
@@ -776,7 +779,8 @@ public partial class PCM {
             EmployeeStatus.SetDbValue(row["EmployeeStatus"]);
             Draft.SetDbValue(row["Draft"]);
             Submitted.SetDbValue(row["Submitted"]);
-            Reviewed.SetDbValue(row["Reviewed"]);
+            AgencyReviewed.SetDbValue(row["AgencyReviewed"]);
+            PDEReviewed.SetDbValue(row["PDEReviewed"]);
             RegistrationForm.SetDbValue(row["RegistrationForm"]);
             PreScreeningInterview.SetDbValue(row["PreScreeningInterview"]);
             MinimumRecruitmentCheck.SetDbValue(row["MinimumRecruitmentCheck"]);
@@ -810,7 +814,8 @@ public partial class PCM {
             row.Add("EmployeeStatus", EmployeeStatus.DefaultValue ?? DbNullValue); // DN
             row.Add("Draft", Draft.DefaultValue ?? DbNullValue); // DN
             row.Add("Submitted", Submitted.DefaultValue ?? DbNullValue); // DN
-            row.Add("Reviewed", Reviewed.DefaultValue ?? DbNullValue); // DN
+            row.Add("AgencyReviewed", AgencyReviewed.DefaultValue ?? DbNullValue); // DN
+            row.Add("PDEReviewed", PDEReviewed.DefaultValue ?? DbNullValue); // DN
             row.Add("RegistrationForm", RegistrationForm.DefaultValue ?? DbNullValue); // DN
             row.Add("PreScreeningInterview", PreScreeningInterview.DefaultValue ?? DbNullValue); // DN
             row.Add("MinimumRecruitmentCheck", MinimumRecruitmentCheck.DefaultValue ?? DbNullValue); // DN
@@ -863,7 +868,9 @@ public partial class PCM {
 
             // Submitted
 
-            // Reviewed
+            // AgencyReviewed
+
+            // PDEReviewed
 
             // RegistrationForm
 
@@ -931,6 +938,7 @@ public partial class PCM {
                 } else {
                     WillAcceptLowRank.ViewValue = WillAcceptLowRank.TagCaption(2) != "" ? WillAcceptLowRank.TagCaption(2) : "No";
                 }
+                WillAcceptLowRank.CellCssStyle += "text-align: center;";
                 WillAcceptLowRank.ViewCustomAttributes = "";
 
                 // EmployeeStatus
@@ -949,11 +957,17 @@ public partial class PCM {
                 Submitted.CellCssStyle += "text-align: center;";
                 Submitted.ViewCustomAttributes = "";
 
-                // Reviewed
-                Reviewed.ViewValue = Reviewed.CurrentValue;
-                Reviewed.ViewValue = FormatNumber(Reviewed.ViewValue, Reviewed.FormatPattern);
-                Reviewed.CellCssStyle += "text-align: center;";
-                Reviewed.ViewCustomAttributes = "";
+                // AgencyReviewed
+                AgencyReviewed.ViewValue = AgencyReviewed.CurrentValue;
+                AgencyReviewed.ViewValue = FormatNumber(AgencyReviewed.ViewValue, AgencyReviewed.FormatPattern);
+                AgencyReviewed.CellCssStyle += "text-align: center;";
+                AgencyReviewed.ViewCustomAttributes = "";
+
+                // PDEReviewed
+                PDEReviewed.ViewValue = PDEReviewed.CurrentValue;
+                PDEReviewed.ViewValue = FormatNumber(PDEReviewed.ViewValue, PDEReviewed.FormatPattern);
+                PDEReviewed.CellCssStyle += "text-align: center;";
+                PDEReviewed.ViewCustomAttributes = "";
 
                 // RegistrationForm
                 RegistrationForm.ViewValue = RegistrationForm.CurrentValue;
@@ -1039,14 +1053,6 @@ public partial class PCM {
                 MedicalCheckup.CellCssStyle += "text-align: center;";
                 MedicalCheckup.ViewCustomAttributes = "";
 
-                // CreatedBy
-                CreatedBy.ViewValue = ConvertToString(CreatedBy.CurrentValue); // DN
-                CreatedBy.ViewCustomAttributes = "";
-
-                // LastUpdatedBy
-                LastUpdatedBy.ViewValue = ConvertToString(LastUpdatedBy.CurrentValue); // DN
-                LastUpdatedBy.ViewCustomAttributes = "";
-
                 // IndividualCodeNumber
                 IndividualCodeNumber.HrefValue = "";
                 IndividualCodeNumber.TooltipValue = "";
@@ -1087,9 +1093,13 @@ public partial class PCM {
                 Submitted.HrefValue = "";
                 Submitted.TooltipValue = "";
 
-                // Reviewed
-                Reviewed.HrefValue = "";
-                Reviewed.TooltipValue = "";
+                // AgencyReviewed
+                AgencyReviewed.HrefValue = "";
+                AgencyReviewed.TooltipValue = "";
+
+                // PDEReviewed
+                PDEReviewed.HrefValue = "";
+                PDEReviewed.TooltipValue = "";
 
                 // RegistrationForm
                 RegistrationForm.HrefValue = "";
@@ -1146,14 +1156,6 @@ public partial class PCM {
                 // MedicalCheckup
                 MedicalCheckup.HrefValue = "";
                 MedicalCheckup.TooltipValue = "";
-
-                // CreatedBy
-                CreatedBy.HrefValue = "";
-                CreatedBy.TooltipValue = "";
-
-                // LastUpdatedBy
-                LastUpdatedBy.HrefValue = "";
-                LastUpdatedBy.TooltipValue = "";
             }
 
             // Call Row Rendered event

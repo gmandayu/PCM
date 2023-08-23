@@ -1,0 +1,271 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (emailHistorySearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!emailHistorySearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(emailHistorySearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { EmailHistory: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fEmailHistorysearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fEmailHistorysearch")
+        .setPageId("search")
+@if (emailHistorySearch.IsModal && emailHistorySearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["CrewSeafarerIDWithName", [], fields.CrewSeafarerIDWithName.isInvalid],
+            ["To", [], fields.To.isInvalid],
+            ["Subject", [], fields.Subject.isInvalid],
+            ["IsSent", [], fields.IsSent.isInvalid],
+            ["SentDateTime", [ew.Validators.datetime(fields.SentDateTime.clientFormatPattern)], fields.SentDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "IsSent": @Html.Raw(emailHistorySearch.IsSent.ToClientList(emailHistorySearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (emailHistorySearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@emailHistorySearch.ShowPageHeader()
+@emailHistorySearch.ShowMessages()
+<form name="fEmailHistorysearch" id="fEmailHistorysearch" class="@(emailHistorySearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (emailHistorySearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (emailHistorySearch.CrewSeafarerIDWithName.Visible) { // emailHistorySearch.CrewSeafarerIDWithName.Visible (begin)
+    <div id="r_CrewSeafarerIDWithName" class="row" @Html.Raw(emailHistorySearch.CrewSeafarerIDWithName.RowAttributes)>
+        <label for="x_CrewSeafarerIDWithName" class="@(emailHistorySearch.LeftColumnClass)"><span id="elh_EmailHistory_CrewSeafarerIDWithName">@Html.Raw(emailHistorySearch.CrewSeafarerIDWithName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_CrewSeafarerIDWithName" id="z_CrewSeafarerIDWithName" value="LIKE">
+</span>
+        </label>
+        <div class="@(emailHistorySearch.RightColumnClass)">
+            <div @Html.Raw(emailHistorySearch.CrewSeafarerIDWithName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_EmailHistory_CrewSeafarerIDWithName" class="ew-search-field ew-search-field-single">
+<input type="@(emailHistorySearch.CrewSeafarerIDWithName.InputTextType)" name="x_CrewSeafarerIDWithName" id="x_CrewSeafarerIDWithName" data-table="EmailHistory" data-field="x_CrewSeafarerIDWithName" value="@Html.Raw(emailHistorySearch.CrewSeafarerIDWithName.EditValue)" size="30" maxlength="123" placeholder="@Html.Raw(HtmlEncode(emailHistorySearch.CrewSeafarerIDWithName.PlaceHolder))" data-format-pattern="@(emailHistorySearch.CrewSeafarerIDWithName.FormatPattern)"@Html.Raw(emailHistorySearch.CrewSeafarerIDWithName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(emailHistorySearch.CrewSeafarerIDWithName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* emailHistorySearch.CrewSeafarerIDWithName.Visible (end) *@
+@if (emailHistorySearch.To.Visible) { // emailHistorySearch.To.Visible (begin)
+    <div id="r_To" class="row" @Html.Raw(emailHistorySearch.To.RowAttributes)>
+        <label for="x_To" class="@(emailHistorySearch.LeftColumnClass)"><span id="elh_EmailHistory_To">@Html.Raw(emailHistorySearch.To.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_To" id="z_To" value="LIKE">
+</span>
+        </label>
+        <div class="@(emailHistorySearch.RightColumnClass)">
+            <div @Html.Raw(emailHistorySearch.To.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_EmailHistory_To" class="ew-search-field ew-search-field-single">
+<input type="@(emailHistorySearch.To.InputTextType)" name="x_To" id="x_To" data-table="EmailHistory" data-field="x_To" value="@Html.Raw(emailHistorySearch.To.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(emailHistorySearch.To.PlaceHolder))" data-format-pattern="@(emailHistorySearch.To.FormatPattern)"@Html.Raw(emailHistorySearch.To.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(emailHistorySearch.To.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* emailHistorySearch.To.Visible (end) *@
+@if (emailHistorySearch.Subject.Visible) { // emailHistorySearch.Subject.Visible (begin)
+    <div id="r_Subject" class="row" @Html.Raw(emailHistorySearch.Subject.RowAttributes)>
+        <label for="x_Subject" class="@(emailHistorySearch.LeftColumnClass)"><span id="elh_EmailHistory_Subject">@Html.Raw(emailHistorySearch.Subject.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Subject" id="z_Subject" value="LIKE">
+</span>
+        </label>
+        <div class="@(emailHistorySearch.RightColumnClass)">
+            <div @Html.Raw(emailHistorySearch.Subject.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_EmailHistory_Subject" class="ew-search-field ew-search-field-single">
+<input type="@(emailHistorySearch.Subject.InputTextType)" name="x_Subject" id="x_Subject" data-table="EmailHistory" data-field="x_Subject" value="@Html.Raw(emailHistorySearch.Subject.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(emailHistorySearch.Subject.PlaceHolder))" data-format-pattern="@(emailHistorySearch.Subject.FormatPattern)"@Html.Raw(emailHistorySearch.Subject.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(emailHistorySearch.Subject.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* emailHistorySearch.Subject.Visible (end) *@
+@if (emailHistorySearch.IsSent.Visible) { // emailHistorySearch.IsSent.Visible (begin)
+    <div id="r_IsSent" class="row" @Html.Raw(emailHistorySearch.IsSent.RowAttributes)>
+        <label class="@(emailHistorySearch.LeftColumnClass)"><span id="elh_EmailHistory_IsSent">@Html.Raw(emailHistorySearch.IsSent.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_IsSent" id="z_IsSent" value="=">
+</span>
+        </label>
+        <div class="@(emailHistorySearch.RightColumnClass)">
+            <div @Html.Raw(emailHistorySearch.IsSent.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_EmailHistory_IsSent" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(emailHistorySearch.IsSent.IsInvalidClass)" data-table="EmailHistory" data-field="x_IsSent" data-boolean name="x_IsSent" id="x_IsSent" value="1" checked="@ConvertToBool(emailHistorySearch.IsSent.AdvancedSearch.SearchValue)" @Html.Raw(emailHistorySearch.IsSent.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(emailHistorySearch.IsSent.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* emailHistorySearch.IsSent.Visible (end) *@
+@if (emailHistorySearch.SentDateTime.Visible) { // emailHistorySearch.SentDateTime.Visible (begin)
+    <div id="r_SentDateTime" class="row" @Html.Raw(emailHistorySearch.SentDateTime.RowAttributes)>
+        <label for="x_SentDateTime" class="@(emailHistorySearch.LeftColumnClass)"><span id="elh_EmailHistory_SentDateTime">@Html.Raw(emailHistorySearch.SentDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_SentDateTime" id="z_SentDateTime" value="=">
+</span>
+        </label>
+        <div class="@(emailHistorySearch.RightColumnClass)">
+            <div @Html.Raw(emailHistorySearch.SentDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_EmailHistory_SentDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(emailHistorySearch.SentDateTime.InputTextType)" name="x_SentDateTime" id="x_SentDateTime" data-table="EmailHistory" data-field="x_SentDateTime" value="@Html.Raw(emailHistorySearch.SentDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(emailHistorySearch.SentDateTime.PlaceHolder))" data-format-pattern="@(emailHistorySearch.SentDateTime.FormatPattern)"@Html.Raw(emailHistorySearch.SentDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(emailHistorySearch.SentDateTime.GetErrorMessage(false))</div>
+@if (!emailHistorySearch.SentDateTime.ReadOnly && !emailHistorySearch.SentDateTime.Disabled && !emailHistorySearch.SentDateTime.EditAttrs.Is("readonly") && !emailHistorySearch.SentDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fEmailHistorysearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fEmailHistorysearch", "x_SentDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* emailHistorySearch.SentDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(emailHistorySearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(emailHistorySearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fEmailHistorysearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (emailHistorySearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fEmailHistorysearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fEmailHistorysearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(emailHistorySearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@emailHistorySearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("EmailHistory");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

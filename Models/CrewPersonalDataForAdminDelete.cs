@@ -276,6 +276,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.Visible = false;
             NomineeAddressHomeTelCode_CountryID.Visible = false;
             NomineeMobileNumberCode_CountryID.Visible = false;
+            MTManningAgentID.Visible = false;
         }
 
         // Constructor
@@ -758,6 +759,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.SetDbValue(row["AlternativeAddressHomeTelCode_CountryID"]);
             NomineeAddressHomeTelCode_CountryID.SetDbValue(row["NomineeAddressHomeTelCode_CountryID"]);
             NomineeMobileNumberCode_CountryID.SetDbValue(row["NomineeMobileNumberCode_CountryID"]);
+            MTManningAgentID.SetDbValue(row["MTManningAgentID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -838,6 +840,7 @@ public partial class PCM {
             row.Add("AlternativeAddressHomeTelCode_CountryID", AlternativeAddressHomeTelCode_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeAddressHomeTelCode_CountryID", NomineeAddressHomeTelCode_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeMobileNumberCode_CountryID", NomineeMobileNumberCode_CountryID.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTManningAgentID", MTManningAgentID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -1071,6 +1074,9 @@ public partial class PCM {
 
             // NomineeMobileNumberCode_CountryID
             NomineeMobileNumberCode_CountryID.CellCssStyle = "white-space: nowrap;";
+
+            // MTManningAgentID
+            MTManningAgentID.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {
@@ -1723,6 +1729,10 @@ public partial class PCM {
                     NomineeMobileNumberCode_CountryID.ViewValue = DbNullValue;
                 }
                 NomineeMobileNumberCode_CountryID.ViewCustomAttributes = "";
+
+                // MTManningAgentID
+                MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+                MTManningAgentID.ViewCustomAttributes = "";
 
                 // IndividualCodeNumber
                 IndividualCodeNumber.HrefValue = "";

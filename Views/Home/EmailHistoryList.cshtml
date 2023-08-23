@@ -1,0 +1,648 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (emailHistoryList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!emailHistoryList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!emailHistoryList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(emailHistoryList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { EmailHistory: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(emailHistoryList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(emailHistoryList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(emailHistoryList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(emailHistoryList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "CrewSeafarerIDWithName": @Html.Raw(emailHistoryList.CrewSeafarerIDWithName.ToClientList(emailHistoryList)),
+            "To": @Html.Raw(emailHistoryList.To.ToClientList(emailHistoryList)),
+            "Subject": @Html.Raw(emailHistoryList.Subject.ToClientList(emailHistoryList)),
+            "IsSent": @Html.Raw(emailHistoryList.IsSent.ToClientList(emailHistoryList)),
+            "SentDateTime": @Html.Raw(emailHistoryList.SentDateTime.ToClientList(emailHistoryList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!emailHistoryList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (emailHistoryList.TotalRecords > 0 && emailHistoryList.ExportOptions.Visible) {
+    emailHistoryList.ExportOptions.Render("body");
+}
+@if (emailHistoryList.ImportOptions.Visible) {
+    emailHistoryList.ImportOptions.Render("body");
+}
+@if (emailHistoryList.SearchOptions.Visible) {
+    emailHistoryList.SearchOptions.Render("body");
+}
+@if (emailHistoryList.FilterOptions.Visible) {
+    emailHistoryList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (emailHistoryList.ShowCurrentFilter) {
+    emailHistoryList.ShowFilterList();
+}
+@if (!emailHistoryList.IsModal) {
+<form name="fEmailHistorysrch" id="fEmailHistorysrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fEmailHistorysrch_search_panel" class="mb-2 mb-sm-0 @(emailHistoryList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(emailHistoryList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { EmailHistory: currentTable } });
+var currentForm;
+var fEmailHistorysrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fEmailHistorysrch")
+        .setPageId("list")
+@if (emailHistoryList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["CrewSeafarerIDWithName", [], fields.CrewSeafarerIDWithName.isInvalid],
+            ["To", [], fields.To.isInvalid],
+            ["Subject", [], fields.Subject.isInvalid],
+            ["IsSent", [], fields.IsSent.isInvalid],
+            ["SentDateTime", [], fields.SentDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "CrewSeafarerIDWithName": @Html.Raw(emailHistoryList.CrewSeafarerIDWithName.ToClientList(emailHistoryList)),
+            "To": @Html.Raw(emailHistoryList.To.ToClientList(emailHistoryList)),
+            "Subject": @Html.Raw(emailHistoryList.Subject.ToClientList(emailHistoryList)),
+            "IsSent": @Html.Raw(emailHistoryList.IsSent.ToClientList(emailHistoryList)),
+            "SentDateTime": @Html.Raw(emailHistoryList.SentDateTime.ToClientList(emailHistoryList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await emailHistoryList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!emailHistoryList.IsExport() && Empty(emailHistoryList.CurrentAction) && emailHistoryList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0 d-none@(emailHistoryList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + emailHistoryList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    emailHistoryList.RowType = RowType.Search;
+    emailHistoryList.ResetAttributes();
+    await emailHistoryList.RenderRow();
+}
+@if (emailHistoryList.CrewSeafarerIDWithName.Visible) { // emailHistoryList.CrewSeafarerIDWithName.Visible (begin)
+    if (!emailHistoryList.CrewSeafarerIDWithName.UseFilter) {
+        emailHistoryList.SearchColumnCount++;
+    }
+    <div id="xs_CrewSeafarerIDWithName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(emailHistoryList.CrewSeafarerIDWithName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CrewSeafarerIDWithName"
+            name="x_CrewSeafarerIDWithName[]"
+            class="form-control ew-select@(emailHistoryList.CrewSeafarerIDWithName.IsInvalidClass)"
+            data-select2-id="fEmailHistorysrch_x_CrewSeafarerIDWithName"
+            data-table="EmailHistory"
+            data-field="x_CrewSeafarerIDWithName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(emailHistoryList.CrewSeafarerIDWithName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(emailHistoryList.CrewSeafarerIDWithName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(emailHistoryList.CrewSeafarerIDWithName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(emailHistoryList.CrewSeafarerIDWithName.EditAttributes)>
+            @(emailHistoryList.CrewSeafarerIDWithName.SelectOptionListHtml("x_CrewSeafarerIDWithName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(emailHistoryList.CrewSeafarerIDWithName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fEmailHistorysrch", function() {
+            var options = {
+                name: "x_CrewSeafarerIDWithName",
+                selectId: "fEmailHistorysrch_x_CrewSeafarerIDWithName",
+                ajax: { id: "x_CrewSeafarerIDWithName", form: "fEmailHistorysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.EmailHistory.fields.CrewSeafarerIDWithName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* emailHistoryList.CrewSeafarerIDWithName.Visible (end) *@
+@if (emailHistoryList.To.Visible) { // emailHistoryList.To.Visible (begin)
+    if (!emailHistoryList.To.UseFilter) {
+        emailHistoryList.SearchColumnCount++;
+    }
+    <div id="xs_To" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(emailHistoryList.To.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_To"
+            name="x_To[]"
+            class="form-control ew-select@(emailHistoryList.To.IsInvalidClass)"
+            data-select2-id="fEmailHistorysrch_x_To"
+            data-table="EmailHistory"
+            data-field="x_To"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(emailHistoryList.To.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(emailHistoryList.To.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(emailHistoryList.To.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(emailHistoryList.To.EditAttributes)>
+            @(emailHistoryList.To.SelectOptionListHtml("x_To", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(emailHistoryList.To.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fEmailHistorysrch", function() {
+            var options = {
+                name: "x_To",
+                selectId: "fEmailHistorysrch_x_To",
+                ajax: { id: "x_To", form: "fEmailHistorysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.EmailHistory.fields.To.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* emailHistoryList.To.Visible (end) *@
+@if (emailHistoryList.Subject.Visible) { // emailHistoryList.Subject.Visible (begin)
+    if (!emailHistoryList.Subject.UseFilter) {
+        emailHistoryList.SearchColumnCount++;
+    }
+    <div id="xs_Subject" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(emailHistoryList.Subject.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Subject"
+            name="x_Subject[]"
+            class="form-control ew-select@(emailHistoryList.Subject.IsInvalidClass)"
+            data-select2-id="fEmailHistorysrch_x_Subject"
+            data-table="EmailHistory"
+            data-field="x_Subject"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(emailHistoryList.Subject.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(emailHistoryList.Subject.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(emailHistoryList.Subject.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(emailHistoryList.Subject.EditAttributes)>
+            @(emailHistoryList.Subject.SelectOptionListHtml("x_Subject", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(emailHistoryList.Subject.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fEmailHistorysrch", function() {
+            var options = {
+                name: "x_Subject",
+                selectId: "fEmailHistorysrch_x_Subject",
+                ajax: { id: "x_Subject", form: "fEmailHistorysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.EmailHistory.fields.Subject.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* emailHistoryList.Subject.Visible (end) *@
+@if (emailHistoryList.IsSent.Visible) { // emailHistoryList.IsSent.Visible (begin)
+    if (!emailHistoryList.IsSent.UseFilter) {
+        emailHistoryList.SearchColumnCount++;
+    }
+    <div id="xs_IsSent" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(emailHistoryList.IsSent.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IsSent"
+            name="x_IsSent[]"
+            class="form-control ew-select@(emailHistoryList.IsSent.IsInvalidClass)"
+            data-select2-id="fEmailHistorysrch_x_IsSent"
+            data-table="EmailHistory"
+            data-field="x_IsSent"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(emailHistoryList.IsSent.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(emailHistoryList.IsSent.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(emailHistoryList.IsSent.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(emailHistoryList.IsSent.EditAttributes)>
+            @(emailHistoryList.IsSent.SelectOptionListHtml("x_IsSent", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(emailHistoryList.IsSent.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fEmailHistorysrch", function() {
+            var options = {
+                name: "x_IsSent",
+                selectId: "fEmailHistorysrch_x_IsSent",
+                ajax: { id: "x_IsSent", form: "fEmailHistorysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.EmailHistory.fields.IsSent.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* emailHistoryList.IsSent.Visible (end) *@
+@if (emailHistoryList.SentDateTime.Visible) { // emailHistoryList.SentDateTime.Visible (begin)
+    if (!emailHistoryList.SentDateTime.UseFilter) {
+        emailHistoryList.SearchColumnCount++;
+    }
+    <div id="xs_SentDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(emailHistoryList.SentDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_SentDateTime"
+            name="x_SentDateTime[]"
+            class="form-control ew-select@(emailHistoryList.SentDateTime.IsInvalidClass)"
+            data-select2-id="fEmailHistorysrch_x_SentDateTime"
+            data-table="EmailHistory"
+            data-field="x_SentDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(emailHistoryList.SentDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(emailHistoryList.SentDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(emailHistoryList.SentDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(emailHistoryList.SentDateTime.EditAttributes)>
+            @(emailHistoryList.SentDateTime.SelectOptionListHtml("x_SentDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(emailHistoryList.SentDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fEmailHistorysrch", function() {
+            var options = {
+                name: "x_SentDateTime",
+                selectId: "fEmailHistorysrch_x_SentDateTime",
+                ajax: { id: "x_SentDateTime", form: "fEmailHistorysrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.EmailHistory.fields.SentDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* emailHistoryList.SentDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div id="tpsd_EmailHistorylist" class="ew-custom-template-search"></div>
+<template id="tpsm_EmailHistorylist">
+<div id="EmailHistorylist"><div id="loading-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="text-center mb-0">
+                    @(CurrentLanguage == "en-US" ? "Processing..." : "Sedang memproses...")
+                </p>
+            </div>
+        </div>
+    </div>
+</div></div>
+</template>
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(emailHistoryList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(emailHistoryList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(emailHistoryList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(emailHistoryList.BasicSearch.SessionType == "" ? " active" : "")" form="fEmailHistorysrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(emailHistoryList.BasicSearch.SessionType == "=" ? " active" : "")" form="fEmailHistorysrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(emailHistoryList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fEmailHistorysrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(emailHistoryList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fEmailHistorysrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+<script>
+loadjs.ready(ew.applyTemplateId, () => ew.applyTemplate("tpsd_EmailHistorylist", "tpsm_EmailHistorylist"));
+</script>
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@emailHistoryList.ShowPageHeader()
+@emailHistoryList.ShowMessages()
+<main class="list @(emailHistoryList.TotalRecords == 0 && !emailHistoryList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (emailHistoryList.TotalRecords > 0 || !Empty(emailHistoryList.CurrentAction)) {
+<div class="card ew-card ew-grid@(emailHistoryList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(emailHistoryList.TableGridClass)">
+<form name="@(emailHistoryList.FormName)" id="@(emailHistoryList.FormName)" class="ew-form ew-list-form" action="@AppPath(emailHistoryList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (emailHistoryList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_EmailHistory" class="card-body ew-grid-middle-panel @(emailHistoryList.TableContainerClass)" style="@(emailHistoryList.TableContainerStyle)">
+@if (emailHistoryList.TotalRecords > 0 || emailHistoryList.IsGridEdit || emailHistoryList.IsMultiEdit) {
+<table id="tbl_EmailHistorylist" class="@(emailHistoryList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    emailHistoryList.RowType = RowType.Header;
+
+    // Render list options
+    await emailHistoryList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@emailHistoryList.ListOptions.RenderHeader("left")
+@if (emailHistoryList.CrewSeafarerIDWithName.Visible) { // emailHistoryList.CrewSeafarerIDWithName.Visible (begin)
+        <th data-name="CrewSeafarerIDWithName" class="@(emailHistoryList.CrewSeafarerIDWithName.HeaderCellClass)"><div id="elh_EmailHistory_CrewSeafarerIDWithName" class="EmailHistory_CrewSeafarerIDWithName">@Html.Raw(emailHistoryList.RenderFieldHeader(emailHistoryList.CrewSeafarerIDWithName))</div></th>
+} @* emailHistoryList.CrewSeafarerIDWithName.Visible (end) *@
+@if (emailHistoryList.To.Visible) { // emailHistoryList.To.Visible (begin)
+        <th data-name="To" class="@(emailHistoryList.To.HeaderCellClass)"><div id="elh_EmailHistory_To" class="EmailHistory_To">@Html.Raw(emailHistoryList.RenderFieldHeader(emailHistoryList.To))</div></th>
+} @* emailHistoryList.To.Visible (end) *@
+@if (emailHistoryList.Subject.Visible) { // emailHistoryList.Subject.Visible (begin)
+        <th data-name="Subject" class="@(emailHistoryList.Subject.HeaderCellClass)"><div id="elh_EmailHistory_Subject" class="EmailHistory_Subject">@Html.Raw(emailHistoryList.RenderFieldHeader(emailHistoryList.Subject))</div></th>
+} @* emailHistoryList.Subject.Visible (end) *@
+@if (emailHistoryList.IsSent.Visible) { // emailHistoryList.IsSent.Visible (begin)
+        <th data-name="IsSent" class="@(emailHistoryList.IsSent.HeaderCellClass)"><div id="elh_EmailHistory_IsSent" class="EmailHistory_IsSent">@Html.Raw(emailHistoryList.RenderFieldHeader(emailHistoryList.IsSent))</div></th>
+} @* emailHistoryList.IsSent.Visible (end) *@
+@if (emailHistoryList.SentDateTime.Visible) { // emailHistoryList.SentDateTime.Visible (begin)
+        <th data-name="SentDateTime" class="@(emailHistoryList.SentDateTime.HeaderCellClass)"><div id="elh_EmailHistory_SentDateTime" class="EmailHistory_SentDateTime">@Html.Raw(emailHistoryList.RenderFieldHeader(emailHistoryList.SentDateTime))</div></th>
+} @* emailHistoryList.SentDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@emailHistoryList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(emailHistoryList.PageNumber)">
+@{
+    await emailHistoryList.SetupGrid();
+    bool eof = emailHistoryList.Recordset == null; // DN
+}
+@while (emailHistoryList.RecordCount < emailHistoryList.StopRecord || SameString(emailHistoryList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(emailHistoryList.RowIndex, "$rowindex$") &&
+        (!emailHistoryList.IsGridAdd || emailHistoryList.CurrentMode == "copy") &&
+        (!((emailHistoryList.IsCopy || emailHistoryList.IsAdd) && emailHistoryList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await emailHistoryList.Recordset.ReadAsync();
+    emailHistoryList.RecordCount++;
+    if (emailHistoryList.RecordCount >= emailHistoryList.StartRecord) {
+        await emailHistoryList.SetupRow();
+    <tr @Html.Raw(emailHistoryList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @emailHistoryList.ListOptions.RenderBody("left", emailHistoryList.RowCount)
+    @if (emailHistoryList.CrewSeafarerIDWithName.Visible) { // emailHistoryList.CrewSeafarerIDWithName.Visible (begin)
+        <td data-name="CrewSeafarerIDWithName" @Html.Raw(emailHistoryList.CrewSeafarerIDWithName.CellAttributes)>
+<span id="el@(emailHistoryList.RowCount)_EmailHistory_CrewSeafarerIDWithName" class="el_EmailHistory_CrewSeafarerIDWithName">
+<span @Html.Raw(emailHistoryList.CrewSeafarerIDWithName.ViewAttributes)>
+@Html.Raw(emailHistoryList.CrewSeafarerIDWithName.GetViewValue())</span>
+</span>
+</td>
+    } @* emailHistoryList.CrewSeafarerIDWithName.Visible (end) *@
+    @if (emailHistoryList.To.Visible) { // emailHistoryList.To.Visible (begin)
+        <td data-name="To" @Html.Raw(emailHistoryList.To.CellAttributes)>
+<span id="el@(emailHistoryList.RowCount)_EmailHistory_To" class="el_EmailHistory_To">
+<span @Html.Raw(emailHistoryList.To.ViewAttributes)>
+@Html.Raw(emailHistoryList.To.GetViewValue())</span>
+</span>
+</td>
+    } @* emailHistoryList.To.Visible (end) *@
+    @if (emailHistoryList.Subject.Visible) { // emailHistoryList.Subject.Visible (begin)
+        <td data-name="Subject" @Html.Raw(emailHistoryList.Subject.CellAttributes)>
+<span id="el@(emailHistoryList.RowCount)_EmailHistory_Subject" class="el_EmailHistory_Subject">
+<span @Html.Raw(emailHistoryList.Subject.ViewAttributes)>
+@Html.Raw(emailHistoryList.Subject.GetViewValue())</span>
+</span>
+</td>
+    } @* emailHistoryList.Subject.Visible (end) *@
+    @if (emailHistoryList.IsSent.Visible) { // emailHistoryList.IsSent.Visible (begin)
+        <td data-name="IsSent" @Html.Raw(emailHistoryList.IsSent.CellAttributes)>
+<span id="el@(emailHistoryList.RowCount)_EmailHistory_IsSent" class="el_EmailHistory_IsSent">
+<span @Html.Raw(emailHistoryList.IsSent.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_IsSent_@(emailHistoryList.RowCount)" class="form-check-input" value="@(emailHistoryList.IsSent.GetViewValue())" disabled checked="@(ConvertToBool(emailHistoryList.IsSent.CurrentValue))">
+    <label class="form-check-label" for="x_IsSent_@(emailHistoryList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* emailHistoryList.IsSent.Visible (end) *@
+    @if (emailHistoryList.SentDateTime.Visible) { // emailHistoryList.SentDateTime.Visible (begin)
+        <td data-name="SentDateTime" @Html.Raw(emailHistoryList.SentDateTime.CellAttributes)>
+<span id="el@(emailHistoryList.RowCount)_EmailHistory_SentDateTime" class="el_EmailHistory_SentDateTime">
+<span @Html.Raw(emailHistoryList.SentDateTime.ViewAttributes)>
+@Html.Raw(emailHistoryList.SentDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* emailHistoryList.SentDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @emailHistoryList.ListOptions.RenderBody("right", emailHistoryList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(emailHistoryList.RowIndex, "$rowindex$"))
+        emailHistoryList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((emailHistoryList.IsCopy || emailHistoryList.IsAdd) && emailHistoryList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        emailHistoryList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(emailHistoryList.CurrentAction) && !emailHistoryList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ emailHistoryList.CloseRecordset(); }
+@if (!emailHistoryList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!emailHistoryList.IsGridAdd && !(emailHistoryList.IsGridEdit && emailHistoryList.ModalGridEdit) && !emailHistoryList.IsMultiEdit) {
+@Html.Raw(emailHistoryList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@emailHistoryList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@emailHistoryList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@emailHistoryList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!emailHistoryList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("EmailHistory");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Startup script
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
+    const parentUrl = ew.PATH_BASE;
+    $("button.resend-email").removeAttr("data-ew-action").removeAttr("data-url");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
+    const successMessage = urlQueryParams.get('successMessage');
+    if (successMessage !== null) {
+        const decodedSuccessMessage = decodeURIComponent(successMessage);
+        ew.showToast(decodedSuccessMessage, 'success');
+        urlQueryParams.delete('successMessage');
+        currentUrlObject.search = urlQueryParams.toString();
+        history.pushState(null, '', currentUrlObject);
+    }
+    const errorMessage = urlQueryParams.get('errorMessage');
+    if (errorMessage !== null) {
+        const decodedErrorMessage = decodeURIComponent(errorMessage);
+        ew.showToast(decodedErrorMessage);
+        urlQueryParams.delete('errorMessage');
+        currentUrlObject.search = urlQueryParams.toString();
+        history.pushState(null, '', currentUrlObject);
+    }
+    const resendApi = 'resend-email';
+    $("button.resend-email").click(function(event) {
+        event.preventDefault();
+        ew.prompt((selectedLanguage.id === 'en-US') ? "Are you sure want to resend?" : "Apakah Anda yakin untuk mengirim ulang?", result => {
+            if (result) {
+                $('#loading-modal-dialog').modal('show');
+                const emailID = $(this).attr('email-id');
+                $.ajax({
+                    method: "POST",
+                    url: `${parentUrl}api/Email/${resendApi}?emailID=${emailID}`,
+                    success: function(response) {
+                        if (response.success) {
+                            let successMessage = '';
+                            if (selectedLanguage.id === 'en-US') {
+                                successMessage = `Resend Email Successful`;
+                            } else {
+                                successMessage = `Berhasil Mengirim Kembali Email`;
+                            }
+                            const targetUrl = new URL(window.location.href);
+                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                            const params = new URLSearchParams(targetUrl.search);
+                            params.set('successMessage', encodedSuccessMessage);
+                            targetUrl.search = params.toString();
+                            $('#loading-modal-dialog').modal('hide');
+                            window.location.href = targetUrl.href;
+                        } else {
+                            const errorMessage = response.errorMessage;
+                            const targetUrl = new URL(window.location.href);
+                            const encodedErrorMessage = encodeURIComponent(errorMessage);
+                            const params = new URLSearchParams(targetUrl.search);
+                            params.set('errorMessage', encodedErrorMessage);
+                            targetUrl.search = params.toString();
+                            $('#loading-modal-dialog').modal('hide');
+                            window.location.href = targetUrl.href;
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        $('#loading-modal-dialog').modal('hide');
+                        ew.showToast(errorThrown);
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+}

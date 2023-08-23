@@ -238,18 +238,6 @@ public partial class PCM {
             AlternativeAddressCountryID.SetVisibility();
             MobileNumber.SetVisibility();
             _Email.SetVisibility();
-            ContactMethodEmail.SetVisibility();
-            ContactMethodFax.SetVisibility();
-            ContactMethodMobilePhone.SetVisibility();
-            ContactMethodHomePhone.SetVisibility();
-            ContactMethodPost.SetVisibility();
-            CollarSize.SetVisibility();
-            ChestSize.SetVisibility();
-            WaistSize.SetVisibility();
-            InsideLegSize.SetVisibility();
-            CapSize.SetVisibility();
-            SweaterSize_ClothesSizeID.SetVisibility();
-            BoilersuitSize_ClothesSizeID.SetVisibility();
             SocialSecurityNumber.SetVisibility();
             SocialSecurityIssuingCountryID.SetVisibility();
             SocialSecurityImage.SetVisibility();
@@ -267,16 +255,6 @@ public partial class PCM {
             NomineeAddressHomeTel.SetVisibility();
             NomineeEmail.SetVisibility();
             NomineeMobileNumber.SetVisibility();
-            NomineeValidVisa.SetVisibility();
-            BankName.SetVisibility();
-            BankAddress.SetVisibility();
-            BankAccountName.SetVisibility();
-            BankAccountNumber.SetVisibility();
-            BankSortCode.SetVisibility();
-            MNOPF.SetVisibility();
-            MembershipNumber.SetVisibility();
-            NationalInsuranceNumber.SetVisibility();
-            AVC.SetVisibility();
             ForeignVisaHasBeenDenied.SetVisibility();
             ForeignVisaDenied_CountryID.SetVisibility();
             ForeignVisaDeniedReason.SetVisibility();
@@ -300,10 +278,6 @@ public partial class PCM {
             LastUpdatedByUserID.SetVisibility();
             LastUpdatedDateTime.SetVisibility();
             MTUserID.Visible = false;
-            DocumentCheckDateTime.Visible = false;
-            InterviewManagerDateTime.Visible = false;
-            InterviewGMDateTime.Visible = false;
-            MCUScheduleDateTime.Visible = false;
             RejectedReason.Visible = false;
             RejectedDateTime.Visible = false;
             Status.Visible = false;
@@ -326,6 +300,7 @@ public partial class PCM {
             NomineeMobileNumberCode_CountryID.Visible = false;
             RevisedReason.SetVisibility();
             RevisedDateTime.SetVisibility();
+            MTManningAgentID.SetVisibility();
         }
 
         // Constructor
@@ -644,19 +619,11 @@ public partial class PCM {
             await SetupLookupOptions(WillAcceptLowRank);
             await SetupLookupOptions(PrimaryAddressCountryID);
             await SetupLookupOptions(AlternativeAddressCountryID);
-            await SetupLookupOptions(ContactMethodEmail);
-            await SetupLookupOptions(ContactMethodFax);
-            await SetupLookupOptions(ContactMethodMobilePhone);
-            await SetupLookupOptions(ContactMethodHomePhone);
-            await SetupLookupOptions(ContactMethodPost);
-            await SetupLookupOptions(SweaterSize_ClothesSizeID);
-            await SetupLookupOptions(BoilersuitSize_ClothesSizeID);
             await SetupLookupOptions(SocialSecurityIssuingCountryID);
             await SetupLookupOptions(PersonalTaxIssuingCountryID);
             await SetupLookupOptions(NomineeGender);
             await SetupLookupOptions(NomineeNationality_CountryID);
             await SetupLookupOptions(NomineeAddressCountryID);
-            await SetupLookupOptions(NomineeValidVisa);
             await SetupLookupOptions(ForeignVisaHasBeenDenied);
             await SetupLookupOptions(ForeignVisaDenied_CountryID);
             await SetupLookupOptions(HasMaritimeAccidentOrCourtOfEnquiry);
@@ -753,18 +720,6 @@ public partial class PCM {
             BuildSearchUrl(ref srchUrl, AlternativeAddressCountryID); // AlternativeAddressCountryID
             BuildSearchUrl(ref srchUrl, MobileNumber); // MobileNumber
             BuildSearchUrl(ref srchUrl, _Email); // Email
-            BuildSearchUrl(ref srchUrl, ContactMethodEmail, true); // ContactMethodEmail
-            BuildSearchUrl(ref srchUrl, ContactMethodFax, true); // ContactMethodFax
-            BuildSearchUrl(ref srchUrl, ContactMethodMobilePhone, true); // ContactMethodMobilePhone
-            BuildSearchUrl(ref srchUrl, ContactMethodHomePhone, true); // ContactMethodHomePhone
-            BuildSearchUrl(ref srchUrl, ContactMethodPost, true); // ContactMethodPost
-            BuildSearchUrl(ref srchUrl, CollarSize); // CollarSize
-            BuildSearchUrl(ref srchUrl, ChestSize); // ChestSize
-            BuildSearchUrl(ref srchUrl, WaistSize); // WaistSize
-            BuildSearchUrl(ref srchUrl, InsideLegSize); // InsideLegSize
-            BuildSearchUrl(ref srchUrl, CapSize); // CapSize
-            BuildSearchUrl(ref srchUrl, SweaterSize_ClothesSizeID); // SweaterSize_ClothesSizeID
-            BuildSearchUrl(ref srchUrl, BoilersuitSize_ClothesSizeID); // BoilersuitSize_ClothesSizeID
             BuildSearchUrl(ref srchUrl, SocialSecurityNumber); // SocialSecurityNumber
             BuildSearchUrl(ref srchUrl, SocialSecurityIssuingCountryID); // SocialSecurityIssuingCountryID
             BuildSearchUrl(ref srchUrl, SocialSecurityImage); // SocialSecurityImage
@@ -782,16 +737,6 @@ public partial class PCM {
             BuildSearchUrl(ref srchUrl, NomineeAddressHomeTel); // NomineeAddressHomeTel
             BuildSearchUrl(ref srchUrl, NomineeEmail); // NomineeEmail
             BuildSearchUrl(ref srchUrl, NomineeMobileNumber); // NomineeMobileNumber
-            BuildSearchUrl(ref srchUrl, NomineeValidVisa); // NomineeValidVisa
-            BuildSearchUrl(ref srchUrl, BankName); // BankName
-            BuildSearchUrl(ref srchUrl, BankAddress); // BankAddress
-            BuildSearchUrl(ref srchUrl, BankAccountName); // BankAccountName
-            BuildSearchUrl(ref srchUrl, BankAccountNumber); // BankAccountNumber
-            BuildSearchUrl(ref srchUrl, BankSortCode); // BankSortCode
-            BuildSearchUrl(ref srchUrl, MNOPF); // MNOPF
-            BuildSearchUrl(ref srchUrl, MembershipNumber); // MembershipNumber
-            BuildSearchUrl(ref srchUrl, NationalInsuranceNumber); // NationalInsuranceNumber
-            BuildSearchUrl(ref srchUrl, AVC); // AVC
             BuildSearchUrl(ref srchUrl, ForeignVisaHasBeenDenied, true); // ForeignVisaHasBeenDenied
             BuildSearchUrl(ref srchUrl, ForeignVisaDenied_CountryID); // ForeignVisaDenied_CountryID
             BuildSearchUrl(ref srchUrl, ForeignVisaDeniedReason); // ForeignVisaDeniedReason
@@ -815,6 +760,7 @@ public partial class PCM {
             BuildSearchUrl(ref srchUrl, LastUpdatedDateTime); // LastUpdatedDateTime
             BuildSearchUrl(ref srchUrl, RevisedReason); // RevisedReason
             BuildSearchUrl(ref srchUrl, RevisedDateTime); // RevisedDateTime
+            BuildSearchUrl(ref srchUrl, MTManningAgentID); // MTManningAgentID
             if (!Empty(srchUrl))
                 srchUrl += "&";
             srchUrl += "cmd=search";
@@ -1097,90 +1043,6 @@ public partial class PCM {
             if (Form.ContainsKey("z__Email"))
                 _Email.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z__Email");
 
-            // ContactMethodEmail
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_ContactMethodEmail"))
-                    ContactMethodEmail.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_ContactMethodEmail");
-            if (Form.ContainsKey("z_ContactMethodEmail"))
-                ContactMethodEmail.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_ContactMethodEmail");
-
-            // ContactMethodFax
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_ContactMethodFax"))
-                    ContactMethodFax.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_ContactMethodFax");
-            if (Form.ContainsKey("z_ContactMethodFax"))
-                ContactMethodFax.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_ContactMethodFax");
-
-            // ContactMethodMobilePhone
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_ContactMethodMobilePhone"))
-                    ContactMethodMobilePhone.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_ContactMethodMobilePhone");
-            if (Form.ContainsKey("z_ContactMethodMobilePhone"))
-                ContactMethodMobilePhone.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_ContactMethodMobilePhone");
-
-            // ContactMethodHomePhone
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_ContactMethodHomePhone"))
-                    ContactMethodHomePhone.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_ContactMethodHomePhone");
-            if (Form.ContainsKey("z_ContactMethodHomePhone"))
-                ContactMethodHomePhone.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_ContactMethodHomePhone");
-
-            // ContactMethodPost
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_ContactMethodPost"))
-                    ContactMethodPost.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_ContactMethodPost");
-            if (Form.ContainsKey("z_ContactMethodPost"))
-                ContactMethodPost.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_ContactMethodPost");
-
-            // CollarSize
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_CollarSize"))
-                    CollarSize.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_CollarSize");
-            if (Form.ContainsKey("z_CollarSize"))
-                CollarSize.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_CollarSize");
-
-            // ChestSize
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_ChestSize"))
-                    ChestSize.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_ChestSize");
-            if (Form.ContainsKey("z_ChestSize"))
-                ChestSize.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_ChestSize");
-
-            // WaistSize
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_WaistSize"))
-                    WaistSize.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_WaistSize");
-            if (Form.ContainsKey("z_WaistSize"))
-                WaistSize.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_WaistSize");
-
-            // InsideLegSize
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_InsideLegSize"))
-                    InsideLegSize.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_InsideLegSize");
-            if (Form.ContainsKey("z_InsideLegSize"))
-                InsideLegSize.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_InsideLegSize");
-
-            // CapSize
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_CapSize"))
-                    CapSize.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_CapSize");
-            if (Form.ContainsKey("z_CapSize"))
-                CapSize.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_CapSize");
-
-            // SweaterSize_ClothesSizeID
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_SweaterSize_ClothesSizeID"))
-                    SweaterSize_ClothesSizeID.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_SweaterSize_ClothesSizeID");
-            if (Form.ContainsKey("z_SweaterSize_ClothesSizeID"))
-                SweaterSize_ClothesSizeID.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_SweaterSize_ClothesSizeID");
-
-            // BoilersuitSize_ClothesSizeID
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_BoilersuitSize_ClothesSizeID"))
-                    BoilersuitSize_ClothesSizeID.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_BoilersuitSize_ClothesSizeID");
-            if (Form.ContainsKey("z_BoilersuitSize_ClothesSizeID"))
-                BoilersuitSize_ClothesSizeID.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_BoilersuitSize_ClothesSizeID");
-
             // SocialSecurityNumber
             if (!IsAddOrEdit)
                 if (Form.ContainsKey("x_SocialSecurityNumber"))
@@ -1299,76 +1161,6 @@ public partial class PCM {
                     NomineeMobileNumber.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_NomineeMobileNumber");
             if (Form.ContainsKey("z_NomineeMobileNumber"))
                 NomineeMobileNumber.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_NomineeMobileNumber");
-
-            // NomineeValidVisa
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_NomineeValidVisa"))
-                    NomineeValidVisa.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_NomineeValidVisa");
-            if (Form.ContainsKey("z_NomineeValidVisa"))
-                NomineeValidVisa.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_NomineeValidVisa");
-
-            // BankName
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_BankName"))
-                    BankName.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_BankName");
-            if (Form.ContainsKey("z_BankName"))
-                BankName.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_BankName");
-
-            // BankAddress
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_BankAddress"))
-                    BankAddress.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_BankAddress");
-            if (Form.ContainsKey("z_BankAddress"))
-                BankAddress.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_BankAddress");
-
-            // BankAccountName
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_BankAccountName"))
-                    BankAccountName.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_BankAccountName");
-            if (Form.ContainsKey("z_BankAccountName"))
-                BankAccountName.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_BankAccountName");
-
-            // BankAccountNumber
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_BankAccountNumber"))
-                    BankAccountNumber.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_BankAccountNumber");
-            if (Form.ContainsKey("z_BankAccountNumber"))
-                BankAccountNumber.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_BankAccountNumber");
-
-            // BankSortCode
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_BankSortCode"))
-                    BankSortCode.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_BankSortCode");
-            if (Form.ContainsKey("z_BankSortCode"))
-                BankSortCode.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_BankSortCode");
-
-            // MNOPF
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_MNOPF"))
-                    MNOPF.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_MNOPF");
-            if (Form.ContainsKey("z_MNOPF"))
-                MNOPF.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_MNOPF");
-
-            // MembershipNumber
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_MembershipNumber"))
-                    MembershipNumber.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_MembershipNumber");
-            if (Form.ContainsKey("z_MembershipNumber"))
-                MembershipNumber.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_MembershipNumber");
-
-            // NationalInsuranceNumber
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_NationalInsuranceNumber"))
-                    NationalInsuranceNumber.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_NationalInsuranceNumber");
-            if (Form.ContainsKey("z_NationalInsuranceNumber"))
-                NationalInsuranceNumber.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_NationalInsuranceNumber");
-
-            // AVC
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_AVC"))
-                    AVC.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_AVC");
-            if (Form.ContainsKey("z_AVC"))
-                AVC.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_AVC");
 
             // ForeignVisaHasBeenDenied
             if (!IsAddOrEdit)
@@ -1530,6 +1322,13 @@ public partial class PCM {
                     RevisedDateTime.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_RevisedDateTime");
             if (Form.ContainsKey("z_RevisedDateTime"))
                 RevisedDateTime.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_RevisedDateTime");
+
+            // MTManningAgentID
+            if (!IsAddOrEdit)
+                if (Form.ContainsKey("x_MTManningAgentID"))
+                    MTManningAgentID.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_MTManningAgentID");
+            if (Form.ContainsKey("z_MTManningAgentID"))
+                MTManningAgentID.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_MTManningAgentID");
         }
 
         // Load row based on key values
@@ -1608,18 +1407,6 @@ public partial class PCM {
             AlternativeAddressCountryID.SetDbValue(row["AlternativeAddressCountryID"]);
             MobileNumber.SetDbValue(row["MobileNumber"]);
             _Email.SetDbValue(row["Email"]);
-            ContactMethodEmail.SetDbValue((ConvertToBool(row["ContactMethodEmail"]) ? "1" : "0"));
-            ContactMethodFax.SetDbValue((ConvertToBool(row["ContactMethodFax"]) ? "1" : "0"));
-            ContactMethodMobilePhone.SetDbValue((ConvertToBool(row["ContactMethodMobilePhone"]) ? "1" : "0"));
-            ContactMethodHomePhone.SetDbValue((ConvertToBool(row["ContactMethodHomePhone"]) ? "1" : "0"));
-            ContactMethodPost.SetDbValue((ConvertToBool(row["ContactMethodPost"]) ? "1" : "0"));
-            CollarSize.SetDbValue(IsNull(row["CollarSize"]) ? DbNullValue : ConvertToDouble(row["CollarSize"]));
-            ChestSize.SetDbValue(IsNull(row["ChestSize"]) ? DbNullValue : ConvertToDouble(row["ChestSize"]));
-            WaistSize.SetDbValue(IsNull(row["WaistSize"]) ? DbNullValue : ConvertToDouble(row["WaistSize"]));
-            InsideLegSize.SetDbValue(IsNull(row["InsideLegSize"]) ? DbNullValue : ConvertToDouble(row["InsideLegSize"]));
-            CapSize.SetDbValue(IsNull(row["CapSize"]) ? DbNullValue : ConvertToDouble(row["CapSize"]));
-            SweaterSize_ClothesSizeID.SetDbValue(row["SweaterSize_ClothesSizeID"]);
-            BoilersuitSize_ClothesSizeID.SetDbValue(row["BoilersuitSize_ClothesSizeID"]);
             SocialSecurityNumber.SetDbValue(row["SocialSecurityNumber"]);
             SocialSecurityIssuingCountryID.SetDbValue(row["SocialSecurityIssuingCountryID"]);
             SocialSecurityImage.Upload.DbValue = row["SocialSecurityImage"];
@@ -1639,16 +1426,6 @@ public partial class PCM {
             NomineeAddressHomeTel.SetDbValue(row["NomineeAddressHomeTel"]);
             NomineeEmail.SetDbValue(row["NomineeEmail"]);
             NomineeMobileNumber.SetDbValue(row["NomineeMobileNumber"]);
-            NomineeValidVisa.SetDbValue(row["NomineeValidVisa"]);
-            BankName.SetDbValue(row["BankName"]);
-            BankAddress.SetDbValue(row["BankAddress"]);
-            BankAccountName.SetDbValue(row["BankAccountName"]);
-            BankAccountNumber.SetDbValue(row["BankAccountNumber"]);
-            BankSortCode.SetDbValue(row["BankSortCode"]);
-            MNOPF.SetDbValue(row["MNOPF"]);
-            MembershipNumber.SetDbValue(row["MembershipNumber"]);
-            NationalInsuranceNumber.SetDbValue(row["NationalInsuranceNumber"]);
-            AVC.SetDbValue(row["AVC"]);
             ForeignVisaHasBeenDenied.SetDbValue((ConvertToBool(row["ForeignVisaHasBeenDenied"]) ? "1" : "0"));
             ForeignVisaDenied_CountryID.SetDbValue(row["ForeignVisaDenied_CountryID"]);
             ForeignVisaDeniedReason.SetDbValue(row["ForeignVisaDeniedReason"]);
@@ -1672,10 +1449,6 @@ public partial class PCM {
             LastUpdatedByUserID.SetDbValue(row["LastUpdatedByUserID"]);
             LastUpdatedDateTime.SetDbValue(row["LastUpdatedDateTime"]);
             MTUserID.SetDbValue(row["MTUserID"]);
-            DocumentCheckDateTime.SetDbValue(row["DocumentCheckDateTime"]);
-            InterviewManagerDateTime.SetDbValue(row["InterviewManagerDateTime"]);
-            InterviewGMDateTime.SetDbValue(row["InterviewGMDateTime"]);
-            MCUScheduleDateTime.SetDbValue(row["MCUScheduleDateTime"]);
             RejectedReason.SetDbValue(row["RejectedReason"]);
             RejectedDateTime.SetDbValue(row["RejectedDateTime"]);
             Status.SetDbValue(row["Status"]);
@@ -1698,6 +1471,7 @@ public partial class PCM {
             NomineeMobileNumberCode_CountryID.SetDbValue(row["NomineeMobileNumberCode_CountryID"]);
             RevisedReason.SetDbValue(row["RevisedReason"]);
             RevisedDateTime.SetDbValue(row["RevisedDateTime"]);
+            MTManningAgentID.SetDbValue(row["MTManningAgentID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -1740,18 +1514,6 @@ public partial class PCM {
             row.Add("AlternativeAddressCountryID", AlternativeAddressCountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("MobileNumber", MobileNumber.DefaultValue ?? DbNullValue); // DN
             row.Add("Email", _Email.DefaultValue ?? DbNullValue); // DN
-            row.Add("ContactMethodEmail", ContactMethodEmail.DefaultValue ?? DbNullValue); // DN
-            row.Add("ContactMethodFax", ContactMethodFax.DefaultValue ?? DbNullValue); // DN
-            row.Add("ContactMethodMobilePhone", ContactMethodMobilePhone.DefaultValue ?? DbNullValue); // DN
-            row.Add("ContactMethodHomePhone", ContactMethodHomePhone.DefaultValue ?? DbNullValue); // DN
-            row.Add("ContactMethodPost", ContactMethodPost.DefaultValue ?? DbNullValue); // DN
-            row.Add("CollarSize", CollarSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("ChestSize", ChestSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("WaistSize", WaistSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("InsideLegSize", InsideLegSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("CapSize", CapSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("SweaterSize_ClothesSizeID", SweaterSize_ClothesSizeID.DefaultValue ?? DbNullValue); // DN
-            row.Add("BoilersuitSize_ClothesSizeID", BoilersuitSize_ClothesSizeID.DefaultValue ?? DbNullValue); // DN
             row.Add("SocialSecurityNumber", SocialSecurityNumber.DefaultValue ?? DbNullValue); // DN
             row.Add("SocialSecurityIssuingCountryID", SocialSecurityIssuingCountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("SocialSecurityImage", SocialSecurityImage.DefaultValue ?? DbNullValue); // DN
@@ -1769,16 +1531,6 @@ public partial class PCM {
             row.Add("NomineeAddressHomeTel", NomineeAddressHomeTel.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeEmail", NomineeEmail.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeMobileNumber", NomineeMobileNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("NomineeValidVisa", NomineeValidVisa.DefaultValue ?? DbNullValue); // DN
-            row.Add("BankName", BankName.DefaultValue ?? DbNullValue); // DN
-            row.Add("BankAddress", BankAddress.DefaultValue ?? DbNullValue); // DN
-            row.Add("BankAccountName", BankAccountName.DefaultValue ?? DbNullValue); // DN
-            row.Add("BankAccountNumber", BankAccountNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("BankSortCode", BankSortCode.DefaultValue ?? DbNullValue); // DN
-            row.Add("MNOPF", MNOPF.DefaultValue ?? DbNullValue); // DN
-            row.Add("MembershipNumber", MembershipNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("NationalInsuranceNumber", NationalInsuranceNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("AVC", AVC.DefaultValue ?? DbNullValue); // DN
             row.Add("ForeignVisaHasBeenDenied", ForeignVisaHasBeenDenied.DefaultValue ?? DbNullValue); // DN
             row.Add("ForeignVisaDenied_CountryID", ForeignVisaDenied_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("ForeignVisaDeniedReason", ForeignVisaDeniedReason.DefaultValue ?? DbNullValue); // DN
@@ -1802,10 +1554,6 @@ public partial class PCM {
             row.Add("LastUpdatedByUserID", LastUpdatedByUserID.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedDateTime", LastUpdatedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("MTUserID", MTUserID.DefaultValue ?? DbNullValue); // DN
-            row.Add("DocumentCheckDateTime", DocumentCheckDateTime.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewManagerDateTime", InterviewManagerDateTime.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewGMDateTime", InterviewGMDateTime.DefaultValue ?? DbNullValue); // DN
-            row.Add("MCUScheduleDateTime", MCUScheduleDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("RejectedReason", RejectedReason.DefaultValue ?? DbNullValue); // DN
             row.Add("RejectedDateTime", RejectedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("Status", Status.DefaultValue ?? DbNullValue); // DN
@@ -1828,6 +1576,7 @@ public partial class PCM {
             row.Add("NomineeMobileNumberCode_CountryID", NomineeMobileNumberCode_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("RevisedReason", RevisedReason.DefaultValue ?? DbNullValue); // DN
             row.Add("RevisedDateTime", RevisedDateTime.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTManningAgentID", MTManningAgentID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -1948,42 +1697,6 @@ public partial class PCM {
             // Email
             _Email.RowCssClass = "row";
 
-            // ContactMethodEmail
-            ContactMethodEmail.RowCssClass = "row";
-
-            // ContactMethodFax
-            ContactMethodFax.RowCssClass = "row";
-
-            // ContactMethodMobilePhone
-            ContactMethodMobilePhone.RowCssClass = "row";
-
-            // ContactMethodHomePhone
-            ContactMethodHomePhone.RowCssClass = "row";
-
-            // ContactMethodPost
-            ContactMethodPost.RowCssClass = "row";
-
-            // CollarSize
-            CollarSize.RowCssClass = "row";
-
-            // ChestSize
-            ChestSize.RowCssClass = "row";
-
-            // WaistSize
-            WaistSize.RowCssClass = "row";
-
-            // InsideLegSize
-            InsideLegSize.RowCssClass = "row";
-
-            // CapSize
-            CapSize.RowCssClass = "row";
-
-            // SweaterSize_ClothesSizeID
-            SweaterSize_ClothesSizeID.RowCssClass = "row";
-
-            // BoilersuitSize_ClothesSizeID
-            BoilersuitSize_ClothesSizeID.RowCssClass = "row";
-
             // SocialSecurityNumber
             SocialSecurityNumber.RowCssClass = "row";
 
@@ -2034,36 +1747,6 @@ public partial class PCM {
 
             // NomineeMobileNumber
             NomineeMobileNumber.RowCssClass = "row";
-
-            // NomineeValidVisa
-            NomineeValidVisa.RowCssClass = "row";
-
-            // BankName
-            BankName.RowCssClass = "row";
-
-            // BankAddress
-            BankAddress.RowCssClass = "row";
-
-            // BankAccountName
-            BankAccountName.RowCssClass = "row";
-
-            // BankAccountNumber
-            BankAccountNumber.RowCssClass = "row";
-
-            // BankSortCode
-            BankSortCode.RowCssClass = "row";
-
-            // MNOPF
-            MNOPF.RowCssClass = "row";
-
-            // MembershipNumber
-            MembershipNumber.RowCssClass = "row";
-
-            // NationalInsuranceNumber
-            NationalInsuranceNumber.RowCssClass = "row";
-
-            // AVC
-            AVC.RowCssClass = "row";
 
             // ForeignVisaHasBeenDenied
             ForeignVisaHasBeenDenied.RowCssClass = "row";
@@ -2134,18 +1817,6 @@ public partial class PCM {
             // MTUserID
             MTUserID.RowCssClass = "row";
 
-            // DocumentCheckDateTime
-            DocumentCheckDateTime.RowCssClass = "row";
-
-            // InterviewManagerDateTime
-            InterviewManagerDateTime.RowCssClass = "row";
-
-            // InterviewGMDateTime
-            InterviewGMDateTime.RowCssClass = "row";
-
-            // MCUScheduleDateTime
-            MCUScheduleDateTime.RowCssClass = "row";
-
             // RejectedReason
             RejectedReason.RowCssClass = "row";
 
@@ -2211,6 +1882,9 @@ public partial class PCM {
 
             // RevisedDateTime
             RevisedDateTime.RowCssClass = "row";
+
+            // MTManningAgentID
+            MTManningAgentID.RowCssClass = "row";
 
             // View row
             if (RowType == RowType.View) {
@@ -2481,113 +2155,6 @@ public partial class PCM {
                 _Email.ViewValue = ConvertToString(_Email.CurrentValue); // DN
                 _Email.ViewCustomAttributes = "";
 
-                // ContactMethodEmail
-                if (ConvertToBool(ContactMethodEmail.CurrentValue)) {
-                    ContactMethodEmail.ViewValue = ContactMethodEmail.TagCaption(1) != "" ? ContactMethodEmail.TagCaption(1) : "Yes";
-                } else {
-                    ContactMethodEmail.ViewValue = ContactMethodEmail.TagCaption(2) != "" ? ContactMethodEmail.TagCaption(2) : "No";
-                }
-                ContactMethodEmail.ViewCustomAttributes = "";
-
-                // ContactMethodFax
-                if (ConvertToBool(ContactMethodFax.CurrentValue)) {
-                    ContactMethodFax.ViewValue = ContactMethodFax.TagCaption(1) != "" ? ContactMethodFax.TagCaption(1) : "Yes";
-                } else {
-                    ContactMethodFax.ViewValue = ContactMethodFax.TagCaption(2) != "" ? ContactMethodFax.TagCaption(2) : "No";
-                }
-                ContactMethodFax.ViewCustomAttributes = "";
-
-                // ContactMethodMobilePhone
-                if (ConvertToBool(ContactMethodMobilePhone.CurrentValue)) {
-                    ContactMethodMobilePhone.ViewValue = ContactMethodMobilePhone.TagCaption(1) != "" ? ContactMethodMobilePhone.TagCaption(1) : "Yes";
-                } else {
-                    ContactMethodMobilePhone.ViewValue = ContactMethodMobilePhone.TagCaption(2) != "" ? ContactMethodMobilePhone.TagCaption(2) : "No";
-                }
-                ContactMethodMobilePhone.ViewCustomAttributes = "";
-
-                // ContactMethodHomePhone
-                if (ConvertToBool(ContactMethodHomePhone.CurrentValue)) {
-                    ContactMethodHomePhone.ViewValue = ContactMethodHomePhone.TagCaption(1) != "" ? ContactMethodHomePhone.TagCaption(1) : "Yes";
-                } else {
-                    ContactMethodHomePhone.ViewValue = ContactMethodHomePhone.TagCaption(2) != "" ? ContactMethodHomePhone.TagCaption(2) : "No";
-                }
-                ContactMethodHomePhone.ViewCustomAttributes = "";
-
-                // ContactMethodPost
-                if (ConvertToBool(ContactMethodPost.CurrentValue)) {
-                    ContactMethodPost.ViewValue = ContactMethodPost.TagCaption(1) != "" ? ContactMethodPost.TagCaption(1) : "Yes";
-                } else {
-                    ContactMethodPost.ViewValue = ContactMethodPost.TagCaption(2) != "" ? ContactMethodPost.TagCaption(2) : "No";
-                }
-                ContactMethodPost.ViewCustomAttributes = "";
-
-                // CollarSize
-                CollarSize.ViewValue = CollarSize.CurrentValue;
-                CollarSize.ViewValue = FormatNumber(CollarSize.ViewValue, CollarSize.FormatPattern);
-                CollarSize.ViewCustomAttributes = "";
-
-                // ChestSize
-                ChestSize.ViewValue = ChestSize.CurrentValue;
-                ChestSize.ViewValue = FormatNumber(ChestSize.ViewValue, ChestSize.FormatPattern);
-                ChestSize.ViewCustomAttributes = "";
-
-                // WaistSize
-                WaistSize.ViewValue = WaistSize.CurrentValue;
-                WaistSize.ViewValue = FormatNumber(WaistSize.ViewValue, WaistSize.FormatPattern);
-                WaistSize.ViewCustomAttributes = "";
-
-                // InsideLegSize
-                InsideLegSize.ViewValue = InsideLegSize.CurrentValue;
-                InsideLegSize.ViewValue = FormatNumber(InsideLegSize.ViewValue, InsideLegSize.FormatPattern);
-                InsideLegSize.ViewCustomAttributes = "";
-
-                // CapSize
-                CapSize.ViewValue = CapSize.CurrentValue;
-                CapSize.ViewValue = FormatNumber(CapSize.ViewValue, CapSize.FormatPattern);
-                CapSize.ViewCustomAttributes = "";
-
-                // SweaterSize_ClothesSizeID
-                curVal = ConvertToString(SweaterSize_ClothesSizeID.CurrentValue);
-                if (!Empty(curVal)) {
-                    if (SweaterSize_ClothesSizeID.Lookup != null && IsDictionary(SweaterSize_ClothesSizeID.Lookup?.Options) && SweaterSize_ClothesSizeID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
-                        SweaterSize_ClothesSizeID.ViewValue = SweaterSize_ClothesSizeID.LookupCacheOption(curVal);
-                    } else { // Lookup from database // DN
-                        filterWrk = SearchFilter("[ID]", "=", SweaterSize_ClothesSizeID.CurrentValue, DataType.Number, "");
-                        sqlWrk = SweaterSize_ClothesSizeID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
-                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
-                        if (rswrk?.Count > 0 && SweaterSize_ClothesSizeID.Lookup != null) { // Lookup values found
-                            var listwrk = SweaterSize_ClothesSizeID.Lookup?.RenderViewRow(rswrk[0]);
-                            SweaterSize_ClothesSizeID.ViewValue = SweaterSize_ClothesSizeID.HighlightLookup(ConvertToString(rswrk[0]), SweaterSize_ClothesSizeID.DisplayValue(listwrk));
-                        } else {
-                            SweaterSize_ClothesSizeID.ViewValue = FormatNumber(SweaterSize_ClothesSizeID.CurrentValue, SweaterSize_ClothesSizeID.FormatPattern);
-                        }
-                    }
-                } else {
-                    SweaterSize_ClothesSizeID.ViewValue = DbNullValue;
-                }
-                SweaterSize_ClothesSizeID.ViewCustomAttributes = "";
-
-                // BoilersuitSize_ClothesSizeID
-                curVal = ConvertToString(BoilersuitSize_ClothesSizeID.CurrentValue);
-                if (!Empty(curVal)) {
-                    if (BoilersuitSize_ClothesSizeID.Lookup != null && IsDictionary(BoilersuitSize_ClothesSizeID.Lookup?.Options) && BoilersuitSize_ClothesSizeID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
-                        BoilersuitSize_ClothesSizeID.ViewValue = BoilersuitSize_ClothesSizeID.LookupCacheOption(curVal);
-                    } else { // Lookup from database // DN
-                        filterWrk = SearchFilter("[ID]", "=", BoilersuitSize_ClothesSizeID.CurrentValue, DataType.Number, "");
-                        sqlWrk = BoilersuitSize_ClothesSizeID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
-                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
-                        if (rswrk?.Count > 0 && BoilersuitSize_ClothesSizeID.Lookup != null) { // Lookup values found
-                            var listwrk = BoilersuitSize_ClothesSizeID.Lookup?.RenderViewRow(rswrk[0]);
-                            BoilersuitSize_ClothesSizeID.ViewValue = BoilersuitSize_ClothesSizeID.HighlightLookup(ConvertToString(rswrk[0]), BoilersuitSize_ClothesSizeID.DisplayValue(listwrk));
-                        } else {
-                            BoilersuitSize_ClothesSizeID.ViewValue = FormatNumber(BoilersuitSize_ClothesSizeID.CurrentValue, BoilersuitSize_ClothesSizeID.FormatPattern);
-                        }
-                    }
-                } else {
-                    BoilersuitSize_ClothesSizeID.ViewValue = DbNullValue;
-                }
-                BoilersuitSize_ClothesSizeID.ViewCustomAttributes = "";
-
                 // SocialSecurityNumber
                 SocialSecurityNumber.ViewValue = ConvertToString(SocialSecurityNumber.CurrentValue); // DN
                 SocialSecurityNumber.ViewCustomAttributes = "";
@@ -2737,46 +2304,6 @@ public partial class PCM {
                 // NomineeMobileNumber
                 NomineeMobileNumber.ViewValue = ConvertToString(NomineeMobileNumber.CurrentValue); // DN
                 NomineeMobileNumber.ViewCustomAttributes = "";
-
-                // NomineeValidVisa
-                NomineeValidVisa.ViewValue = ConvertToString(NomineeValidVisa.CurrentValue); // DN
-                NomineeValidVisa.ViewCustomAttributes = "";
-
-                // BankName
-                BankName.ViewValue = ConvertToString(BankName.CurrentValue); // DN
-                BankName.ViewCustomAttributes = "";
-
-                // BankAddress
-                BankAddress.ViewValue = BankAddress.CurrentValue;
-                BankAddress.ViewCustomAttributes = "";
-
-                // BankAccountName
-                BankAccountName.ViewValue = ConvertToString(BankAccountName.CurrentValue); // DN
-                BankAccountName.ViewCustomAttributes = "";
-
-                // BankAccountNumber
-                BankAccountNumber.ViewValue = ConvertToString(BankAccountNumber.CurrentValue); // DN
-                BankAccountNumber.ViewCustomAttributes = "";
-
-                // BankSortCode
-                BankSortCode.ViewValue = ConvertToString(BankSortCode.CurrentValue); // DN
-                BankSortCode.ViewCustomAttributes = "";
-
-                // MNOPF
-                MNOPF.ViewValue = ConvertToString(MNOPF.CurrentValue); // DN
-                MNOPF.ViewCustomAttributes = "";
-
-                // MembershipNumber
-                MembershipNumber.ViewValue = ConvertToString(MembershipNumber.CurrentValue); // DN
-                MembershipNumber.ViewCustomAttributes = "";
-
-                // NationalInsuranceNumber
-                NationalInsuranceNumber.ViewValue = ConvertToString(NationalInsuranceNumber.CurrentValue); // DN
-                NationalInsuranceNumber.ViewCustomAttributes = "";
-
-                // AVC
-                AVC.ViewValue = ConvertToString(AVC.CurrentValue); // DN
-                AVC.ViewCustomAttributes = "";
 
                 // ForeignVisaHasBeenDenied
                 if (ConvertToBool(ForeignVisaHasBeenDenied.CurrentValue)) {
@@ -2957,26 +2484,6 @@ public partial class PCM {
                 LastUpdatedDateTime.ViewValue = LastUpdatedDateTime.CurrentValue;
                 LastUpdatedDateTime.ViewValue = FormatDateTime(LastUpdatedDateTime.ViewValue, LastUpdatedDateTime.FormatPattern);
                 LastUpdatedDateTime.ViewCustomAttributes = "";
-
-                // DocumentCheckDateTime
-                DocumentCheckDateTime.ViewValue = DocumentCheckDateTime.CurrentValue;
-                DocumentCheckDateTime.ViewValue = FormatDateTime(DocumentCheckDateTime.ViewValue, DocumentCheckDateTime.FormatPattern);
-                DocumentCheckDateTime.ViewCustomAttributes = "";
-
-                // InterviewManagerDateTime
-                InterviewManagerDateTime.ViewValue = InterviewManagerDateTime.CurrentValue;
-                InterviewManagerDateTime.ViewValue = FormatDateTime(InterviewManagerDateTime.ViewValue, InterviewManagerDateTime.FormatPattern);
-                InterviewManagerDateTime.ViewCustomAttributes = "";
-
-                // InterviewGMDateTime
-                InterviewGMDateTime.ViewValue = InterviewGMDateTime.CurrentValue;
-                InterviewGMDateTime.ViewValue = FormatDateTime(InterviewGMDateTime.ViewValue, InterviewGMDateTime.FormatPattern);
-                InterviewGMDateTime.ViewCustomAttributes = "";
-
-                // MCUScheduleDateTime
-                MCUScheduleDateTime.ViewValue = MCUScheduleDateTime.CurrentValue;
-                MCUScheduleDateTime.ViewValue = FormatDateTime(MCUScheduleDateTime.ViewValue, MCUScheduleDateTime.FormatPattern);
-                MCUScheduleDateTime.ViewCustomAttributes = "";
 
                 // RejectedReason
                 RejectedReason.ViewValue = RejectedReason.CurrentValue;
@@ -3191,6 +2698,11 @@ public partial class PCM {
                 RevisedDateTime.ViewValue = FormatDateTime(RevisedDateTime.ViewValue, RevisedDateTime.FormatPattern);
                 RevisedDateTime.ViewCustomAttributes = "";
 
+                // MTManningAgentID
+                MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+                MTManningAgentID.ViewValue = FormatNumber(MTManningAgentID.ViewValue, MTManningAgentID.FormatPattern);
+                MTManningAgentID.ViewCustomAttributes = "";
+
                 // IndividualCodeNumber
                 IndividualCodeNumber.HrefValue = "";
                 IndividualCodeNumber.TooltipValue = "";
@@ -3311,54 +2823,6 @@ public partial class PCM {
                 _Email.HrefValue = "";
                 _Email.TooltipValue = "";
 
-                // ContactMethodEmail
-                ContactMethodEmail.HrefValue = "";
-                ContactMethodEmail.TooltipValue = "";
-
-                // ContactMethodFax
-                ContactMethodFax.HrefValue = "";
-                ContactMethodFax.TooltipValue = "";
-
-                // ContactMethodMobilePhone
-                ContactMethodMobilePhone.HrefValue = "";
-                ContactMethodMobilePhone.TooltipValue = "";
-
-                // ContactMethodHomePhone
-                ContactMethodHomePhone.HrefValue = "";
-                ContactMethodHomePhone.TooltipValue = "";
-
-                // ContactMethodPost
-                ContactMethodPost.HrefValue = "";
-                ContactMethodPost.TooltipValue = "";
-
-                // CollarSize
-                CollarSize.HrefValue = "";
-                CollarSize.TooltipValue = "";
-
-                // ChestSize
-                ChestSize.HrefValue = "";
-                ChestSize.TooltipValue = "";
-
-                // WaistSize
-                WaistSize.HrefValue = "";
-                WaistSize.TooltipValue = "";
-
-                // InsideLegSize
-                InsideLegSize.HrefValue = "";
-                InsideLegSize.TooltipValue = "";
-
-                // CapSize
-                CapSize.HrefValue = "";
-                CapSize.TooltipValue = "";
-
-                // SweaterSize_ClothesSizeID
-                SweaterSize_ClothesSizeID.HrefValue = "";
-                SweaterSize_ClothesSizeID.TooltipValue = "";
-
-                // BoilersuitSize_ClothesSizeID
-                BoilersuitSize_ClothesSizeID.HrefValue = "";
-                BoilersuitSize_ClothesSizeID.TooltipValue = "";
-
                 // SocialSecurityNumber
                 SocialSecurityNumber.HrefValue = "";
                 SocialSecurityNumber.TooltipValue = "";
@@ -3444,46 +2908,6 @@ public partial class PCM {
                 // NomineeMobileNumber
                 NomineeMobileNumber.HrefValue = "";
                 NomineeMobileNumber.TooltipValue = "";
-
-                // NomineeValidVisa
-                NomineeValidVisa.HrefValue = "";
-                NomineeValidVisa.TooltipValue = "";
-
-                // BankName
-                BankName.HrefValue = "";
-                BankName.TooltipValue = "";
-
-                // BankAddress
-                BankAddress.HrefValue = "";
-                BankAddress.TooltipValue = "";
-
-                // BankAccountName
-                BankAccountName.HrefValue = "";
-                BankAccountName.TooltipValue = "";
-
-                // BankAccountNumber
-                BankAccountNumber.HrefValue = "";
-                BankAccountNumber.TooltipValue = "";
-
-                // BankSortCode
-                BankSortCode.HrefValue = "";
-                BankSortCode.TooltipValue = "";
-
-                // MNOPF
-                MNOPF.HrefValue = "";
-                MNOPF.TooltipValue = "";
-
-                // MembershipNumber
-                MembershipNumber.HrefValue = "";
-                MembershipNumber.TooltipValue = "";
-
-                // NationalInsuranceNumber
-                NationalInsuranceNumber.HrefValue = "";
-                NationalInsuranceNumber.TooltipValue = "";
-
-                // AVC
-                AVC.HrefValue = "";
-                AVC.TooltipValue = "";
 
                 // ForeignVisaHasBeenDenied
                 ForeignVisaHasBeenDenied.HrefValue = "";
@@ -3576,6 +3000,10 @@ public partial class PCM {
                 // RevisedDateTime
                 RevisedDateTime.HrefValue = "";
                 RevisedDateTime.TooltipValue = "";
+
+                // MTManningAgentID
+                MTManningAgentID.HrefValue = "";
+                MTManningAgentID.TooltipValue = "";
             } else if (RowType == RowType.Search) {
                 // IndividualCodeNumber
                 IndividualCodeNumber.SetupEditAttributes();
@@ -3828,85 +3256,6 @@ public partial class PCM {
                 _Email.EditValue = HtmlEncode(_Email.AdvancedSearch.SearchValue);
                 _Email.PlaceHolder = RemoveHtml(_Email.Caption);
 
-                // ContactMethodEmail
-                ContactMethodEmail.EditValue = ContactMethodEmail.Options(false);
-                ContactMethodEmail.PlaceHolder = RemoveHtml(ContactMethodEmail.Caption);
-
-                // ContactMethodFax
-                ContactMethodFax.EditValue = ContactMethodFax.Options(false);
-                ContactMethodFax.PlaceHolder = RemoveHtml(ContactMethodFax.Caption);
-
-                // ContactMethodMobilePhone
-                ContactMethodMobilePhone.EditValue = ContactMethodMobilePhone.Options(false);
-                ContactMethodMobilePhone.PlaceHolder = RemoveHtml(ContactMethodMobilePhone.Caption);
-
-                // ContactMethodHomePhone
-                ContactMethodHomePhone.EditValue = ContactMethodHomePhone.Options(false);
-                ContactMethodHomePhone.PlaceHolder = RemoveHtml(ContactMethodHomePhone.Caption);
-
-                // ContactMethodPost
-                ContactMethodPost.EditValue = ContactMethodPost.Options(false);
-                ContactMethodPost.PlaceHolder = RemoveHtml(ContactMethodPost.Caption);
-
-                // CollarSize
-                CollarSize.SetupEditAttributes();
-                CollarSize.EditValue = CollarSize.AdvancedSearch.SearchValue; // DN
-                CollarSize.PlaceHolder = RemoveHtml(CollarSize.Caption);
-
-                // ChestSize
-                ChestSize.SetupEditAttributes();
-                ChestSize.EditValue = ChestSize.AdvancedSearch.SearchValue; // DN
-                ChestSize.PlaceHolder = RemoveHtml(ChestSize.Caption);
-
-                // WaistSize
-                WaistSize.SetupEditAttributes();
-                WaistSize.EditValue = WaistSize.AdvancedSearch.SearchValue; // DN
-                WaistSize.PlaceHolder = RemoveHtml(WaistSize.Caption);
-
-                // InsideLegSize
-                InsideLegSize.SetupEditAttributes();
-                InsideLegSize.EditValue = InsideLegSize.AdvancedSearch.SearchValue; // DN
-                InsideLegSize.PlaceHolder = RemoveHtml(InsideLegSize.Caption);
-
-                // CapSize
-                CapSize.SetupEditAttributes();
-                CapSize.EditValue = CapSize.AdvancedSearch.SearchValue; // DN
-                CapSize.PlaceHolder = RemoveHtml(CapSize.Caption);
-
-                // SweaterSize_ClothesSizeID
-                SweaterSize_ClothesSizeID.SetupEditAttributes();
-                curVal = ConvertToString(SweaterSize_ClothesSizeID.AdvancedSearch.SearchValue)?.Trim() ?? "";
-                if (SweaterSize_ClothesSizeID.Lookup != null && IsDictionary(SweaterSize_ClothesSizeID.Lookup?.Options) && SweaterSize_ClothesSizeID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
-                    SweaterSize_ClothesSizeID.EditValue = SweaterSize_ClothesSizeID.Lookup?.Options.Values.ToList();
-                } else { // Lookup from database
-                    if (curVal == "") {
-                        filterWrk = "0=1";
-                    } else {
-                        filterWrk = SearchFilter("[ID]", "=", SweaterSize_ClothesSizeID.AdvancedSearch.SearchValue, DataType.Number, "");
-                    }
-                    sqlWrk = SweaterSize_ClothesSizeID.Lookup?.GetSql(true, filterWrk, null, this, false, true);
-                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
-                    SweaterSize_ClothesSizeID.EditValue = rswrk;
-                }
-                SweaterSize_ClothesSizeID.PlaceHolder = RemoveHtml(SweaterSize_ClothesSizeID.Caption);
-
-                // BoilersuitSize_ClothesSizeID
-                BoilersuitSize_ClothesSizeID.SetupEditAttributes();
-                curVal = ConvertToString(BoilersuitSize_ClothesSizeID.AdvancedSearch.SearchValue)?.Trim() ?? "";
-                if (BoilersuitSize_ClothesSizeID.Lookup != null && IsDictionary(BoilersuitSize_ClothesSizeID.Lookup?.Options) && BoilersuitSize_ClothesSizeID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
-                    BoilersuitSize_ClothesSizeID.EditValue = BoilersuitSize_ClothesSizeID.Lookup?.Options.Values.ToList();
-                } else { // Lookup from database
-                    if (curVal == "") {
-                        filterWrk = "0=1";
-                    } else {
-                        filterWrk = SearchFilter("[ID]", "=", BoilersuitSize_ClothesSizeID.AdvancedSearch.SearchValue, DataType.Number, "");
-                    }
-                    sqlWrk = BoilersuitSize_ClothesSizeID.Lookup?.GetSql(true, filterWrk, null, this, false, true);
-                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
-                    BoilersuitSize_ClothesSizeID.EditValue = rswrk;
-                }
-                BoilersuitSize_ClothesSizeID.PlaceHolder = RemoveHtml(BoilersuitSize_ClothesSizeID.Caption);
-
                 // SocialSecurityNumber
                 SocialSecurityNumber.SetupEditAttributes();
                 if (!SocialSecurityNumber.Raw)
@@ -4061,74 +3410,6 @@ public partial class PCM {
                     NomineeMobileNumber.AdvancedSearch.SearchValue = HtmlDecode(NomineeMobileNumber.AdvancedSearch.SearchValue);
                 NomineeMobileNumber.EditValue = HtmlEncode(NomineeMobileNumber.AdvancedSearch.SearchValue);
                 NomineeMobileNumber.PlaceHolder = RemoveHtml(NomineeMobileNumber.Caption);
-
-                // NomineeValidVisa
-                NomineeValidVisa.SetupEditAttributes();
-                if (!NomineeValidVisa.Raw)
-                    NomineeValidVisa.AdvancedSearch.SearchValue = HtmlDecode(NomineeValidVisa.AdvancedSearch.SearchValue);
-                NomineeValidVisa.EditValue = HtmlEncode(NomineeValidVisa.AdvancedSearch.SearchValue);
-                NomineeValidVisa.PlaceHolder = RemoveHtml(NomineeValidVisa.Caption);
-
-                // BankName
-                BankName.SetupEditAttributes();
-                if (!BankName.Raw)
-                    BankName.AdvancedSearch.SearchValue = HtmlDecode(BankName.AdvancedSearch.SearchValue);
-                BankName.EditValue = HtmlEncode(BankName.AdvancedSearch.SearchValue);
-                BankName.PlaceHolder = RemoveHtml(BankName.Caption);
-
-                // BankAddress
-                BankAddress.SetupEditAttributes();
-                BankAddress.EditValue = BankAddress.AdvancedSearch.SearchValue; // DN
-                BankAddress.PlaceHolder = RemoveHtml(BankAddress.Caption);
-
-                // BankAccountName
-                BankAccountName.SetupEditAttributes();
-                if (!BankAccountName.Raw)
-                    BankAccountName.AdvancedSearch.SearchValue = HtmlDecode(BankAccountName.AdvancedSearch.SearchValue);
-                BankAccountName.EditValue = HtmlEncode(BankAccountName.AdvancedSearch.SearchValue);
-                BankAccountName.PlaceHolder = RemoveHtml(BankAccountName.Caption);
-
-                // BankAccountNumber
-                BankAccountNumber.SetupEditAttributes();
-                if (!BankAccountNumber.Raw)
-                    BankAccountNumber.AdvancedSearch.SearchValue = HtmlDecode(BankAccountNumber.AdvancedSearch.SearchValue);
-                BankAccountNumber.EditValue = HtmlEncode(BankAccountNumber.AdvancedSearch.SearchValue);
-                BankAccountNumber.PlaceHolder = RemoveHtml(BankAccountNumber.Caption);
-
-                // BankSortCode
-                BankSortCode.SetupEditAttributes();
-                if (!BankSortCode.Raw)
-                    BankSortCode.AdvancedSearch.SearchValue = HtmlDecode(BankSortCode.AdvancedSearch.SearchValue);
-                BankSortCode.EditValue = HtmlEncode(BankSortCode.AdvancedSearch.SearchValue);
-                BankSortCode.PlaceHolder = RemoveHtml(BankSortCode.Caption);
-
-                // MNOPF
-                MNOPF.SetupEditAttributes();
-                if (!MNOPF.Raw)
-                    MNOPF.AdvancedSearch.SearchValue = HtmlDecode(MNOPF.AdvancedSearch.SearchValue);
-                MNOPF.EditValue = HtmlEncode(MNOPF.AdvancedSearch.SearchValue);
-                MNOPF.PlaceHolder = RemoveHtml(MNOPF.Caption);
-
-                // MembershipNumber
-                MembershipNumber.SetupEditAttributes();
-                if (!MembershipNumber.Raw)
-                    MembershipNumber.AdvancedSearch.SearchValue = HtmlDecode(MembershipNumber.AdvancedSearch.SearchValue);
-                MembershipNumber.EditValue = HtmlEncode(MembershipNumber.AdvancedSearch.SearchValue);
-                MembershipNumber.PlaceHolder = RemoveHtml(MembershipNumber.Caption);
-
-                // NationalInsuranceNumber
-                NationalInsuranceNumber.SetupEditAttributes();
-                if (!NationalInsuranceNumber.Raw)
-                    NationalInsuranceNumber.AdvancedSearch.SearchValue = HtmlDecode(NationalInsuranceNumber.AdvancedSearch.SearchValue);
-                NationalInsuranceNumber.EditValue = HtmlEncode(NationalInsuranceNumber.AdvancedSearch.SearchValue);
-                NationalInsuranceNumber.PlaceHolder = RemoveHtml(NationalInsuranceNumber.Caption);
-
-                // AVC
-                AVC.SetupEditAttributes();
-                if (!AVC.Raw)
-                    AVC.AdvancedSearch.SearchValue = HtmlDecode(AVC.AdvancedSearch.SearchValue);
-                AVC.EditValue = HtmlEncode(AVC.AdvancedSearch.SearchValue);
-                AVC.PlaceHolder = RemoveHtml(AVC.Caption);
 
                 // ForeignVisaHasBeenDenied
                 ForeignVisaHasBeenDenied.EditValue = ForeignVisaHasBeenDenied.Options(false);
@@ -4318,6 +3599,11 @@ public partial class PCM {
                 RevisedDateTime.SetupEditAttributes();
                 RevisedDateTime.EditValue = FormatDateTime(UnformatDateTime(RevisedDateTime.AdvancedSearch.SearchValue, RevisedDateTime.FormatPattern), RevisedDateTime.FormatPattern); // DN
                 RevisedDateTime.PlaceHolder = RemoveHtml(RevisedDateTime.Caption);
+
+                // MTManningAgentID
+                MTManningAgentID.SetupEditAttributes();
+                MTManningAgentID.EditValue = MTManningAgentID.AdvancedSearch.SearchValue; // DN
+                MTManningAgentID.PlaceHolder = RemoveHtml(MTManningAgentID.Caption);
             }
             if (RowType == RowType.Add || RowType == RowType.Edit || RowType == RowType.Search) // Add/Edit/Search row
                 SetupFieldTitles();
@@ -4342,21 +3628,6 @@ public partial class PCM {
             if (!CheckDate(ConvertToString(AvailableUntil.AdvancedSearch.SearchValue), AvailableUntil.FormatPattern)) {
                 AvailableUntil.AddErrorMessage(AvailableUntil.GetErrorMessage(false));
             }
-            if (!CheckNumber(ConvertToString(CollarSize.AdvancedSearch.SearchValue))) {
-                CollarSize.AddErrorMessage(CollarSize.GetErrorMessage(false));
-            }
-            if (!CheckNumber(ConvertToString(ChestSize.AdvancedSearch.SearchValue))) {
-                ChestSize.AddErrorMessage(ChestSize.GetErrorMessage(false));
-            }
-            if (!CheckNumber(ConvertToString(WaistSize.AdvancedSearch.SearchValue))) {
-                WaistSize.AddErrorMessage(WaistSize.GetErrorMessage(false));
-            }
-            if (!CheckNumber(ConvertToString(InsideLegSize.AdvancedSearch.SearchValue))) {
-                InsideLegSize.AddErrorMessage(InsideLegSize.GetErrorMessage(false));
-            }
-            if (!CheckNumber(ConvertToString(CapSize.AdvancedSearch.SearchValue))) {
-                CapSize.AddErrorMessage(CapSize.GetErrorMessage(false));
-            }
             if (!CheckDate(ConvertToString(FormSubmittedDateTime.AdvancedSearch.SearchValue), FormSubmittedDateTime.FormatPattern)) {
                 FormSubmittedDateTime.AddErrorMessage(FormSubmittedDateTime.GetErrorMessage(false));
             }
@@ -4368,6 +3639,9 @@ public partial class PCM {
             }
             if (!CheckDate(ConvertToString(RevisedDateTime.AdvancedSearch.SearchValue), RevisedDateTime.FormatPattern)) {
                 RevisedDateTime.AddErrorMessage(RevisedDateTime.GetErrorMessage(false));
+            }
+            if (!CheckInteger(ConvertToString(MTManningAgentID.AdvancedSearch.SearchValue))) {
+                MTManningAgentID.AddErrorMessage(MTManningAgentID.GetErrorMessage(false));
             }
 
             // Return validate result
@@ -4414,18 +3688,6 @@ public partial class PCM {
             AlternativeAddressCountryID.AdvancedSearch.Load();
             MobileNumber.AdvancedSearch.Load();
             _Email.AdvancedSearch.Load();
-            ContactMethodEmail.AdvancedSearch.Load();
-            ContactMethodFax.AdvancedSearch.Load();
-            ContactMethodMobilePhone.AdvancedSearch.Load();
-            ContactMethodHomePhone.AdvancedSearch.Load();
-            ContactMethodPost.AdvancedSearch.Load();
-            CollarSize.AdvancedSearch.Load();
-            ChestSize.AdvancedSearch.Load();
-            WaistSize.AdvancedSearch.Load();
-            InsideLegSize.AdvancedSearch.Load();
-            CapSize.AdvancedSearch.Load();
-            SweaterSize_ClothesSizeID.AdvancedSearch.Load();
-            BoilersuitSize_ClothesSizeID.AdvancedSearch.Load();
             SocialSecurityNumber.AdvancedSearch.Load();
             SocialSecurityIssuingCountryID.AdvancedSearch.Load();
             SocialSecurityImage.AdvancedSearch.Load();
@@ -4443,16 +3705,6 @@ public partial class PCM {
             NomineeAddressHomeTel.AdvancedSearch.Load();
             NomineeEmail.AdvancedSearch.Load();
             NomineeMobileNumber.AdvancedSearch.Load();
-            NomineeValidVisa.AdvancedSearch.Load();
-            BankName.AdvancedSearch.Load();
-            BankAddress.AdvancedSearch.Load();
-            BankAccountName.AdvancedSearch.Load();
-            BankAccountNumber.AdvancedSearch.Load();
-            BankSortCode.AdvancedSearch.Load();
-            MNOPF.AdvancedSearch.Load();
-            MembershipNumber.AdvancedSearch.Load();
-            NationalInsuranceNumber.AdvancedSearch.Load();
-            AVC.AdvancedSearch.Load();
             ForeignVisaHasBeenDenied.AdvancedSearch.Load();
             ForeignVisaDenied_CountryID.AdvancedSearch.Load();
             ForeignVisaDeniedReason.AdvancedSearch.Load();
@@ -4476,6 +3728,7 @@ public partial class PCM {
             LastUpdatedDateTime.AdvancedSearch.Load();
             RevisedReason.AdvancedSearch.Load();
             RevisedDateTime.AdvancedSearch.Load();
+            MTManningAgentID.AdvancedSearch.Load();
         }
 
         // Set up Breadcrumb

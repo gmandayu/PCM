@@ -77,6 +77,8 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> ActiveDescription;
 
+        public readonly DbField<SqlDbType> ManningAgentName;
+
         public readonly DbField<SqlDbType> CreatedBy;
 
         public readonly DbField<SqlDbType> CreatedDateTime;
@@ -461,6 +463,33 @@ public partial class PCM {
                 IsUpload = false
             };
             Fields.Add("ActiveDescription", ActiveDescription);
+
+            // ManningAgentName
+            ManningAgentName = new (this, "x_ManningAgentName", 202, SqlDbType.NVarChar) {
+                Name = "ManningAgentName",
+                Expression = "[ManningAgentName]",
+                UseBasicSearch = true,
+                BasicSearchExpression = "[ManningAgentName]",
+                DateTimeFormat = -1,
+                VirtualExpression = "[ManningAgentName]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXT",
+                InputTextType = "text",
+                UseFilter = true, // Table header filter
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("v_WaitingForPDEReview", "ManningAgentName", "CustomMsg"),
+                IsUpload = false
+            };
+            ManningAgentName.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>("ManningAgentName", "v_WaitingForPDEReview", true, "ManningAgentName", new List<string> {"ManningAgentName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>("ManningAgentName", "v_WaitingForPDEReview", true, "ManningAgentName", new List<string> {"ManningAgentName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>("ManningAgentName", "v_WaitingForPDEReview", true, "ManningAgentName", new List<string> {"ManningAgentName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
+            };
+            Fields.Add("ManningAgentName", ManningAgentName);
 
             // CreatedBy
             CreatedBy = new (this, "x_CreatedBy", 202, SqlDbType.NVarChar) {
@@ -1148,6 +1177,7 @@ public partial class PCM {
                 EmployeeStatus.DbValue = row["EmployeeStatus"]; // Set DB value only
                 FormSubmittedDateTime.DbValue = row["FormSubmittedDateTime"]; // Set DB value only
                 ActiveDescription.DbValue = row["ActiveDescription"]; // Set DB value only
+                ManningAgentName.DbValue = row["ManningAgentName"]; // Set DB value only
                 CreatedBy.DbValue = row["CreatedBy"]; // Set DB value only
                 CreatedDateTime.DbValue = row["CreatedDateTime"]; // Set DB value only
                 LastUpdatedBy.DbValue = row["LastUpdatedBy"]; // Set DB value only
@@ -1543,6 +1573,7 @@ public partial class PCM {
             EmployeeStatus.SetDbValue(dr["EmployeeStatus"]);
             FormSubmittedDateTime.SetDbValue(dr["FormSubmittedDateTime"]);
             ActiveDescription.SetDbValue(dr["ActiveDescription"]);
+            ManningAgentName.SetDbValue(dr["ManningAgentName"]);
             CreatedBy.SetDbValue(dr["CreatedBy"]);
             CreatedDateTime.SetDbValue(dr["CreatedDateTime"]);
             LastUpdatedBy.SetDbValue(dr["LastUpdatedBy"]);
@@ -1612,6 +1643,9 @@ public partial class PCM {
 
             // ActiveDescription
             ActiveDescription.CellCssStyle = "white-space: nowrap;";
+
+            // ManningAgentName
+            ManningAgentName.CellCssStyle = "white-space: nowrap;";
 
             // CreatedBy
             CreatedBy.CellCssStyle = "white-space: nowrap;";
@@ -1711,6 +1745,10 @@ public partial class PCM {
             ActiveDescription.ViewValue = ConvertToString(ActiveDescription.CurrentValue); // DN
             ActiveDescription.ViewCustomAttributes = "";
 
+            // ManningAgentName
+            ManningAgentName.ViewValue = ConvertToString(ManningAgentName.CurrentValue); // DN
+            ManningAgentName.ViewCustomAttributes = "";
+
             // CreatedBy
             CreatedBy.ViewValue = ConvertToString(CreatedBy.CurrentValue); // DN
             CreatedBy.ViewCustomAttributes = "";
@@ -1803,6 +1841,10 @@ public partial class PCM {
             // ActiveDescription
             ActiveDescription.HrefValue = "";
             ActiveDescription.TooltipValue = "";
+
+            // ManningAgentName
+            ManningAgentName.HrefValue = "";
+            ManningAgentName.TooltipValue = "";
 
             // CreatedBy
             CreatedBy.HrefValue = "";
@@ -1935,6 +1977,13 @@ public partial class PCM {
             ActiveDescription.EditValue = HtmlEncode(ActiveDescription.CurrentValue);
             ActiveDescription.PlaceHolder = RemoveHtml(ActiveDescription.Caption);
 
+            // ManningAgentName
+            ManningAgentName.SetupEditAttributes();
+            if (!ManningAgentName.Raw)
+                ManningAgentName.CurrentValue = HtmlDecode(ManningAgentName.CurrentValue);
+            ManningAgentName.EditValue = HtmlEncode(ManningAgentName.CurrentValue);
+            ManningAgentName.PlaceHolder = RemoveHtml(ManningAgentName.Caption);
+
             // CreatedBy
             CreatedBy.SetupEditAttributes();
             if (!CreatedBy.Raw)
@@ -2008,6 +2057,7 @@ public partial class PCM {
                         doc.ExportCaption(AvailableFrom);
                         doc.ExportCaption(AvailableUntil);
                         doc.ExportCaption(FormSubmittedDateTime);
+                        doc.ExportCaption(ManningAgentName);
                         doc.ExportCaption(CreatedBy);
                         doc.ExportCaption(CreatedDateTime);
                         doc.ExportCaption(LastUpdatedBy);
@@ -2024,6 +2074,7 @@ public partial class PCM {
                         doc.ExportCaption(AvailableUntil);
                         doc.ExportCaption(EmployeeStatus);
                         doc.ExportCaption(FormSubmittedDateTime);
+                        doc.ExportCaption(ManningAgentName);
                         doc.ExportCaption(CreatedBy);
                         doc.ExportCaption(CreatedDateTime);
                         doc.ExportCaption(LastUpdatedBy);
@@ -2075,6 +2126,7 @@ public partial class PCM {
                             await doc.ExportField(AvailableFrom);
                             await doc.ExportField(AvailableUntil);
                             await doc.ExportField(FormSubmittedDateTime);
+                            await doc.ExportField(ManningAgentName);
                             await doc.ExportField(CreatedBy);
                             await doc.ExportField(CreatedDateTime);
                             await doc.ExportField(LastUpdatedBy);
@@ -2091,6 +2143,7 @@ public partial class PCM {
                             await doc.ExportField(AvailableUntil);
                             await doc.ExportField(EmployeeStatus);
                             await doc.ExportField(FormSubmittedDateTime);
+                            await doc.ExportField(ManningAgentName);
                             await doc.ExportField(CreatedBy);
                             await doc.ExportField(CreatedDateTime);
                             await doc.ExportField(LastUpdatedBy);

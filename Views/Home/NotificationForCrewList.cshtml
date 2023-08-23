@@ -106,15 +106,49 @@ loadjs.ready("head", function() {
 <script>
 loadjs.ready("load", function() {
     // Startup script
+    // Startup script
     // Write your table-specific startup script here
     // document.write("page loaded");
     $('div.ew-layout-option').remove();
 
+    // Get the current URL
+    const currentUrlObject = new URL(window.location.href);
+    // Create a new URLSearchParams object based on the current URL's search parameters
+    const urlQueryParams = new URLSearchParams(currentUrlObject.search);
+
     // gmandayu: notification need to read.
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
     const markAsReadButtons = document.querySelectorAll('.mark-as-read-button');
     const parentUrl = ew.PATH_BASE;
     const getUnreadNotificationUrl = `${parentUrl}api/Notification/unread-notification`;
+    // const getEmployeeStatusUrl = `${parentUrl}api/Registration/get-employee-status`;
+
+    // !Get MTCrewID.
+    // function buildSelectCrewIDQuery() {
+    //     let query = `SELECT MTCrew.ID FROM MTCrew JOIN MTUser ON MTCrew.MTUserID = MTUser.ID WHERE MTUser.ID = ${currentUserId}`;
+
+    //     return query;
+    // }
+
+    // const selectQuery = buildSelectCrewIDQuery();
+
+    // console.log(selectQuery);
     function loadPage() {
+        const getReadLabels = document.getElementsByClassName("form-check-label");
+        for (let i = 0; i < getReadLabels.length; i++) {
+            getReadLabels[i].innerText = selectedLanguage.id === 'en-US' ? "Mark as Read" : "Tandai sudah Dibaca";
+            getReadLabels[i].style.cursor = "pointer";
+        }
+        const getTest = document.getElementsByClassName("form-check-input");
+        for (let i = 0; i < getTest.length; i++) {
+            const getMarkId = document.getElementById("x_MarkAsRead_" + (i + 1));
+            if (getMarkId && getMarkId.checked) {
+                const readStatus = getMarkId.nextElementSibling;
+                if (readStatus) {
+                    readStatus.innerText = selectedLanguage.id === 'en-US' ? "Read" : "Dibaca";
+                }
+            }
+        }
         $.ajax({
             url: getUnreadNotificationUrl,
             method: 'GET',
@@ -133,6 +167,19 @@ loadjs.ready("load", function() {
                 console.error('Kesalahan saat memuat notifikasi:', errorThrown);
             }
         });
+        // $.ajax({
+        //     url: getEmployeeStatusUrl,
+        //     method: 'GET',
+        //     success: function(response) { 
+        //         const employeeStatus = response.data;
+        //         if (employeeStatus === 'Candidate - Accepted') {
+        //             $('[data-name="mi_Registration"] p').text(selectedLanguage.id === 'en-US' ? 'Personal Data' : 'Data Pribadi');
+        //         }
+        //     },
+        //     error: function (xhr, textStatus, errorThrown) {
+        //         console.error('Kesalahan saat memuat status karyawan kru: ', errorThrown);
+        //     }
+        // });
     }
     const notificationMarkAsReadApi = 'notification-mark-as-read';
     markAsReadButtons.forEach(button => {
@@ -160,6 +207,14 @@ loadjs.ready("load", function() {
     $(document).ready(function() {
         loadPage();
     });
+    const errorMessage = urlQueryParams.get('errorMessage');
+    if (errorMessage !== null) {
+        const decodedErrorMessage = decodeURIComponent(errorMessage);
+        ew.showToast(decodedErrorMessage);
+        urlQueryParams.delete('errorMessage');
+        currentUrlObject.search = urlQueryParams.toString();
+        history.pushState(null, '', currentUrlObject);
+    }
 });
 </script>
 }

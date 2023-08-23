@@ -175,7 +175,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "SELECT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UsePleaseSelect = true, // Use PleaseSelect by default
                 PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 UseFilter = true, // Table header filter

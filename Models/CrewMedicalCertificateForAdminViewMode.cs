@@ -2158,6 +2158,7 @@ public partial class PCM {
                 {
                     string crewIndividualCodeNumber = crewQueryResult.IndividualCodeNumber;
                     Attachment.UploadPath = "uploads/" + crewIndividualCodeNumber;
+                    Attachment.OldUploadPath = "uploads/" + crewIndividualCodeNumber;
                     string attachmentFileName = rsnew["Attachment"].ToString();
                     string attachmentFileExtension = System.IO.Path.GetExtension(attachmentFileName);
                     dynamic medicalCertificateQueryResult = QueryBuilder("MTMedicalCertificate").Where("ID", rsnew["MTMedicalCertificateID"].ToString()).Select("Name").FirstOrDefault();
@@ -2188,9 +2189,16 @@ public partial class PCM {
         public bool RowDeleting(Dictionary<string, object> rs) {
             // Enter your code here
             // To cancel, set return value to False and error message to CancelMessage
+            int mtCrewID = Convert.ToInt32(rs["MTCrewID"]);
+            object individualCodeNumberObject = ExecuteScalar("SELECT IndividualCodeNumber FROM MTCrew WHERE ID = " + mtCrewID + ";");
+            if ((object) individualCodeNumberObject != null)
+            {
+                string individualCodeNumber = individualCodeNumberObject.ToString();
+                Attachment.UploadPath = "uploads/" + individualCodeNumber;
+                Attachment.OldUploadPath = "uploads/" + individualCodeNumber;
+            }
             return true;
         }
-
         // Row Deleted event
         public void RowDeleted(Dictionary<string, object> rs) {
             //Log("Row Deleted");

@@ -275,7 +275,8 @@ public partial class PCM {
             MTUserLevelID.SetVisibility();
             SeafarerID.SetVisibility();
             IdentificationImage.Visible = false;
-            CrewAgency.SetVisibility();
+            CrewAgency.Visible = false;
+            MTManningAgentID.SetVisibility();
         }
 
         // Constructor
@@ -742,6 +743,7 @@ public partial class PCM {
             // Set up lookup cache
             await SetupLookupOptions(MTUserLevelID);
             await SetupLookupOptions(CrewAgency);
+            await SetupLookupOptions(MTManningAgentID);
 
             // Update form name to avoid conflict
             if (IsModal)
@@ -1093,7 +1095,7 @@ public partial class PCM {
             filters.Merge(JObject.Parse(FullName.AdvancedSearch.ToJson())); // Field FullName
             filters.Merge(JObject.Parse(MTUserLevelID.AdvancedSearch.ToJson())); // Field MTUserLevelID
             filters.Merge(JObject.Parse(SeafarerID.AdvancedSearch.ToJson())); // Field SeafarerID
-            filters.Merge(JObject.Parse(CrewAgency.AdvancedSearch.ToJson())); // Field CrewAgency
+            filters.Merge(JObject.Parse(MTManningAgentID.AdvancedSearch.ToJson())); // Field MTManningAgentID
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1160,14 +1162,14 @@ public partial class PCM {
                 SeafarerID.AdvancedSearch.Save();
             }
 
-            // Field CrewAgency
-            if (filter?.TryGetValue("x_CrewAgency", out sv) ?? false) {
-                CrewAgency.AdvancedSearch.SearchValue = sv;
-                CrewAgency.AdvancedSearch.SearchOperator = filter["z_CrewAgency"];
-                CrewAgency.AdvancedSearch.SearchCondition = filter["v_CrewAgency"];
-                CrewAgency.AdvancedSearch.SearchValue2 = filter["y_CrewAgency"];
-                CrewAgency.AdvancedSearch.SearchOperator2 = filter["w_CrewAgency"];
-                CrewAgency.AdvancedSearch.Save();
+            // Field MTManningAgentID
+            if (filter?.TryGetValue("x_MTManningAgentID", out sv) ?? false) {
+                MTManningAgentID.AdvancedSearch.SearchValue = sv;
+                MTManningAgentID.AdvancedSearch.SearchOperator = filter["z_MTManningAgentID"];
+                MTManningAgentID.AdvancedSearch.SearchCondition = filter["v_MTManningAgentID"];
+                MTManningAgentID.AdvancedSearch.SearchValue2 = filter["y_MTManningAgentID"];
+                MTManningAgentID.AdvancedSearch.SearchOperator2 = filter["w_MTManningAgentID"];
+                MTManningAgentID.AdvancedSearch.Save();
             }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
@@ -1185,7 +1187,7 @@ public partial class PCM {
             BuildSearchSql(ref where, FullName, def, true); // FullName
             BuildSearchSql(ref where, MTUserLevelID, def, true); // MTUserLevelID
             BuildSearchSql(ref where, SeafarerID, def, true); // SeafarerID
-            BuildSearchSql(ref where, CrewAgency, def, true); // CrewAgency
+            BuildSearchSql(ref where, MTManningAgentID, def, true); // MTManningAgentID
 
             // Set up search command
             if (!def && !Empty(where) && (new[] { "", "reset", "resetall" }).Contains(Command))
@@ -1195,7 +1197,7 @@ public partial class PCM {
                 FullName.AdvancedSearch.Save(); // FullName
                 MTUserLevelID.AdvancedSearch.Save(); // MTUserLevelID
                 SeafarerID.AdvancedSearch.Save(); // SeafarerID
-                CrewAgency.AdvancedSearch.Save(); // CrewAgency
+                MTManningAgentID.AdvancedSearch.Save(); // MTManningAgentID
 
                 // Clear rules for QueryBuilder
                 SessionRules = "";
@@ -1364,12 +1366,12 @@ public partial class PCM {
             if (!Empty(filter))
                 filterList += "<div><span class=\"" + captionClass + "\">" + SeafarerID.Caption + "</span>" + captionSuffix + filter + "</div>";
 
-            // Field CrewAgency
-            filter = QueryBuilderWhere("CrewAgency");
+            // Field MTManningAgentID
+            filter = QueryBuilderWhere("MTManningAgentID");
             if (Empty(filter))
-                BuildSearchSql(ref filter, CrewAgency, false, true);
+                BuildSearchSql(ref filter, MTManningAgentID, false, true);
             if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + CrewAgency.Caption + "</span>" + captionSuffix + filter + "</div>";
+                filterList += "<div><span class=\"" + captionClass + "\">" + MTManningAgentID.Caption + "</span>" + captionSuffix + filter + "</div>";
             if (!Empty(BasicSearch.Keyword))
                 filterList += "<div><span class=\"" + captionClass + "\">" + Language.Phrase("BasicSearchKeyword") + "</span>" + captionSuffix + BasicSearch.Keyword + "</div>";
 
@@ -1395,7 +1397,6 @@ public partial class PCM {
             searchFlds.Add(_Email);
             searchFlds.Add(FullName);
             searchFlds.Add(SeafarerID);
-            searchFlds.Add(CrewAgency);
             string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
             string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
 
@@ -1429,7 +1430,7 @@ public partial class PCM {
                 return true;
             if (SeafarerID.AdvancedSearch.IssetSession)
                 return true;
-            if (CrewAgency.AdvancedSearch.IssetSession)
+            if (MTManningAgentID.AdvancedSearch.IssetSession)
                 return true;
             return false;
         }
@@ -1465,7 +1466,7 @@ public partial class PCM {
             FullName.AdvancedSearch.UnsetSession();
             MTUserLevelID.AdvancedSearch.UnsetSession();
             SeafarerID.AdvancedSearch.UnsetSession();
-            CrewAgency.AdvancedSearch.UnsetSession();
+            MTManningAgentID.AdvancedSearch.UnsetSession();
         }
 
         // Restore all search parameters
@@ -1480,7 +1481,7 @@ public partial class PCM {
             FullName.AdvancedSearch.Load();
             MTUserLevelID.AdvancedSearch.Load();
             SeafarerID.AdvancedSearch.Load();
-            CrewAgency.AdvancedSearch.Load();
+            MTManningAgentID.AdvancedSearch.Load();
         }
 
         // Set up sort parameters
@@ -1503,7 +1504,7 @@ public partial class PCM {
                 UpdateSort(FullName, ctrl); // FullName
                 UpdateSort(MTUserLevelID, ctrl); // MTUserLevelID
                 UpdateSort(SeafarerID, ctrl); // SeafarerID
-                UpdateSort(CrewAgency, ctrl); // CrewAgency
+                UpdateSort(MTManningAgentID, ctrl); // MTManningAgentID
                 StartRecordNumber = 1; // Reset start position
             }
 
@@ -1536,6 +1537,7 @@ public partial class PCM {
                     SeafarerID.Sort = "";
                     IdentificationImage.Sort = "";
                     CrewAgency.Sort = "";
+                    MTManningAgentID.Sort = "";
                 }
 
                 // Reset start position
@@ -1755,7 +1757,7 @@ public partial class PCM {
                 CreateColumnOption(option.Add("FullName")); // DN
                 CreateColumnOption(option.Add("MTUserLevelID")); // DN
                 CreateColumnOption(option.Add("SeafarerID")); // DN
-                CreateColumnOption(option.Add("CrewAgency")); // DN
+                CreateColumnOption(option.Add("MTManningAgentID")); // DN
             }
 
             // Set up options default
@@ -2110,16 +2112,16 @@ public partial class PCM {
             if (Query.ContainsKey("z_SeafarerID"))
                 SeafarerID.AdvancedSearch.SearchOperator = Get("z_SeafarerID");
 
-            // CrewAgency
+            // MTManningAgentID
             if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_CrewAgency[]"))
-                    CrewAgency.AdvancedSearch.SearchValue = Get("x_CrewAgency[]");
+                if (Query.ContainsKey("x_MTManningAgentID[]"))
+                    MTManningAgentID.AdvancedSearch.SearchValue = Get("x_MTManningAgentID[]");
                 else
-                    CrewAgency.AdvancedSearch.SearchValue = Get("CrewAgency"); // Default Value // DN
-            if (!Empty(CrewAgency.AdvancedSearch.SearchValue) && Command == "")
+                    MTManningAgentID.AdvancedSearch.SearchValue = Get("MTManningAgentID"); // Default Value // DN
+            if (!Empty(MTManningAgentID.AdvancedSearch.SearchValue) && Command == "")
                 Command = "search";
-            if (Query.ContainsKey("z_CrewAgency"))
-                CrewAgency.AdvancedSearch.SearchOperator = Get("z_CrewAgency");
+            if (Query.ContainsKey("z_MTManningAgentID"))
+                MTManningAgentID.AdvancedSearch.SearchOperator = Get("z_MTManningAgentID");
         }
 
         // Load recordset // DN
@@ -2196,6 +2198,7 @@ public partial class PCM {
             IdentificationImage.Upload.DbValue = row["IdentificationImage"];
             IdentificationImage.SetDbValue(IdentificationImage.Upload.DbValue);
             CrewAgency.SetDbValue(row["CrewAgency"]);
+            MTManningAgentID.SetDbValue(row["MTManningAgentID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -2210,6 +2213,7 @@ public partial class PCM {
             row.Add("SeafarerID", SeafarerID.DefaultValue ?? DbNullValue); // DN
             row.Add("IdentificationImage", IdentificationImage.DefaultValue ?? DbNullValue); // DN
             row.Add("CrewAgency", CrewAgency.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTManningAgentID", MTManningAgentID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -2267,6 +2271,9 @@ public partial class PCM {
             // CrewAgency
             CrewAgency.CellCssStyle = "white-space: nowrap;";
 
+            // MTManningAgentID
+            MTManningAgentID.CellCssStyle = "white-space: nowrap;";
+
             // View row
             if (RowType == RowType.View) {
                 // Email
@@ -2306,13 +2313,26 @@ public partial class PCM {
                 SeafarerID.ViewValue = ConvertToString(SeafarerID.CurrentValue); // DN
                 SeafarerID.ViewCustomAttributes = "";
 
-                // CrewAgency
-                if (!Empty(CrewAgency.CurrentValue)) {
-                    CrewAgency.ViewValue = CrewAgency.HighlightLookup(ConvertToString(CrewAgency.CurrentValue), CrewAgency.OptionCaption(ConvertToString(CrewAgency.CurrentValue)));
+                // MTManningAgentID
+                curVal = ConvertToString(MTManningAgentID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (MTManningAgentID.Lookup != null && IsDictionary(MTManningAgentID.Lookup?.Options) && MTManningAgentID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        MTManningAgentID.ViewValue = MTManningAgentID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[ID]", "=", MTManningAgentID.CurrentValue, DataType.Number, "");
+                        sqlWrk = MTManningAgentID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && MTManningAgentID.Lookup != null) { // Lookup values found
+                            var listwrk = MTManningAgentID.Lookup?.RenderViewRow(rswrk[0]);
+                            MTManningAgentID.ViewValue = MTManningAgentID.HighlightLookup(ConvertToString(rswrk[0]), MTManningAgentID.DisplayValue(listwrk));
+                        } else {
+                            MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+                        }
+                    }
                 } else {
-                    CrewAgency.ViewValue = DbNullValue;
+                    MTManningAgentID.ViewValue = DbNullValue;
                 }
-                CrewAgency.ViewCustomAttributes = "";
+                MTManningAgentID.ViewCustomAttributes = "";
 
                 // Email
                 _Email.HrefValue = "";
@@ -2330,9 +2350,9 @@ public partial class PCM {
                 SeafarerID.HrefValue = "";
                 SeafarerID.TooltipValue = "";
 
-                // CrewAgency
-                CrewAgency.HrefValue = "";
-                CrewAgency.TooltipValue = "";
+                // MTManningAgentID
+                MTManningAgentID.HrefValue = "";
+                MTManningAgentID.TooltipValue = "";
             } else if (RowType == RowType.Search) {
                 // Email
                 if (_Email.UseFilter && !Empty(_Email.AdvancedSearch.SearchValue)) {
@@ -2354,9 +2374,9 @@ public partial class PCM {
                     SeafarerID.EditValue = ConvertToString(SeafarerID.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
                 }
 
-                // CrewAgency
-                if (CrewAgency.UseFilter && !Empty(CrewAgency.AdvancedSearch.SearchValue)) {
-                    CrewAgency.EditValue = ConvertToString(CrewAgency.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                // MTManningAgentID
+                if (MTManningAgentID.UseFilter && !Empty(MTManningAgentID.AdvancedSearch.SearchValue)) {
+                    MTManningAgentID.EditValue = ConvertToString(MTManningAgentID.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
                 }
             }
 
@@ -2766,7 +2786,7 @@ public partial class PCM {
             FullName.AdvancedSearch.Load();
             MTUserLevelID.AdvancedSearch.Load();
             SeafarerID.AdvancedSearch.Load();
-            CrewAgency.AdvancedSearch.Load();
+            MTManningAgentID.AdvancedSearch.Load();
         }
 
         // Get export HTML tag

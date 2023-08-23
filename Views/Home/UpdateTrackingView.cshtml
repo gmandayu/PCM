@@ -1,0 +1,95 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (updateTrackingView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!updateTrackingView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!updateTrackingView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!updateTrackingView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @updateTrackingView.ExportOptions.RenderBody()
+    @updateTrackingView.OtherOptions.RenderBody()
+</div>
+}
+@updateTrackingView.ShowPageHeader()
+@updateTrackingView.ShowMessages()
+<main class="view">
+<form name="fUpdateTrackingview" id="fUpdateTrackingview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (!updateTrackingView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(updateTrackingView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { UpdateTracking: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fUpdateTrackingview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fUpdateTrackingview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(updateTrackingView.IsModal)">
+<table class="@(updateTrackingView.TableClass)">
+@if (updateTrackingView.TabName.Visible) { // updateTrackingView.TabName.Visible (begin)
+    <tr id="r_TabName" @Html.Raw(updateTrackingView.TabName.RowAttributes)>
+        <td class="@(updateTrackingView.TableLeftColumnClass)"><span id="elh_UpdateTracking_TabName">@Html.Raw(updateTrackingView.TabName.Caption)</span></td>
+        <td data-name="TabName" @Html.Raw(updateTrackingView.TabName.CellAttributes)>
+<span id="el_UpdateTracking_TabName">
+<span @Html.Raw(updateTrackingView.TabName.ViewAttributes)>
+@Html.Raw(updateTrackingView.TabName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* updateTrackingView.TabName.Visible (end) *@
+</table>
+@{ updateTrackingView.CloseRecordset(); }
+</form>
+</main>
+@updateTrackingView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!updateTrackingView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

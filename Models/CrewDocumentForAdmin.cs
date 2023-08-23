@@ -196,7 +196,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewDocumentForAdmin", "Number", "CustomMsg"),
@@ -223,7 +222,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "SELECT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UsePleaseSelect = true, // Use PleaseSelect by default
                 PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 UseFilter = true, // Table header filter
@@ -252,7 +250,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 ImageResize = true,
                 DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
@@ -282,7 +279,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewDocumentForAdmin", "PlaceOfIssue", "CustomMsg"),
@@ -309,7 +305,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
@@ -338,7 +333,6 @@ public partial class PCM {
                 ViewTag = "IMAGE",
                 HtmlTag = "FILE",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 ImageResize = true,
                 UploadAllowedFileExtensions = "jpg,jpeg,png,pdf",
@@ -2243,6 +2237,7 @@ public partial class PCM {
                 {
                     string crewIndividualCodeNumber = crewQueryResult.IndividualCodeNumber;
                     Image.UploadPath = "uploads/" + crewIndividualCodeNumber;
+                    Image.OldUploadPath = "uploads/" + crewIndividualCodeNumber;
                     string imageFileName = rsnew["Image"].ToString();
                     string imageFileExtension = System.IO.Path.GetExtension(imageFileName);
                     dynamic documentQueryResult = QueryBuilder("MTDocument").Where("ID", rsnew["MTDocumentID"].ToString()).Select("Type").FirstOrDefault();
@@ -2279,6 +2274,7 @@ public partial class PCM {
             {
                 string individualCodeNumber = individualCodeNumberObject.ToString();
                 Image.UploadPath = "uploads/" + individualCodeNumber;
+                Image.OldUploadPath = "uploads/" + individualCodeNumber;
             }
             return true;
         }

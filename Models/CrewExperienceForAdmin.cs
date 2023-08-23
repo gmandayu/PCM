@@ -187,7 +187,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewExperienceForAdmin", "CompanyName", "CustomMsg"),
@@ -215,7 +214,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "SELECT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UsePleaseSelect = true, // Use PleaseSelect by default
                 PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 UseFilter = true, // Table header filter
@@ -246,7 +244,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewExperienceForAdmin", "VesselName", "CustomMsg"),
@@ -273,7 +270,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "SELECT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UsePleaseSelect = true, // Use PleaseSelect by default
                 PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 UseFilter = true, // Table header filter
@@ -302,7 +298,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewExperienceForAdmin", "GRT", "CustomMsg"),
@@ -329,7 +324,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewExperienceForAdmin", "DWT", "CustomMsg"),
@@ -409,7 +403,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "SELECT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UsePleaseSelect = true, // Use PleaseSelect by default
                 PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 UseFilter = true, // Table header filter
@@ -438,7 +431,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
@@ -466,7 +458,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
@@ -646,7 +637,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewExperienceForAdmin", "SignOnPortName", "CustomMsg"),
@@ -674,7 +664,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewExperienceForAdmin", "SignOffPortName", "CustomMsg"),
@@ -702,7 +691,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXTAREA",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewExperienceForAdmin", "SignOffReason", "CustomMsg"),

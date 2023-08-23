@@ -53,17 +53,17 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> Id;
 
-        public readonly DbField<SqlDbType> MTEmailTemplate_ID;
-
         public readonly DbField<SqlDbType> To;
 
-        public readonly DbField<SqlDbType> From;
-
-        public readonly DbField<SqlDbType> Cc;
-
-        public readonly DbField<SqlDbType> Bcc;
-
         public readonly DbField<SqlDbType> MTCrew_ID;
+
+        public readonly DbField<SqlDbType> Subject;
+
+        public readonly DbField<SqlDbType> _Message;
+
+        public readonly DbField<SqlDbType> IsSent;
+
+        public readonly DbField<SqlDbType> SentDateTime;
 
         // Constructor
         public TrEmailHistory()
@@ -104,37 +104,17 @@ public partial class PCM {
                 SelectMultiple = false,
                 VirtualSearch = false,
                 ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
+                HtmlTag = "NO",
                 InputTextType = "text",
+                IsAutoIncrement = true, // Autoincrement field
+                IsPrimaryKey = true, // Primary key field
                 Nullable = false, // NOT NULL field
-                Required = true, // Required field
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
                 CustomMessage = Language.FieldPhrase("TREmailHistory", "Id", "CustomMsg"),
                 IsUpload = false
             };
             Fields.Add("Id", Id);
-
-            // MTEmailTemplate_ID
-            MTEmailTemplate_ID = new (this, "x_MTEmailTemplate_ID", 3, SqlDbType.Int) {
-                Name = "MTEmailTemplate_ID",
-                Expression = "[MTEmailTemplate_ID]",
-                BasicSearchExpression = "CAST([MTEmailTemplate_ID] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[MTEmailTemplate_ID]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("TREmailHistory", "MTEmailTemplate_ID", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("MTEmailTemplate_ID", MTEmailTemplate_ID);
 
             // To
             To = new (this, "x_To", 202, SqlDbType.NVarChar) {
@@ -157,69 +137,6 @@ public partial class PCM {
             };
             Fields.Add("To", To);
 
-            // From
-            From = new (this, "x_From", 202, SqlDbType.NVarChar) {
-                Name = "From",
-                Expression = "[From]",
-                UseBasicSearch = true,
-                BasicSearchExpression = "[From]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[From]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("TREmailHistory", "From", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("From", From);
-
-            // Cc
-            Cc = new (this, "x_Cc", 202, SqlDbType.NVarChar) {
-                Name = "Cc",
-                Expression = "[Cc]",
-                UseBasicSearch = true,
-                BasicSearchExpression = "[Cc]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[Cc]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("TREmailHistory", "Cc", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("Cc", Cc);
-
-            // Bcc
-            Bcc = new (this, "x_Bcc", 202, SqlDbType.NVarChar) {
-                Name = "Bcc",
-                Expression = "[Bcc]",
-                UseBasicSearch = true,
-                BasicSearchExpression = "[Bcc]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[Bcc]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("TREmailHistory", "Bcc", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("Bcc", Bcc);
-
             // MTCrew_ID
             MTCrew_ID = new (this, "x_MTCrew_ID", 3, SqlDbType.Int) {
                 Name = "MTCrew_ID",
@@ -240,6 +157,97 @@ public partial class PCM {
                 IsUpload = false
             };
             Fields.Add("MTCrew_ID", MTCrew_ID);
+
+            // Subject
+            Subject = new (this, "x_Subject", 202, SqlDbType.NVarChar) {
+                Name = "Subject",
+                Expression = "[Subject]",
+                UseBasicSearch = true,
+                BasicSearchExpression = "[Subject]",
+                DateTimeFormat = -1,
+                VirtualExpression = "[Subject]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXT",
+                InputTextType = "text",
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("TREmailHistory", "Subject", "CustomMsg"),
+                IsUpload = false
+            };
+            Fields.Add("Subject", Subject);
+
+            // Message
+            _Message = new (this, "x__Message", 203, SqlDbType.NText) {
+                Name = "Message",
+                Expression = "[Message]",
+                UseBasicSearch = true,
+                BasicSearchExpression = "[Message]",
+                DateTimeFormat = -1,
+                VirtualExpression = "[Message]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXT",
+                InputTextType = "text",
+                Sortable = false, // Allow sort
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("TREmailHistory", "_Message", "CustomMsg"),
+                IsUpload = false
+            };
+            Fields.Add("Message", _Message);
+
+            // IsSent
+            IsSent = new (this, "x_IsSent", 11, SqlDbType.Bit) {
+                Name = "IsSent",
+                Expression = "[IsSent]",
+                BasicSearchExpression = "[IsSent]",
+                DateTimeFormat = -1,
+                VirtualExpression = "[IsSent]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "CHECKBOX",
+                InputTextType = "text",
+                DataType = DataType.Boolean,
+                OptionCount = 2,
+                SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("TREmailHistory", "IsSent", "CustomMsg"),
+                IsUpload = false
+            };
+            IsSent.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>("IsSent", "TREmailHistory", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>("IsSent", "TREmailHistory", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>("IsSent", "TREmailHistory", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
+            };
+            Fields.Add("IsSent", IsSent);
+
+            // SentDateTime
+            SentDateTime = new (this, "x_SentDateTime", 146, SqlDbType.DateTimeOffset) {
+                Name = "SentDateTime",
+                Expression = "[SentDateTime]",
+                BasicSearchExpression = CastDateFieldForLike("[SentDateTime]", 0, "DB"),
+                DateTimeFormat = 0,
+                VirtualExpression = "[SentDateTime]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXT",
+                InputTextType = "text",
+                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("TREmailHistory", "SentDateTime", "CustomMsg"),
+                IsUpload = false
+            };
+            Fields.Add("SentDateTime", SentDateTime);
 
             // Call Table Load event
             TableLoad();
@@ -629,7 +637,9 @@ public partial class PCM {
                 return -1;
             var queryBuilder = GetQueryBuilder();
             try {
-                result = await queryBuilder.InsertAsync(row);
+                var lastInsertedId = await queryBuilder.InsertGetIdAsync<int>(row);
+                Id.SetDbValue(lastInsertedId);
+                result = 1;
             } catch (Exception e) {
                 CurrentPage?.SetFailureMessage(e.Message);
                 if (Config.Debug)
@@ -781,12 +791,12 @@ public partial class PCM {
                 return;
             try {
                 Id.DbValue = row["Id"]; // Set DB value only
-                MTEmailTemplate_ID.DbValue = row["MTEmailTemplate_ID"]; // Set DB value only
                 To.DbValue = row["To"]; // Set DB value only
-                From.DbValue = row["From"]; // Set DB value only
-                Cc.DbValue = row["Cc"]; // Set DB value only
-                Bcc.DbValue = row["Bcc"]; // Set DB value only
                 MTCrew_ID.DbValue = row["MTCrew_ID"]; // Set DB value only
+                Subject.DbValue = row["Subject"]; // Set DB value only
+                _Message.DbValue = row["Message"]; // Set DB value only
+                IsSent.DbValue = (ConvertToBool(row["IsSent"]) ? "1" : "0"); // Set DB value only
+                SentDateTime.DbValue = row["SentDateTime"]; // Set DB value only
             } catch {}
         }
 
@@ -796,7 +806,7 @@ public partial class PCM {
         }
 
         // Record filter WHERE clause
-        private string _sqlKeyFilter => "";
+        private string _sqlKeyFilter => "[Id] = @Id@";
 
         #pragma warning disable 168, 219
         // Get record filter as string
@@ -804,6 +814,14 @@ public partial class PCM {
         {
             string keyFilter = _sqlKeyFilter;
             object? val = null, result = "";
+            val = row?.TryGetValue("Id", out result) ?? false
+                ? result
+                : !Empty(Id.OldValue) && !current ? Id.OldValue : Id.CurrentValue;
+            if (!IsNumeric(val))
+                return "0=1"; // Invalid key
+            if (val == null)
+                return "0=1"; // Invalid key
+            keyFilter = keyFilter.Replace("@Id@", AdjustSql(val, DbId)); // Replace key value
             return keyFilter;
         }
 
@@ -812,6 +830,14 @@ public partial class PCM {
         {
             Dictionary<string, object>? keyFilter = new ();
             object? val = null, result;
+            val = row?.TryGetValue("Id", out result) ?? false
+                ? result
+                : !Empty(Id.OldValue) ? Id.OldValue : Id.CurrentValue;
+            if (!IsNumeric(val))
+                return null; // Invalid key
+            if (Empty(val))
+                return null; // Invalid key
+            keyFilter.Add("Id", val); // Add key value
             return keyFilter.Count > 0 ? keyFilter : null;
         }
         #pragma warning restore 168, 219
@@ -958,6 +984,7 @@ public partial class PCM {
         public string KeyToJson(bool htmlEncode = false)
         {
             string json = "";
+            json += "\"Id\":" + ConvertToJson(Id.CurrentValue, "number", true);
             json = "{" + json + "}";
             if (htmlEncode)
                 json = HtmlEncode(json);
@@ -966,6 +993,11 @@ public partial class PCM {
 
         // Add key value to URL
         public string KeyUrl(string url, string parm = "") { // DN
+            if (!IsNull(Id.CurrentValue)) {
+                url += "/" + Id.CurrentValue;
+            } else {
+                return "javascript:ew.alert(ew.language.phrase('InvalidRecord'));";
+            }
             if (Empty(parm))
                 return url;
             else
@@ -1020,6 +1052,10 @@ public partial class PCM {
         {
             List<string> keys = new ();
             string val;
+            val = current ? ConvertToString(Id.CurrentValue) ?? "" : ConvertToString(Id.OldValue) ?? "";
+            if (Empty(val))
+                return String.Empty;
+            keys.Add(val);
             return String.Join(Config.CompositeKeySeparator, keys);
         }
 
@@ -1028,6 +1064,10 @@ public partial class PCM {
         {
             List<string> keys = new ();
             object? val = null, result;
+            val = row?.TryGetValue("Id", out result) ?? false ? ConvertToString(result) : null;
+            if (Empty(val))
+                return String.Empty; // Invalid key
+            keys.Add(ConvertToString(val)); // Add key value
             return String.Join(Config.CompositeKeySeparator, keys);
         }
         #pragma warning restore 168, 219
@@ -1037,7 +1077,12 @@ public partial class PCM {
         {
             OldKey = key;
             string[] keys = OldKey.Split(Convert.ToChar(Config.CompositeKeySeparator));
-            if (keys.Length == 0) {
+            if (keys.Length == 1) {
+                if (current) {
+                    Id.CurrentValue = keys[0];
+                } else {
+                    Id.OldValue = keys[0];
+                }
             }
         }
 
@@ -1051,14 +1096,25 @@ public partial class PCM {
             if (Post("key_m[]", out sv) || Get("key_m[]", out sv)) { // DN
                 keysList = ((StringValues)sv).Select(k => ConvertToString(k)).ToList();
             } else if (RouteValues.Count > 0 || Query.Count > 0 || Form.Count > 0) { // DN
+                string key = "";
                 string[] keyValues = {};
                 if (IsApi() && RouteValues.TryGetValue("key", out object? k)) {
                     string str = ConvertToString(k);
                     keyValues = str.Split('/');
                 }
+                if (RouteValues.TryGetValue("Id", out object? v0)) { // Id // DN
+                    key = UrlDecode(v0); // DN
+                } else if (IsApi() && !Empty(keyValues)) {
+                    key = keyValues[0];
+                } else {
+                    key = Param("Id");
+                }
+                keysList.Add(key);
             }
             // Check keys
             foreach (var keys in keysList) {
+                if (!IsNumeric(keys)) // Id
+                    continue;
                 result.Add(keys);
             }
             return result;
@@ -1077,6 +1133,10 @@ public partial class PCM {
             foreach (var keys in recordKeys) {
                 if (!Empty(keyFilter))
                     keyFilter += " OR ";
+                if (setCurrent)
+                    Id.CurrentValue = keys;
+                else
+                    Id.OldValue = keys;
                 keyFilter += "(" + GetRecordFilter() + ")";
             }
             return keyFilter;
@@ -1105,12 +1165,12 @@ public partial class PCM {
             if (dr == null)
                 return;
             Id.SetDbValue(dr["Id"]);
-            MTEmailTemplate_ID.SetDbValue(dr["MTEmailTemplate_ID"]);
             To.SetDbValue(dr["To"]);
-            From.SetDbValue(dr["From"]);
-            Cc.SetDbValue(dr["Cc"]);
-            Bcc.SetDbValue(dr["Bcc"]);
             MTCrew_ID.SetDbValue(dr["MTCrew_ID"]);
+            Subject.SetDbValue(dr["Subject"]);
+            _Message.SetDbValue(dr["Message"]);
+            IsSent.SetDbValue(ConvertToBool(dr["IsSent"]) ? "1" : "0");
+            SentDateTime.SetDbValue(dr["SentDateTime"]);
         }
 
         // Render list content
@@ -1140,82 +1200,82 @@ public partial class PCM {
             // Id
             Id.CellCssStyle = "white-space: nowrap;";
 
-            // MTEmailTemplate_ID
-            MTEmailTemplate_ID.CellCssStyle = "white-space: nowrap;";
-
             // To
             To.CellCssStyle = "white-space: nowrap;";
 
-            // From
-            From.CellCssStyle = "white-space: nowrap;";
-
-            // Cc
-            Cc.CellCssStyle = "white-space: nowrap;";
-
-            // Bcc
-            Bcc.CellCssStyle = "white-space: nowrap;";
-
             // MTCrew_ID
             MTCrew_ID.CellCssStyle = "white-space: nowrap;";
+
+            // Subject
+
+            // Message
+
+            // IsSent
+
+            // SentDateTime
 
             // Id
             Id.ViewValue = Id.CurrentValue;
             Id.ViewValue = FormatNumber(Id.ViewValue, Id.FormatPattern);
             Id.ViewCustomAttributes = "";
 
-            // MTEmailTemplate_ID
-            MTEmailTemplate_ID.ViewValue = MTEmailTemplate_ID.CurrentValue;
-            MTEmailTemplate_ID.ViewValue = FormatNumber(MTEmailTemplate_ID.ViewValue, MTEmailTemplate_ID.FormatPattern);
-            MTEmailTemplate_ID.ViewCustomAttributes = "";
-
             // To
             To.ViewValue = ConvertToString(To.CurrentValue); // DN
             To.ViewCustomAttributes = "";
-
-            // From
-            From.ViewValue = ConvertToString(From.CurrentValue); // DN
-            From.ViewCustomAttributes = "";
-
-            // Cc
-            Cc.ViewValue = ConvertToString(Cc.CurrentValue); // DN
-            Cc.ViewCustomAttributes = "";
-
-            // Bcc
-            Bcc.ViewValue = ConvertToString(Bcc.CurrentValue); // DN
-            Bcc.ViewCustomAttributes = "";
 
             // MTCrew_ID
             MTCrew_ID.ViewValue = MTCrew_ID.CurrentValue;
             MTCrew_ID.ViewValue = FormatNumber(MTCrew_ID.ViewValue, MTCrew_ID.FormatPattern);
             MTCrew_ID.ViewCustomAttributes = "";
 
+            // Subject
+            Subject.ViewValue = ConvertToString(Subject.CurrentValue); // DN
+            Subject.ViewCustomAttributes = "";
+
+            // Message
+            _Message.ViewValue = ConvertToString(_Message.CurrentValue); // DN
+            _Message.ViewCustomAttributes = "";
+
+            // IsSent
+            if (ConvertToBool(IsSent.CurrentValue)) {
+                IsSent.ViewValue = IsSent.TagCaption(1) != "" ? IsSent.TagCaption(1) : "Yes";
+            } else {
+                IsSent.ViewValue = IsSent.TagCaption(2) != "" ? IsSent.TagCaption(2) : "No";
+            }
+            IsSent.ViewCustomAttributes = "";
+
+            // SentDateTime
+            SentDateTime.ViewValue = SentDateTime.CurrentValue;
+            SentDateTime.ViewValue = FormatDateTime(SentDateTime.ViewValue, SentDateTime.FormatPattern);
+            SentDateTime.ViewCustomAttributes = "";
+
             // Id
             Id.HrefValue = "";
             Id.TooltipValue = "";
-
-            // MTEmailTemplate_ID
-            MTEmailTemplate_ID.HrefValue = "";
-            MTEmailTemplate_ID.TooltipValue = "";
 
             // To
             To.HrefValue = "";
             To.TooltipValue = "";
 
-            // From
-            From.HrefValue = "";
-            From.TooltipValue = "";
-
-            // Cc
-            Cc.HrefValue = "";
-            Cc.TooltipValue = "";
-
-            // Bcc
-            Bcc.HrefValue = "";
-            Bcc.TooltipValue = "";
-
             // MTCrew_ID
             MTCrew_ID.HrefValue = "";
             MTCrew_ID.TooltipValue = "";
+
+            // Subject
+            Subject.HrefValue = "";
+            Subject.TooltipValue = "";
+
+            // Message
+            _Message.HrefValue = "";
+            _Message.TooltipValue = "";
+
+            // IsSent
+            IsSent.HrefValue = "";
+            IsSent.TooltipValue = "";
+
+            // SentDateTime
+            SentDateTime.HrefValue = "";
+            SentDateTime.TooltipValue = "";
 
             // Call Row Rendered event
             RowRendered();
@@ -1234,17 +1294,9 @@ public partial class PCM {
 
             // Id
             Id.SetupEditAttributes();
-            Id.EditValue = Id.CurrentValue; // DN
-            Id.PlaceHolder = RemoveHtml(Id.Caption);
-            if (!Empty(Id.EditValue) && IsNumeric(Id.EditValue))
-                Id.EditValue = FormatNumber(Id.EditValue, null);
-
-            // MTEmailTemplate_ID
-            MTEmailTemplate_ID.SetupEditAttributes();
-            MTEmailTemplate_ID.EditValue = MTEmailTemplate_ID.CurrentValue; // DN
-            MTEmailTemplate_ID.PlaceHolder = RemoveHtml(MTEmailTemplate_ID.Caption);
-            if (!Empty(MTEmailTemplate_ID.EditValue) && IsNumeric(MTEmailTemplate_ID.EditValue))
-                MTEmailTemplate_ID.EditValue = FormatNumber(MTEmailTemplate_ID.EditValue, null);
+            Id.EditValue = Id.CurrentValue;
+            Id.EditValue = FormatNumber(Id.EditValue, Id.FormatPattern);
+            Id.ViewCustomAttributes = "";
 
             // To
             To.SetupEditAttributes();
@@ -1253,33 +1305,35 @@ public partial class PCM {
             To.EditValue = HtmlEncode(To.CurrentValue);
             To.PlaceHolder = RemoveHtml(To.Caption);
 
-            // From
-            From.SetupEditAttributes();
-            if (!From.Raw)
-                From.CurrentValue = HtmlDecode(From.CurrentValue);
-            From.EditValue = HtmlEncode(From.CurrentValue);
-            From.PlaceHolder = RemoveHtml(From.Caption);
-
-            // Cc
-            Cc.SetupEditAttributes();
-            if (!Cc.Raw)
-                Cc.CurrentValue = HtmlDecode(Cc.CurrentValue);
-            Cc.EditValue = HtmlEncode(Cc.CurrentValue);
-            Cc.PlaceHolder = RemoveHtml(Cc.Caption);
-
-            // Bcc
-            Bcc.SetupEditAttributes();
-            if (!Bcc.Raw)
-                Bcc.CurrentValue = HtmlDecode(Bcc.CurrentValue);
-            Bcc.EditValue = HtmlEncode(Bcc.CurrentValue);
-            Bcc.PlaceHolder = RemoveHtml(Bcc.Caption);
-
             // MTCrew_ID
             MTCrew_ID.SetupEditAttributes();
             MTCrew_ID.EditValue = MTCrew_ID.CurrentValue; // DN
             MTCrew_ID.PlaceHolder = RemoveHtml(MTCrew_ID.Caption);
             if (!Empty(MTCrew_ID.EditValue) && IsNumeric(MTCrew_ID.EditValue))
                 MTCrew_ID.EditValue = FormatNumber(MTCrew_ID.EditValue, null);
+
+            // Subject
+            Subject.SetupEditAttributes();
+            if (!Subject.Raw)
+                Subject.CurrentValue = HtmlDecode(Subject.CurrentValue);
+            Subject.EditValue = HtmlEncode(Subject.CurrentValue);
+            Subject.PlaceHolder = RemoveHtml(Subject.Caption);
+
+            // Message
+            _Message.SetupEditAttributes();
+            if (!_Message.Raw)
+                _Message.CurrentValue = HtmlDecode(_Message.CurrentValue);
+            _Message.EditValue = HtmlEncode(_Message.CurrentValue);
+            _Message.PlaceHolder = RemoveHtml(_Message.Caption);
+
+            // IsSent
+            IsSent.EditValue = IsSent.Options(false);
+            IsSent.PlaceHolder = RemoveHtml(IsSent.Caption);
+
+            // SentDateTime
+            SentDateTime.SetupEditAttributes();
+            SentDateTime.EditValue = FormatDateTime(SentDateTime.CurrentValue, SentDateTime.FormatPattern); // DN
+            SentDateTime.PlaceHolder = RemoveHtml(SentDateTime.Caption);
 
             // Call Row Rendered event
             RowRendered();
@@ -1314,20 +1368,20 @@ public partial class PCM {
                     doc.BeginExportRow();
                     if (exportType == "view") {
                         doc.ExportCaption(Id);
-                        doc.ExportCaption(MTEmailTemplate_ID);
                         doc.ExportCaption(To);
-                        doc.ExportCaption(From);
-                        doc.ExportCaption(Cc);
-                        doc.ExportCaption(Bcc);
                         doc.ExportCaption(MTCrew_ID);
+                        doc.ExportCaption(Subject);
+                        doc.ExportCaption(_Message);
+                        doc.ExportCaption(IsSent);
+                        doc.ExportCaption(SentDateTime);
                     } else {
                         doc.ExportCaption(Id);
-                        doc.ExportCaption(MTEmailTemplate_ID);
                         doc.ExportCaption(To);
-                        doc.ExportCaption(From);
-                        doc.ExportCaption(Cc);
-                        doc.ExportCaption(Bcc);
                         doc.ExportCaption(MTCrew_ID);
+                        doc.ExportCaption(Subject);
+                        doc.ExportCaption(_Message);
+                        doc.ExportCaption(IsSent);
+                        doc.ExportCaption(SentDateTime);
                     }
                     doc.EndExportRow();
                 }
@@ -1366,20 +1420,20 @@ public partial class PCM {
                         doc.BeginExportRow(rowcnt); // Allow CSS styles if enabled
                         if (exportType == "view") {
                             await doc.ExportField(Id);
-                            await doc.ExportField(MTEmailTemplate_ID);
                             await doc.ExportField(To);
-                            await doc.ExportField(From);
-                            await doc.ExportField(Cc);
-                            await doc.ExportField(Bcc);
                             await doc.ExportField(MTCrew_ID);
+                            await doc.ExportField(Subject);
+                            await doc.ExportField(_Message);
+                            await doc.ExportField(IsSent);
+                            await doc.ExportField(SentDateTime);
                         } else {
                             await doc.ExportField(Id);
-                            await doc.ExportField(MTEmailTemplate_ID);
                             await doc.ExportField(To);
-                            await doc.ExportField(From);
-                            await doc.ExportField(Cc);
-                            await doc.ExportField(Bcc);
                             await doc.ExportField(MTCrew_ID);
+                            await doc.ExportField(Subject);
+                            await doc.ExportField(_Message);
+                            await doc.ExportField(IsSent);
+                            await doc.ExportField(SentDateTime);
                         }
                         doc.EndExportRow(rowcnt);
                     }

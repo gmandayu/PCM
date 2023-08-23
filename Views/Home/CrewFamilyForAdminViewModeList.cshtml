@@ -641,6 +641,17 @@ if (!crewFamilyForAdminViewModeList.IsExport() && Empty(crewFamilyForAdminViewMo
         </div>
     </div>
 </div>
+<div id="loading-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="text-center mb-0">
+                    @(CurrentLanguage == "en-US" ? "Processing..." : "Sedang memproses...")
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link" href="@string.Concat(AppPath(), "CrewPersonalDataForAdminViewModeView")">
@@ -1171,7 +1182,7 @@ loadjs.ready("load", function() {
                         currentUrlObject.search = urlQueryParams.toString();
                         history.pushState(null, '', currentUrlObject);
                     }
-                } else if (employeeStatus === 'Candidate - Submitted') {
+                } else if (employeeStatus === 'Candidate - Agency Reviewed') {
                     const invokeScheduleModalButton = $('<button/>', {
                         'class': 'btn btn-default ew-btn primary-green-bg primary-white-clr',
                         'name': 'btn-invoke-schedule-modal',
@@ -1268,8 +1279,10 @@ loadjs.ready("load", function() {
                         // Format timezone offset as needed
                         function formatTimezoneOffset(offset) {
                             const hours = Math.floor(Math.abs(offset) / 60);
+                            const minutes = Math.abs(offset) % 60;
                             const sign = offset < 0 ? '+' : '-';
-                            return ' GMT ' + sign + hours;
+                            const formattedOffset = sign + addLeadingZero(hours) + ':' + addLeadingZero(minutes);
+                            return ' GMT ' + formattedOffset;
                         }
 
                         // Helper function to add leading zero to single-digit numbers
@@ -1281,43 +1294,68 @@ loadjs.ready("load", function() {
                         function replaceTimezoneOffset(str, offset) {
                             return str.replace('zzz', offset);
                         }
+                        function validateDateTime(dateTimeString) {
+                            const errorMessage = (selectedLanguage.id === 'en-US') ? `Incorrect date (dd MMM yyyy HH:mm:ss GMT +/-HH:mm)` : `Tanggal tidak benar (dd MMM yyyy HH:mm:ss GMT +/-HH:mm)`;
+                            const dateTimeRegex = /^\d{1,2} [A-Za-z]{3} \d{4} \d{1,2}:\d{2}:\d{2} GMT [+-]\d{1,2}:\d{2}$/;
+                            if (!dateTimeRegex.test(dateTimeString)) {
+                                ew.showToast(errorMessage);
+                                return false;
+                            }
+                            const dateTimeParts = dateTimeString.split(' ');
+                            const day = parseInt(dateTimeParts[0], 10);
+                            const monthNamesEnglish = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                            const monthNamesIndonesian = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                            const month = (selectedLanguage.id === 'en-US') ? monthNamesEnglish.indexOf(dateTimeParts[1]) : monthNamesIndonesian.indexOf(dateTimeParts[1]);
+                            const year = parseInt(dateTimeParts[2], 10);
+                            let valid = false;
+                            if (year >= 1900 && year <= 9999 && month >= 0 && day >= 1 && day <= 31) {
+                                if (month === 1) {
+                                    valid = day <= (((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 29 : 28);
+                                } else if (month === 3 || month === 5 || month === 8 || month === 10) {
+                                    valid = day <= 30;
+                                } else {
+                                    valid = true;
+                                }
+                            }
+                            const timeParts = dateTimeParts[3].split(':');
+                            const hour = parseInt(timeParts[0], 10);
+                            const minute = parseInt(timeParts[1], 10);
+                            const second = parseInt(timeParts[2], 10);
+                            if (valid) {
+                                valid = (hour >= 0) && (hour <= 23) && (minute >= 0) && (minute <= 59) && (second >= 0) && (second <= 59);
+                                if (valid) {
+                                    const timeOffsetWithSign = dateTimeParts[5];
+                                    const timeOffset = timeOffsetWithSign.substring(1);
+                                    const timeOffsetParts = timeOffset.split(':');
+                                    const timeOffsetHour = parseInt(timeOffsetParts[0], 10);
+                                    const timeOffsetMinute = parseInt(timeOffsetParts[1], 10);
+                                    valid = (timeOffsetHour >= 0) && (timeOffsetHour <= 23) && (timeOffsetMinute >= 0) && (timeOffsetMinute <= 59);
+                                }
+                            }
+                            if (!valid) {
+                                ew.showToast(errorMessage);
+                            }
+                            return valid;
+                        }
                         const addDocumentCheckDateTimeApiUrl = "add-document-check-date-time";
                         $("#btn-add-schedule").click(function() {
                             const documentCheckDateTimeValue = $('#x_DocumentCheckDateTime').val();
-                            const documentCheckDateTimeFormattedValue = documentCheckDateTimeValue.replace(/\sGMT ([+\-]\d+)/g, function(match, offset) {
-                                const hours = parseInt(offset);
-                                const sign = hours >= 0 ? '+' : '-';
-                                const formattedOffset = sign + Math.abs(hours).toString().padStart(2, '0') + ':00';
-                                return formattedOffset;
-                            });
                             const documentCheckDateTimeCaption = $(`label[for="x_DocumentCheckDateTime"]`).text();
-                            if (documentCheckDateTimeFormattedValue == '') {
+                            if (documentCheckDateTimeValue == '') {
                                 if (selectedLanguage.id === 'en-US') {
                                     ew.showToast(`Please enter required field - ${documentCheckDateTimeCaption}`);
                                 } else {
                                     ew.showToast(`Masukkan input yang dibutuhkan - ${documentCheckDateTimeCaption}`);
                                 }
                             } else {
-                                const currentDate = new Date();
-                                const documentCheckDateObject = new Date(documentCheckDateTimeFormattedValue);
-                                if (isNaN(documentCheckDateObject)) {
-                                    if (selectedLanguage.id === 'en-US') {
-                                        ew.showToast(`Invalid date time - ${documentCheckDateTimeCaption}`);
-                                    } else {
-                                        ew.showToast(`Tanggal dan jam tidak valid - ${documentCheckDateTimeCaption}`);
-                                    }
-                                } else if (documentCheckDateObject < currentDate) {
-                                    if (selectedLanguage.id === 'en-US') {
-                                        ew.showToast(`${documentCheckDateTimeCaption} must be later or equal than today`);
-                                    } else {
-                                        ew.showToast(`${documentCheckDateTimeCaption} harus setelah atau sama dengan hari ini`);
-                                    }
-                                } else {
+                                if (validateDateTime(documentCheckDateTimeValue)) {
+                                    $('#schedule-modal-dialog').modal('hide');
+                                    $('#loading-modal-dialog').modal('show');
                                     const arrDataKey = [currentlyEditedCrewID];
                                     const notesValue = $('#x_DocumentCheckNotes').val();
                                     const notes = (notesValue !== '') ? notesValue : '';
                                     const documentCheckDateTimeRequest = {
-                                        scheduleDateTime: documentCheckDateTimeFormattedValue,
+                                        scheduleDateTime: documentCheckDateTimeValue.replace(' GMT ', ''),
                                         notes: notes,
                                         crewIDArray: JSON.stringify(arrDataKey),
                                     };
@@ -1328,7 +1366,6 @@ loadjs.ready("load", function() {
                                         contentType: "application/json",
                                         success: function(response) {
                                             if (response.success) {
-                                                $('#schedule-modal-dialog').modal('hide');
                                                 let successMessage = '';
                                                 if (selectedLanguage.id === 'en-US') {
                                                     successMessage = `Add ${documentCheckDateTimeCaption} Successful`;
@@ -1341,15 +1378,16 @@ loadjs.ready("load", function() {
                                                 const params = new URLSearchParams(targetUrl.search);
                                                 params.set('successMessage', encodedSuccessMessage);
                                                 targetUrl.search = params.toString();
+                                                $('#loading-modal-dialog').modal('hide');
                                                 window.location.href = targetUrl.href;
                                             } else {
-                                                $('#schedule-modal-dialog').modal('hide');
+                                                $('#loading-modal-dialog').modal('hide');
                                                 const errorMessage = response.errorMessage;
                                                 ew.showToast(errorMessage);
                                             }
                                         },
                                         error: function(xhr, textStatus, errorThrown) {
-                                            $('#schedule-modal-dialog').modal('hide');
+                                            $('#loading-modal-dialog').modal('hide');
                                             ew.showToast(errorThrown);
                                         }
                                     });
@@ -1367,6 +1405,8 @@ loadjs.ready("load", function() {
                                     ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
                                 }
                             } else {
+                                $('#reject-modal-dialog').modal('hide');
+                                $('#loading-modal-dialog').modal('show');
                                 const arrDataKey = [currentlyEditedCrewID];
                                 const rejectMultipleRequest = {
                                     rejectReason: rejectedReasonValue,
@@ -1379,7 +1419,6 @@ loadjs.ready("load", function() {
                                     contentType: "application/json",
                                     success: function(response) {
                                         if (response.success) {
-                                            $('#reject-modal-dialog').modal('hide');
                                             let successMessage = '';
                                             if (selectedLanguage.id === 'en-US') {
                                                 successMessage = `Add ${rejectedReasonCaption} Successful`;
@@ -1392,15 +1431,16 @@ loadjs.ready("load", function() {
                                             const params = new URLSearchParams(targetUrl.search);
                                             params.set('successMessage', encodedSuccessMessage);
                                             targetUrl.search = params.toString();
+                                            $('#loading-modal-dialog').modal('hide');
                                             window.location.href = targetUrl.href;
                                         } else {
-                                            $('#reject-modal-dialog').modal('hide');
+                                            $('#loading-modal-dialog').modal('hide');
                                             const errorMessage = response.errorMessage;
                                             ew.showToast(errorMessage);
                                         }
                                     },
                                     error: function(xhr, textStatus, errorThrown) {
-                                        $('#reject-modal-dialog').modal('hide');
+                                        $('#loading-modal-dialog').modal('hide');
                                         ew.showToast(errorThrown);
                                     }
                                 });
@@ -1417,6 +1457,8 @@ loadjs.ready("load", function() {
                                     ew.showToast(`Masukkan input yang dibutuhkan - ${revisedReasonCaption}`);
                                 }
                             } else {
+                                $('#revise-modal-dialog').modal('hide');
+                                $('#loading-modal-dialog').modal('show');
                                 const arrDataKey = [currentlyEditedCrewID];
                                 const revisedMultipleCrewRequest = {
                                     revisedReason: revisedReasonValue,
@@ -1429,7 +1471,6 @@ loadjs.ready("load", function() {
                                     contentType: "application/json",
                                     success: function(response) {
                                         if(response.success) {
-                                            $('#revise-modal-dialog').modal('hide');
                                             let successMessage = '';
                                             if(selectedLanguage.id === 'en-US') {
                                                 successMessage = `Add ${revisedReasonCaption} Successful`;
@@ -1442,15 +1483,218 @@ loadjs.ready("load", function() {
                                             const params = new URLSearchParams(targetUrl.search);
                                             params.set('successMessage', encodedSuccessMessage);
                                             targetUrl.search = params.toString();
+                                            $('#loading-modal-dialog').modal('hide');
                                             window.location.href = targetUrl.href;
                                         } else {
-                                            $('#revise-modal-dialog').modal('hide');
+                                            $('#loading-modal-dialog').modal('hide');
                                             const errorMessage = response.errorMessage;
                                             ew.showToast(errorMessage);
                                         }  
                                     },
                                     error: function(xhr, textStatus, errorThrown) {
-                                        $('#revise-modal-dialog').modal('hide');
+                                        $('#loading-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } else if (employeeStatus === 'Candidate - Submitted') {
+                    const acceptByAgencyButton = $('<button/>', {
+                        'class': 'btn btn-default ew-btn primary-green-bg primary-white-clr',
+                        'name': 'btn-accept-by-agency',
+                        'id': 'btn-accept-by-agency',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Accept' : 'Terima'
+                    });
+                    const invokeReviseModalButton = $('<button/>', {
+                        'class': 'btn btn-primary ew-btn ms-3 primary-white-clr',
+                        'name': 'btn-invoke-revise-modal',
+                        'id': 'btn-invoke-revise-modal',
+                        'type': 'button', 
+                        'text': (selectedLanguage.id === 'en-US') ? 'Revise' : 'Tinjau'
+                    });
+                    const invokeRejectModalButton = $('<button/>', {
+                        'class': 'btn btn-danger ew-btn ms-3 me-auto primary-white-clr',
+                        'name': 'btn-invoke-reject-modal',
+                        'id': 'btn-invoke-reject-modal',
+                        'type': 'button',
+                        'text': (selectedLanguage.id === 'en-US') ? 'Reject' : 'Tolak'
+                    });
+                    const backButton = $("<a></a>", {
+                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
+                        class: "btn btn-default ew-btn primary-black-clr gray-bg",
+                        id: "btn-back",
+                        name: "btn-back",
+                        href: `${parentUrl}VWaitingForPdeReviewList`,
+                    });
+                    const flexDiv = $("<div class='d-flex mb-3'></div>");
+                    if (isAdmin) {
+                        flexDiv.append(acceptByAgencyButton);
+                        flexDiv.append(invokeReviseModalButton);
+                        flexDiv.append(invokeRejectModalButton);
+                        flexDiv.append(backButton);
+                    }
+                    const buttonsDiv = $("<div class='row mt-3 ew-buttons'></div>");
+                    buttonsDiv.append(flexDiv);
+                    $('div#CrewFamilyForAdminViewModelist').append(buttonsDiv);
+                    if (isAdmin) {
+                        $('#btn-accept-by-agency').click(function() {
+                            const confirmationMessage = (selectedLanguage.id === 'en-US') ? "Are you sure you want to accept the selected crew(s)?" : "Apakah Anda yakin untuk menerima kru yang telah dipilih?";
+                            ew.prompt(confirmationMessage, result => {
+                                if (result) {
+                                    const acceptByAgencyUrl = "accept-by-agency";
+                                    $('#loading-modal-dialog').modal('show');
+                                    const arrDataKey = [currentlyEditedCrewID];
+                                    const acceptByAgencyRequest = {
+                                        crewIDArray: JSON.stringify(arrDataKey),
+                                    };
+                                    $.ajax({
+                                        method: "POST",
+                                        url: `${parentUrl}api/Registration/${acceptByAgencyUrl}`,
+                                        data: JSON.stringify(acceptByAgencyRequest),
+                                        contentType: "application/json",
+                                        success: function(response) {
+                                            if (response.success) {
+                                                let successMessage = '';
+                                                if (selectedLanguage.id === 'en-US') {
+                                                    successMessage = `Accept Crew Successful`;
+                                                } else {
+                                                    successMessage = `Berhasil Menerima Kru`;
+                                                }
+                                                const baseUrl = new URL(window.location.href).origin;
+                                                const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}WaitingForAgencyReviewList`);
+                                                const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                                const params = new URLSearchParams(targetUrl.search);
+                                                params.set('successMessage', encodedSuccessMessage);
+                                                targetUrl.search = params.toString();
+                                                $('#loading-modal-dialog').modal('hide');
+                                                window.location.href = targetUrl.href;
+                                            } else {
+                                                $('#loading-modal-dialog').modal('hide');
+                                                const errorMessage = response.errorMessage;
+                                                ew.showToast(errorMessage);
+                                            }
+                                        },
+                                        error: function(xhr, textStatus, errorThrown) {
+                                            $('#loading-modal-dialog').modal('hide');
+                                            ew.showToast(errorThrown);
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                        $('#btn-invoke-revise-modal').click(function() {
+                            $('#revise-modal-dialog').modal('show');
+                        });
+                        $('#btn-invoke-reject-modal').click(function() {
+                            $('#reject-modal-dialog').modal('show');
+                        });
+                        $('#revise-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RevisedReason').val(null);
+                        });
+                        $('#reject-modal-dialog').on('hidden.bs.modal', function() {
+                            $('#x_RejectedReason').val(null);
+                        });
+                        const rejectMultipleCrewApiUrl = "reject-multiple-crew";
+                        $("#btn-reject").click(function() {
+                            const rejectedReasonValue = $('#x_RejectedReason').val();
+                            const rejectedReasonCaption = $(`label[for="x_RejectedReason"]`).text();
+                            if (rejectedReasonValue == '') {
+                                if (selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${rejectedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
+                                }
+                            } else {
+                                $('#reject-modal-dialog').modal('hide');
+                                $('#loading-modal-dialog').modal('show');
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const rejectMultipleRequest = {
+                                    rejectReason: rejectedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey),
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${rejectMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(rejectMultipleRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if (response.success) {
+                                            let successMessage = '';
+                                            if (selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${rejectedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${rejectedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            $('#loading-modal-dialog').modal('hide');
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#loading-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#loading-modal-dialog').modal('hide');
+                                        ew.showToast(errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                        const reviseMultipleCrewApiUrl = "revise-multiple-crew";
+                        $("#btn-revise").click(function() {
+                            const revisedReasonValue = $('#x_RevisedReason').val();
+                            const revisedReasonCaption = $(`label[for="x_RevisedReason"]`).text();
+                            if(revisedReasonValue.trim() === '') {
+                                if(selectedLanguage.id === 'en-US') {
+                                    ew.showToast(`Please enter required field - ${revisedReasonCaption}`);
+                                } else {
+                                    ew.showToast(`Masukkan input yang dibutuhkan - ${revisedReasonCaption}`);
+                                }
+                            } else {
+                                $('#revise-modal-dialog').modal('hide');
+                                $('#loading-modal-dialog').modal('show');
+                                const arrDataKey = [currentlyEditedCrewID];
+                                const revisedMultipleCrewRequest = {
+                                    revisedReason: revisedReasonValue,
+                                    crewIDArray: JSON.stringify(arrDataKey)
+                                };
+                                $.ajax({
+                                    method: "POST",
+                                    url: `${parentUrl}api/Registration/${reviseMultipleCrewApiUrl}`,
+                                    data: JSON.stringify(revisedMultipleCrewRequest),
+                                    contentType: "application/json",
+                                    success: function(response) {
+                                        if(response.success) {
+                                            let successMessage = '';
+                                            if(selectedLanguage.id === 'en-US') {
+                                                successMessage = `Add ${revisedReasonCaption} Successful`;
+                                            } else {
+                                                successMessage = `Menambahkan ${revisedReasonCaption} Berhasil`;
+                                            }
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}VWaitingForPdeReviewList`);
+                                            const encodedSuccessMessage = encodeURIComponent(successMessage);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('successMessage', encodedSuccessMessage);
+                                            targetUrl.search = params.toString();
+                                            $('#loading-modal-dialog').modal('hide');
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            $('#loading-modal-dialog').modal('hide');
+                                            const errorMessage = response.errorMessage;
+                                            ew.showToast(errorMessage);
+                                        }  
+                                    },
+                                    error: function(xhr, textStatus, errorThrown) {
+                                        $('#loading-modal-dialog').modal('hide');
                                         ew.showToast(errorThrown);
                                     }
                                 });
@@ -1497,11 +1741,11 @@ loadjs.ready("load", function() {
                                     const firstDropdownLi = $('<li>');
                                     const viewAnchor = $('<a>')
                                         .addClass('ew-row-link ew-view dropdown-item')
-                                        .attr('data-caption', 'View')
+                                        .attr('data-caption', ew.language.phrase("ViewLink"))
                                         .attr('href', `${parentUrl}${tableName}View/${rowID}?crewID=${currentlyEditedCrewID}`);
                                     const viewAnchorIcon = $('<i>').addClass('icon-view ew-icon me-2').attr('data-phrase', 'ViewLink');
-                                    const viewAnchorSpan = $('<span>').addClass('visually-hidden').text('View');
-                                    const viewAnchorText = 'View';
+                                    const viewAnchorSpan = $('<span>').addClass('visually-hidden').text(ew.language.phrase("ViewLink"));
+                                    const viewAnchorText = ew.language.phrase("ViewLink");
                                     viewAnchorIcon.append(viewAnchorSpan);
                                     viewAnchor.append(viewAnchorIcon);
                                     viewAnchor.append(viewAnchorText);
@@ -1511,20 +1755,20 @@ loadjs.ready("load", function() {
                                         const secondDropdownLi = $('<li>');
                                         const editAnchor = $('<a>')
                                             .addClass('ew-row-link ew-edit dropdown-item')
-                                            .attr('data-caption', 'Edit')
+                                            .attr('data-caption', ew.language.phrase("EditLink"))
                                             .attr('href', `${parentUrl}${tableName}Edit/${rowID}?crewID=${currentlyEditedCrewID}`);
                                         const editAnchorIcon = $('<i>').addClass('fa-solid fa-pen ew-icon me-2').attr('data-phrase', 'EditLink');
-                                        const editAnchorSpan = $('<span>').addClass('visually-hidden').text('Edit');
-                                        const editAnchorText = 'Edit';
+                                        const editAnchorSpan = $('<span>').addClass('visually-hidden').text(ew.language.phrase("EditLink"));
+                                        const editAnchorText = ew.language.phrase("EditLink");
                                         const thirdDropdownLi = $('<li>');
                                         const deleteAnchor = $('<a>')
                                             .addClass('ew-row-link ew-delete dropdown-item')
                                             .attr('data-ew-action', 'inline-delete')
-                                            .attr('data-caption', 'Delete')
+                                            .attr('data-caption', ew.language.phrase("DeleteLink"))
                                             .attr('href', `${parentUrl}${tableName}Delete/${rowID}`);
                                         const deleteAnchorIcon = $('<i>').addClass('fa-solid fa-trash ew-icon me-2').attr('data-phrase', 'DeleteLink');
-                                        const deleteAnchorSpan = $('<span>').addClass('visually-hidden').text('Delete');
-                                        const deleteAnchorText = 'Delete';
+                                        const deleteAnchorSpan = $('<span>').addClass('visually-hidden').text(ew.language.phrase("DeleteLink"));
+                                        const deleteAnchorText = ew.language.phrase("DeleteLink");
                                         deleteAnchorIcon.append(deleteAnchorSpan);
                                         deleteAnchor.append(deleteAnchorIcon);
                                         deleteAnchor.append(deleteAnchorText);

@@ -279,6 +279,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.SetVisibility();
             NomineeAddressHomeTelCode_CountryID.SetVisibility();
             NomineeMobileNumberCode_CountryID.SetVisibility();
+            MTManningAgentID.SetVisibility();
         }
 
         // Constructor
@@ -1383,6 +1384,15 @@ public partial class PCM {
                     NomineeMobileNumberCode_CountryID.SetFormValue(val);
             }
 
+            // Check field name 'MTManningAgentID' before field var 'x_MTManningAgentID'
+            val = CurrentForm.HasValue("MTManningAgentID") ? CurrentForm.GetValue("MTManningAgentID") : CurrentForm.GetValue("x_MTManningAgentID");
+            if (!MTManningAgentID.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("MTManningAgentID") && !CurrentForm.HasValue("x_MTManningAgentID")) // DN
+                    MTManningAgentID.Visible = false; // Disable update for API request
+                else
+                    MTManningAgentID.SetFormValue(val);
+            }
+
             // Check field name 'ID' before field var 'x_ID'
             val = CurrentForm.HasValue("ID") ? CurrentForm.GetValue("ID") : CurrentForm.GetValue("x_ID");
             if (!ID.IsDetailKey)
@@ -1467,6 +1477,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.CurrentValue = AlternativeAddressHomeTelCode_CountryID.FormValue;
             NomineeAddressHomeTelCode_CountryID.CurrentValue = NomineeAddressHomeTelCode_CountryID.FormValue;
             NomineeMobileNumberCode_CountryID.CurrentValue = NomineeMobileNumberCode_CountryID.FormValue;
+            MTManningAgentID.CurrentValue = MTManningAgentID.FormValue;
         }
 
         // Load row based on key values
@@ -1592,6 +1603,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.SetDbValue(row["AlternativeAddressHomeTelCode_CountryID"]);
             NomineeAddressHomeTelCode_CountryID.SetDbValue(row["NomineeAddressHomeTelCode_CountryID"]);
             NomineeMobileNumberCode_CountryID.SetDbValue(row["NomineeMobileNumberCode_CountryID"]);
+            MTManningAgentID.SetDbValue(row["MTManningAgentID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -1672,6 +1684,7 @@ public partial class PCM {
             row.Add("AlternativeAddressHomeTelCode_CountryID", AlternativeAddressHomeTelCode_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeAddressHomeTelCode_CountryID", NomineeAddressHomeTelCode_CountryID.DefaultValue ?? DbNullValue); // DN
             row.Add("NomineeMobileNumberCode_CountryID", NomineeMobileNumberCode_CountryID.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTManningAgentID", MTManningAgentID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -1926,6 +1939,9 @@ public partial class PCM {
 
             // NomineeMobileNumberCode_CountryID
             NomineeMobileNumberCode_CountryID.RowCssClass = "row";
+
+            // MTManningAgentID
+            MTManningAgentID.RowCssClass = "row";
 
             // View row
             if (RowType == RowType.View) {
@@ -2591,8 +2607,13 @@ public partial class PCM {
                 }
                 NomineeMobileNumberCode_CountryID.ViewCustomAttributes = "";
 
+                // MTManningAgentID
+                MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+                MTManningAgentID.ViewCustomAttributes = "";
+
                 // IndividualCodeNumber
                 IndividualCodeNumber.HrefValue = "";
+                IndividualCodeNumber.TooltipValue = "";
 
                 // FullName
                 FullName.HrefValue = "";
@@ -2821,13 +2842,14 @@ public partial class PCM {
 
                 // NomineeMobileNumberCode_CountryID
                 NomineeMobileNumberCode_CountryID.HrefValue = "";
+
+                // MTManningAgentID
+                MTManningAgentID.HrefValue = "";
             } else if (RowType == RowType.Edit) {
                 // IndividualCodeNumber
                 IndividualCodeNumber.SetupEditAttributes();
-                if (!IndividualCodeNumber.Raw)
-                    IndividualCodeNumber.CurrentValue = HtmlDecode(IndividualCodeNumber.CurrentValue);
-                IndividualCodeNumber.EditValue = HtmlEncode(IndividualCodeNumber.CurrentValue);
-                IndividualCodeNumber.PlaceHolder = RemoveHtml(IndividualCodeNumber.Caption);
+                IndividualCodeNumber.EditValue = ConvertToString(IndividualCodeNumber.CurrentValue); // DN
+                IndividualCodeNumber.ViewCustomAttributes = "";
 
                 // FullName
                 FullName.SetupEditAttributes();
@@ -3488,10 +3510,16 @@ public partial class PCM {
                 }
                 NomineeMobileNumberCode_CountryID.PlaceHolder = RemoveHtml(NomineeMobileNumberCode_CountryID.Caption);
 
+                // MTManningAgentID
+                MTManningAgentID.SetupEditAttributes();
+                MTManningAgentID.EditValue = MTManningAgentID.CurrentValue; // DN
+                MTManningAgentID.PlaceHolder = RemoveHtml(MTManningAgentID.Caption);
+
                 // Edit refer script
 
                 // IndividualCodeNumber
                 IndividualCodeNumber.HrefValue = "";
+                IndividualCodeNumber.TooltipValue = "";
 
                 // FullName
                 FullName.HrefValue = "";
@@ -3720,6 +3748,9 @@ public partial class PCM {
 
                 // NomineeMobileNumberCode_CountryID
                 NomineeMobileNumberCode_CountryID.HrefValue = "";
+
+                // MTManningAgentID
+                MTManningAgentID.HrefValue = "";
             }
             if (RowType == RowType.Add || RowType == RowType.Edit || RowType == RowType.Search) // Add/Edit/Search row
                 SetupFieldTitles();
@@ -4081,6 +4112,11 @@ public partial class PCM {
                     NomineeMobileNumberCode_CountryID.AddErrorMessage(ConvertToString(NomineeMobileNumberCode_CountryID.RequiredErrorMessage).Replace("%s", NomineeMobileNumberCode_CountryID.Caption));
                 }
             }
+            if (MTManningAgentID.Required) {
+                if (!MTManningAgentID.IsDetailKey && Empty(MTManningAgentID.FormValue)) {
+                    MTManningAgentID.AddErrorMessage(ConvertToString(MTManningAgentID.RequiredErrorMessage).Replace("%s", MTManningAgentID.Caption));
+                }
+            }
 
             // Return validate result
             validateForm = validateForm && !HasInvalidFields();
@@ -4131,9 +4167,6 @@ public partial class PCM {
 
             // Set new row
             Dictionary<string, object> rsnew = new ();
-
-            // IndividualCodeNumber
-            IndividualCodeNumber.SetDbValue(rsnew, IndividualCodeNumber.CurrentValue, IndividualCodeNumber.ReadOnly);
 
             // FullName
             FullName.SetDbValue(rsnew, FullName.CurrentValue, FullName.ReadOnly);
@@ -4354,6 +4387,9 @@ public partial class PCM {
 
             // NomineeMobileNumberCode_CountryID
             NomineeMobileNumberCode_CountryID.SetDbValue(rsnew, NomineeMobileNumberCode_CountryID.CurrentValue, NomineeMobileNumberCode_CountryID.ReadOnly);
+
+            // MTManningAgentID
+            MTManningAgentID.SetDbValue(rsnew, MTManningAgentID.CurrentValue, MTManningAgentID.ReadOnly);
 
             // Update current values
             SetCurrentValues(rsnew);

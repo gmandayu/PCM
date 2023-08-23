@@ -285,12 +285,6 @@ public partial class PCM {
             CreatedDateTime.SetVisibility();
             LastUpdatedByUserID.SetVisibility();
             LastUpdatedDateTime.SetVisibility();
-            PassportValidUntil.Visible = false;
-            PassportPlaceIssued.Visible = false;
-            PassportDateIssued.Visible = false;
-            PassportNumber.Visible = false;
-            FirstName.Visible = false;
-            LastName.Visible = false;
             MTUserID.Visible = false;
         }
 
@@ -1135,12 +1129,6 @@ public partial class PCM {
             filters.Merge(JObject.Parse(CreatedDateTime.AdvancedSearch.ToJson())); // Field CreatedDateTime
             filters.Merge(JObject.Parse(LastUpdatedByUserID.AdvancedSearch.ToJson())); // Field LastUpdatedByUserID
             filters.Merge(JObject.Parse(LastUpdatedDateTime.AdvancedSearch.ToJson())); // Field LastUpdatedDateTime
-            filters.Merge(JObject.Parse(PassportValidUntil.AdvancedSearch.ToJson())); // Field PassportValidUntil
-            filters.Merge(JObject.Parse(PassportPlaceIssued.AdvancedSearch.ToJson())); // Field PassportPlaceIssued
-            filters.Merge(JObject.Parse(PassportDateIssued.AdvancedSearch.ToJson())); // Field PassportDateIssued
-            filters.Merge(JObject.Parse(PassportNumber.AdvancedSearch.ToJson())); // Field PassportNumber
-            filters.Merge(JObject.Parse(FirstName.AdvancedSearch.ToJson())); // Field FirstName
-            filters.Merge(JObject.Parse(LastName.AdvancedSearch.ToJson())); // Field LastName
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1316,66 +1304,6 @@ public partial class PCM {
                 LastUpdatedDateTime.AdvancedSearch.SearchOperator2 = filter["w_LastUpdatedDateTime"];
                 LastUpdatedDateTime.AdvancedSearch.Save();
             }
-
-            // Field PassportValidUntil
-            if (filter?.TryGetValue("x_PassportValidUntil", out sv) ?? false) {
-                PassportValidUntil.AdvancedSearch.SearchValue = sv;
-                PassportValidUntil.AdvancedSearch.SearchOperator = filter["z_PassportValidUntil"];
-                PassportValidUntil.AdvancedSearch.SearchCondition = filter["v_PassportValidUntil"];
-                PassportValidUntil.AdvancedSearch.SearchValue2 = filter["y_PassportValidUntil"];
-                PassportValidUntil.AdvancedSearch.SearchOperator2 = filter["w_PassportValidUntil"];
-                PassportValidUntil.AdvancedSearch.Save();
-            }
-
-            // Field PassportPlaceIssued
-            if (filter?.TryGetValue("x_PassportPlaceIssued", out sv) ?? false) {
-                PassportPlaceIssued.AdvancedSearch.SearchValue = sv;
-                PassportPlaceIssued.AdvancedSearch.SearchOperator = filter["z_PassportPlaceIssued"];
-                PassportPlaceIssued.AdvancedSearch.SearchCondition = filter["v_PassportPlaceIssued"];
-                PassportPlaceIssued.AdvancedSearch.SearchValue2 = filter["y_PassportPlaceIssued"];
-                PassportPlaceIssued.AdvancedSearch.SearchOperator2 = filter["w_PassportPlaceIssued"];
-                PassportPlaceIssued.AdvancedSearch.Save();
-            }
-
-            // Field PassportDateIssued
-            if (filter?.TryGetValue("x_PassportDateIssued", out sv) ?? false) {
-                PassportDateIssued.AdvancedSearch.SearchValue = sv;
-                PassportDateIssued.AdvancedSearch.SearchOperator = filter["z_PassportDateIssued"];
-                PassportDateIssued.AdvancedSearch.SearchCondition = filter["v_PassportDateIssued"];
-                PassportDateIssued.AdvancedSearch.SearchValue2 = filter["y_PassportDateIssued"];
-                PassportDateIssued.AdvancedSearch.SearchOperator2 = filter["w_PassportDateIssued"];
-                PassportDateIssued.AdvancedSearch.Save();
-            }
-
-            // Field PassportNumber
-            if (filter?.TryGetValue("x_PassportNumber", out sv) ?? false) {
-                PassportNumber.AdvancedSearch.SearchValue = sv;
-                PassportNumber.AdvancedSearch.SearchOperator = filter["z_PassportNumber"];
-                PassportNumber.AdvancedSearch.SearchCondition = filter["v_PassportNumber"];
-                PassportNumber.AdvancedSearch.SearchValue2 = filter["y_PassportNumber"];
-                PassportNumber.AdvancedSearch.SearchOperator2 = filter["w_PassportNumber"];
-                PassportNumber.AdvancedSearch.Save();
-            }
-
-            // Field FirstName
-            if (filter?.TryGetValue("x_FirstName", out sv) ?? false) {
-                FirstName.AdvancedSearch.SearchValue = sv;
-                FirstName.AdvancedSearch.SearchOperator = filter["z_FirstName"];
-                FirstName.AdvancedSearch.SearchCondition = filter["v_FirstName"];
-                FirstName.AdvancedSearch.SearchValue2 = filter["y_FirstName"];
-                FirstName.AdvancedSearch.SearchOperator2 = filter["w_FirstName"];
-                FirstName.AdvancedSearch.Save();
-            }
-
-            // Field LastName
-            if (filter?.TryGetValue("x_LastName", out sv) ?? false) {
-                LastName.AdvancedSearch.SearchValue = sv;
-                LastName.AdvancedSearch.SearchOperator = filter["z_LastName"];
-                LastName.AdvancedSearch.SearchCondition = filter["v_LastName"];
-                LastName.AdvancedSearch.SearchValue2 = filter["y_LastName"];
-                LastName.AdvancedSearch.SearchOperator2 = filter["w_LastName"];
-                LastName.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1403,12 +1331,6 @@ public partial class PCM {
             BuildSearchSql(ref where, CreatedDateTime, def, true); // CreatedDateTime
             BuildSearchSql(ref where, LastUpdatedByUserID, def, true); // LastUpdatedByUserID
             BuildSearchSql(ref where, LastUpdatedDateTime, def, true); // LastUpdatedDateTime
-            BuildSearchSql(ref where, PassportValidUntil, def, true); // PassportValidUntil
-            BuildSearchSql(ref where, PassportPlaceIssued, def, true); // PassportPlaceIssued
-            BuildSearchSql(ref where, PassportDateIssued, def, true); // PassportDateIssued
-            BuildSearchSql(ref where, PassportNumber, def, true); // PassportNumber
-            BuildSearchSql(ref where, FirstName, def, true); // FirstName
-            BuildSearchSql(ref where, LastName, def, true); // LastName
 
             // Set up search command
             if (!def && !Empty(where) && (new[] { "", "reset", "resetall" }).Contains(Command))
@@ -1429,12 +1351,6 @@ public partial class PCM {
                 CreatedDateTime.AdvancedSearch.Save(); // CreatedDateTime
                 LastUpdatedByUserID.AdvancedSearch.Save(); // LastUpdatedByUserID
                 LastUpdatedDateTime.AdvancedSearch.Save(); // LastUpdatedDateTime
-                PassportValidUntil.AdvancedSearch.Save(); // PassportValidUntil
-                PassportPlaceIssued.AdvancedSearch.Save(); // PassportPlaceIssued
-                PassportDateIssued.AdvancedSearch.Save(); // PassportDateIssued
-                PassportNumber.AdvancedSearch.Save(); // PassportNumber
-                FirstName.AdvancedSearch.Save(); // FirstName
-                LastName.AdvancedSearch.Save(); // LastName
 
                 // Clear rules for QueryBuilder
                 SessionRules = "";
@@ -1709,10 +1625,6 @@ public partial class PCM {
             searchFlds.Add(SocialSecurityNumber);
             searchFlds.Add(FamilyRegisterNumber);
             searchFlds.Add(Address);
-            searchFlds.Add(PassportPlaceIssued);
-            searchFlds.Add(PassportNumber);
-            searchFlds.Add(FirstName);
-            searchFlds.Add(LastName);
             string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
             string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
 
@@ -1768,18 +1680,6 @@ public partial class PCM {
                 return true;
             if (LastUpdatedDateTime.AdvancedSearch.IssetSession)
                 return true;
-            if (PassportValidUntil.AdvancedSearch.IssetSession)
-                return true;
-            if (PassportPlaceIssued.AdvancedSearch.IssetSession)
-                return true;
-            if (PassportDateIssued.AdvancedSearch.IssetSession)
-                return true;
-            if (PassportNumber.AdvancedSearch.IssetSession)
-                return true;
-            if (FirstName.AdvancedSearch.IssetSession)
-                return true;
-            if (LastName.AdvancedSearch.IssetSession)
-                return true;
             return false;
         }
 
@@ -1825,12 +1725,6 @@ public partial class PCM {
             CreatedDateTime.AdvancedSearch.UnsetSession();
             LastUpdatedByUserID.AdvancedSearch.UnsetSession();
             LastUpdatedDateTime.AdvancedSearch.UnsetSession();
-            PassportValidUntil.AdvancedSearch.UnsetSession();
-            PassportPlaceIssued.AdvancedSearch.UnsetSession();
-            PassportDateIssued.AdvancedSearch.UnsetSession();
-            PassportNumber.AdvancedSearch.UnsetSession();
-            FirstName.AdvancedSearch.UnsetSession();
-            LastName.AdvancedSearch.UnsetSession();
         }
 
         // Restore all search parameters
@@ -1856,12 +1750,6 @@ public partial class PCM {
             CreatedDateTime.AdvancedSearch.Load();
             LastUpdatedByUserID.AdvancedSearch.Load();
             LastUpdatedDateTime.AdvancedSearch.Load();
-            PassportValidUntil.AdvancedSearch.Load();
-            PassportPlaceIssued.AdvancedSearch.Load();
-            PassportDateIssued.AdvancedSearch.Load();
-            PassportNumber.AdvancedSearch.Load();
-            FirstName.AdvancedSearch.Load();
-            LastName.AdvancedSearch.Load();
         }
 
         // Set up sort parameters
@@ -1944,12 +1832,6 @@ public partial class PCM {
                     CreatedDateTime.Sort = "";
                     LastUpdatedByUserID.Sort = "";
                     LastUpdatedDateTime.Sort = "";
-                    PassportValidUntil.Sort = "";
-                    PassportPlaceIssued.Sort = "";
-                    PassportDateIssued.Sort = "";
-                    PassportNumber.Sort = "";
-                    FirstName.Sort = "";
-                    LastName.Sort = "";
                     MTUserID.Sort = "";
                 }
 
@@ -2568,72 +2450,6 @@ public partial class PCM {
                 Command = "search";
             if (Query.ContainsKey("z_LastUpdatedDateTime"))
                 LastUpdatedDateTime.AdvancedSearch.SearchOperator = Get("z_LastUpdatedDateTime");
-
-            // PassportValidUntil
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_PassportValidUntil[]"))
-                    PassportValidUntil.AdvancedSearch.SearchValue = Get("x_PassportValidUntil[]");
-                else
-                    PassportValidUntil.AdvancedSearch.SearchValue = Get("PassportValidUntil"); // Default Value // DN
-            if (!Empty(PassportValidUntil.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_PassportValidUntil"))
-                PassportValidUntil.AdvancedSearch.SearchOperator = Get("z_PassportValidUntil");
-
-            // PassportPlaceIssued
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_PassportPlaceIssued[]"))
-                    PassportPlaceIssued.AdvancedSearch.SearchValue = Get("x_PassportPlaceIssued[]");
-                else
-                    PassportPlaceIssued.AdvancedSearch.SearchValue = Get("PassportPlaceIssued"); // Default Value // DN
-            if (!Empty(PassportPlaceIssued.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_PassportPlaceIssued"))
-                PassportPlaceIssued.AdvancedSearch.SearchOperator = Get("z_PassportPlaceIssued");
-
-            // PassportDateIssued
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_PassportDateIssued[]"))
-                    PassportDateIssued.AdvancedSearch.SearchValue = Get("x_PassportDateIssued[]");
-                else
-                    PassportDateIssued.AdvancedSearch.SearchValue = Get("PassportDateIssued"); // Default Value // DN
-            if (!Empty(PassportDateIssued.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_PassportDateIssued"))
-                PassportDateIssued.AdvancedSearch.SearchOperator = Get("z_PassportDateIssued");
-
-            // PassportNumber
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_PassportNumber[]"))
-                    PassportNumber.AdvancedSearch.SearchValue = Get("x_PassportNumber[]");
-                else
-                    PassportNumber.AdvancedSearch.SearchValue = Get("PassportNumber"); // Default Value // DN
-            if (!Empty(PassportNumber.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_PassportNumber"))
-                PassportNumber.AdvancedSearch.SearchOperator = Get("z_PassportNumber");
-
-            // FirstName
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_FirstName[]"))
-                    FirstName.AdvancedSearch.SearchValue = Get("x_FirstName[]");
-                else
-                    FirstName.AdvancedSearch.SearchValue = Get("FirstName"); // Default Value // DN
-            if (!Empty(FirstName.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_FirstName"))
-                FirstName.AdvancedSearch.SearchOperator = Get("z_FirstName");
-
-            // LastName
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_LastName[]"))
-                    LastName.AdvancedSearch.SearchValue = Get("x_LastName[]");
-                else
-                    LastName.AdvancedSearch.SearchValue = Get("LastName"); // Default Value // DN
-            if (!Empty(LastName.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_LastName"))
-                LastName.AdvancedSearch.SearchOperator = Get("z_LastName");
         }
 
         // Load recordset // DN
@@ -2718,12 +2534,6 @@ public partial class PCM {
             CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
             LastUpdatedByUserID.SetDbValue(row["LastUpdatedByUserID"]);
             LastUpdatedDateTime.SetDbValue(row["LastUpdatedDateTime"]);
-            PassportValidUntil.SetDbValue(row["PassportValidUntil"]);
-            PassportPlaceIssued.SetDbValue(row["PassportPlaceIssued"]);
-            PassportDateIssued.SetDbValue(row["PassportDateIssued"]);
-            PassportNumber.SetDbValue(row["PassportNumber"]);
-            FirstName.SetDbValue(row["FirstName"]);
-            LastName.SetDbValue(row["LastName"]);
             MTUserID.SetDbValue(row["MTUserID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
@@ -2748,12 +2558,6 @@ public partial class PCM {
             row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedByUserID", LastUpdatedByUserID.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedDateTime", LastUpdatedDateTime.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportValidUntil", PassportValidUntil.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportPlaceIssued", PassportPlaceIssued.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportDateIssued", PassportDateIssued.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportNumber", PassportNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("FirstName", FirstName.DefaultValue ?? DbNullValue); // DN
-            row.Add("LastName", LastName.DefaultValue ?? DbNullValue); // DN
             row.Add("MTUserID", MTUserID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
@@ -2831,24 +2635,6 @@ public partial class PCM {
 
             // LastUpdatedDateTime
             LastUpdatedDateTime.CellCssStyle = "white-space: nowrap;";
-
-            // PassportValidUntil
-            PassportValidUntil.CellCssStyle = "white-space: nowrap;";
-
-            // PassportPlaceIssued
-            PassportPlaceIssued.CellCssStyle = "white-space: nowrap;";
-
-            // PassportDateIssued
-            PassportDateIssued.CellCssStyle = "white-space: nowrap;";
-
-            // PassportNumber
-            PassportNumber.CellCssStyle = "white-space: nowrap;";
-
-            // FirstName
-            FirstName.CellCssStyle = "white-space: nowrap;";
-
-            // LastName
-            LastName.CellCssStyle = "white-space: nowrap;";
 
             // MTUserID
             MTUserID.CellCssStyle = "white-space: nowrap;";
@@ -2977,32 +2763,6 @@ public partial class PCM {
                 LastUpdatedDateTime.ViewValue = LastUpdatedDateTime.CurrentValue;
                 LastUpdatedDateTime.ViewValue = FormatDateTime(LastUpdatedDateTime.ViewValue, LastUpdatedDateTime.FormatPattern);
                 LastUpdatedDateTime.ViewCustomAttributes = "";
-
-                // PassportValidUntil
-                PassportValidUntil.ViewValue = PassportValidUntil.CurrentValue;
-                PassportValidUntil.ViewValue = FormatDateTime(PassportValidUntil.ViewValue, PassportValidUntil.FormatPattern);
-                PassportValidUntil.ViewCustomAttributes = "";
-
-                // PassportPlaceIssued
-                PassportPlaceIssued.ViewValue = ConvertToString(PassportPlaceIssued.CurrentValue); // DN
-                PassportPlaceIssued.ViewCustomAttributes = "";
-
-                // PassportDateIssued
-                PassportDateIssued.ViewValue = PassportDateIssued.CurrentValue;
-                PassportDateIssued.ViewValue = FormatDateTime(PassportDateIssued.ViewValue, PassportDateIssued.FormatPattern);
-                PassportDateIssued.ViewCustomAttributes = "";
-
-                // PassportNumber
-                PassportNumber.ViewValue = ConvertToString(PassportNumber.CurrentValue); // DN
-                PassportNumber.ViewCustomAttributes = "";
-
-                // FirstName
-                FirstName.ViewValue = ConvertToString(FirstName.CurrentValue); // DN
-                FirstName.ViewCustomAttributes = "";
-
-                // LastName
-                LastName.ViewValue = ConvertToString(LastName.CurrentValue); // DN
-                LastName.ViewCustomAttributes = "";
 
                 // MTCrewID
                 MTCrewID.HrefValue = "";
@@ -3193,12 +2953,6 @@ public partial class PCM {
             CreatedDateTime.AdvancedSearch.Load();
             LastUpdatedByUserID.AdvancedSearch.Load();
             LastUpdatedDateTime.AdvancedSearch.Load();
-            PassportValidUntil.AdvancedSearch.Load();
-            PassportPlaceIssued.AdvancedSearch.Load();
-            PassportDateIssued.AdvancedSearch.Load();
-            PassportNumber.AdvancedSearch.Load();
-            FirstName.AdvancedSearch.Load();
-            LastName.AdvancedSearch.Load();
         }
 
         // Get export HTML tag

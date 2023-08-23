@@ -1,0 +1,71 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (pageNotFound.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!pageNotFound.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@pageNotFound.ShowMessages()
+<div class="pnf-container">
+    <h2 class="pnf-h2">404</h2>
+    <h3 class="pnf-h3">@(CurrentLanguage == "en-US" ? "Page Not Found" : "Halaman Tidak Ditemukan")</h3>
+    <p class="pnf-p">@(CurrentLanguage == "en-US" ? "The page you are looking for does not exist." : "Halaman yang anda cari tidak ditemukan.")</p>
+    <p class="pnf-p">@(CurrentLanguage == "en-US" ? "Please check the URL or" : "Silakan periksa URL atau") <a id="homeLink" href="#">@(CurrentLanguage == "en-US" ? "click here" : "klik disini")</a> @(CurrentLanguage == "en-US" ? "to redirect to the previous page." : "untuk beralih ke halaman sebelumnya.")</p>
+    <!-- <p class="pnf-p">Please check the URL or <a id="homeLink" href="#">click here</a> to redirect to the homepage.</p> -->
+    <p class="pnf-p">@(CurrentLanguage == "en-US" ? "Possible reasons why you see this error:" : "Alasan mungkin mengapa Anda melihat kesalahan ini:")</p>
+    <p class="pnf-p" id="reasons"></p>
+    <!-- <ul class="pnf-reasons" id="reasons"></ul> -->
+</div>
+
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const reasons = urlParams.get('reasons');
+
+    const decodedReasons = decodeURIComponent(reasons);
+
+    const reasonArray = decodedReasons.split("; ");
+    const reasonsList = document.createElement("ul");
+    reasonArray.forEach(reason => {
+        const li = document.createElement("li");
+        li.textContent = reason;
+        reasonsList.appendChild(li);
+    });
+
+    document.getElementById('reasons').appendChild(reasonsList);
+
+    function hideElement() {
+        var elementOne = document.getElementById('ew-breadcrumb1');
+        var elementTwo = document.getElementById('ew-breadcrumb2');
+
+        if(elementOne && elementTwo) {
+            elementOne.style.display = 'none';
+            elementTwo.style.display = 'none';
+        }
+    }
+    window.addEventListener('load', hideElement);
+
+    document.getElementById('homeLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        history.back();
+    });
+</script>
+@Html.Raw(GetDebugMessage())

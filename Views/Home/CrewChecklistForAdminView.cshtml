@@ -1774,7 +1774,7 @@ loadjs.ready(["wrapper", "head"], function () {
                                     type="password"
                                     name="x_Password"
                                     id="x_Password"
-                                    placeholder=@(CurrentLanguage == "en-US" ? "Password" : "Kata Sandi")
+                                    placeholder="@(CurrentLanguage == "en-US" ? "Password" : "Kata Sandi")"
                                     class="form-control"
                                     maxlength="50"
                                 />
@@ -1791,6 +1791,17 @@ loadjs.ready(["wrapper", "head"], function () {
                 <button class="btn btn-default ew-btn" id="btn-cancel-approve-form" type="button" data-bs-dismiss="modal">
                     @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loading-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="text-center mb-0">
+                    @(CurrentLanguage == "en-US" ? "Processing..." : "Sedang memproses...")
+                </p>
             </div>
         </div>
     </div>
@@ -1965,6 +1976,8 @@ loadjs.ready("load", function() {
                                             }
                                             return;
                                         }
+                                        $('#approve-modal-dialog').modal('hide');
+                                        $('#loading-modal-dialog').modal('show');
                                         const approveChecklistRequest = {
                                             password: passwordValue,
                                             userLevel: userLevelName,
@@ -1977,7 +1990,6 @@ loadjs.ready("load", function() {
                                             contentType: "application/json",
                                             success: function(response) {
                                                 if (response.success) {
-                                                    $('#approve-modal-dialog').modal('hide');
                                                     let successMessage = '';
                                                     if (selectedLanguage.id === 'en-US') {
                                                         successMessage = `Approve Crew Candidate Successful`;
@@ -1990,15 +2002,16 @@ loadjs.ready("load", function() {
                                                     const params = new URLSearchParams(targetUrl.search);
                                                     params.set('successMessage', encodedSuccessMessage);
                                                     targetUrl.search = params.toString();
+                                                    $('#loading-modal-dialog').modal('hide');
                                                     window.location.href = targetUrl.href;
                                                 } else {
-                                                    $('#approve-modal-dialog').modal('hide');
+                                                    $('#loading-modal-dialog').modal('hide');
                                                     const errorMessage = response.errorMessage;
                                                     ew.showToast(errorMessage);
                                                 }
                                             },
                                             error: function(xhr, textStatus, errorThrown) {
-                                                $('#approve-modal-dialog').modal('hide');
+                                                $('#loading-modal-dialog').modal('hide');
                                                 ew.showToast(errorThrown);
                                             }
                                         });
@@ -2066,8 +2079,10 @@ loadjs.ready("load", function() {
                                         // Format timezone offset as needed
                                         function formatTimezoneOffset(offset) {
                                             const hours = Math.floor(Math.abs(offset) / 60);
+                                            const minutes = Math.abs(offset) % 60;
                                             const sign = offset < 0 ? '+' : '-';
-                                            return ' GMT ' + sign + hours;
+                                            const formattedOffset = sign + addLeadingZero(hours) + ':' + addLeadingZero(minutes);
+                                            return ' GMT ' + formattedOffset;
                                         }
 
                                         // Helper function to add leading zero to single-digit numbers
@@ -2079,6 +2094,49 @@ loadjs.ready("load", function() {
                                         function replaceTimezoneOffset(str, offset) {
                                             return str.replace('zzz', offset);
                                         }
+                                        function validateDateTime(dateTimeString) {
+                                            const errorMessage = (selectedLanguage.id === 'en-US') ? `Incorrect date (dd MMM yyyy HH:mm:ss GMT +/-HH:mm)` : `Tanggal tidak benar (dd MMM yyyy HH:mm:ss GMT +/-HH:mm)`;
+                                            const dateTimeRegex = /^\d{1,2} [A-Za-z]{3} \d{4} \d{1,2}:\d{2}:\d{2} GMT [+-]\d{1,2}:\d{2}$/;
+                                            if (!dateTimeRegex.test(dateTimeString)) {
+                                                ew.showToast(errorMessage);
+                                                return false;
+                                            }
+                                            const dateTimeParts = dateTimeString.split(' ');
+                                            const day = parseInt(dateTimeParts[0], 10);
+                                            const monthNamesEnglish = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            const monthNamesIndonesian = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                                            const month = (selectedLanguage.id === 'en-US') ? monthNamesEnglish.indexOf(dateTimeParts[1]) : monthNamesIndonesian.indexOf(dateTimeParts[1]);
+                                            const year = parseInt(dateTimeParts[2], 10);
+                                            let valid = false;
+                                            if (year >= 1900 && year <= 9999 && month >= 0 && day >= 1 && day <= 31) {
+                                                if (month === 1) {
+                                                    valid = day <= (((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 29 : 28);
+                                                } else if (month === 3 || month === 5 || month === 8 || month === 10) {
+                                                    valid = day <= 30;
+                                                } else {
+                                                    valid = true;
+                                                }
+                                            }
+                                            const timeParts = dateTimeParts[3].split(':');
+                                            const hour = parseInt(timeParts[0], 10);
+                                            const minute = parseInt(timeParts[1], 10);
+                                            const second = parseInt(timeParts[2], 10);
+                                            if (valid) {
+                                                valid = (hour >= 0) && (hour <= 23) && (minute >= 0) && (minute <= 59) && (second >= 0) && (second <= 59);
+                                                if (valid) {
+                                                    const timeOffsetWithSign = dateTimeParts[5];
+                                                    const timeOffset = timeOffsetWithSign.substring(1);
+                                                    const timeOffsetParts = timeOffset.split(':');
+                                                    const timeOffsetHour = parseInt(timeOffsetParts[0], 10);
+                                                    const timeOffsetMinute = parseInt(timeOffsetParts[1], 10);
+                                                    valid = (timeOffsetHour >= 0) && (timeOffsetHour <= 23) && (timeOffsetMinute >= 0) && (timeOffsetMinute <= 59);
+                                                }
+                                            }
+                                            if (!valid) {
+                                                ew.showToast(errorMessage);
+                                            }
+                                            return valid;
+                                        }
                                         $('#invite-modal-dialog').on('hidden.bs.modal', function() {
                                             // $('#x_InviteDateTime').val(null);
                                             // $('#x_InviteNotes').val(null);
@@ -2086,14 +2144,8 @@ loadjs.ready("load", function() {
                                         const inviteCrewUrl = "invite-crew";
                                         $("#btn-add-invite-datetime").click(function() {
                                             const inviteDateTimeValue = $('#x_InviteDateTime').val();
-                                            const inviteDateTimeFormattedValue = inviteDateTimeValue.replace(/\sGMT ([+\-]\d+)/g, function(match, offset) {
-                                                const hours = parseInt(offset);
-                                                const sign = hours >= 0 ? '+' : '-';
-                                                const formattedOffset = sign + Math.abs(hours).toString().padStart(2, '0') + ':00';
-                                                return formattedOffset;
-                                            });
                                             const inviteDateTimeCaption = $(`label[for="x_InviteDateTime"]`).text();
-                                            if (inviteDateTimeFormattedValue == '') {
+                                            if (inviteDateTimeValue == '') {
                                                 if (selectedLanguage.id === 'en-US') {
                                                     ew.showToast(`Please enter required field - ${inviteDateTimeCaption}`);
                                                 } else {
@@ -2101,27 +2153,14 @@ loadjs.ready("load", function() {
                                                 }
                                                 return;
                                             }
-                                            const currentDate = new Date();
-                                            const inviteDateObject = new Date(inviteDateTimeFormattedValue);
-                                            if (isNaN(inviteDateObject)) {
-                                                if (selectedLanguage.id === 'en-US') {
-                                                    ew.showToast(`Invalid date time - ${inviteDateTimeCaption}`);
-                                                } else {
-                                                    ew.showToast(`Tanggal dan jam tidak valid - ${inviteDateTimeCaption}`);
-                                                }
-                                                return;
-                                            } 
-                                            if (inviteDateObject < currentDate) {
-                                                if (selectedLanguage.id === 'en-US') {
-                                                    ew.showToast(`${inviteDateTimeCaption} must be later or equal than today`);
-                                                } else {
-                                                    ew.showToast(`${inviteDateTimeCaption} harus setelah atau sama dengan hari ini`);
-                                                }
+                                            if (!validateDateTime(inviteDateTimeValue)) {
                                                 return;
                                             }
+                                            $('#invite-modal-dialog').modal('hide');
+                                            $('#loading-modal-dialog').modal('show');
                                             const inviteNotesValue = ($('#x_InviteNotes').val() !== '') ? $('#x_InviteNotes').val() : '';
                                             const inviteCrewRequest = {
-                                                inviteDateTime: inviteDateTimeFormattedValue,
+                                                inviteDateTime: inviteDateTimeValue.replace(' GMT ', ''),
                                                 notes: inviteNotesValue,
                                                 crewID: parseInt(crewData.ID),
                                             };
@@ -2132,7 +2171,6 @@ loadjs.ready("load", function() {
                                                 contentType: "application/json",
                                                 success: function(response) {
                                                     if (response.success) {
-                                                        $('#invite-modal-dialog').modal('hide');
                                                         let successMessage = '';
                                                         if (selectedLanguage.id === 'en-US') {
                                                             successMessage = `Invite Crew Successful`;
@@ -2145,15 +2183,16 @@ loadjs.ready("load", function() {
                                                         const params = new URLSearchParams(targetUrl.search);
                                                         params.set('successMessage', encodedSuccessMessage);
                                                         targetUrl.search = params.toString();
+                                                        $('#loading-modal-dialog').modal('hide');
                                                         window.location.href = targetUrl.href;
                                                     } else {
-                                                        $('#invite-modal-dialog').modal('hide');
+                                                        $('#loading-modal-dialog').modal('hide');
                                                         const errorMessage = response.errorMessage;
                                                         ew.showToast(errorMessage);
                                                     }
                                                 },
                                                 error: function(xhr, textStatus, errorThrown) {
-                                                    $('#invite-modal-dialog').modal('hide');
+                                                    $('#loading-modal-dialog').modal('hide');
                                                     ew.showToast(errorThrown);
                                                 }
                                             });
@@ -2191,6 +2230,11 @@ loadjs.ready("load", function() {
                                         const buttonsDiv = $("<div class='row ew-buttons mt-3'></div>");
                                         buttonsDiv.append(flexDiv);
                                         $('form#fCrewChecklistForAdminview').append(buttonsDiv);
+                                        if ($('#x_CrewingManagerApproval_0')[0].checked) {
+                                            $("#btn-invoke-reject-modal").prop("disabled", true);
+                                        } else {
+                                            $("#btn-invoke-reject-modal").prop("disabled", false);
+                                        }
                                         ew.createDateTimePicker("add-mcu-schedule", "x_MCUScheduleDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
                                         $('#x_MCUScheduleDateTime').val(replaceTimezoneOffset($('#x_MCUScheduleDateTime').val(), formatTimezoneOffset(new Date().getTimezoneOffset())));
 
@@ -2221,14 +2265,8 @@ loadjs.ready("load", function() {
                                         const addMCUScheduleApiUrl = "add-mcu-schedule";
                                         $("#btn-add-mcu-schedule").click(function() {
                                             const mcuScheduleDateTimeValue = $('#x_MCUScheduleDateTime').val();
-                                            const mcuScheduleDateTimeFormattedValue = mcuScheduleDateTimeValue.replace(/\sGMT ([+\-]\d+)/g, function(match, offset) {
-                                                const hours = parseInt(offset);
-                                                const sign = hours >= 0 ? '+' : '-';
-                                                const formattedOffset = sign + Math.abs(hours).toString().padStart(2, '0') + ':00';
-                                                return formattedOffset;
-                                            });
                                             const mcuScheduleDateTimeCaption = $(`label[for="x_MCUScheduleDateTime"]`).text();
-                                            if (mcuScheduleDateTimeFormattedValue == '') {
+                                            if (mcuScheduleDateTimeValue == '') {
                                                 if (selectedLanguage.id === 'en-US') {
                                                     ew.showToast(`Please enter required field - ${mcuScheduleDateTimeCaption}`);
                                                 } else {
@@ -2236,22 +2274,7 @@ loadjs.ready("load", function() {
                                                 }
                                                 return;
                                             }
-                                            const currentDate = new Date();
-                                            const mcuScheduleDateObject = new Date(mcuScheduleDateTimeFormattedValue);
-                                            if (isNaN(mcuScheduleDateObject)) {
-                                                if (selectedLanguage.id === 'en-US') {
-                                                    ew.showToast(`Invalid date time - ${mcuScheduleDateTimeCaption}`);
-                                                } else {
-                                                    ew.showToast(`Tanggal dan jam tidak valid - ${mcuScheduleDateTimeCaption}`);
-                                                }
-                                                return;
-                                            } 
-                                            if (mcuScheduleDateObject < currentDate) {
-                                                if (selectedLanguage.id === 'en-US') {
-                                                    ew.showToast(`${mcuScheduleDateTimeCaption} must be later or equal than today`);
-                                                } else {
-                                                    ew.showToast(`${mcuScheduleDateTimeCaption} harus setelah atau sama dengan hari ini`);
-                                                }
+                                            if (!validateDateTime(mcuScheduleDateTimeValue)) {
                                                 return;
                                             }
                                             const mcuLocationValue = $('#x_MCULocation').val();
@@ -2264,8 +2287,10 @@ loadjs.ready("load", function() {
                                                 }
                                                 return;
                                             }
+                                            $('#mcu-modal-dialog').modal('hide');
+                                            $('#loading-modal-dialog').modal('show');
                                             const mcuScheduleRequest = {
-                                                mcuScheduleDateTime: mcuScheduleDateTimeFormattedValue,
+                                                mcuScheduleDateTime: mcuScheduleDateTimeValue.replace(' GMT ', ''),
                                                 mcuLocation: mcuLocationValue,
                                                 crewID: parseInt(crewData.ID),
                                             };
@@ -2276,7 +2301,6 @@ loadjs.ready("load", function() {
                                                 contentType: "application/json",
                                                 success: function(response) {
                                                     if (response.success) {
-                                                        $('#mcu-modal-dialog').modal('hide');
                                                         let successMessage = '';
                                                         if (selectedLanguage.id === 'en-US') {
                                                             successMessage = `Add MCU Schedule Successful`;
@@ -2289,15 +2313,16 @@ loadjs.ready("load", function() {
                                                         const params = new URLSearchParams(targetUrl.search);
                                                         params.set('successMessage', encodedSuccessMessage);
                                                         targetUrl.search = params.toString();
+                                                        $('#loading-modal-dialog').modal('hide');
                                                         window.location.href = targetUrl.href;
                                                     } else {
-                                                        $('#mcu-modal-dialog').modal('hide');
+                                                        $('#loading-modal-dialog').modal('hide');
                                                         const errorMessage = response.errorMessage;
                                                         ew.showToast(errorMessage);
                                                     }
                                                 },
                                                 error: function(xhr, textStatus, errorThrown) {
-                                                    $('#mcu-modal-dialog').modal('hide');
+                                                    $('#loading-modal-dialog').modal('hide');
                                                     ew.showToast(errorThrown);
                                                 }
                                             });
@@ -2313,6 +2338,8 @@ loadjs.ready("load", function() {
                                                     ew.showToast(`Masukkan input yang dibutuhkan - ${rejectedReasonCaption}`);
                                                 }
                                             } else {
+                                                $('#reject-modal-dialog').modal('hide');
+                                                $('#loading-modal-dialog').modal('show');
                                                 const rejectSingleRequest = {
                                                     rejectReason: rejectedReasonValue,
                                                     crewID: parseInt(crewData.ID),
@@ -2324,7 +2351,6 @@ loadjs.ready("load", function() {
                                                     contentType: "application/json",
                                                     success: function(response) {
                                                         if (response.success) {
-                                                            $('#reject-modal-dialog').modal('hide');
                                                             let successMessage = '';
                                                             if (selectedLanguage.id === 'en-US') {
                                                                 successMessage = `Add ${rejectedReasonCaption} Successful`;
@@ -2337,15 +2363,16 @@ loadjs.ready("load", function() {
                                                             const params = new URLSearchParams(targetUrl.search);
                                                             params.set('successMessage', encodedSuccessMessage);
                                                             targetUrl.search = params.toString();
+                                                            $('#loading-modal-dialog').modal('hide');
                                                             window.location.href = targetUrl.href;
                                                         } else {
-                                                            $('#reject-modal-dialog').modal('hide');
+                                                            $('#loading-modal-dialog').modal('hide');
                                                             const errorMessage = response.errorMessage;
                                                             ew.showToast(errorMessage);
                                                         }
                                                     },
                                                     error: function(xhr, textStatus, errorThrown) {
-                                                        $('#reject-modal-dialog').modal('hide');
+                                                        $('#loading-modal-dialog').modal('hide');
                                                         ew.showToast(errorThrown);
                                                     }
                                                 });

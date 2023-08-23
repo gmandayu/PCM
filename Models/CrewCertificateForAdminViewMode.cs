@@ -428,7 +428,6 @@ public partial class PCM {
                 ViewTag = "IMAGE",
                 HtmlTag = "FILE",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 ImageResize = true,
                 UploadAllowedFileExtensions = "jpg,jpeg,png,pdf",
@@ -2361,6 +2360,7 @@ public partial class PCM {
                 {
                     string crewIndividualCodeNumber = crewQueryResult.IndividualCodeNumber;
                     Image.UploadPath = "uploads/" + crewIndividualCodeNumber;
+                    Image.OldUploadPath = "uploads/" + crewIndividualCodeNumber;
                     string imageFileName = rsnew["Image"].ToString();
                     string imageFileExtension = System.IO.Path.GetExtension(imageFileName);
                     dynamic certificateQueryResult = QueryBuilder("MTCertificate").Where("ID", rsnew["MTCertificateID"].ToString()).Select("Name").FirstOrDefault();
@@ -2391,9 +2391,16 @@ public partial class PCM {
         public bool RowDeleting(Dictionary<string, object> rs) {
             // Enter your code here
             // To cancel, set return value to False and error message to CancelMessage
+            int mtCrewID = Convert.ToInt32(rs["MTCrewID"]);
+            object individualCodeNumberObject = ExecuteScalar("SELECT IndividualCodeNumber FROM MTCrew WHERE ID = " + mtCrewID + ";");
+            if ((object) individualCodeNumberObject != null)
+            {
+                string individualCodeNumber = individualCodeNumberObject.ToString();
+                Image.UploadPath = "uploads/" + individualCodeNumber;
+                Image.OldUploadPath = "uploads/" + individualCodeNumber;
+            }
             return true;
         }
-
         // Row Deleted event
         public void RowDeleted(Dictionary<string, object> rs) {
             //Log("Row Deleted");

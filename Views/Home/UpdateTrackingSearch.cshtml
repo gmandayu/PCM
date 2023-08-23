@@ -1,0 +1,324 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (updateTrackingSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!updateTrackingSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(updateTrackingSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { UpdateTracking: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fUpdateTrackingsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fUpdateTrackingsearch")
+        .setPageId("search")
+@if (updateTrackingSearch.IsModal && updateTrackingSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["ID", [ew.Validators.integer], fields.ID.isInvalid],
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["ColumnName", [], fields.ColumnName.isInvalid],
+            ["ChangeType", [], fields.ChangeType.isInvalid],
+            ["TabName", [], fields.TabName.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+@if (updateTrackingSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@updateTrackingSearch.ShowPageHeader()
+@updateTrackingSearch.ShowMessages()
+<form name="fUpdateTrackingsearch" id="fUpdateTrackingsearch" class="@(updateTrackingSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (updateTrackingSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (updateTrackingSearch.ID.Visible) { // updateTrackingSearch.ID.Visible (begin)
+    <div id="r_ID" class="row" @Html.Raw(updateTrackingSearch.ID.RowAttributes)>
+        <label for="x_ID" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_ID">@Html.Raw(updateTrackingSearch.ID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_ID" id="z_ID" value="=">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.ID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_ID" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.ID.InputTextType)" name="x_ID" id="x_ID" data-table="UpdateTracking" data-field="x_ID" value="@Html.Raw(updateTrackingSearch.ID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.ID.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.ID.FormatPattern)"@Html.Raw(updateTrackingSearch.ID.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.ID.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.ID.Visible (end) *@
+@if (updateTrackingSearch.IndividualCodeNumber.Visible) { // updateTrackingSearch.IndividualCodeNumber.Visible (begin)
+    <div id="r_IndividualCodeNumber" class="row" @Html.Raw(updateTrackingSearch.IndividualCodeNumber.RowAttributes)>
+        <label for="x_IndividualCodeNumber" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_IndividualCodeNumber">@Html.Raw(updateTrackingSearch.IndividualCodeNumber.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.IndividualCodeNumber.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_IndividualCodeNumber" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="UpdateTracking" data-field="x_IndividualCodeNumber" value="@Html.Raw(updateTrackingSearch.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.IndividualCodeNumber.FormatPattern)"@Html.Raw(updateTrackingSearch.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.IndividualCodeNumber.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.IndividualCodeNumber.Visible (end) *@
+@if (updateTrackingSearch.FullName.Visible) { // updateTrackingSearch.FullName.Visible (begin)
+    <div id="r_FullName" class="row" @Html.Raw(updateTrackingSearch.FullName.RowAttributes)>
+        <label for="x_FullName" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_FullName">@Html.Raw(updateTrackingSearch.FullName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.FullName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_FullName" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="UpdateTracking" data-field="x_FullName" value="@Html.Raw(updateTrackingSearch.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.FullName.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.FullName.FormatPattern)"@Html.Raw(updateTrackingSearch.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.FullName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.FullName.Visible (end) *@
+@if (updateTrackingSearch.EmployeeStatus.Visible) { // updateTrackingSearch.EmployeeStatus.Visible (begin)
+    <div id="r_EmployeeStatus" class="row" @Html.Raw(updateTrackingSearch.EmployeeStatus.RowAttributes)>
+        <label for="x_EmployeeStatus" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_EmployeeStatus">@Html.Raw(updateTrackingSearch.EmployeeStatus.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EmployeeStatus" id="z_EmployeeStatus" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.EmployeeStatus.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_EmployeeStatus" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.EmployeeStatus.InputTextType)" name="x_EmployeeStatus" id="x_EmployeeStatus" data-table="UpdateTracking" data-field="x_EmployeeStatus" value="@Html.Raw(updateTrackingSearch.EmployeeStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.EmployeeStatus.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.EmployeeStatus.FormatPattern)"@Html.Raw(updateTrackingSearch.EmployeeStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.EmployeeStatus.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.EmployeeStatus.Visible (end) *@
+@if (updateTrackingSearch.RequiredPhoto.Visible) { // updateTrackingSearch.RequiredPhoto.Visible (begin)
+    <div id="r_RequiredPhoto" class="row" @Html.Raw(updateTrackingSearch.RequiredPhoto.RowAttributes)>
+        <label for="x_RequiredPhoto" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_RequiredPhoto">@Html.Raw(updateTrackingSearch.RequiredPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_RequiredPhoto" id="z_RequiredPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.RequiredPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_RequiredPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.RequiredPhoto.InputTextType)" name="x_RequiredPhoto" id="x_RequiredPhoto" data-table="UpdateTracking" data-field="x_RequiredPhoto" value="@Html.Raw(updateTrackingSearch.RequiredPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.RequiredPhoto.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.RequiredPhoto.FormatPattern)"@Html.Raw(updateTrackingSearch.RequiredPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.RequiredPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.RequiredPhoto.Visible (end) *@
+@if (updateTrackingSearch.VisaPhoto.Visible) { // updateTrackingSearch.VisaPhoto.Visible (begin)
+    <div id="r_VisaPhoto" class="row" @Html.Raw(updateTrackingSearch.VisaPhoto.RowAttributes)>
+        <label for="x_VisaPhoto" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_VisaPhoto">@Html.Raw(updateTrackingSearch.VisaPhoto.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_VisaPhoto" id="z_VisaPhoto" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.VisaPhoto.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_VisaPhoto" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.VisaPhoto.InputTextType)" name="x_VisaPhoto" id="x_VisaPhoto" data-table="UpdateTracking" data-field="x_VisaPhoto" value="@Html.Raw(updateTrackingSearch.VisaPhoto.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.VisaPhoto.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.VisaPhoto.FormatPattern)"@Html.Raw(updateTrackingSearch.VisaPhoto.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.VisaPhoto.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.VisaPhoto.Visible (end) *@
+@if (updateTrackingSearch.ColumnName.Visible) { // updateTrackingSearch.ColumnName.Visible (begin)
+    <div id="r_ColumnName" class="row" @Html.Raw(updateTrackingSearch.ColumnName.RowAttributes)>
+        <label for="x_ColumnName" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_ColumnName">@Html.Raw(updateTrackingSearch.ColumnName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_ColumnName" id="z_ColumnName" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.ColumnName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_ColumnName" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.ColumnName.InputTextType)" name="x_ColumnName" id="x_ColumnName" data-table="UpdateTracking" data-field="x_ColumnName" value="@Html.Raw(updateTrackingSearch.ColumnName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.ColumnName.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.ColumnName.FormatPattern)"@Html.Raw(updateTrackingSearch.ColumnName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.ColumnName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.ColumnName.Visible (end) *@
+@if (updateTrackingSearch.ChangeType.Visible) { // updateTrackingSearch.ChangeType.Visible (begin)
+    <div id="r_ChangeType" class="row" @Html.Raw(updateTrackingSearch.ChangeType.RowAttributes)>
+        <label for="x_ChangeType" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_ChangeType">@Html.Raw(updateTrackingSearch.ChangeType.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_ChangeType" id="z_ChangeType" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.ChangeType.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_ChangeType" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.ChangeType.InputTextType)" name="x_ChangeType" id="x_ChangeType" data-table="UpdateTracking" data-field="x_ChangeType" value="@Html.Raw(updateTrackingSearch.ChangeType.EditValue)" size="30" maxlength="25" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.ChangeType.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.ChangeType.FormatPattern)"@Html.Raw(updateTrackingSearch.ChangeType.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.ChangeType.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.ChangeType.Visible (end) *@
+@if (updateTrackingSearch.TabName.Visible) { // updateTrackingSearch.TabName.Visible (begin)
+    <div id="r_TabName" class="row" @Html.Raw(updateTrackingSearch.TabName.RowAttributes)>
+        <label for="x_TabName" class="@(updateTrackingSearch.LeftColumnClass)"><span id="elh_UpdateTracking_TabName">@Html.Raw(updateTrackingSearch.TabName.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_TabName" id="z_TabName" value="LIKE">
+</span>
+        </label>
+        <div class="@(updateTrackingSearch.RightColumnClass)">
+            <div @Html.Raw(updateTrackingSearch.TabName.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_UpdateTracking_TabName" class="ew-search-field ew-search-field-single">
+<input type="@(updateTrackingSearch.TabName.InputTextType)" name="x_TabName" id="x_TabName" data-table="UpdateTracking" data-field="x_TabName" value="@Html.Raw(updateTrackingSearch.TabName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingSearch.TabName.PlaceHolder))" data-format-pattern="@(updateTrackingSearch.TabName.FormatPattern)"@Html.Raw(updateTrackingSearch.TabName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingSearch.TabName.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* updateTrackingSearch.TabName.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(updateTrackingSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(updateTrackingSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fUpdateTrackingsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (updateTrackingSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fUpdateTrackingsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fUpdateTrackingsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(updateTrackingSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@updateTrackingSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("UpdateTracking");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

@@ -1,0 +1,371 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtManningAgentSearch.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtManningAgentSearch.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtManningAgentSearch.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTManningAgent: currentTable } });
+var currentPageID = ew.PAGE_ID = "search";
+var currentForm;
+var fMTManningAgentsearch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTManningAgentsearch")
+        .setPageId("search")
+@if (mtManningAgentSearch.IsModal && mtManningAgentSearch.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["Code", [], fields.Code.isInvalid],
+            ["_Name", [], fields._Name.isInvalid],
+            ["Active", [], fields.Active.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [ew.Validators.datetime(fields.LastUpdatedDateTime.clientFormatPattern)], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Active": @Html.Raw(mtManningAgentSearch.Active.ToClientList(mtManningAgentSearch)),
+            "CreatedByUserID": @Html.Raw(mtManningAgentSearch.CreatedByUserID.ToClientList(mtManningAgentSearch)),
+            "LastUpdatedByUserID": @Html.Raw(mtManningAgentSearch.LastUpdatedByUserID.ToClientList(mtManningAgentSearch)),
+        })
+        .build();
+    window[form.id] = form;
+@if (mtManningAgentSearch.IsModal) {
+    <text>currentAdvancedSearchForm = form;</text>
+} else {
+    <text>currentForm = form;</text>
+}
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@mtManningAgentSearch.ShowPageHeader()
+@mtManningAgentSearch.ShowMessages()
+<form name="fMTManningAgentsearch" id="fMTManningAgentsearch" class="@(mtManningAgentSearch.FormClassName)" action="@AppPath(CurrentPageName())" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="search">
+@if (mtManningAgentSearch.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div class="ew-search-div"><!-- page* -->
+@if (mtManningAgentSearch.Code.Visible) { // mtManningAgentSearch.Code.Visible (begin)
+    <div id="r_Code" class="row" @Html.Raw(mtManningAgentSearch.Code.RowAttributes)>
+        <label for="x_Code" class="@(mtManningAgentSearch.LeftColumnClass)"><span id="elh_MTManningAgent_Code">@Html.Raw(mtManningAgentSearch.Code.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_Code" id="z_Code" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtManningAgentSearch.RightColumnClass)">
+            <div @Html.Raw(mtManningAgentSearch.Code.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTManningAgent_Code" class="ew-search-field ew-search-field-single">
+<input type="@(mtManningAgentSearch.Code.InputTextType)" name="x_Code" id="x_Code" data-table="MTManningAgent" data-field="x_Code" value="@Html.Raw(mtManningAgentSearch.Code.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch.Code.PlaceHolder))" data-format-pattern="@(mtManningAgentSearch.Code.FormatPattern)"@Html.Raw(mtManningAgentSearch.Code.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtManningAgentSearch.Code.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtManningAgentSearch.Code.Visible (end) *@
+@if (mtManningAgentSearch._Name.Visible) { // mtManningAgentSearch._Name.Visible (begin)
+    <div id="r__Name" class="row" @Html.Raw(mtManningAgentSearch._Name.RowAttributes)>
+        <label for="x__Name" class="@(mtManningAgentSearch.LeftColumnClass)"><span id="elh_MTManningAgent__Name">@Html.Raw(mtManningAgentSearch._Name.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z__Name" id="z__Name" value="LIKE">
+</span>
+        </label>
+        <div class="@(mtManningAgentSearch.RightColumnClass)">
+            <div @Html.Raw(mtManningAgentSearch._Name.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTManningAgent__Name" class="ew-search-field ew-search-field-single">
+<input type="@(mtManningAgentSearch._Name.InputTextType)" name="x__Name" id="x__Name" data-table="MTManningAgent" data-field="x__Name" value="@Html.Raw(mtManningAgentSearch._Name.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch._Name.PlaceHolder))" data-format-pattern="@(mtManningAgentSearch._Name.FormatPattern)"@Html.Raw(mtManningAgentSearch._Name.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtManningAgentSearch._Name.GetErrorMessage(false))</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtManningAgentSearch._Name.Visible (end) *@
+@if (mtManningAgentSearch.Active.Visible) { // mtManningAgentSearch.Active.Visible (begin)
+    <div id="r_Active" class="row" @Html.Raw(mtManningAgentSearch.Active.RowAttributes)>
+        <label class="@(mtManningAgentSearch.LeftColumnClass)"><span id="elh_MTManningAgent_Active">@Html.Raw(mtManningAgentSearch.Active.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_Active" id="z_Active" value="=">
+</span>
+        </label>
+        <div class="@(mtManningAgentSearch.RightColumnClass)">
+            <div @Html.Raw(mtManningAgentSearch.Active.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTManningAgent_Active" class="ew-search-field ew-search-field-single">
+<div class="form-check d-inline-block">
+    <input type="checkbox" class="form-check-input@(mtManningAgentSearch.Active.IsInvalidClass)" data-table="MTManningAgent" data-field="x_Active" data-boolean name="x_Active" id="x_Active" value="1" checked="@ConvertToBool(mtManningAgentSearch.Active.AdvancedSearch.SearchValue)" @Html.Raw(mtManningAgentSearch.Active.EditAttributes)>
+    <div class="invalid-feedback">@Html.Raw(mtManningAgentSearch.Active.GetErrorMessage(false))</div>
+</div>
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtManningAgentSearch.Active.Visible (end) *@
+@if (mtManningAgentSearch.CreatedByUserID.Visible) { // mtManningAgentSearch.CreatedByUserID.Visible (begin)
+    <div id="r_CreatedByUserID" class="row" @Html.Raw(mtManningAgentSearch.CreatedByUserID.RowAttributes)>
+        <label class="@(mtManningAgentSearch.LeftColumnClass)"><span id="elh_MTManningAgent_CreatedByUserID">@Html.Raw(mtManningAgentSearch.CreatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedByUserID" id="z_CreatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtManningAgentSearch.RightColumnClass)">
+            <div @Html.Raw(mtManningAgentSearch.CreatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTManningAgent_CreatedByUserID" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mtManningAgentSearch.CreatedByUserID.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_CreatedByUserID" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_CreatedByUserID" id="sv_x_CreatedByUserID" value="@(RemoveHtml(ConvertToString(mtManningAgentSearch.CreatedByUserID.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch.CreatedByUserID.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch.CreatedByUserID.PlaceHolder))" data-format-pattern="@(mtManningAgentSearch.CreatedByUserID.FormatPattern)" @Html.Raw(mtManningAgentSearch.CreatedByUserID.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="MTManningAgent" data-field="x_CreatedByUserID" data-input="sv_x_CreatedByUserID" data-value-separator="@(mtManningAgentSearch.CreatedByUserID.DisplayValueSeparatorAttribute)" name="x_CreatedByUserID" id="x_CreatedByUserID" value="@(HtmlEncode(mtManningAgentSearch.CreatedByUserID.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mtManningAgentSearch.CreatedByUserID.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMTManningAgentsearch"], function() {
+    fMTManningAgentsearch.createAutoSuggest(Object.assign({"id":"x_CreatedByUserID","forceSelect":false}, { lookupAllDisplayFields: @(mtManningAgentSearch.CreatedByUserID.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.MTManningAgent.fields.CreatedByUserID.autoSuggestOptions));
+});
+</script>
+@Html.Raw(mtManningAgentSearch.CreatedByUserID.Lookup.GetParamTag(mtManningAgentSearch, "p_x_CreatedByUserID"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtManningAgentSearch.CreatedByUserID.Visible (end) *@
+@if (mtManningAgentSearch.CreatedDateTime.Visible) { // mtManningAgentSearch.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" class="row" @Html.Raw(mtManningAgentSearch.CreatedDateTime.RowAttributes)>
+        <label for="x_CreatedDateTime" class="@(mtManningAgentSearch.LeftColumnClass)"><span id="elh_MTManningAgent_CreatedDateTime">@Html.Raw(mtManningAgentSearch.CreatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_CreatedDateTime" id="z_CreatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtManningAgentSearch.RightColumnClass)">
+            <div @Html.Raw(mtManningAgentSearch.CreatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTManningAgent_CreatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtManningAgentSearch.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="MTManningAgent" data-field="x_CreatedDateTime" value="@Html.Raw(mtManningAgentSearch.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch.CreatedDateTime.PlaceHolder))" data-format-pattern="@(mtManningAgentSearch.CreatedDateTime.FormatPattern)"@Html.Raw(mtManningAgentSearch.CreatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtManningAgentSearch.CreatedDateTime.GetErrorMessage(false))</div>
+@if (!mtManningAgentSearch.CreatedDateTime.ReadOnly && !mtManningAgentSearch.CreatedDateTime.Disabled && !mtManningAgentSearch.CreatedDateTime.EditAttrs.Is("readonly") && !mtManningAgentSearch.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTManningAgentsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTManningAgentsearch", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtManningAgentSearch.CreatedDateTime.Visible (end) *@
+@if (mtManningAgentSearch.LastUpdatedByUserID.Visible) { // mtManningAgentSearch.LastUpdatedByUserID.Visible (begin)
+    <div id="r_LastUpdatedByUserID" class="row" @Html.Raw(mtManningAgentSearch.LastUpdatedByUserID.RowAttributes)>
+        <label class="@(mtManningAgentSearch.LeftColumnClass)"><span id="elh_MTManningAgent_LastUpdatedByUserID">@Html.Raw(mtManningAgentSearch.LastUpdatedByUserID.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedByUserID" id="z_LastUpdatedByUserID" value="=">
+</span>
+        </label>
+        <div class="@(mtManningAgentSearch.RightColumnClass)">
+            <div @Html.Raw(mtManningAgentSearch.LastUpdatedByUserID.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTManningAgent_LastUpdatedByUserID" class="ew-search-field ew-search-field-single">
+<span>@{
+    if (IsRTL) {
+        mtManningAgentSearch.LastUpdatedByUserID.EditAttrs["dir"] = "rtl";
+    }
+}</span>
+<span id="as_x_LastUpdatedByUserID" class="ew-auto-suggest">
+    <input type="text" class="form-control" name="sv_x_LastUpdatedByUserID" id="sv_x_LastUpdatedByUserID" value="@(RemoveHtml(ConvertToString(mtManningAgentSearch.LastUpdatedByUserID.EditValue)))" autocomplete="off" size="30" placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch.LastUpdatedByUserID.PlaceHolder))" data-placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch.LastUpdatedByUserID.PlaceHolder))" data-format-pattern="@(mtManningAgentSearch.LastUpdatedByUserID.FormatPattern)" @Html.Raw(mtManningAgentSearch.LastUpdatedByUserID.EditAttributes)>
+</span>
+<selection-list hidden class="form-control" data-table="MTManningAgent" data-field="x_LastUpdatedByUserID" data-input="sv_x_LastUpdatedByUserID" data-value-separator="@(mtManningAgentSearch.LastUpdatedByUserID.DisplayValueSeparatorAttribute)" name="x_LastUpdatedByUserID" id="x_LastUpdatedByUserID" value="@(HtmlEncode(mtManningAgentSearch.LastUpdatedByUserID.AdvancedSearch.SearchValue))"></selection-list>
+<div class="invalid-feedback">@Html.Raw(mtManningAgentSearch.LastUpdatedByUserID.GetErrorMessage(false))</div>
+<script>
+loadjs.ready(["fMTManningAgentsearch"], function() {
+    fMTManningAgentsearch.createAutoSuggest(Object.assign({"id":"x_LastUpdatedByUserID","forceSelect":false}, { lookupAllDisplayFields: @(mtManningAgentSearch.LastUpdatedByUserID.Lookup.LookupAllDisplayFields ? "true" : "false") }, ew.vars.tables.MTManningAgent.fields.LastUpdatedByUserID.autoSuggestOptions));
+});
+</script>
+@Html.Raw(mtManningAgentSearch.LastUpdatedByUserID.Lookup.GetParamTag(mtManningAgentSearch, "p_x_LastUpdatedByUserID"))
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtManningAgentSearch.LastUpdatedByUserID.Visible (end) *@
+@if (mtManningAgentSearch.LastUpdatedDateTime.Visible) { // mtManningAgentSearch.LastUpdatedDateTime.Visible (begin)
+    <div id="r_LastUpdatedDateTime" class="row" @Html.Raw(mtManningAgentSearch.LastUpdatedDateTime.RowAttributes)>
+        <label for="x_LastUpdatedDateTime" class="@(mtManningAgentSearch.LeftColumnClass)"><span id="elh_MTManningAgent_LastUpdatedDateTime">@Html.Raw(mtManningAgentSearch.LastUpdatedDateTime.Caption)</span>
+        <span class="ew-search-operator">
+@Html.Raw(Language.Phrase("="))
+<input type="hidden" name="z_LastUpdatedDateTime" id="z_LastUpdatedDateTime" value="=">
+</span>
+        </label>
+        <div class="@(mtManningAgentSearch.RightColumnClass)">
+            <div @Html.Raw(mtManningAgentSearch.LastUpdatedDateTime.CellAttributes)>
+                <div class="d-flex align-items-start">
+                <span id="el_MTManningAgent_LastUpdatedDateTime" class="ew-search-field ew-search-field-single">
+<input type="@(mtManningAgentSearch.LastUpdatedDateTime.InputTextType)" name="x_LastUpdatedDateTime" id="x_LastUpdatedDateTime" data-table="MTManningAgent" data-field="x_LastUpdatedDateTime" value="@Html.Raw(mtManningAgentSearch.LastUpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(mtManningAgentSearch.LastUpdatedDateTime.PlaceHolder))" data-format-pattern="@(mtManningAgentSearch.LastUpdatedDateTime.FormatPattern)"@Html.Raw(mtManningAgentSearch.LastUpdatedDateTime.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(mtManningAgentSearch.LastUpdatedDateTime.GetErrorMessage(false))</div>
+@if (!mtManningAgentSearch.LastUpdatedDateTime.ReadOnly && !mtManningAgentSearch.LastUpdatedDateTime.Disabled && !mtManningAgentSearch.LastUpdatedDateTime.EditAttrs.Is("readonly") && !mtManningAgentSearch.LastUpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fMTManningAgentsearch", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(1))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fMTManningAgentsearch", "x_LastUpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+} @* mtManningAgentSearch.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(mtManningAgentSearch.IsModal ? Html.Raw("<template class=\"ew-modal-buttons\">") : Html.Raw("<div class=\"row ew-buttons\">"))<!-- buttons .row -->
+    <div class="@(mtManningAgentSearch.OffsetColumnClass)"><!-- buttons offset -->
+        <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fMTManningAgentsearch">@Html.Raw(Language.Phrase("Search"))</button>
+@if (mtManningAgentSearch.IsModal) {
+        <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fMTManningAgentsearch">@Html.Raw(Language.Phrase("Cancel"))</button>
+} else {
+        <button class="btn btn-default ew-btn" name="btn-reset" id="btn-reset" type="button" form="fMTManningAgentsearch" data-ew-action="reload">@Html.Raw(Language.Phrase("Reset"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(mtManningAgentSearch.IsModal ? Html.Raw("</template>") : Html.Raw("</div>"))<!-- /buttons .row -->
+</form>
+@mtManningAgentSearch.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTManningAgent");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

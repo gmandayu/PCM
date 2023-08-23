@@ -55,8 +55,6 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> MTCrewID;
 
-        public readonly DbField<SqlDbType> BankName;
-
         public readonly DbField<SqlDbType> MTBankID;
 
         public readonly DbField<SqlDbType> OtherBankName;
@@ -64,8 +62,6 @@ public partial class PCM {
         public readonly DbField<SqlDbType> AccountNumber;
 
         public readonly DbField<SqlDbType> Beneficiary;
-
-        public readonly DbField<SqlDbType> Currency;
 
         public readonly DbField<SqlDbType> MTCurrencyID;
 
@@ -162,32 +158,6 @@ public partial class PCM {
                 _ => new Lookup<DbField>("MTCrewID", "MTCrew", true, "ID", new List<string> {"IndividualCodeNumber", "FullName", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "CONCAT([IndividualCodeNumber],'" + ValueSeparator(1, MTCrewID) + "',[FullName])")
             };
             Fields.Add("MTCrewID", MTCrewID);
-
-            // BankName
-            BankName = new (this, "x_BankName", 202, SqlDbType.NVarChar) {
-                Name = "BankName",
-                Expression = "[BankName]",
-                BasicSearchExpression = "[BankName]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[BankName]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                UseFilter = true, // Table header filter
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrewBankAccount", "BankName", "CustomMsg"),
-                IsUpload = false
-            };
-            BankName.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("BankName", "MTCrewBankAccount", true, "BankName", new List<string> {"BankName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("BankName", "MTCrewBankAccount", true, "BankName", new List<string> {"BankName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("BankName", "MTCrewBankAccount", true, "BankName", new List<string> {"BankName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
-            };
-            Fields.Add("BankName", BankName);
 
             // MTBankID
             MTBankID = new (this, "x_MTBankID", 3, SqlDbType.Int) {
@@ -291,27 +261,6 @@ public partial class PCM {
                 _ => new Lookup<DbField>("Beneficiary", "MTCrewBankAccount", true, "Beneficiary", new List<string> {"Beneficiary", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             Fields.Add("Beneficiary", Beneficiary);
-
-            // Currency
-            Currency = new (this, "x_Currency", 202, SqlDbType.NVarChar) {
-                Name = "Currency",
-                Expression = "[Currency]",
-                BasicSearchExpression = "[Currency]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[Currency]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Sortable = false, // Allow sort
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrewBankAccount", "Currency", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("Currency", Currency);
 
             // MTCurrencyID
             MTCurrencyID = new (this, "x_MTCurrencyID", 3, SqlDbType.Int) {
@@ -1100,12 +1049,10 @@ public partial class PCM {
             try {
                 ID.DbValue = row["ID"]; // Set DB value only
                 MTCrewID.DbValue = row["MTCrewID"]; // Set DB value only
-                BankName.DbValue = row["BankName"]; // Set DB value only
                 MTBankID.DbValue = row["MTBankID"]; // Set DB value only
                 OtherBankName.DbValue = row["OtherBankName"]; // Set DB value only
                 AccountNumber.DbValue = row["AccountNumber"]; // Set DB value only
                 Beneficiary.DbValue = row["Beneficiary"]; // Set DB value only
-                Currency.DbValue = row["Currency"]; // Set DB value only
                 MTCurrencyID.DbValue = row["MTCurrencyID"]; // Set DB value only
                 MainAcc.DbValue = (ConvertToBool(row["MainAcc"]) ? "1" : "0"); // Set DB value only
                 Attachment.Upload.DbValue = row["Attachment"];
@@ -1487,12 +1434,10 @@ public partial class PCM {
                 return;
             ID.SetDbValue(dr["ID"]);
             MTCrewID.SetDbValue(dr["MTCrewID"]);
-            BankName.SetDbValue(dr["BankName"]);
             MTBankID.SetDbValue(dr["MTBankID"]);
             OtherBankName.SetDbValue(dr["OtherBankName"]);
             AccountNumber.SetDbValue(dr["AccountNumber"]);
             Beneficiary.SetDbValue(dr["Beneficiary"]);
-            Currency.SetDbValue(dr["Currency"]);
             MTCurrencyID.SetDbValue(dr["MTCurrencyID"]);
             MainAcc.SetDbValue(ConvertToBool(dr["MainAcc"]) ? "1" : "0");
             Attachment.Upload.DbValue = dr["Attachment"];
@@ -1535,9 +1480,6 @@ public partial class PCM {
             // MTCrewID
             MTCrewID.CellCssStyle = "white-space: nowrap;";
 
-            // BankName
-            BankName.CellCssStyle = "white-space: nowrap;";
-
             // MTBankID
 
             // OtherBankName
@@ -1547,9 +1489,6 @@ public partial class PCM {
 
             // Beneficiary
             Beneficiary.CellCssStyle = "white-space: nowrap;";
-
-            // Currency
-            Currency.CellCssStyle = "white-space: nowrap;";
 
             // MTCurrencyID
             MTCurrencyID.CellCssStyle = "white-space: nowrap;";
@@ -1604,10 +1543,6 @@ public partial class PCM {
             }
             MTCrewID.ViewCustomAttributes = "";
 
-            // BankName
-            BankName.ViewValue = ConvertToString(BankName.CurrentValue); // DN
-            BankName.ViewCustomAttributes = "";
-
             // MTBankID
             curVal = ConvertToString(MTBankID.CurrentValue);
             if (!Empty(curVal)) {
@@ -1640,10 +1575,6 @@ public partial class PCM {
             // Beneficiary
             Beneficiary.ViewValue = ConvertToString(Beneficiary.CurrentValue); // DN
             Beneficiary.ViewCustomAttributes = "";
-
-            // Currency
-            Currency.ViewValue = ConvertToString(Currency.CurrentValue); // DN
-            Currency.ViewCustomAttributes = "";
 
             // MTCurrencyID
             curVal = ConvertToString(MTCurrencyID.CurrentValue);
@@ -1756,10 +1687,6 @@ public partial class PCM {
             MTCrewID.HrefValue = "";
             MTCrewID.TooltipValue = "";
 
-            // BankName
-            BankName.HrefValue = "";
-            BankName.TooltipValue = "";
-
             // MTBankID
             MTBankID.HrefValue = "";
             MTBankID.TooltipValue = "";
@@ -1775,10 +1702,6 @@ public partial class PCM {
             // Beneficiary
             Beneficiary.HrefValue = "";
             Beneficiary.TooltipValue = "";
-
-            // Currency
-            Currency.HrefValue = "";
-            Currency.TooltipValue = "";
 
             // MTCurrencyID
             MTCurrencyID.HrefValue = "";
@@ -1851,13 +1774,6 @@ public partial class PCM {
             if (!Empty(MTCrewID.EditValue) && IsNumeric(MTCrewID.EditValue))
                 MTCrewID.EditValue = FormatNumber(MTCrewID.EditValue, null);
 
-            // BankName
-            BankName.SetupEditAttributes();
-            if (!BankName.Raw)
-                BankName.CurrentValue = HtmlDecode(BankName.CurrentValue);
-            BankName.EditValue = HtmlEncode(BankName.CurrentValue);
-            BankName.PlaceHolder = RemoveHtml(BankName.Caption);
-
             // MTBankID
             MTBankID.SetupEditAttributes();
             MTBankID.PlaceHolder = RemoveHtml(MTBankID.Caption);
@@ -1882,13 +1798,6 @@ public partial class PCM {
                 Beneficiary.CurrentValue = HtmlDecode(Beneficiary.CurrentValue);
             Beneficiary.EditValue = HtmlEncode(Beneficiary.CurrentValue);
             Beneficiary.PlaceHolder = RemoveHtml(Beneficiary.Caption);
-
-            // Currency
-            Currency.SetupEditAttributes();
-            if (!Currency.Raw)
-                Currency.CurrentValue = HtmlDecode(Currency.CurrentValue);
-            Currency.EditValue = HtmlEncode(Currency.CurrentValue);
-            Currency.PlaceHolder = RemoveHtml(Currency.Caption);
 
             // MTCurrencyID
             MTCurrencyID.SetupEditAttributes();
@@ -2018,7 +1927,6 @@ public partial class PCM {
                     doc.BeginExportRow();
                     if (exportType == "view") {
                         doc.ExportCaption(MTCrewID);
-                        doc.ExportCaption(BankName);
                         doc.ExportCaption(MTBankID);
                         doc.ExportCaption(OtherBankName);
                         doc.ExportCaption(AccountNumber);
@@ -2032,7 +1940,6 @@ public partial class PCM {
                         doc.ExportCaption(LastUpdatedDateTime);
                     } else {
                         doc.ExportCaption(MTCrewID);
-                        doc.ExportCaption(BankName);
                         doc.ExportCaption(MTBankID);
                         doc.ExportCaption(OtherBankName);
                         doc.ExportCaption(AccountNumber);
@@ -2082,7 +1989,6 @@ public partial class PCM {
                         doc.BeginExportRow(rowcnt); // Allow CSS styles if enabled
                         if (exportType == "view") {
                             await doc.ExportField(MTCrewID);
-                            await doc.ExportField(BankName);
                             await doc.ExportField(MTBankID);
                             await doc.ExportField(OtherBankName);
                             await doc.ExportField(AccountNumber);
@@ -2096,7 +2002,6 @@ public partial class PCM {
                             await doc.ExportField(LastUpdatedDateTime);
                         } else {
                             await doc.ExportField(MTCrewID);
-                            await doc.ExportField(BankName);
                             await doc.ExportField(MTBankID);
                             await doc.ExportField(OtherBankName);
                             await doc.ExportField(AccountNumber);

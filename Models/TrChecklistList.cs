@@ -276,7 +276,6 @@ public partial class PCM {
         {
             ID.Visible = false;
             MTCrewID.Visible = false;
-            DocumentDate.SetVisibility();
             Activity10.Visible = false;
             Activity11.Visible = false;
             Activity12.Visible = false;
@@ -312,23 +311,17 @@ public partial class PCM {
             RemarkActivity70.Visible = false;
             InterviewedByPersonOneName.Visible = false;
             InterviewedByPersonOneRank.Visible = false;
-            InterviewedByPersonOneDate.SetVisibility();
             AssistantManagerPdeReviewedDate.Visible = false;
             InterviewedByPersonTwoName.Visible = false;
             InterviewedByPersonTwoRank.Visible = false;
-            InterviewedByPersonTwoDate.SetVisibility();
             InterviewedByPersonThreeName.Visible = false;
             InterviewedByPersonThreeRank.Visible = false;
-            InterviewedByPersonThreeDate.SetVisibility();
             CrewingManagerApprovalDate.Visible = false;
             Activity14Attachment.Visible = false;
             Activity20Attachment.Visible = false;
             Activity30Attachment.Visible = false;
             Activity50Attachment.Visible = false;
             Activity70Attachment.Visible = false;
-            InterviewedByPersonOneAttachment.SetVisibility();
-            InterviewedByPersonTwoAttachment.SetVisibility();
-            InterviewedByPersonThreeAttachment.SetVisibility();
             FinalInterviewAttachment.Visible = false;
             PrincipalCommentAttachment.Visible = false;
             FormPrintoutAttachment.Visible = false;
@@ -1164,17 +1157,10 @@ public partial class PCM {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(DocumentDate.AdvancedSearch.ToJson())); // Field DocumentDate
             filters.Merge(JObject.Parse(CreatedByUserID.AdvancedSearch.ToJson())); // Field CreatedByUserID
             filters.Merge(JObject.Parse(CreatedDateTime.AdvancedSearch.ToJson())); // Field CreatedDateTime
             filters.Merge(JObject.Parse(LastUpdatedByUserID.AdvancedSearch.ToJson())); // Field LastUpdatedByUserID
             filters.Merge(JObject.Parse(LastUpdatedDateTime.AdvancedSearch.ToJson())); // Field LastUpdatedDateTime
-            filters.Merge(JObject.Parse(InterviewedByPersonOneDate.AdvancedSearch.ToJson())); // Field InterviewedByPersonOneDate
-            filters.Merge(JObject.Parse(InterviewedByPersonTwoDate.AdvancedSearch.ToJson())); // Field InterviewedByPersonTwoDate
-            filters.Merge(JObject.Parse(InterviewedByPersonThreeDate.AdvancedSearch.ToJson())); // Field InterviewedByPersonThreeDate
-            filters.Merge(JObject.Parse(InterviewedByPersonOneAttachment.AdvancedSearch.ToJson())); // Field InterviewedByPersonOneAttachment
-            filters.Merge(JObject.Parse(InterviewedByPersonTwoAttachment.AdvancedSearch.ToJson())); // Field InterviewedByPersonTwoAttachment
-            filters.Merge(JObject.Parse(InterviewedByPersonThreeAttachment.AdvancedSearch.ToJson())); // Field InterviewedByPersonThreeAttachment
             filters.Merge(JObject.Parse(ApprovedByUserID1.AdvancedSearch.ToJson())); // Field ApprovedByUserID1
             filters.Merge(JObject.Parse(ApprovedByUserID2.AdvancedSearch.ToJson())); // Field ApprovedByUserID2
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
@@ -1202,16 +1188,6 @@ public partial class PCM {
             var filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
             Command = "search";
             string? sv;
-
-            // Field DocumentDate
-            if (filter?.TryGetValue("x_DocumentDate", out sv) ?? false) {
-                DocumentDate.AdvancedSearch.SearchValue = sv;
-                DocumentDate.AdvancedSearch.SearchOperator = filter["z_DocumentDate"];
-                DocumentDate.AdvancedSearch.SearchCondition = filter["v_DocumentDate"];
-                DocumentDate.AdvancedSearch.SearchValue2 = filter["y_DocumentDate"];
-                DocumentDate.AdvancedSearch.SearchOperator2 = filter["w_DocumentDate"];
-                DocumentDate.AdvancedSearch.Save();
-            }
 
             // Field CreatedByUserID
             if (filter?.TryGetValue("x_CreatedByUserID", out sv) ?? false) {
@@ -1253,66 +1229,6 @@ public partial class PCM {
                 LastUpdatedDateTime.AdvancedSearch.Save();
             }
 
-            // Field InterviewedByPersonOneDate
-            if (filter?.TryGetValue("x_InterviewedByPersonOneDate", out sv) ?? false) {
-                InterviewedByPersonOneDate.AdvancedSearch.SearchValue = sv;
-                InterviewedByPersonOneDate.AdvancedSearch.SearchOperator = filter["z_InterviewedByPersonOneDate"];
-                InterviewedByPersonOneDate.AdvancedSearch.SearchCondition = filter["v_InterviewedByPersonOneDate"];
-                InterviewedByPersonOneDate.AdvancedSearch.SearchValue2 = filter["y_InterviewedByPersonOneDate"];
-                InterviewedByPersonOneDate.AdvancedSearch.SearchOperator2 = filter["w_InterviewedByPersonOneDate"];
-                InterviewedByPersonOneDate.AdvancedSearch.Save();
-            }
-
-            // Field InterviewedByPersonTwoDate
-            if (filter?.TryGetValue("x_InterviewedByPersonTwoDate", out sv) ?? false) {
-                InterviewedByPersonTwoDate.AdvancedSearch.SearchValue = sv;
-                InterviewedByPersonTwoDate.AdvancedSearch.SearchOperator = filter["z_InterviewedByPersonTwoDate"];
-                InterviewedByPersonTwoDate.AdvancedSearch.SearchCondition = filter["v_InterviewedByPersonTwoDate"];
-                InterviewedByPersonTwoDate.AdvancedSearch.SearchValue2 = filter["y_InterviewedByPersonTwoDate"];
-                InterviewedByPersonTwoDate.AdvancedSearch.SearchOperator2 = filter["w_InterviewedByPersonTwoDate"];
-                InterviewedByPersonTwoDate.AdvancedSearch.Save();
-            }
-
-            // Field InterviewedByPersonThreeDate
-            if (filter?.TryGetValue("x_InterviewedByPersonThreeDate", out sv) ?? false) {
-                InterviewedByPersonThreeDate.AdvancedSearch.SearchValue = sv;
-                InterviewedByPersonThreeDate.AdvancedSearch.SearchOperator = filter["z_InterviewedByPersonThreeDate"];
-                InterviewedByPersonThreeDate.AdvancedSearch.SearchCondition = filter["v_InterviewedByPersonThreeDate"];
-                InterviewedByPersonThreeDate.AdvancedSearch.SearchValue2 = filter["y_InterviewedByPersonThreeDate"];
-                InterviewedByPersonThreeDate.AdvancedSearch.SearchOperator2 = filter["w_InterviewedByPersonThreeDate"];
-                InterviewedByPersonThreeDate.AdvancedSearch.Save();
-            }
-
-            // Field InterviewedByPersonOneAttachment
-            if (filter?.TryGetValue("x_InterviewedByPersonOneAttachment", out sv) ?? false) {
-                InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue = sv;
-                InterviewedByPersonOneAttachment.AdvancedSearch.SearchOperator = filter["z_InterviewedByPersonOneAttachment"];
-                InterviewedByPersonOneAttachment.AdvancedSearch.SearchCondition = filter["v_InterviewedByPersonOneAttachment"];
-                InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue2 = filter["y_InterviewedByPersonOneAttachment"];
-                InterviewedByPersonOneAttachment.AdvancedSearch.SearchOperator2 = filter["w_InterviewedByPersonOneAttachment"];
-                InterviewedByPersonOneAttachment.AdvancedSearch.Save();
-            }
-
-            // Field InterviewedByPersonTwoAttachment
-            if (filter?.TryGetValue("x_InterviewedByPersonTwoAttachment", out sv) ?? false) {
-                InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue = sv;
-                InterviewedByPersonTwoAttachment.AdvancedSearch.SearchOperator = filter["z_InterviewedByPersonTwoAttachment"];
-                InterviewedByPersonTwoAttachment.AdvancedSearch.SearchCondition = filter["v_InterviewedByPersonTwoAttachment"];
-                InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue2 = filter["y_InterviewedByPersonTwoAttachment"];
-                InterviewedByPersonTwoAttachment.AdvancedSearch.SearchOperator2 = filter["w_InterviewedByPersonTwoAttachment"];
-                InterviewedByPersonTwoAttachment.AdvancedSearch.Save();
-            }
-
-            // Field InterviewedByPersonThreeAttachment
-            if (filter?.TryGetValue("x_InterviewedByPersonThreeAttachment", out sv) ?? false) {
-                InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue = sv;
-                InterviewedByPersonThreeAttachment.AdvancedSearch.SearchOperator = filter["z_InterviewedByPersonThreeAttachment"];
-                InterviewedByPersonThreeAttachment.AdvancedSearch.SearchCondition = filter["v_InterviewedByPersonThreeAttachment"];
-                InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue2 = filter["y_InterviewedByPersonThreeAttachment"];
-                InterviewedByPersonThreeAttachment.AdvancedSearch.SearchOperator2 = filter["w_InterviewedByPersonThreeAttachment"];
-                InterviewedByPersonThreeAttachment.AdvancedSearch.Save();
-            }
-
             // Field ApprovedByUserID1
             if (filter?.TryGetValue("x_ApprovedByUserID1", out sv) ?? false) {
                 ApprovedByUserID1.AdvancedSearch.SearchValue = sv;
@@ -1344,17 +1260,10 @@ public partial class PCM {
             string where = "";
             if (!Security.CanSearch)
                 return "";
-            BuildSearchSql(ref where, DocumentDate, def, false); // DocumentDate
             BuildSearchSql(ref where, CreatedByUserID, def, true); // CreatedByUserID
             BuildSearchSql(ref where, CreatedDateTime, def, true); // CreatedDateTime
             BuildSearchSql(ref where, LastUpdatedByUserID, def, true); // LastUpdatedByUserID
             BuildSearchSql(ref where, LastUpdatedDateTime, def, true); // LastUpdatedDateTime
-            BuildSearchSql(ref where, InterviewedByPersonOneDate, def, false); // InterviewedByPersonOneDate
-            BuildSearchSql(ref where, InterviewedByPersonTwoDate, def, false); // InterviewedByPersonTwoDate
-            BuildSearchSql(ref where, InterviewedByPersonThreeDate, def, false); // InterviewedByPersonThreeDate
-            BuildSearchSql(ref where, InterviewedByPersonOneAttachment, def, false); // InterviewedByPersonOneAttachment
-            BuildSearchSql(ref where, InterviewedByPersonTwoAttachment, def, false); // InterviewedByPersonTwoAttachment
-            BuildSearchSql(ref where, InterviewedByPersonThreeAttachment, def, false); // InterviewedByPersonThreeAttachment
             BuildSearchSql(ref where, ApprovedByUserID1, def, false); // ApprovedByUserID1
             BuildSearchSql(ref where, ApprovedByUserID2, def, false); // ApprovedByUserID2
 
@@ -1362,17 +1271,10 @@ public partial class PCM {
             if (!def && !Empty(where) && (new[] { "", "reset", "resetall" }).Contains(Command))
                 Command = "search";
             if (!def && Command == "search") {
-                DocumentDate.AdvancedSearch.Save(); // DocumentDate
                 CreatedByUserID.AdvancedSearch.Save(); // CreatedByUserID
                 CreatedDateTime.AdvancedSearch.Save(); // CreatedDateTime
                 LastUpdatedByUserID.AdvancedSearch.Save(); // LastUpdatedByUserID
                 LastUpdatedDateTime.AdvancedSearch.Save(); // LastUpdatedDateTime
-                InterviewedByPersonOneDate.AdvancedSearch.Save(); // InterviewedByPersonOneDate
-                InterviewedByPersonTwoDate.AdvancedSearch.Save(); // InterviewedByPersonTwoDate
-                InterviewedByPersonThreeDate.AdvancedSearch.Save(); // InterviewedByPersonThreeDate
-                InterviewedByPersonOneAttachment.AdvancedSearch.Save(); // InterviewedByPersonOneAttachment
-                InterviewedByPersonTwoAttachment.AdvancedSearch.Save(); // InterviewedByPersonTwoAttachment
-                InterviewedByPersonThreeAttachment.AdvancedSearch.Save(); // InterviewedByPersonThreeAttachment
                 ApprovedByUserID1.AdvancedSearch.Save(); // ApprovedByUserID1
                 ApprovedByUserID2.AdvancedSearch.Save(); // ApprovedByUserID2
 
@@ -1515,13 +1417,6 @@ public partial class PCM {
                 captionClass = IsExport("email") ? "ew-filter-caption-email" : "ew-filter-caption",
                 captionSuffix = IsExport("email") ? ": " : "";
 
-            // Field DocumentDate
-            filter = QueryBuilderWhere("DocumentDate");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, DocumentDate, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + DocumentDate.Caption + "</span>" + captionSuffix + filter + "</div>";
-
             // Field CreatedByUserID
             filter = QueryBuilderWhere("CreatedByUserID");
             if (Empty(filter))
@@ -1549,48 +1444,6 @@ public partial class PCM {
                 BuildSearchSql(ref filter, LastUpdatedDateTime, false, true);
             if (!Empty(filter))
                 filterList += "<div><span class=\"" + captionClass + "\">" + LastUpdatedDateTime.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field InterviewedByPersonOneDate
-            filter = QueryBuilderWhere("InterviewedByPersonOneDate");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, InterviewedByPersonOneDate, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + InterviewedByPersonOneDate.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field InterviewedByPersonTwoDate
-            filter = QueryBuilderWhere("InterviewedByPersonTwoDate");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, InterviewedByPersonTwoDate, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + InterviewedByPersonTwoDate.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field InterviewedByPersonThreeDate
-            filter = QueryBuilderWhere("InterviewedByPersonThreeDate");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, InterviewedByPersonThreeDate, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + InterviewedByPersonThreeDate.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field InterviewedByPersonOneAttachment
-            filter = QueryBuilderWhere("InterviewedByPersonOneAttachment");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, InterviewedByPersonOneAttachment, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + InterviewedByPersonOneAttachment.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field InterviewedByPersonTwoAttachment
-            filter = QueryBuilderWhere("InterviewedByPersonTwoAttachment");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, InterviewedByPersonTwoAttachment, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + InterviewedByPersonTwoAttachment.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field InterviewedByPersonThreeAttachment
-            filter = QueryBuilderWhere("InterviewedByPersonThreeAttachment");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, InterviewedByPersonThreeAttachment, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + InterviewedByPersonThreeAttachment.Caption + "</span>" + captionSuffix + filter + "</div>";
 
             // Field ApprovedByUserID1
             filter = QueryBuilderWhere("ApprovedByUserID1");
@@ -1631,9 +1484,6 @@ public partial class PCM {
             searchFlds.Add(CreatedDateTime);
             searchFlds.Add(LastUpdatedByUserID);
             searchFlds.Add(LastUpdatedDateTime);
-            searchFlds.Add(InterviewedByPersonOneAttachment);
-            searchFlds.Add(InterviewedByPersonTwoAttachment);
-            searchFlds.Add(InterviewedByPersonThreeAttachment);
             string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
             string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
 
@@ -1659,8 +1509,6 @@ public partial class PCM {
             // Check basic search
             if (BasicSearch.IssetSession)
                 return true;
-            if (DocumentDate.AdvancedSearch.IssetSession)
-                return true;
             if (CreatedByUserID.AdvancedSearch.IssetSession)
                 return true;
             if (CreatedDateTime.AdvancedSearch.IssetSession)
@@ -1668,18 +1516,6 @@ public partial class PCM {
             if (LastUpdatedByUserID.AdvancedSearch.IssetSession)
                 return true;
             if (LastUpdatedDateTime.AdvancedSearch.IssetSession)
-                return true;
-            if (InterviewedByPersonOneDate.AdvancedSearch.IssetSession)
-                return true;
-            if (InterviewedByPersonTwoDate.AdvancedSearch.IssetSession)
-                return true;
-            if (InterviewedByPersonThreeDate.AdvancedSearch.IssetSession)
-                return true;
-            if (InterviewedByPersonOneAttachment.AdvancedSearch.IssetSession)
-                return true;
-            if (InterviewedByPersonTwoAttachment.AdvancedSearch.IssetSession)
-                return true;
-            if (InterviewedByPersonThreeAttachment.AdvancedSearch.IssetSession)
                 return true;
             if (ApprovedByUserID1.AdvancedSearch.IssetSession)
                 return true;
@@ -1715,17 +1551,10 @@ public partial class PCM {
 
         // Clear all advanced search parameters
         protected void ResetAdvancedSearchParms() {
-            DocumentDate.AdvancedSearch.UnsetSession();
             CreatedByUserID.AdvancedSearch.UnsetSession();
             CreatedDateTime.AdvancedSearch.UnsetSession();
             LastUpdatedByUserID.AdvancedSearch.UnsetSession();
             LastUpdatedDateTime.AdvancedSearch.UnsetSession();
-            InterviewedByPersonOneDate.AdvancedSearch.UnsetSession();
-            InterviewedByPersonTwoDate.AdvancedSearch.UnsetSession();
-            InterviewedByPersonThreeDate.AdvancedSearch.UnsetSession();
-            InterviewedByPersonOneAttachment.AdvancedSearch.UnsetSession();
-            InterviewedByPersonTwoAttachment.AdvancedSearch.UnsetSession();
-            InterviewedByPersonThreeAttachment.AdvancedSearch.UnsetSession();
             ApprovedByUserID1.AdvancedSearch.UnsetSession();
             ApprovedByUserID2.AdvancedSearch.UnsetSession();
         }
@@ -1738,17 +1567,10 @@ public partial class PCM {
             BasicSearch.Load();
 
             // Restore advanced search values
-            DocumentDate.AdvancedSearch.Load();
             CreatedByUserID.AdvancedSearch.Load();
             CreatedDateTime.AdvancedSearch.Load();
             LastUpdatedByUserID.AdvancedSearch.Load();
             LastUpdatedDateTime.AdvancedSearch.Load();
-            InterviewedByPersonOneDate.AdvancedSearch.Load();
-            InterviewedByPersonTwoDate.AdvancedSearch.Load();
-            InterviewedByPersonThreeDate.AdvancedSearch.Load();
-            InterviewedByPersonOneAttachment.AdvancedSearch.Load();
-            InterviewedByPersonTwoAttachment.AdvancedSearch.Load();
-            InterviewedByPersonThreeAttachment.AdvancedSearch.Load();
             ApprovedByUserID1.AdvancedSearch.Load();
             ApprovedByUserID2.AdvancedSearch.Load();
         }
@@ -1769,17 +1591,10 @@ public partial class PCM {
             if (Get("order", out StringValues sv)) {
                 CurrentOrder = sv.ToString();
                 CurrentOrderType = Get("ordertype");
-                UpdateSort(DocumentDate, ctrl); // DocumentDate
                 UpdateSort(CreatedByUserID, ctrl); // CreatedByUserID
                 UpdateSort(CreatedDateTime, ctrl); // CreatedDateTime
                 UpdateSort(LastUpdatedByUserID, ctrl); // LastUpdatedByUserID
                 UpdateSort(LastUpdatedDateTime, ctrl); // LastUpdatedDateTime
-                UpdateSort(InterviewedByPersonOneDate, ctrl); // InterviewedByPersonOneDate
-                UpdateSort(InterviewedByPersonTwoDate, ctrl); // InterviewedByPersonTwoDate
-                UpdateSort(InterviewedByPersonThreeDate, ctrl); // InterviewedByPersonThreeDate
-                UpdateSort(InterviewedByPersonOneAttachment, ctrl); // InterviewedByPersonOneAttachment
-                UpdateSort(InterviewedByPersonTwoAttachment, ctrl); // InterviewedByPersonTwoAttachment
-                UpdateSort(InterviewedByPersonThreeAttachment, ctrl); // InterviewedByPersonThreeAttachment
                 UpdateSort(ApprovedByUserID1, ctrl); // ApprovedByUserID1
                 UpdateSort(ApprovedByUserID2, ctrl); // ApprovedByUserID2
                 StartRecordNumber = 1; // Reset start position
@@ -1808,7 +1623,6 @@ public partial class PCM {
                     SessionOrderBy = orderBy;
                     ID.Sort = "";
                     MTCrewID.Sort = "";
-                    DocumentDate.Sort = "";
                     Activity10.Sort = "";
                     Activity11.Sort = "";
                     Activity12.Sort = "";
@@ -1844,23 +1658,17 @@ public partial class PCM {
                     RemarkActivity70.Sort = "";
                     InterviewedByPersonOneName.Sort = "";
                     InterviewedByPersonOneRank.Sort = "";
-                    InterviewedByPersonOneDate.Sort = "";
                     AssistantManagerPdeReviewedDate.Sort = "";
                     InterviewedByPersonTwoName.Sort = "";
                     InterviewedByPersonTwoRank.Sort = "";
-                    InterviewedByPersonTwoDate.Sort = "";
                     InterviewedByPersonThreeName.Sort = "";
                     InterviewedByPersonThreeRank.Sort = "";
-                    InterviewedByPersonThreeDate.Sort = "";
                     CrewingManagerApprovalDate.Sort = "";
                     Activity14Attachment.Sort = "";
                     Activity20Attachment.Sort = "";
                     Activity30Attachment.Sort = "";
                     Activity50Attachment.Sort = "";
                     Activity70Attachment.Sort = "";
-                    InterviewedByPersonOneAttachment.Sort = "";
-                    InterviewedByPersonTwoAttachment.Sort = "";
-                    InterviewedByPersonThreeAttachment.Sort = "";
                     FinalInterviewAttachment.Sort = "";
                     PrincipalCommentAttachment.Sort = "";
                     FormPrintoutAttachment.Sort = "";
@@ -2197,17 +2005,10 @@ public partial class PCM {
                 item = option.AddGroupOption();
                 item.Body = "";
                 item.Visible = UseColumnVisibility;
-                CreateColumnOption(option.Add("DocumentDate")); // DN
                 CreateColumnOption(option.Add("CreatedByUserID")); // DN
                 CreateColumnOption(option.Add("CreatedDateTime")); // DN
                 CreateColumnOption(option.Add("LastUpdatedByUserID")); // DN
                 CreateColumnOption(option.Add("LastUpdatedDateTime")); // DN
-                CreateColumnOption(option.Add("InterviewedByPersonOneDate")); // DN
-                CreateColumnOption(option.Add("InterviewedByPersonTwoDate")); // DN
-                CreateColumnOption(option.Add("InterviewedByPersonThreeDate")); // DN
-                CreateColumnOption(option.Add("InterviewedByPersonOneAttachment")); // DN
-                CreateColumnOption(option.Add("InterviewedByPersonTwoAttachment")); // DN
-                CreateColumnOption(option.Add("InterviewedByPersonThreeAttachment")); // DN
                 CreateColumnOption(option.Add("ApprovedByUserID1")); // DN
                 CreateColumnOption(option.Add("ApprovedByUserID2")); // DN
             }
@@ -2503,17 +2304,6 @@ public partial class PCM {
                 Command = "search";
             }
 
-            // DocumentDate
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_DocumentDate"))
-                    DocumentDate.AdvancedSearch.SearchValue = Get("x_DocumentDate");
-                else
-                    DocumentDate.AdvancedSearch.SearchValue = Get("DocumentDate"); // Default Value // DN
-            if (!Empty(DocumentDate.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_DocumentDate"))
-                DocumentDate.AdvancedSearch.SearchOperator = Get("z_DocumentDate");
-
             // CreatedByUserID
             if (!IsAddOrEdit)
                 if (Query.ContainsKey("x_CreatedByUserID[]"))
@@ -2557,72 +2347,6 @@ public partial class PCM {
                 Command = "search";
             if (Query.ContainsKey("z_LastUpdatedDateTime"))
                 LastUpdatedDateTime.AdvancedSearch.SearchOperator = Get("z_LastUpdatedDateTime");
-
-            // InterviewedByPersonOneDate
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_InterviewedByPersonOneDate"))
-                    InterviewedByPersonOneDate.AdvancedSearch.SearchValue = Get("x_InterviewedByPersonOneDate");
-                else
-                    InterviewedByPersonOneDate.AdvancedSearch.SearchValue = Get("InterviewedByPersonOneDate"); // Default Value // DN
-            if (!Empty(InterviewedByPersonOneDate.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_InterviewedByPersonOneDate"))
-                InterviewedByPersonOneDate.AdvancedSearch.SearchOperator = Get("z_InterviewedByPersonOneDate");
-
-            // InterviewedByPersonTwoDate
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_InterviewedByPersonTwoDate"))
-                    InterviewedByPersonTwoDate.AdvancedSearch.SearchValue = Get("x_InterviewedByPersonTwoDate");
-                else
-                    InterviewedByPersonTwoDate.AdvancedSearch.SearchValue = Get("InterviewedByPersonTwoDate"); // Default Value // DN
-            if (!Empty(InterviewedByPersonTwoDate.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_InterviewedByPersonTwoDate"))
-                InterviewedByPersonTwoDate.AdvancedSearch.SearchOperator = Get("z_InterviewedByPersonTwoDate");
-
-            // InterviewedByPersonThreeDate
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_InterviewedByPersonThreeDate"))
-                    InterviewedByPersonThreeDate.AdvancedSearch.SearchValue = Get("x_InterviewedByPersonThreeDate");
-                else
-                    InterviewedByPersonThreeDate.AdvancedSearch.SearchValue = Get("InterviewedByPersonThreeDate"); // Default Value // DN
-            if (!Empty(InterviewedByPersonThreeDate.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_InterviewedByPersonThreeDate"))
-                InterviewedByPersonThreeDate.AdvancedSearch.SearchOperator = Get("z_InterviewedByPersonThreeDate");
-
-            // InterviewedByPersonOneAttachment
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_InterviewedByPersonOneAttachment"))
-                    InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue = Get("x_InterviewedByPersonOneAttachment");
-                else
-                    InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue = Get("InterviewedByPersonOneAttachment"); // Default Value // DN
-            if (!Empty(InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_InterviewedByPersonOneAttachment"))
-                InterviewedByPersonOneAttachment.AdvancedSearch.SearchOperator = Get("z_InterviewedByPersonOneAttachment");
-
-            // InterviewedByPersonTwoAttachment
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_InterviewedByPersonTwoAttachment"))
-                    InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue = Get("x_InterviewedByPersonTwoAttachment");
-                else
-                    InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue = Get("InterviewedByPersonTwoAttachment"); // Default Value // DN
-            if (!Empty(InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_InterviewedByPersonTwoAttachment"))
-                InterviewedByPersonTwoAttachment.AdvancedSearch.SearchOperator = Get("z_InterviewedByPersonTwoAttachment");
-
-            // InterviewedByPersonThreeAttachment
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_InterviewedByPersonThreeAttachment"))
-                    InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue = Get("x_InterviewedByPersonThreeAttachment");
-                else
-                    InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue = Get("InterviewedByPersonThreeAttachment"); // Default Value // DN
-            if (!Empty(InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_InterviewedByPersonThreeAttachment"))
-                InterviewedByPersonThreeAttachment.AdvancedSearch.SearchOperator = Get("z_InterviewedByPersonThreeAttachment");
 
             // ApprovedByUserID1
             if (!IsAddOrEdit)
@@ -2714,7 +2438,6 @@ public partial class PCM {
             RowSelected(row);
             ID.SetDbValue(row["ID"]);
             MTCrewID.SetDbValue(row["MTCrewID"]);
-            DocumentDate.SetDbValue(row["DocumentDate"]);
             Activity10.SetDbValue((ConvertToBool(row["Activity10"]) ? "1" : "0"));
             Activity11.SetDbValue((ConvertToBool(row["Activity11"]) ? "1" : "0"));
             Activity12.SetDbValue((ConvertToBool(row["Activity12"]) ? "1" : "0"));
@@ -2750,14 +2473,11 @@ public partial class PCM {
             RemarkActivity70.SetDbValue(row["RemarkActivity70"]);
             InterviewedByPersonOneName.SetDbValue(row["InterviewedByPersonOneName"]);
             InterviewedByPersonOneRank.SetDbValue(row["InterviewedByPersonOneRank"]);
-            InterviewedByPersonOneDate.SetDbValue(row["InterviewedByPersonOneDate"]);
             AssistantManagerPdeReviewedDate.SetDbValue(row["AssistantManagerPdeReviewedDate"]);
             InterviewedByPersonTwoName.SetDbValue(row["InterviewedByPersonTwoName"]);
             InterviewedByPersonTwoRank.SetDbValue(row["InterviewedByPersonTwoRank"]);
-            InterviewedByPersonTwoDate.SetDbValue(row["InterviewedByPersonTwoDate"]);
             InterviewedByPersonThreeName.SetDbValue(row["InterviewedByPersonThreeName"]);
             InterviewedByPersonThreeRank.SetDbValue(row["InterviewedByPersonThreeRank"]);
-            InterviewedByPersonThreeDate.SetDbValue(row["InterviewedByPersonThreeDate"]);
             CrewingManagerApprovalDate.SetDbValue(row["CrewingManagerApprovalDate"]);
             Activity14Attachment.Upload.DbValue = row["Activity14Attachment"];
             Activity14Attachment.SetDbValue(Activity14Attachment.Upload.DbValue);
@@ -2769,9 +2489,6 @@ public partial class PCM {
             Activity50Attachment.SetDbValue(Activity50Attachment.Upload.DbValue);
             Activity70Attachment.Upload.DbValue = row["Activity70Attachment"];
             Activity70Attachment.SetDbValue(Activity70Attachment.Upload.DbValue);
-            InterviewedByPersonOneAttachment.SetDbValue(row["InterviewedByPersonOneAttachment"]);
-            InterviewedByPersonTwoAttachment.SetDbValue(row["InterviewedByPersonTwoAttachment"]);
-            InterviewedByPersonThreeAttachment.SetDbValue(row["InterviewedByPersonThreeAttachment"]);
             FinalInterviewAttachment.Upload.DbValue = row["FinalInterviewAttachment"];
             FinalInterviewAttachment.SetDbValue(FinalInterviewAttachment.Upload.DbValue);
             PrincipalCommentAttachment.Upload.DbValue = row["PrincipalCommentAttachment"];
@@ -2793,7 +2510,6 @@ public partial class PCM {
             var row = new Dictionary<string, object>();
             row.Add("ID", ID.DefaultValue ?? DbNullValue); // DN
             row.Add("MTCrewID", MTCrewID.DefaultValue ?? DbNullValue); // DN
-            row.Add("DocumentDate", DocumentDate.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity10", Activity10.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity11", Activity11.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity12", Activity12.DefaultValue ?? DbNullValue); // DN
@@ -2829,23 +2545,17 @@ public partial class PCM {
             row.Add("RemarkActivity70", RemarkActivity70.DefaultValue ?? DbNullValue); // DN
             row.Add("InterviewedByPersonOneName", InterviewedByPersonOneName.DefaultValue ?? DbNullValue); // DN
             row.Add("InterviewedByPersonOneRank", InterviewedByPersonOneRank.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewedByPersonOneDate", InterviewedByPersonOneDate.DefaultValue ?? DbNullValue); // DN
             row.Add("AssistantManagerPdeReviewedDate", AssistantManagerPdeReviewedDate.DefaultValue ?? DbNullValue); // DN
             row.Add("InterviewedByPersonTwoName", InterviewedByPersonTwoName.DefaultValue ?? DbNullValue); // DN
             row.Add("InterviewedByPersonTwoRank", InterviewedByPersonTwoRank.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewedByPersonTwoDate", InterviewedByPersonTwoDate.DefaultValue ?? DbNullValue); // DN
             row.Add("InterviewedByPersonThreeName", InterviewedByPersonThreeName.DefaultValue ?? DbNullValue); // DN
             row.Add("InterviewedByPersonThreeRank", InterviewedByPersonThreeRank.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewedByPersonThreeDate", InterviewedByPersonThreeDate.DefaultValue ?? DbNullValue); // DN
             row.Add("CrewingManagerApprovalDate", CrewingManagerApprovalDate.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity14Attachment", Activity14Attachment.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity20Attachment", Activity20Attachment.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity30Attachment", Activity30Attachment.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity50Attachment", Activity50Attachment.DefaultValue ?? DbNullValue); // DN
             row.Add("Activity70Attachment", Activity70Attachment.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewedByPersonOneAttachment", InterviewedByPersonOneAttachment.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewedByPersonTwoAttachment", InterviewedByPersonTwoAttachment.DefaultValue ?? DbNullValue); // DN
-            row.Add("InterviewedByPersonThreeAttachment", InterviewedByPersonThreeAttachment.DefaultValue ?? DbNullValue); // DN
             row.Add("FinalInterviewAttachment", FinalInterviewAttachment.DefaultValue ?? DbNullValue); // DN
             row.Add("PrincipalCommentAttachment", PrincipalCommentAttachment.DefaultValue ?? DbNullValue); // DN
             row.Add("FormPrintoutAttachment", FormPrintoutAttachment.DefaultValue ?? DbNullValue); // DN
@@ -2892,8 +2602,6 @@ public partial class PCM {
             ID.CellCssStyle = "white-space: nowrap;";
 
             // MTCrewID
-
-            // DocumentDate
 
             // Activity10
 
@@ -2965,21 +2673,15 @@ public partial class PCM {
 
             // InterviewedByPersonOneRank
 
-            // InterviewedByPersonOneDate
-
             // AssistantManagerPdeReviewedDate
 
             // InterviewedByPersonTwoName
 
             // InterviewedByPersonTwoRank
 
-            // InterviewedByPersonTwoDate
-
             // InterviewedByPersonThreeName
 
             // InterviewedByPersonThreeRank
-
-            // InterviewedByPersonThreeDate
 
             // CrewingManagerApprovalDate
 
@@ -2992,12 +2694,6 @@ public partial class PCM {
             // Activity50Attachment
 
             // Activity70Attachment
-
-            // InterviewedByPersonOneAttachment
-
-            // InterviewedByPersonTwoAttachment
-
-            // InterviewedByPersonThreeAttachment
 
             // FinalInterviewAttachment
 
@@ -3023,11 +2719,6 @@ public partial class PCM {
                 MTCrewID.ViewValue = MTCrewID.CurrentValue;
                 MTCrewID.ViewValue = FormatNumber(MTCrewID.ViewValue, MTCrewID.FormatPattern);
                 MTCrewID.ViewCustomAttributes = "";
-
-                // DocumentDate
-                DocumentDate.ViewValue = DocumentDate.CurrentValue;
-                DocumentDate.ViewValue = FormatDateTime(DocumentDate.ViewValue, DocumentDate.FormatPattern);
-                DocumentDate.ViewCustomAttributes = "";
 
                 // Activity10
                 if (ConvertToBool(Activity10.CurrentValue)) {
@@ -3189,11 +2880,6 @@ public partial class PCM {
                 InterviewedByPersonOneRank.ViewValue = ConvertToString(InterviewedByPersonOneRank.CurrentValue); // DN
                 InterviewedByPersonOneRank.ViewCustomAttributes = "";
 
-                // InterviewedByPersonOneDate
-                InterviewedByPersonOneDate.ViewValue = InterviewedByPersonOneDate.CurrentValue;
-                InterviewedByPersonOneDate.ViewValue = FormatDateTime(InterviewedByPersonOneDate.ViewValue, InterviewedByPersonOneDate.FormatPattern);
-                InterviewedByPersonOneDate.ViewCustomAttributes = "";
-
                 // AssistantManagerPdeReviewedDate
                 AssistantManagerPdeReviewedDate.ViewValue = AssistantManagerPdeReviewedDate.CurrentValue;
                 AssistantManagerPdeReviewedDate.ViewValue = FormatDateTime(AssistantManagerPdeReviewedDate.ViewValue, AssistantManagerPdeReviewedDate.FormatPattern);
@@ -3207,11 +2893,6 @@ public partial class PCM {
                 InterviewedByPersonTwoRank.ViewValue = ConvertToString(InterviewedByPersonTwoRank.CurrentValue); // DN
                 InterviewedByPersonTwoRank.ViewCustomAttributes = "";
 
-                // InterviewedByPersonTwoDate
-                InterviewedByPersonTwoDate.ViewValue = InterviewedByPersonTwoDate.CurrentValue;
-                InterviewedByPersonTwoDate.ViewValue = FormatDateTime(InterviewedByPersonTwoDate.ViewValue, InterviewedByPersonTwoDate.FormatPattern);
-                InterviewedByPersonTwoDate.ViewCustomAttributes = "";
-
                 // InterviewedByPersonThreeName
                 InterviewedByPersonThreeName.ViewValue = ConvertToString(InterviewedByPersonThreeName.CurrentValue); // DN
                 InterviewedByPersonThreeName.ViewCustomAttributes = "";
@@ -3219,11 +2900,6 @@ public partial class PCM {
                 // InterviewedByPersonThreeRank
                 InterviewedByPersonThreeRank.ViewValue = ConvertToString(InterviewedByPersonThreeRank.CurrentValue); // DN
                 InterviewedByPersonThreeRank.ViewCustomAttributes = "";
-
-                // InterviewedByPersonThreeDate
-                InterviewedByPersonThreeDate.ViewValue = InterviewedByPersonThreeDate.CurrentValue;
-                InterviewedByPersonThreeDate.ViewValue = FormatDateTime(InterviewedByPersonThreeDate.ViewValue, InterviewedByPersonThreeDate.FormatPattern);
-                InterviewedByPersonThreeDate.ViewCustomAttributes = "";
 
                 // CrewingManagerApprovalDate
                 CrewingManagerApprovalDate.ViewValue = CrewingManagerApprovalDate.CurrentValue;
@@ -3269,18 +2945,6 @@ public partial class PCM {
                     Activity70Attachment.ViewValue = "";
                 }
                 Activity70Attachment.ViewCustomAttributes = "";
-
-                // InterviewedByPersonOneAttachment
-                InterviewedByPersonOneAttachment.ViewValue = ConvertToString(InterviewedByPersonOneAttachment.CurrentValue); // DN
-                InterviewedByPersonOneAttachment.ViewCustomAttributes = "";
-
-                // InterviewedByPersonTwoAttachment
-                InterviewedByPersonTwoAttachment.ViewValue = ConvertToString(InterviewedByPersonTwoAttachment.CurrentValue); // DN
-                InterviewedByPersonTwoAttachment.ViewCustomAttributes = "";
-
-                // InterviewedByPersonThreeAttachment
-                InterviewedByPersonThreeAttachment.ViewValue = ConvertToString(InterviewedByPersonThreeAttachment.CurrentValue); // DN
-                InterviewedByPersonThreeAttachment.ViewCustomAttributes = "";
 
                 // FinalInterviewAttachment
                 if (!IsNull(FinalInterviewAttachment.Upload.DbValue)) {
@@ -3345,10 +3009,6 @@ public partial class PCM {
                 ApprovedByUserID2.ViewValue = FormatNumber(ApprovedByUserID2.ViewValue, ApprovedByUserID2.FormatPattern);
                 ApprovedByUserID2.ViewCustomAttributes = "";
 
-                // DocumentDate
-                DocumentDate.HrefValue = "";
-                DocumentDate.TooltipValue = "";
-
                 // CreatedByUserID
                 CreatedByUserID.HrefValue = "";
                 CreatedByUserID.TooltipValue = "";
@@ -3365,30 +3025,6 @@ public partial class PCM {
                 LastUpdatedDateTime.HrefValue = "";
                 LastUpdatedDateTime.TooltipValue = "";
 
-                // InterviewedByPersonOneDate
-                InterviewedByPersonOneDate.HrefValue = "";
-                InterviewedByPersonOneDate.TooltipValue = "";
-
-                // InterviewedByPersonTwoDate
-                InterviewedByPersonTwoDate.HrefValue = "";
-                InterviewedByPersonTwoDate.TooltipValue = "";
-
-                // InterviewedByPersonThreeDate
-                InterviewedByPersonThreeDate.HrefValue = "";
-                InterviewedByPersonThreeDate.TooltipValue = "";
-
-                // InterviewedByPersonOneAttachment
-                InterviewedByPersonOneAttachment.HrefValue = "";
-                InterviewedByPersonOneAttachment.TooltipValue = "";
-
-                // InterviewedByPersonTwoAttachment
-                InterviewedByPersonTwoAttachment.HrefValue = "";
-                InterviewedByPersonTwoAttachment.TooltipValue = "";
-
-                // InterviewedByPersonThreeAttachment
-                InterviewedByPersonThreeAttachment.HrefValue = "";
-                InterviewedByPersonThreeAttachment.TooltipValue = "";
-
                 // ApprovedByUserID1
                 ApprovedByUserID1.HrefValue = "";
                 ApprovedByUserID1.TooltipValue = "";
@@ -3397,11 +3033,6 @@ public partial class PCM {
                 ApprovedByUserID2.HrefValue = "";
                 ApprovedByUserID2.TooltipValue = "";
             } else if (RowType == RowType.Search) {
-                // DocumentDate
-                DocumentDate.SetupEditAttributes();
-                DocumentDate.EditValue = FormatDateTime(UnformatDateTime(DocumentDate.AdvancedSearch.SearchValue, DocumentDate.FormatPattern), DocumentDate.FormatPattern); // DN
-                DocumentDate.PlaceHolder = RemoveHtml(DocumentDate.Caption);
-
                 // CreatedByUserID
                 if (CreatedByUserID.UseFilter && !Empty(CreatedByUserID.AdvancedSearch.SearchValue)) {
                     CreatedByUserID.EditValue = ConvertToString(CreatedByUserID.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
@@ -3421,42 +3052,6 @@ public partial class PCM {
                 if (LastUpdatedDateTime.UseFilter && !Empty(LastUpdatedDateTime.AdvancedSearch.SearchValue)) {
                     LastUpdatedDateTime.EditValue = ConvertToString(LastUpdatedDateTime.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
                 }
-
-                // InterviewedByPersonOneDate
-                InterviewedByPersonOneDate.SetupEditAttributes();
-                InterviewedByPersonOneDate.EditValue = FormatDateTime(UnformatDateTime(InterviewedByPersonOneDate.AdvancedSearch.SearchValue, InterviewedByPersonOneDate.FormatPattern), InterviewedByPersonOneDate.FormatPattern); // DN
-                InterviewedByPersonOneDate.PlaceHolder = RemoveHtml(InterviewedByPersonOneDate.Caption);
-
-                // InterviewedByPersonTwoDate
-                InterviewedByPersonTwoDate.SetupEditAttributes();
-                InterviewedByPersonTwoDate.EditValue = FormatDateTime(UnformatDateTime(InterviewedByPersonTwoDate.AdvancedSearch.SearchValue, InterviewedByPersonTwoDate.FormatPattern), InterviewedByPersonTwoDate.FormatPattern); // DN
-                InterviewedByPersonTwoDate.PlaceHolder = RemoveHtml(InterviewedByPersonTwoDate.Caption);
-
-                // InterviewedByPersonThreeDate
-                InterviewedByPersonThreeDate.SetupEditAttributes();
-                InterviewedByPersonThreeDate.EditValue = FormatDateTime(UnformatDateTime(InterviewedByPersonThreeDate.AdvancedSearch.SearchValue, InterviewedByPersonThreeDate.FormatPattern), InterviewedByPersonThreeDate.FormatPattern); // DN
-                InterviewedByPersonThreeDate.PlaceHolder = RemoveHtml(InterviewedByPersonThreeDate.Caption);
-
-                // InterviewedByPersonOneAttachment
-                InterviewedByPersonOneAttachment.SetupEditAttributes();
-                if (!InterviewedByPersonOneAttachment.Raw)
-                    InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue = HtmlDecode(InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue);
-                InterviewedByPersonOneAttachment.EditValue = HtmlEncode(InterviewedByPersonOneAttachment.AdvancedSearch.SearchValue);
-                InterviewedByPersonOneAttachment.PlaceHolder = RemoveHtml(InterviewedByPersonOneAttachment.Caption);
-
-                // InterviewedByPersonTwoAttachment
-                InterviewedByPersonTwoAttachment.SetupEditAttributes();
-                if (!InterviewedByPersonTwoAttachment.Raw)
-                    InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue = HtmlDecode(InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue);
-                InterviewedByPersonTwoAttachment.EditValue = HtmlEncode(InterviewedByPersonTwoAttachment.AdvancedSearch.SearchValue);
-                InterviewedByPersonTwoAttachment.PlaceHolder = RemoveHtml(InterviewedByPersonTwoAttachment.Caption);
-
-                // InterviewedByPersonThreeAttachment
-                InterviewedByPersonThreeAttachment.SetupEditAttributes();
-                if (!InterviewedByPersonThreeAttachment.Raw)
-                    InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue = HtmlDecode(InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue);
-                InterviewedByPersonThreeAttachment.EditValue = HtmlEncode(InterviewedByPersonThreeAttachment.AdvancedSearch.SearchValue);
-                InterviewedByPersonThreeAttachment.PlaceHolder = RemoveHtml(InterviewedByPersonThreeAttachment.Caption);
 
                 // ApprovedByUserID1
                 ApprovedByUserID1.SetupEditAttributes();
@@ -3871,13 +3466,6 @@ public partial class PCM {
         // Load advanced search
         public void LoadAdvancedSearch()
         {
-            DocumentDate.AdvancedSearch.Load();
-            InterviewedByPersonOneDate.AdvancedSearch.Load();
-            InterviewedByPersonTwoDate.AdvancedSearch.Load();
-            InterviewedByPersonThreeDate.AdvancedSearch.Load();
-            InterviewedByPersonOneAttachment.AdvancedSearch.Load();
-            InterviewedByPersonTwoAttachment.AdvancedSearch.Load();
-            InterviewedByPersonThreeAttachment.AdvancedSearch.Load();
             ApprovedByUserID1.AdvancedSearch.Load();
             ApprovedByUserID2.AdvancedSearch.Load();
         }

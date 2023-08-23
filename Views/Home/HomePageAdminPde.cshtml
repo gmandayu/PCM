@@ -24,7 +24,6 @@
     #pragma warning restore 168
 }
 @homePageAdminPde.ShowMessages()
-@* START CUSTOM TEMPLATE *@
 <div class="container">
     <h1>Welcome, <span id="admin_name">&nbsp;</span></h1>
 
@@ -39,10 +38,9 @@
             </div>
         </div>
     </div>
-
-
-
+    
     <div class="row">
+        <!-- New Applicant -->
         <div class="col-md-3">
             <a href="#" id="href_new_applicant" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -56,6 +54,22 @@
                 </div>
             </a>
         </div>
+        <!-- Waiting For Agency Review -->
+        <div class="col-md-3">
+            <a href="#" id="href_waiting_agency_review" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #08adf0; filter: brightness(0.9);">
+                        <h5 style="color: white;">Waiting Agency Review @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #08adf0; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="box_waiting_agency_review" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-file-invoice" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+       
+        <!-- Waiting For PDE Review -->
         <div class="col-md-3">
             <a href="#" id="href_waiting_pde_review" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -69,6 +83,8 @@
                 </div>
             </a>
         </div>
+
+        <!-- Selection Checklist -->
         <div class="col-md-3">
             <a href="#" id="href_selection_checklist" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -82,6 +98,12 @@
                 </div>
             </a>
         </div>
+
+        
+    </div>
+
+    <div class="row">
+        <!-- Waiting MCU Result -->
         <div class="col-md-3">
             <a href="#" id="href_waiting_mcu_result" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -95,9 +117,8 @@
                 </div>
             </a>
         </div>
-    </div>
 
-    <div class="row">
+        <!-- Crew Accepted -->
         <div class="col-md-3">
             <a href="#" id="href_accepted" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -111,6 +132,8 @@
                 </div>
             </a>
         </div>
+
+        <!-- Crew Rejected -->
         <div class="col-md-3">
             <a href="#" id="href_rejected" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -124,6 +147,8 @@
                 </div>
             </a>
         </div>
+
+        <!-- Crew Temporary Rejected -->
         <div class="col-md-3">
             <a href="#" id="href_temporary_rejected" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -137,6 +162,12 @@
                 </div>
             </a>
         </div>
+
+        
+    </div>
+
+    <div class="row">
+        <!-- Crew Blacklist -->
         <div class="col-md-3">
             <a href="#" id="href_blacklist" style="text-decoration: none">
                 <div class="card" style="height: 180px;">
@@ -150,12 +181,26 @@
                 </div>
             </a>
         </div>
+
+        <!-- Update Tracking -->
+        <div class="col-md-3">
+            <a href="#" id="href_records_change" style="text-decoration: none">
+                <div class="card" style="height: 180px;">
+                    <div class="card-header" style="padding-bottom: 0.5rem;border-bottom: 1px solid transparent;background-color: #888888; filter: brightness(0.9);">
+                        <h5 style="color: white;">Records Change @*<span><i class="fa fa-arrow-circle-right" aria-hidden="true" style="user-select: auto;"></i></span>*@</h5>
+                    </div>
+                    <div class="card-body" style="background-color: #888888; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; height: 100%;">
+                        <span id="recordsChangeCount" style="font-size: 7vh; color: white; opacity: 0.8;">&nbsp;</span>
+                        <i class="fa-solid fa-user-slash" style="font-size: 10vh; color: white; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         const currentUrolObject = new URL(window.location.href);
-
         const parentUrl = ew.PATH_BASE;
 
         $(document).ready(function() {
@@ -216,34 +261,57 @@
                 }
             });
 
-            // Hitung jumlah kru dengan status "Candidate - Submitted"
+            // Hitung jumlah kru dengan status "Candidate - Agency Reviewed"
             $.ajax({
                 url: `${parentUrl}api/Dashboard/get-count-candidate-submitted-crew`,
                 method: 'GET',
                 data: {
                     employeeStatus: 'Candidate - Submitted'
                 },
-                success: function(response) {
-                    if(response.success) {
+                success: function (response) {
+                    if (response.success) {
                         var crewCount = response.data;
                         console.log('Candidate - Submitted: ' + crewCount);
+                        $('#box_waiting_agency_review').text(crewCount);
+                    }
+                    else {
+                        console.log('Error: ' + response.errorMessage);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Request error: ' + error);
+                }
+            });
+
+            // Hitung jumlah kru dengan status "Candidate - Waiting For PDE Reviewed"
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-count-agency-reviewed-crew`,
+                method: 'GET',
+                data: {
+                    employeeStatus: 'Candidate - Agency Reviewed'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var crewCount = response.data;
+                        console.log('Candidate - Agency Reviewed: ' + crewCount);
                         $('#box_waiting_pde_review').text(crewCount);
                     }
                     else {
                         console.log('Error: ' + response.errorMessage);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.log('Request error: ' + error);
                 }
             });
+            
 
-            // Hitung jumlah kru dengan status "Candidate - Reviewed"
+            // Hitung jumlah kru dengan status "Candidate - Checklist"
             $.ajax({
                 url: `${parentUrl}api/Dashboard/get-count-checklist-crew`,
                 method: 'GET',
                 data: {
-                    employeeStatus: 'Candidate - Reviewed'
+                    employeeStatus: 'Candidate - PDE Reviewed'
                 },
                 success: function(response) {
                     if(response.success) {
@@ -369,11 +437,28 @@
                     console.log('Request error: ' + error);
                 }
             });
+            
+            // Hitung jumlah record changes kru
+            $.ajax({
+                url: `${parentUrl}api/Dashboard/get-records-change-count`,
+                method: 'GET',
+                success: function(response) {
+                    var recordCount = response.data;
+                    $('#recordsChangeCount').text(recordCount);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error: ' + error);
+                }
+            });
 
             // Redirect to spesific page when card clicked.
             $("a#href_new_applicant").on("click", function(e) {
                 e.preventDefault();
                 window.location.href = `${parentUrl}RegistrationList`;
+            });
+            $("a#href_waiting_agency_review").on("click", function (e) { 
+                e.preventDefault();
+                window.location.href = `${parentUrl}WaitingForAgencyReviewList`;
             });
             $("a#href_waiting_pde_review").on("click", function(e) {
                 e.preventDefault();
@@ -403,7 +488,10 @@
                 e.preventDefault();
                 window.location.href = `${parentUrl}vCrewBlacklistForAdminList`;
             });
-            
+            $("a#href_records_change").on("click", function(e) {
+                e.preventDefault();
+                window.location.href = `${parentUrl}UpdateTrackingList`;
+            });
         });
     </script>
 </div>

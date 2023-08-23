@@ -1,0 +1,653 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (mtManningAgentList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!mtManningAgentList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!mtManningAgentList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtManningAgentList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTManningAgent: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(mtManningAgentList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(mtManningAgentList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(mtManningAgentList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(mtManningAgentList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "Code": @Html.Raw(mtManningAgentList.Code.ToClientList(mtManningAgentList)),
+            "_Name": @Html.Raw(mtManningAgentList._Name.ToClientList(mtManningAgentList)),
+            "Active": @Html.Raw(mtManningAgentList.Active.ToClientList(mtManningAgentList)),
+            "CreatedByUserID": @Html.Raw(mtManningAgentList.CreatedByUserID.ToClientList(mtManningAgentList)),
+            "CreatedDateTime": @Html.Raw(mtManningAgentList.CreatedDateTime.ToClientList(mtManningAgentList)),
+            "LastUpdatedByUserID": @Html.Raw(mtManningAgentList.LastUpdatedByUserID.ToClientList(mtManningAgentList)),
+            "LastUpdatedDateTime": @Html.Raw(mtManningAgentList.LastUpdatedDateTime.ToClientList(mtManningAgentList)),
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!mtManningAgentList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (mtManningAgentList.TotalRecords > 0 && mtManningAgentList.ExportOptions.Visible) {
+    mtManningAgentList.ExportOptions.Render("body");
+}
+@if (mtManningAgentList.ImportOptions.Visible) {
+    mtManningAgentList.ImportOptions.Render("body");
+}
+@if (mtManningAgentList.SearchOptions.Visible) {
+    mtManningAgentList.SearchOptions.Render("body");
+}
+@if (mtManningAgentList.FilterOptions.Visible) {
+    mtManningAgentList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (mtManningAgentList.ShowCurrentFilter) {
+    mtManningAgentList.ShowFilterList();
+}
+@if (!mtManningAgentList.IsModal) {
+<form name="fMTManningAgentsrch" id="fMTManningAgentsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fMTManningAgentsrch_search_panel" class="mb-2 mb-sm-0 @(mtManningAgentList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(mtManningAgentList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { MTManningAgent: currentTable } });
+var currentForm;
+var fMTManningAgentsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fMTManningAgentsrch")
+        .setPageId("list")
+@if (mtManningAgentList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Add fields
+        .setFields([
+
+            ["Code", [], fields.Code.isInvalid],
+            ["_Name", [], fields._Name.isInvalid],
+            ["Active", [], fields.Active.isInvalid],
+            ["CreatedByUserID", [], fields.CreatedByUserID.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["LastUpdatedByUserID", [], fields.LastUpdatedByUserID.isInvalid],
+            ["LastUpdatedDateTime", [], fields.LastUpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+            "Code": @Html.Raw(mtManningAgentList.Code.ToClientList(mtManningAgentList)),
+            "_Name": @Html.Raw(mtManningAgentList._Name.ToClientList(mtManningAgentList)),
+            "Active": @Html.Raw(mtManningAgentList.Active.ToClientList(mtManningAgentList)),
+            "CreatedByUserID": @Html.Raw(mtManningAgentList.CreatedByUserID.ToClientList(mtManningAgentList)),
+            "CreatedDateTime": @Html.Raw(mtManningAgentList.CreatedDateTime.ToClientList(mtManningAgentList)),
+            "LastUpdatedByUserID": @Html.Raw(mtManningAgentList.LastUpdatedByUserID.ToClientList(mtManningAgentList)),
+            "LastUpdatedDateTime": @Html.Raw(mtManningAgentList.LastUpdatedDateTime.ToClientList(mtManningAgentList)),
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await mtManningAgentList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!mtManningAgentList.IsExport() && Empty(mtManningAgentList.CurrentAction) && mtManningAgentList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(mtManningAgentList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + mtManningAgentList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    mtManningAgentList.RowType = RowType.Search;
+    mtManningAgentList.ResetAttributes();
+    await mtManningAgentList.RenderRow();
+}
+@if (mtManningAgentList.Code.Visible) { // mtManningAgentList.Code.Visible (begin)
+    if (!mtManningAgentList.Code.UseFilter) {
+        mtManningAgentList.SearchColumnCount++;
+    }
+    <div id="xs_Code" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtManningAgentList.Code.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Code"
+            name="x_Code[]"
+            class="form-control ew-select@(mtManningAgentList.Code.IsInvalidClass)"
+            data-select2-id="fMTManningAgentsrch_x_Code"
+            data-table="MTManningAgent"
+            data-field="x_Code"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtManningAgentList.Code.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtManningAgentList.Code.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtManningAgentList.Code.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtManningAgentList.Code.EditAttributes)>
+            @(mtManningAgentList.Code.SelectOptionListHtml("x_Code", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtManningAgentList.Code.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTManningAgentsrch", function() {
+            var options = {
+                name: "x_Code",
+                selectId: "fMTManningAgentsrch_x_Code",
+                ajax: { id: "x_Code", form: "fMTManningAgentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTManningAgent.fields.Code.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtManningAgentList.Code.Visible (end) *@
+@if (mtManningAgentList._Name.Visible) { // mtManningAgentList._Name.Visible (begin)
+    if (!mtManningAgentList._Name.UseFilter) {
+        mtManningAgentList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtManningAgentList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(mtManningAgentList._Name.IsInvalidClass)"
+            data-select2-id="fMTManningAgentsrch_x__Name"
+            data-table="MTManningAgent"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtManningAgentList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtManningAgentList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtManningAgentList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtManningAgentList._Name.EditAttributes)>
+            @(mtManningAgentList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtManningAgentList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTManningAgentsrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fMTManningAgentsrch_x__Name",
+                ajax: { id: "x__Name", form: "fMTManningAgentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTManningAgent.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtManningAgentList._Name.Visible (end) *@
+@if (mtManningAgentList.Active.Visible) { // mtManningAgentList.Active.Visible (begin)
+    if (!mtManningAgentList.Active.UseFilter) {
+        mtManningAgentList.SearchColumnCount++;
+    }
+    <div id="xs_Active" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtManningAgentList.Active.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Active"
+            name="x_Active[]"
+            class="form-control ew-select@(mtManningAgentList.Active.IsInvalidClass)"
+            data-select2-id="fMTManningAgentsrch_x_Active"
+            data-table="MTManningAgent"
+            data-field="x_Active"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtManningAgentList.Active.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtManningAgentList.Active.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtManningAgentList.Active.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtManningAgentList.Active.EditAttributes)>
+            @(mtManningAgentList.Active.SelectOptionListHtml("x_Active", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtManningAgentList.Active.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTManningAgentsrch", function() {
+            var options = {
+                name: "x_Active",
+                selectId: "fMTManningAgentsrch_x_Active",
+                ajax: { id: "x_Active", form: "fMTManningAgentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTManningAgent.fields.Active.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtManningAgentList.Active.Visible (end) *@
+@if (mtManningAgentList.CreatedByUserID.Visible) { // mtManningAgentList.CreatedByUserID.Visible (begin)
+    if (!mtManningAgentList.CreatedByUserID.UseFilter) {
+        mtManningAgentList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtManningAgentList.CreatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedByUserID"
+            name="x_CreatedByUserID[]"
+            class="form-control ew-select@(mtManningAgentList.CreatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTManningAgentsrch_x_CreatedByUserID"
+            data-table="MTManningAgent"
+            data-field="x_CreatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtManningAgentList.CreatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtManningAgentList.CreatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtManningAgentList.CreatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtManningAgentList.CreatedByUserID.EditAttributes)>
+            @(mtManningAgentList.CreatedByUserID.SelectOptionListHtml("x_CreatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtManningAgentList.CreatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTManningAgentsrch", function() {
+            var options = {
+                name: "x_CreatedByUserID",
+                selectId: "fMTManningAgentsrch_x_CreatedByUserID",
+                ajax: { id: "x_CreatedByUserID", form: "fMTManningAgentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTManningAgent.fields.CreatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtManningAgentList.CreatedByUserID.Visible (end) *@
+@if (mtManningAgentList.CreatedDateTime.Visible) { // mtManningAgentList.CreatedDateTime.Visible (begin)
+    if (!mtManningAgentList.CreatedDateTime.UseFilter) {
+        mtManningAgentList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtManningAgentList.CreatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedDateTime"
+            name="x_CreatedDateTime[]"
+            class="form-control ew-select@(mtManningAgentList.CreatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTManningAgentsrch_x_CreatedDateTime"
+            data-table="MTManningAgent"
+            data-field="x_CreatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtManningAgentList.CreatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtManningAgentList.CreatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtManningAgentList.CreatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtManningAgentList.CreatedDateTime.EditAttributes)>
+            @(mtManningAgentList.CreatedDateTime.SelectOptionListHtml("x_CreatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtManningAgentList.CreatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTManningAgentsrch", function() {
+            var options = {
+                name: "x_CreatedDateTime",
+                selectId: "fMTManningAgentsrch_x_CreatedDateTime",
+                ajax: { id: "x_CreatedDateTime", form: "fMTManningAgentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTManningAgent.fields.CreatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtManningAgentList.CreatedDateTime.Visible (end) *@
+@if (mtManningAgentList.LastUpdatedByUserID.Visible) { // mtManningAgentList.LastUpdatedByUserID.Visible (begin)
+    if (!mtManningAgentList.LastUpdatedByUserID.UseFilter) {
+        mtManningAgentList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedByUserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtManningAgentList.LastUpdatedByUserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedByUserID"
+            name="x_LastUpdatedByUserID[]"
+            class="form-control ew-select@(mtManningAgentList.LastUpdatedByUserID.IsInvalidClass)"
+            data-select2-id="fMTManningAgentsrch_x_LastUpdatedByUserID"
+            data-table="MTManningAgent"
+            data-field="x_LastUpdatedByUserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtManningAgentList.LastUpdatedByUserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtManningAgentList.LastUpdatedByUserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtManningAgentList.LastUpdatedByUserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtManningAgentList.LastUpdatedByUserID.EditAttributes)>
+            @(mtManningAgentList.LastUpdatedByUserID.SelectOptionListHtml("x_LastUpdatedByUserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtManningAgentList.LastUpdatedByUserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTManningAgentsrch", function() {
+            var options = {
+                name: "x_LastUpdatedByUserID",
+                selectId: "fMTManningAgentsrch_x_LastUpdatedByUserID",
+                ajax: { id: "x_LastUpdatedByUserID", form: "fMTManningAgentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTManningAgent.fields.LastUpdatedByUserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtManningAgentList.LastUpdatedByUserID.Visible (end) *@
+@if (mtManningAgentList.LastUpdatedDateTime.Visible) { // mtManningAgentList.LastUpdatedDateTime.Visible (begin)
+    if (!mtManningAgentList.LastUpdatedDateTime.UseFilter) {
+        mtManningAgentList.SearchColumnCount++;
+    }
+    <div id="xs_LastUpdatedDateTime" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(mtManningAgentList.LastUpdatedDateTime.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastUpdatedDateTime"
+            name="x_LastUpdatedDateTime[]"
+            class="form-control ew-select@(mtManningAgentList.LastUpdatedDateTime.IsInvalidClass)"
+            data-select2-id="fMTManningAgentsrch_x_LastUpdatedDateTime"
+            data-table="MTManningAgent"
+            data-field="x_LastUpdatedDateTime"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(mtManningAgentList.LastUpdatedDateTime.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(mtManningAgentList.LastUpdatedDateTime.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(mtManningAgentList.LastUpdatedDateTime.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(mtManningAgentList.LastUpdatedDateTime.EditAttributes)>
+            @(mtManningAgentList.LastUpdatedDateTime.SelectOptionListHtml("x_LastUpdatedDateTime", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(mtManningAgentList.LastUpdatedDateTime.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fMTManningAgentsrch", function() {
+            var options = {
+                name: "x_LastUpdatedDateTime",
+                selectId: "fMTManningAgentsrch_x_LastUpdatedDateTime",
+                ajax: { id: "x_LastUpdatedDateTime", form: "fMTManningAgentsrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.MTManningAgent.fields.LastUpdatedDateTime.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* mtManningAgentList.LastUpdatedDateTime.Visible (end) *@
+</div><!-- /.row -->
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(mtManningAgentList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(mtManningAgentList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(mtManningAgentList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(mtManningAgentList.BasicSearch.SessionType == "" ? " active" : "")" form="fMTManningAgentsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(mtManningAgentList.BasicSearch.SessionType == "=" ? " active" : "")" form="fMTManningAgentsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(mtManningAgentList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fMTManningAgentsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(mtManningAgentList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fMTManningAgentsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@mtManningAgentList.ShowPageHeader()
+@mtManningAgentList.ShowMessages()
+<main class="list @(mtManningAgentList.TotalRecords == 0 && !mtManningAgentList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (mtManningAgentList.TotalRecords > 0 || !Empty(mtManningAgentList.CurrentAction)) {
+<div class="card ew-card ew-grid@(mtManningAgentList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(mtManningAgentList.TableGridClass)">
+<form name="@(mtManningAgentList.FormName)" id="@(mtManningAgentList.FormName)" class="ew-form ew-list-form" action="@AppPath(mtManningAgentList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (mtManningAgentList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_MTManningAgent" class="card-body ew-grid-middle-panel @(mtManningAgentList.TableContainerClass)" style="@(mtManningAgentList.TableContainerStyle)">
+@if (mtManningAgentList.TotalRecords > 0 || mtManningAgentList.IsGridEdit || mtManningAgentList.IsMultiEdit) {
+<table id="tbl_MTManningAgentlist" class="@(mtManningAgentList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    mtManningAgentList.RowType = RowType.Header;
+
+    // Render list options
+    await mtManningAgentList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@mtManningAgentList.ListOptions.RenderHeader("left")
+@if (mtManningAgentList.Code.Visible) { // mtManningAgentList.Code.Visible (begin)
+        <th data-name="Code" class="@(mtManningAgentList.Code.HeaderCellClass)"><div id="elh_MTManningAgent_Code" class="MTManningAgent_Code">@Html.Raw(mtManningAgentList.RenderFieldHeader(mtManningAgentList.Code))</div></th>
+} @* mtManningAgentList.Code.Visible (end) *@
+@if (mtManningAgentList._Name.Visible) { // mtManningAgentList._Name.Visible (begin)
+        <th data-name="_Name" class="@(mtManningAgentList._Name.HeaderCellClass)"><div id="elh_MTManningAgent__Name" class="MTManningAgent__Name">@Html.Raw(mtManningAgentList.RenderFieldHeader(mtManningAgentList._Name))</div></th>
+} @* mtManningAgentList._Name.Visible (end) *@
+@if (mtManningAgentList.Active.Visible) { // mtManningAgentList.Active.Visible (begin)
+        <th data-name="Active" class="@(mtManningAgentList.Active.HeaderCellClass)"><div id="elh_MTManningAgent_Active" class="MTManningAgent_Active">@Html.Raw(mtManningAgentList.RenderFieldHeader(mtManningAgentList.Active))</div></th>
+} @* mtManningAgentList.Active.Visible (end) *@
+@if (mtManningAgentList.CreatedByUserID.Visible) { // mtManningAgentList.CreatedByUserID.Visible (begin)
+        <th data-name="CreatedByUserID" class="@(mtManningAgentList.CreatedByUserID.HeaderCellClass)"><div id="elh_MTManningAgent_CreatedByUserID" class="MTManningAgent_CreatedByUserID">@Html.Raw(mtManningAgentList.RenderFieldHeader(mtManningAgentList.CreatedByUserID))</div></th>
+} @* mtManningAgentList.CreatedByUserID.Visible (end) *@
+@if (mtManningAgentList.CreatedDateTime.Visible) { // mtManningAgentList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(mtManningAgentList.CreatedDateTime.HeaderCellClass)"><div id="elh_MTManningAgent_CreatedDateTime" class="MTManningAgent_CreatedDateTime">@Html.Raw(mtManningAgentList.RenderFieldHeader(mtManningAgentList.CreatedDateTime))</div></th>
+} @* mtManningAgentList.CreatedDateTime.Visible (end) *@
+@if (mtManningAgentList.LastUpdatedByUserID.Visible) { // mtManningAgentList.LastUpdatedByUserID.Visible (begin)
+        <th data-name="LastUpdatedByUserID" class="@(mtManningAgentList.LastUpdatedByUserID.HeaderCellClass)"><div id="elh_MTManningAgent_LastUpdatedByUserID" class="MTManningAgent_LastUpdatedByUserID">@Html.Raw(mtManningAgentList.RenderFieldHeader(mtManningAgentList.LastUpdatedByUserID))</div></th>
+} @* mtManningAgentList.LastUpdatedByUserID.Visible (end) *@
+@if (mtManningAgentList.LastUpdatedDateTime.Visible) { // mtManningAgentList.LastUpdatedDateTime.Visible (begin)
+        <th data-name="LastUpdatedDateTime" class="@(mtManningAgentList.LastUpdatedDateTime.HeaderCellClass)"><div id="elh_MTManningAgent_LastUpdatedDateTime" class="MTManningAgent_LastUpdatedDateTime">@Html.Raw(mtManningAgentList.RenderFieldHeader(mtManningAgentList.LastUpdatedDateTime))</div></th>
+} @* mtManningAgentList.LastUpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@mtManningAgentList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(mtManningAgentList.PageNumber)">
+@{
+    await mtManningAgentList.SetupGrid();
+    bool eof = mtManningAgentList.Recordset == null; // DN
+}
+@while (mtManningAgentList.RecordCount < mtManningAgentList.StopRecord || SameString(mtManningAgentList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(mtManningAgentList.RowIndex, "$rowindex$") &&
+        (!mtManningAgentList.IsGridAdd || mtManningAgentList.CurrentMode == "copy") &&
+        (!((mtManningAgentList.IsCopy || mtManningAgentList.IsAdd) && mtManningAgentList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await mtManningAgentList.Recordset.ReadAsync();
+    mtManningAgentList.RecordCount++;
+    if (mtManningAgentList.RecordCount >= mtManningAgentList.StartRecord) {
+        await mtManningAgentList.SetupRow();
+    <tr @Html.Raw(mtManningAgentList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @mtManningAgentList.ListOptions.RenderBody("left", mtManningAgentList.RowCount)
+    @if (mtManningAgentList.Code.Visible) { // mtManningAgentList.Code.Visible (begin)
+        <td data-name="Code" @Html.Raw(mtManningAgentList.Code.CellAttributes)>
+<span id="el@(mtManningAgentList.RowCount)_MTManningAgent_Code" class="el_MTManningAgent_Code">
+<span @Html.Raw(mtManningAgentList.Code.ViewAttributes)>
+@Html.Raw(mtManningAgentList.Code.GetViewValue())</span>
+</span>
+</td>
+    } @* mtManningAgentList.Code.Visible (end) *@
+    @if (mtManningAgentList._Name.Visible) { // mtManningAgentList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(mtManningAgentList._Name.CellAttributes)>
+<span id="el@(mtManningAgentList.RowCount)_MTManningAgent__Name" class="el_MTManningAgent__Name">
+<span @Html.Raw(mtManningAgentList._Name.ViewAttributes)>
+@Html.Raw(mtManningAgentList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* mtManningAgentList._Name.Visible (end) *@
+    @if (mtManningAgentList.Active.Visible) { // mtManningAgentList.Active.Visible (begin)
+        <td data-name="Active" @Html.Raw(mtManningAgentList.Active.CellAttributes)>
+<span id="el@(mtManningAgentList.RowCount)_MTManningAgent_Active" class="el_MTManningAgent_Active">
+<span @Html.Raw(mtManningAgentList.Active.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_Active_@(mtManningAgentList.RowCount)" class="form-check-input" value="@(mtManningAgentList.Active.GetViewValue())" disabled checked="@(ConvertToBool(mtManningAgentList.Active.CurrentValue))">
+    <label class="form-check-label" for="x_Active_@(mtManningAgentList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* mtManningAgentList.Active.Visible (end) *@
+    @if (mtManningAgentList.CreatedByUserID.Visible) { // mtManningAgentList.CreatedByUserID.Visible (begin)
+        <td data-name="CreatedByUserID" @Html.Raw(mtManningAgentList.CreatedByUserID.CellAttributes)>
+<span id="el@(mtManningAgentList.RowCount)_MTManningAgent_CreatedByUserID" class="el_MTManningAgent_CreatedByUserID">
+<span @Html.Raw(mtManningAgentList.CreatedByUserID.ViewAttributes)>
+@Html.Raw(mtManningAgentList.CreatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtManningAgentList.CreatedByUserID.Visible (end) *@
+    @if (mtManningAgentList.CreatedDateTime.Visible) { // mtManningAgentList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(mtManningAgentList.CreatedDateTime.CellAttributes)>
+<span id="el@(mtManningAgentList.RowCount)_MTManningAgent_CreatedDateTime" class="el_MTManningAgent_CreatedDateTime">
+<span @Html.Raw(mtManningAgentList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(mtManningAgentList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtManningAgentList.CreatedDateTime.Visible (end) *@
+    @if (mtManningAgentList.LastUpdatedByUserID.Visible) { // mtManningAgentList.LastUpdatedByUserID.Visible (begin)
+        <td data-name="LastUpdatedByUserID" @Html.Raw(mtManningAgentList.LastUpdatedByUserID.CellAttributes)>
+<span id="el@(mtManningAgentList.RowCount)_MTManningAgent_LastUpdatedByUserID" class="el_MTManningAgent_LastUpdatedByUserID">
+<span @Html.Raw(mtManningAgentList.LastUpdatedByUserID.ViewAttributes)>
+@Html.Raw(mtManningAgentList.LastUpdatedByUserID.GetViewValue())</span>
+</span>
+</td>
+    } @* mtManningAgentList.LastUpdatedByUserID.Visible (end) *@
+    @if (mtManningAgentList.LastUpdatedDateTime.Visible) { // mtManningAgentList.LastUpdatedDateTime.Visible (begin)
+        <td data-name="LastUpdatedDateTime" @Html.Raw(mtManningAgentList.LastUpdatedDateTime.CellAttributes)>
+<span id="el@(mtManningAgentList.RowCount)_MTManningAgent_LastUpdatedDateTime" class="el_MTManningAgent_LastUpdatedDateTime">
+<span @Html.Raw(mtManningAgentList.LastUpdatedDateTime.ViewAttributes)>
+@Html.Raw(mtManningAgentList.LastUpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* mtManningAgentList.LastUpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @mtManningAgentList.ListOptions.RenderBody("right", mtManningAgentList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(mtManningAgentList.RowIndex, "$rowindex$"))
+        mtManningAgentList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((mtManningAgentList.IsCopy || mtManningAgentList.IsAdd) && mtManningAgentList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        mtManningAgentList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(mtManningAgentList.CurrentAction) && !mtManningAgentList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ mtManningAgentList.CloseRecordset(); }
+@if (!mtManningAgentList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!mtManningAgentList.IsGridAdd && !(mtManningAgentList.IsGridEdit && mtManningAgentList.ModalGridEdit) && !mtManningAgentList.IsMultiEdit) {
+@Html.Raw(mtManningAgentList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@mtManningAgentList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@mtManningAgentList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@mtManningAgentList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!mtManningAgentList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("MTManningAgent");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

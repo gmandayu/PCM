@@ -273,12 +273,6 @@ public partial class PCM {
             CoverallSizeDescription.SetVisibility();
             ShirtSizeDescription.SetVisibility();
             TrouserSizeDescription.SetVisibility();
-            ChestSize.Visible = false;
-            WaistSize.Visible = false;
-            ShoulderSize.Visible = false;
-            LongSleeveSize.Visible = false;
-            FrontLengthSize.Visible = false;
-            CollarSize.Visible = false;
             ActiveDescription.Visible = false;
             CreatedByUserID.SetVisibility();
             CreatedDateTime.SetVisibility();
@@ -1562,7 +1556,7 @@ public partial class PCM {
         protected void SetupSortOrder() {
             // Load default Sorting Order
             if (Command != "json") {
-                string defaultSort = ChestSize.Expression + " ASC"; // Set up default sort
+                string defaultSort = ""; // Set up default sort
                 if (Empty(SessionOrderBy) && !Empty(defaultSort))
                     SessionOrderBy = defaultSort;
             }
@@ -1611,12 +1605,6 @@ public partial class PCM {
                     CoverallSizeDescription.Sort = "";
                     ShirtSizeDescription.Sort = "";
                     TrouserSizeDescription.Sort = "";
-                    ChestSize.Sort = "";
-                    WaistSize.Sort = "";
-                    ShoulderSize.Sort = "";
-                    LongSleeveSize.Sort = "";
-                    FrontLengthSize.Sort = "";
-                    CollarSize.Sort = "";
                     ActiveDescription.Sort = "";
                     CreatedByUserID.Sort = "";
                     CreatedDateTime.Sort = "";
@@ -2297,12 +2285,6 @@ public partial class PCM {
             CoverallSizeDescription.SetDbValue(row["CoverallSizeDescription"]);
             ShirtSizeDescription.SetDbValue(row["ShirtSizeDescription"]);
             TrouserSizeDescription.SetDbValue(row["TrouserSizeDescription"]);
-            ChestSize.SetDbValue(IsNull(row["ChestSize"]) ? DbNullValue : ConvertToDouble(row["ChestSize"]));
-            WaistSize.SetDbValue(IsNull(row["WaistSize"]) ? DbNullValue : ConvertToDouble(row["WaistSize"]));
-            ShoulderSize.SetDbValue(IsNull(row["ShoulderSize"]) ? DbNullValue : ConvertToDouble(row["ShoulderSize"]));
-            LongSleeveSize.SetDbValue(IsNull(row["LongSleeveSize"]) ? DbNullValue : ConvertToDouble(row["LongSleeveSize"]));
-            FrontLengthSize.SetDbValue(IsNull(row["FrontLengthSize"]) ? DbNullValue : ConvertToDouble(row["FrontLengthSize"]));
-            CollarSize.SetDbValue(IsNull(row["CollarSize"]) ? DbNullValue : ConvertToDouble(row["CollarSize"]));
             ActiveDescription.SetDbValue(row["ActiveDescription"]);
             CreatedByUserID.SetDbValue(row["CreatedByUserID"]);
             CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
@@ -2319,12 +2301,6 @@ public partial class PCM {
             row.Add("CoverallSizeDescription", CoverallSizeDescription.DefaultValue ?? DbNullValue); // DN
             row.Add("ShirtSizeDescription", ShirtSizeDescription.DefaultValue ?? DbNullValue); // DN
             row.Add("TrouserSizeDescription", TrouserSizeDescription.DefaultValue ?? DbNullValue); // DN
-            row.Add("ChestSize", ChestSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("WaistSize", WaistSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("ShoulderSize", ShoulderSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("LongSleeveSize", LongSleeveSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("FrontLengthSize", FrontLengthSize.DefaultValue ?? DbNullValue); // DN
-            row.Add("CollarSize", CollarSize.DefaultValue ?? DbNullValue); // DN
             row.Add("ActiveDescription", ActiveDescription.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedByUserID", CreatedByUserID.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
@@ -2377,24 +2353,6 @@ public partial class PCM {
 
             // TrouserSizeDescription
             TrouserSizeDescription.CellCssStyle = "white-space: nowrap;";
-
-            // ChestSize
-            ChestSize.CellCssStyle = "white-space: nowrap;";
-
-            // WaistSize
-            WaistSize.CellCssStyle = "white-space: nowrap;";
-
-            // ShoulderSize
-            ShoulderSize.CellCssStyle = "white-space: nowrap;";
-
-            // LongSleeveSize
-            LongSleeveSize.CellCssStyle = "white-space: nowrap;";
-
-            // FrontLengthSize
-            FrontLengthSize.CellCssStyle = "white-space: nowrap;";
-
-            // CollarSize
-            CollarSize.CellCssStyle = "white-space: nowrap;";
 
             // ActiveDescription
             ActiveDescription.CellCssStyle = "white-space: nowrap;";

@@ -73,7 +73,9 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> Submitted;
 
-        public readonly DbField<SqlDbType> Reviewed;
+        public readonly DbField<SqlDbType> AgencyReviewed;
+
+        public readonly DbField<SqlDbType> PDEReviewed;
 
         public readonly DbField<SqlDbType> RegistrationForm;
 
@@ -419,13 +421,13 @@ public partial class PCM {
             };
             Fields.Add("Submitted", Submitted);
 
-            // Reviewed
-            Reviewed = new (this, "x_Reviewed", 3, SqlDbType.Int) {
-                Name = "Reviewed",
-                Expression = "[Reviewed]",
-                BasicSearchExpression = "CAST([Reviewed] AS NVARCHAR)",
+            // AgencyReviewed
+            AgencyReviewed = new (this, "x_AgencyReviewed", 3, SqlDbType.Int) {
+                Name = "AgencyReviewed",
+                Expression = "[AgencyReviewed]",
+                BasicSearchExpression = "CAST([AgencyReviewed] AS NVARCHAR)",
                 DateTimeFormat = -1,
-                VirtualExpression = "[Reviewed]",
+                VirtualExpression = "[AgencyReviewed]",
                 IsVirtual = false,
                 ForceSelection = false,
                 SelectMultiple = false,
@@ -435,10 +437,31 @@ public partial class PCM {
                 InputTextType = "text",
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("v_CrewTrackingStatus", "Reviewed", "CustomMsg"),
+                CustomMessage = Language.FieldPhrase("v_CrewTrackingStatus", "AgencyReviewed", "CustomMsg"),
                 IsUpload = false
             };
-            Fields.Add("Reviewed", Reviewed);
+            Fields.Add("AgencyReviewed", AgencyReviewed);
+
+            // PDEReviewed
+            PDEReviewed = new (this, "x_PDEReviewed", 3, SqlDbType.Int) {
+                Name = "PDEReviewed",
+                Expression = "[PDEReviewed]",
+                BasicSearchExpression = "CAST([PDEReviewed] AS NVARCHAR)",
+                DateTimeFormat = -1,
+                VirtualExpression = "[PDEReviewed]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXT",
+                InputTextType = "text",
+                DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("v_CrewTrackingStatus", "PDEReviewed", "CustomMsg"),
+                IsUpload = false
+            };
+            Fields.Add("PDEReviewed", PDEReviewed);
 
             // RegistrationForm
             RegistrationForm = new (this, "x_RegistrationForm", 3, SqlDbType.Int) {
@@ -748,6 +771,7 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
+                Sortable = false, // Allow sort
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("v_CrewTrackingStatus", "CreatedBy", "CustomMsg"),
                 IsUpload = false
@@ -768,6 +792,7 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
+                Sortable = false, // Allow sort
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("v_CrewTrackingStatus", "LastUpdatedBy", "CustomMsg"),
                 IsUpload = false
@@ -1324,7 +1349,8 @@ public partial class PCM {
                 EmployeeStatus.DbValue = row["EmployeeStatus"]; // Set DB value only
                 Draft.DbValue = row["Draft"]; // Set DB value only
                 Submitted.DbValue = row["Submitted"]; // Set DB value only
-                Reviewed.DbValue = row["Reviewed"]; // Set DB value only
+                AgencyReviewed.DbValue = row["AgencyReviewed"]; // Set DB value only
+                PDEReviewed.DbValue = row["PDEReviewed"]; // Set DB value only
                 RegistrationForm.DbValue = row["RegistrationForm"]; // Set DB value only
                 PreScreeningInterview.DbValue = row["PreScreeningInterview"]; // Set DB value only
                 MinimumRecruitmentCheck.DbValue = row["MinimumRecruitmentCheck"]; // Set DB value only
@@ -1719,7 +1745,8 @@ public partial class PCM {
             EmployeeStatus.SetDbValue(dr["EmployeeStatus"]);
             Draft.SetDbValue(dr["Draft"]);
             Submitted.SetDbValue(dr["Submitted"]);
-            Reviewed.SetDbValue(dr["Reviewed"]);
+            AgencyReviewed.SetDbValue(dr["AgencyReviewed"]);
+            PDEReviewed.SetDbValue(dr["PDEReviewed"]);
             RegistrationForm.SetDbValue(dr["RegistrationForm"]);
             PreScreeningInterview.SetDbValue(dr["PreScreeningInterview"]);
             MinimumRecruitmentCheck.SetDbValue(dr["MinimumRecruitmentCheck"]);
@@ -1795,8 +1822,11 @@ public partial class PCM {
             // Submitted
             Submitted.CellCssStyle = "min-width: 242px; white-space: nowrap;";
 
-            // Reviewed
-            Reviewed.CellCssStyle = "min-width: 242px; white-space: nowrap;";
+            // AgencyReviewed
+            AgencyReviewed.CellCssStyle = "min-width: 242px; white-space: nowrap;";
+
+            // PDEReviewed
+            PDEReviewed.CellCssStyle = "min-width: 242px; white-space: nowrap;";
 
             // RegistrationForm
             RegistrationForm.CellCssStyle = "min-width: 242px; white-space: nowrap;";
@@ -1841,10 +1871,10 @@ public partial class PCM {
             MedicalCheckup.CellCssStyle = "min-width: 242px; white-space: nowrap;";
 
             // CreatedBy
-            CreatedBy.CellCssStyle = "white-space: nowrap;";
+            CreatedBy.CellCssStyle = "min-width: 242px; white-space: nowrap;";
 
             // LastUpdatedBy
-            LastUpdatedBy.CellCssStyle = "white-space: nowrap;";
+            LastUpdatedBy.CellCssStyle = "min-width: 242px; white-space: nowrap;";
 
             // ID
             ID.ViewValue = ID.CurrentValue;
@@ -1883,6 +1913,7 @@ public partial class PCM {
             } else {
                 WillAcceptLowRank.ViewValue = WillAcceptLowRank.TagCaption(2) != "" ? WillAcceptLowRank.TagCaption(2) : "No";
             }
+            WillAcceptLowRank.CellCssStyle += "text-align: center;";
             WillAcceptLowRank.ViewCustomAttributes = "";
 
             // EmployeeStatus
@@ -1901,11 +1932,17 @@ public partial class PCM {
             Submitted.CellCssStyle += "text-align: center;";
             Submitted.ViewCustomAttributes = "";
 
-            // Reviewed
-            Reviewed.ViewValue = Reviewed.CurrentValue;
-            Reviewed.ViewValue = FormatNumber(Reviewed.ViewValue, Reviewed.FormatPattern);
-            Reviewed.CellCssStyle += "text-align: center;";
-            Reviewed.ViewCustomAttributes = "";
+            // AgencyReviewed
+            AgencyReviewed.ViewValue = AgencyReviewed.CurrentValue;
+            AgencyReviewed.ViewValue = FormatNumber(AgencyReviewed.ViewValue, AgencyReviewed.FormatPattern);
+            AgencyReviewed.CellCssStyle += "text-align: center;";
+            AgencyReviewed.ViewCustomAttributes = "";
+
+            // PDEReviewed
+            PDEReviewed.ViewValue = PDEReviewed.CurrentValue;
+            PDEReviewed.ViewValue = FormatNumber(PDEReviewed.ViewValue, PDEReviewed.FormatPattern);
+            PDEReviewed.CellCssStyle += "text-align: center;";
+            PDEReviewed.ViewCustomAttributes = "";
 
             // RegistrationForm
             RegistrationForm.ViewValue = RegistrationForm.CurrentValue;
@@ -2043,9 +2080,13 @@ public partial class PCM {
             Submitted.HrefValue = "";
             Submitted.TooltipValue = "";
 
-            // Reviewed
-            Reviewed.HrefValue = "";
-            Reviewed.TooltipValue = "";
+            // AgencyReviewed
+            AgencyReviewed.HrefValue = "";
+            AgencyReviewed.TooltipValue = "";
+
+            // PDEReviewed
+            PDEReviewed.HrefValue = "";
+            PDEReviewed.TooltipValue = "";
 
             // RegistrationForm
             RegistrationForm.HrefValue = "";
@@ -2198,12 +2239,19 @@ public partial class PCM {
             if (!Empty(Submitted.EditValue) && IsNumeric(Submitted.EditValue))
                 Submitted.EditValue = FormatNumber(Submitted.EditValue, null);
 
-            // Reviewed
-            Reviewed.SetupEditAttributes();
-            Reviewed.EditValue = Reviewed.CurrentValue; // DN
-            Reviewed.PlaceHolder = RemoveHtml(Reviewed.Caption);
-            if (!Empty(Reviewed.EditValue) && IsNumeric(Reviewed.EditValue))
-                Reviewed.EditValue = FormatNumber(Reviewed.EditValue, null);
+            // AgencyReviewed
+            AgencyReviewed.SetupEditAttributes();
+            AgencyReviewed.EditValue = AgencyReviewed.CurrentValue; // DN
+            AgencyReviewed.PlaceHolder = RemoveHtml(AgencyReviewed.Caption);
+            if (!Empty(AgencyReviewed.EditValue) && IsNumeric(AgencyReviewed.EditValue))
+                AgencyReviewed.EditValue = FormatNumber(AgencyReviewed.EditValue, null);
+
+            // PDEReviewed
+            PDEReviewed.SetupEditAttributes();
+            PDEReviewed.EditValue = PDEReviewed.CurrentValue; // DN
+            PDEReviewed.PlaceHolder = RemoveHtml(PDEReviewed.Caption);
+            if (!Empty(PDEReviewed.EditValue) && IsNumeric(PDEReviewed.EditValue))
+                PDEReviewed.EditValue = FormatNumber(PDEReviewed.EditValue, null);
 
             // RegistrationForm
             RegistrationForm.SetupEditAttributes();
@@ -2359,7 +2407,8 @@ public partial class PCM {
                         doc.ExportCaption(EmployeeStatus);
                         doc.ExportCaption(Draft);
                         doc.ExportCaption(Submitted);
-                        doc.ExportCaption(Reviewed);
+                        doc.ExportCaption(AgencyReviewed);
+                        doc.ExportCaption(PDEReviewed);
                         doc.ExportCaption(RegistrationForm);
                         doc.ExportCaption(PreScreeningInterview);
                         doc.ExportCaption(MinimumRecruitmentCheck);
@@ -2374,8 +2423,6 @@ public partial class PCM {
                         doc.ExportCaption(Interviewed);
                         doc.ExportCaption(Approved);
                         doc.ExportCaption(MedicalCheckup);
-                        doc.ExportCaption(CreatedBy);
-                        doc.ExportCaption(LastUpdatedBy);
                     } else {
                         doc.ExportCaption(IndividualCodeNumber);
                         doc.ExportCaption(FullName);
@@ -2387,7 +2434,8 @@ public partial class PCM {
                         doc.ExportCaption(EmployeeStatus);
                         doc.ExportCaption(Draft);
                         doc.ExportCaption(Submitted);
-                        doc.ExportCaption(Reviewed);
+                        doc.ExportCaption(AgencyReviewed);
+                        doc.ExportCaption(PDEReviewed);
                         doc.ExportCaption(RegistrationForm);
                         doc.ExportCaption(PreScreeningInterview);
                         doc.ExportCaption(MinimumRecruitmentCheck);
@@ -2402,8 +2450,6 @@ public partial class PCM {
                         doc.ExportCaption(Interviewed);
                         doc.ExportCaption(Approved);
                         doc.ExportCaption(MedicalCheckup);
-                        doc.ExportCaption(CreatedBy);
-                        doc.ExportCaption(LastUpdatedBy);
                     }
                     doc.EndExportRow();
                 }
@@ -2451,7 +2497,8 @@ public partial class PCM {
                             await doc.ExportField(EmployeeStatus);
                             await doc.ExportField(Draft);
                             await doc.ExportField(Submitted);
-                            await doc.ExportField(Reviewed);
+                            await doc.ExportField(AgencyReviewed);
+                            await doc.ExportField(PDEReviewed);
                             await doc.ExportField(RegistrationForm);
                             await doc.ExportField(PreScreeningInterview);
                             await doc.ExportField(MinimumRecruitmentCheck);
@@ -2466,8 +2513,6 @@ public partial class PCM {
                             await doc.ExportField(Interviewed);
                             await doc.ExportField(Approved);
                             await doc.ExportField(MedicalCheckup);
-                            await doc.ExportField(CreatedBy);
-                            await doc.ExportField(LastUpdatedBy);
                         } else {
                             await doc.ExportField(IndividualCodeNumber);
                             await doc.ExportField(FullName);
@@ -2479,7 +2524,8 @@ public partial class PCM {
                             await doc.ExportField(EmployeeStatus);
                             await doc.ExportField(Draft);
                             await doc.ExportField(Submitted);
-                            await doc.ExportField(Reviewed);
+                            await doc.ExportField(AgencyReviewed);
+                            await doc.ExportField(PDEReviewed);
                             await doc.ExportField(RegistrationForm);
                             await doc.ExportField(PreScreeningInterview);
                             await doc.ExportField(MinimumRecruitmentCheck);
@@ -2494,8 +2540,6 @@ public partial class PCM {
                             await doc.ExportField(Interviewed);
                             await doc.ExportField(Approved);
                             await doc.ExportField(MedicalCheckup);
-                            await doc.ExportField(CreatedBy);
-                            await doc.ExportField(LastUpdatedBy);
                         }
                         doc.EndExportRow(rowcnt);
                     }

@@ -861,46 +861,50 @@ loadjs.ready("load", function() {
     // Startup script
     // Write your table-specific startup script here
     // document.write("page loaded");
+    const selectedLanguage = ew.vars['languages']['languages'].filter(obj => obj.selected === true)[0];
     $('table#tbl_v_CrewAcceptedForAdminlist tbody tr td.ew-list-option-body.w-1 div.btn-group ul.ew-list-options li a.ew-row-link').each(function() {
         const dataCaptionAttrValue = $(this).attr('data-caption');
-        if (dataCaptionAttrValue === ew.language.phrase("ViewLink")) {
-            const oldHref = $(this).attr('href');
-            const id = oldHref.split('/').pop();
-            const newHref = `${ew.PATH_BASE}CrewPersonalDataForAdminViewModeView/${id}`;
-            $(this).attr('href', newHref);
-            $(this).find('i').removeClass('icon-view ew-icon me-2').addClass('icon-view ew-icon me-2');
-            $(this).text('Registration Records');
-        } else if (dataCaptionAttrValue === ew.language.phrase("EditLink")) {
-            const anchorElement = $(this);
-            const oldHref = $(this).attr('href');
-            const id = oldHref.split('/').pop();
-
-            // Tambahkan kode untuk menampilkan "Checklist Records" di sini
-            anchorElement.text('Checklist Records');
+        const anchorElement = $(this);
+        const oldHref = anchorElement.attr('href');
+        const id = oldHref.split('/').pop();
+        const parentUrl = ew.PATH_BASE;
+        if(dataCaptionAttrValue === ew.language.phrase("ViewLink")) {
+            const newHref = `${parentUrl}CrewPersonalDataForAdminViewModeView/${id}`;
+            anchorElement.attr('href', newHref).text(selectedLanguage.id === 'en-US' ? 'Registration Records' : 'Data Registrasi');
+            anchorElement.find('i').removeClass('icon-view ew-icon me-2').addClass('icon-view ew-icon me-2');
+        }
+        else if(dataCaptionAttrValue === ew.language.phrase("EditLink")) {
+            anchorElement.text(selectedLanguage.id === 'en-US' ? 'Checklist Records' : 'Data Daftar Periksa');
             anchorElement.find('i').removeClass('fa-solid fa-pen ew-icon me-2').addClass('icon-view ew-icon me-2');
-
-            // Bikin ajax request untuk dapatkan TRChecklist ID
-            const parentUrl = ew.PATH_BASE;
             $.ajax({
                 url: `${parentUrl}api/Registration/get-trchecklist-id`,
                 method: 'GET',
-                data: {
-                    crewId: id
-                },
+                data: { crewId: id },
                 success: function(response) {
                     const trChecklist_ID = response.data;
+                    const newHref = `${parentUrl}CrewChecklistForAdminView/${trChecklist_ID}?showdetail=TRChecklistPerformance`;
                     if(trChecklist_ID != null) {
-                        const newHref = `${parentUrl}CrewChecklistForAdminView/${trChecklist_ID}?showdetail=TRChecklistPerformance`;
                         anchorElement.attr('href', newHref);
-                        // Sembunyikan elemen buttn di halaman tujuan
-                        $('.row.ew-buttons.mt-3').addClass('hidden');
+                        $('.row ew-buttons.mt-3').addClass('hidden');
                     }
                     else {
+                        const reasons = [
+                            selectedLanguage.id == 'en-US' ? "Data Crew is migrated from an older version of the application." : "Data Crew merupakan data migrasi dari versi aplikasi yang lebih lawas.",
+                            /*
+                            selectedLanguage.id == 'en-US' ? "The URL you entered might contain a typo or is not valid." : "URL yang Anda masukkan mungkin mengandung kesalahan ketik atau tidak valid.",
+                            selectedLanguage.id == 'en-US' ? "The page you are looking for has been removed from our website." : "Halaman yang Anda cari telah dihapus dari situs web kami.",
+                            selectedLanguage.id == 'en-US' ? "The page has been relocated or renamed, and the old URL is no longer valid." : "Halaman telah dipindahkan atau diganti nama, dan URL lama tidak lagi valid.",
+                            selectedLanguage.id == 'en-US' ? "The link you followed from another website or source is broken or outdated." : "Tautan yang Anda ikuti dari situs web atau sumber lain rusak atau kadaluarsa.",
+                            selectedLanguage.id == 'en-US' ? "There may be temporary server or network problems that prevent access to the page." : "Mungkin ada masalah server atau jaringan sementara yang mencegah akses ke halaman ini."
+                            */
+                        ];
+                        const concatenatedReasons = reasons.join("; ");
                         anchorElement.click(function(event) {
-                            event.preventDefault();
-                            // const errorMessage = (CurrentLanguage === 'en-US') ? 'Checklist Record is empty.' : 'Data Daftar Periksa kosong.';
-                            alert("Checklist Record is empty.");
-                        });   
+                            // event.preventDefault();
+                            const notFoundPageUrl = `${parentUrl}PageNotFound?reasons=${encodeURIComponent(concatenatedReasons)}`;
+                            anchorElement.attr('href', notFoundPageUrl);
+                            // alert(selectedLanguage.id === 'en-US' ? 'Checklist Records is empty.' : 'Data Daftar Periksa kosong.');
+                        });
                     }
                 },
                 error: function(xhr, status, error) {
@@ -908,35 +912,38 @@ loadjs.ready("load", function() {
                     console.log('Response error message: ', xhr.responseText);
                 }
             });
-        } else if (dataCaptionAttrValue === ew.language.phrase("DeleteLink")) {
-            const anchorElement = $(this);
-            const oldHref = anchorElement.attr('href');
-            const id = oldHref.split('/').pop();
-
-            // Tambahkan kode untuk menampilkan "Medical Checkup Records" di sini
-            anchorElement.text('Medical Checkup Records');
+        } 
+        else if(dataCaptionAttrValue === ew.language.phrase("DeleteLink")) {
+            anchorElement.text(selectedLanguage.id === 'en-US' ? 'Medical Checkup Records' : 'Data Pemeriksaan Medis');
             anchorElement.find('i').removeClass('fa-solid fa-trash ew-icon me-2').addClass('icon-view ew-icon me-2');
-
-            // Bikin ajax request untuk dapatkan TRMCUResult ID
-            const parentUrl = ew.PATH_BASE;
             $.ajax({
                 url: `${parentUrl}api/Registration/get-trmcuresult-id`,
                 method: 'GET',
-                data: {
-                    crewId: id
-                },
+                data: { crewId: id },
                 success: function(response) {
-                    const mCUResult_ID = response.data;
-                    if(mCUResult_ID != null) {
-                        const newHref = `${parentUrl}CrewMcuResultForAdminView/${mCUResult_ID}?showdetail=TRMCUResult`;
+                    const mcuResult_ID = response.data;
+                    const newHref = `${parentUrl}CrewMcuResultForAdminView/${mcuResult_ID}?showdetail=TRMCUResult`;
+                    if(mcuResult_ID != null) {
                         anchorElement.attr('href', newHref);
                         $('.card.border.rounded').addClass('hidden');
                     }
                     else {
+                        const reasons = [
+                            selectedLanguage.id == 'en-US' ? "Data Crew is migrated from an older version of the application." : "Data Crew merupakan data migrasi dari versi aplikasi yang lebih lawas.",
+                            /*
+                            selectedLanguage.id == 'en-US' ? "The URL you entered might contain a typo or is not valid." : "URL yang Anda masukkan mungkin mengandung kesalahan ketik atau tidak valid.",
+                            selectedLanguage.id == 'en-US' ? "The page you are looking for has been removed from our website." : "Halaman yang Anda cari telah dihapus dari situs web kami.",
+                            selectedLanguage.id == 'en-US' ? "The page has been relocated or renamed, and the old URL is no longer valid." : "Halaman telah dipindahkan atau diganti nama, dan URL lama tidak lagi valid.",
+                            selectedLanguage.id == 'en-US' ? "The link you followed from another website or source is broken or outdated." : "Tautan yang Anda ikuti dari situs web atau sumber lain rusak atau kadaluarsa.",
+                            selectedLanguage.id == 'en-US' ? "There may be temporary server or network problems that prevent access to the page." : "Mungkin ada masalah server atau jaringan sementara yang mencegah akses ke halaman ini."
+                            */
+                        ];
+                        const concatenatedReasons = reasons.join("; ");
                         anchorElement.click(function(event) {
-                            event.preventDefault();
-                            // const errorMessage = (CurrentLanguage === 'en-US') ? 'Medical Checkup Record is empty.' : 'Data Pemeriksaan Medis kosong.';
-                            alert("Medical Checkup Record is empty.");
+                            // event.preventDefault();
+                            const notFoundPageUrl = `${parentUrl}PageNotFound?reasons=${encodeURIComponent(concatenatedReasons)}`;
+                            anchorElement.attr('href', notFoundPageUrl);               
+                            // alert(selectedLanguage.id === 'en-US' ? 'Medical Checkup Record is empty' : 'Data Pemeriksaan Medis Kosong');
                         });
                     }  
                 },
@@ -947,12 +954,11 @@ loadjs.ready("load", function() {
             });
         }
     });
-    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
-    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
-    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
-    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
-    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
-    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding;
+    const nonTableHeightTotal = $('body div.wrapper.ew-layout nav.main-header').outerHeight()
+        + $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight()
+        + $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight()
+        + $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight()
+        + $('main div div.card.ew-card div.card-footer').outerHeight();
     const marginBottom = '20px';
     const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
     $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);

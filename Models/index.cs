@@ -50,6 +50,7 @@ public partial class PCM {
                         LastUpdatedByUserID = Convert.ToInt32(rs["ID"]),
                         LastUpdatedDateTime = DateTimeOffset.Now,
                         MTUserID = Convert.ToInt32(rs["ID"]),
+                        MTManningAgentID = Convert.ToInt32(rs["MTManningAgentID"]),
                     });
                     dynamic crewQueryResult = QueryBuilder("MTCrew")
                         .Where("MTUserID", CurrentUserID())
@@ -80,6 +81,10 @@ public partial class PCM {
                                         MTRecruitmentStatusID = i,
                                         Flag = flag,
                                         FlagDescription = flagDescription,
+                                        CreatedDateTime = DateTimeOffset.Now,
+                                        CreatedByUserID = CurrentUserID(),
+                                        LastUpdatedDateTime = DateTimeOffset.Now,
+                                        LastUpdatedByUserID = CurrentUserID(),
                                     };
                                     QueryBuilder("MTRecruitmentStatusTracking").Insert(insertData);
                                 }

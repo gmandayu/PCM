@@ -123,30 +123,6 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> _Email;
 
-        public readonly DbField<SqlDbType> ContactMethodEmail;
-
-        public readonly DbField<SqlDbType> ContactMethodFax;
-
-        public readonly DbField<SqlDbType> ContactMethodMobilePhone;
-
-        public readonly DbField<SqlDbType> ContactMethodHomePhone;
-
-        public readonly DbField<SqlDbType> ContactMethodPost;
-
-        public readonly DbField<SqlDbType> CollarSize;
-
-        public readonly DbField<SqlDbType> ChestSize;
-
-        public readonly DbField<SqlDbType> WaistSize;
-
-        public readonly DbField<SqlDbType> InsideLegSize;
-
-        public readonly DbField<SqlDbType> CapSize;
-
-        public readonly DbField<SqlDbType> SweaterSize_ClothesSizeID;
-
-        public readonly DbField<SqlDbType> BoilersuitSize_ClothesSizeID;
-
         public readonly DbField<SqlDbType> SocialSecurityNumber;
 
         public readonly DbField<SqlDbType> SocialSecurityIssuingCountryID;
@@ -180,26 +156,6 @@ public partial class PCM {
         public readonly DbField<SqlDbType> NomineeEmail;
 
         public readonly DbField<SqlDbType> NomineeMobileNumber;
-
-        public readonly DbField<SqlDbType> NomineeValidVisa;
-
-        public readonly DbField<SqlDbType> BankName;
-
-        public readonly DbField<SqlDbType> BankAddress;
-
-        public readonly DbField<SqlDbType> BankAccountName;
-
-        public readonly DbField<SqlDbType> BankAccountNumber;
-
-        public readonly DbField<SqlDbType> BankSortCode;
-
-        public readonly DbField<SqlDbType> MNOPF;
-
-        public readonly DbField<SqlDbType> MembershipNumber;
-
-        public readonly DbField<SqlDbType> NationalInsuranceNumber;
-
-        public readonly DbField<SqlDbType> AVC;
 
         public readonly DbField<SqlDbType> ForeignVisaHasBeenDenied;
 
@@ -247,14 +203,6 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> MTUserID;
 
-        public readonly DbField<SqlDbType> DocumentCheckDateTime;
-
-        public readonly DbField<SqlDbType> InterviewManagerDateTime;
-
-        public readonly DbField<SqlDbType> InterviewGMDateTime;
-
-        public readonly DbField<SqlDbType> MCUScheduleDateTime;
-
         public readonly DbField<SqlDbType> RejectedReason;
 
         public readonly DbField<SqlDbType> RejectedDateTime;
@@ -298,6 +246,8 @@ public partial class PCM {
         public readonly DbField<SqlDbType> RevisedReason;
 
         public readonly DbField<SqlDbType> RevisedDateTime;
+
+        public readonly DbField<SqlDbType> MTManningAgentID;
 
         // Constructor
         public MtCrew()
@@ -1226,307 +1176,6 @@ public partial class PCM {
             };
             Fields.Add("Email", _Email);
 
-            // ContactMethodEmail
-            ContactMethodEmail = new (this, "x_ContactMethodEmail", 11, SqlDbType.Bit) {
-                Name = "ContactMethodEmail",
-                Expression = "[ContactMethodEmail]",
-                BasicSearchExpression = "[ContactMethodEmail]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ContactMethodEmail]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "CHECKBOX",
-                InputTextType = "text",
-                DataType = DataType.Boolean,
-                OptionCount = 2,
-                SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "ContactMethodEmail", "CustomMsg"),
-                IsUpload = false
-            };
-            ContactMethodEmail.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("ContactMethodEmail", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("ContactMethodEmail", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("ContactMethodEmail", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
-            };
-            Fields.Add("ContactMethodEmail", ContactMethodEmail);
-
-            // ContactMethodFax
-            ContactMethodFax = new (this, "x_ContactMethodFax", 11, SqlDbType.Bit) {
-                Name = "ContactMethodFax",
-                Expression = "[ContactMethodFax]",
-                BasicSearchExpression = "[ContactMethodFax]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ContactMethodFax]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "CHECKBOX",
-                InputTextType = "text",
-                DataType = DataType.Boolean,
-                OptionCount = 2,
-                SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "ContactMethodFax", "CustomMsg"),
-                IsUpload = false
-            };
-            ContactMethodFax.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("ContactMethodFax", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("ContactMethodFax", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("ContactMethodFax", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
-            };
-            Fields.Add("ContactMethodFax", ContactMethodFax);
-
-            // ContactMethodMobilePhone
-            ContactMethodMobilePhone = new (this, "x_ContactMethodMobilePhone", 11, SqlDbType.Bit) {
-                Name = "ContactMethodMobilePhone",
-                Expression = "[ContactMethodMobilePhone]",
-                BasicSearchExpression = "[ContactMethodMobilePhone]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ContactMethodMobilePhone]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "CHECKBOX",
-                InputTextType = "text",
-                DataType = DataType.Boolean,
-                OptionCount = 2,
-                SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "ContactMethodMobilePhone", "CustomMsg"),
-                IsUpload = false
-            };
-            ContactMethodMobilePhone.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("ContactMethodMobilePhone", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("ContactMethodMobilePhone", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("ContactMethodMobilePhone", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
-            };
-            Fields.Add("ContactMethodMobilePhone", ContactMethodMobilePhone);
-
-            // ContactMethodHomePhone
-            ContactMethodHomePhone = new (this, "x_ContactMethodHomePhone", 11, SqlDbType.Bit) {
-                Name = "ContactMethodHomePhone",
-                Expression = "[ContactMethodHomePhone]",
-                BasicSearchExpression = "[ContactMethodHomePhone]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ContactMethodHomePhone]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "CHECKBOX",
-                InputTextType = "text",
-                DataType = DataType.Boolean,
-                OptionCount = 2,
-                SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "ContactMethodHomePhone", "CustomMsg"),
-                IsUpload = false
-            };
-            ContactMethodHomePhone.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("ContactMethodHomePhone", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("ContactMethodHomePhone", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("ContactMethodHomePhone", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
-            };
-            Fields.Add("ContactMethodHomePhone", ContactMethodHomePhone);
-
-            // ContactMethodPost
-            ContactMethodPost = new (this, "x_ContactMethodPost", 11, SqlDbType.Bit) {
-                Name = "ContactMethodPost",
-                Expression = "[ContactMethodPost]",
-                BasicSearchExpression = "[ContactMethodPost]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ContactMethodPost]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "CHECKBOX",
-                InputTextType = "text",
-                DataType = DataType.Boolean,
-                OptionCount = 2,
-                SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "ContactMethodPost", "CustomMsg"),
-                IsUpload = false
-            };
-            ContactMethodPost.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("ContactMethodPost", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("ContactMethodPost", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("ContactMethodPost", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
-            };
-            Fields.Add("ContactMethodPost", ContactMethodPost);
-
-            // CollarSize
-            CollarSize = new (this, "x_CollarSize", 131, SqlDbType.Decimal) {
-                Name = "CollarSize",
-                Expression = "[CollarSize]",
-                BasicSearchExpression = "CAST([CollarSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[CollarSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "number",
-                Required = true, // Required field
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "CollarSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("CollarSize", CollarSize);
-
-            // ChestSize
-            ChestSize = new (this, "x_ChestSize", 131, SqlDbType.Decimal) {
-                Name = "ChestSize",
-                Expression = "[ChestSize]",
-                BasicSearchExpression = "CAST([ChestSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ChestSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "number",
-                Required = true, // Required field
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "ChestSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("ChestSize", ChestSize);
-
-            // WaistSize
-            WaistSize = new (this, "x_WaistSize", 131, SqlDbType.Decimal) {
-                Name = "WaistSize",
-                Expression = "[WaistSize]",
-                BasicSearchExpression = "CAST([WaistSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[WaistSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "number",
-                Required = true, // Required field
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "WaistSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("WaistSize", WaistSize);
-
-            // InsideLegSize
-            InsideLegSize = new (this, "x_InsideLegSize", 131, SqlDbType.Decimal) {
-                Name = "InsideLegSize",
-                Expression = "[InsideLegSize]",
-                BasicSearchExpression = "CAST([InsideLegSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[InsideLegSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "number",
-                Required = true, // Required field
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "InsideLegSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("InsideLegSize", InsideLegSize);
-
-            // CapSize
-            CapSize = new (this, "x_CapSize", 131, SqlDbType.Decimal) {
-                Name = "CapSize",
-                Expression = "[CapSize]",
-                BasicSearchExpression = "CAST([CapSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[CapSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "number",
-                Required = true, // Required field
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "CapSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("CapSize", CapSize);
-
-            // SweaterSize_ClothesSizeID
-            SweaterSize_ClothesSizeID = new (this, "x_SweaterSize_ClothesSizeID", 3, SqlDbType.Int) {
-                Name = "SweaterSize_ClothesSizeID",
-                Expression = "[SweaterSize_ClothesSizeID]",
-                BasicSearchExpression = "CAST([SweaterSize_ClothesSizeID] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[SweaterSize_ClothesSizeID]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "SELECT",
-                InputTextType = "text",
-                Required = true, // Required field
-                UsePleaseSelect = true, // Use PleaseSelect by default
-                PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
-                SearchOperators = new () { "=", "<>", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "SweaterSize_ClothesSizeID", "CustomMsg"),
-                IsUpload = false
-            };
-            SweaterSize_ClothesSizeID.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("SweaterSize_ClothesSizeID", "MTClothesSize", false, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]"),
-                "id-ID" => new Lookup<DbField>("SweaterSize_ClothesSizeID", "MTClothesSize", false, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]"),
-                _ => new Lookup<DbField>("SweaterSize_ClothesSizeID", "MTClothesSize", false, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]")
-            };
-            Fields.Add("SweaterSize_ClothesSizeID", SweaterSize_ClothesSizeID);
-
-            // BoilersuitSize_ClothesSizeID
-            BoilersuitSize_ClothesSizeID = new (this, "x_BoilersuitSize_ClothesSizeID", 3, SqlDbType.Int) {
-                Name = "BoilersuitSize_ClothesSizeID",
-                Expression = "[BoilersuitSize_ClothesSizeID]",
-                BasicSearchExpression = "CAST([BoilersuitSize_ClothesSizeID] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[BoilersuitSize_ClothesSizeID]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "SELECT",
-                InputTextType = "text",
-                Required = true, // Required field
-                UsePleaseSelect = true, // Use PleaseSelect by default
-                PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
-                SearchOperators = new () { "=", "<>", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "BoilersuitSize_ClothesSizeID", "CustomMsg"),
-                IsUpload = false
-            };
-            BoilersuitSize_ClothesSizeID.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("BoilersuitSize_ClothesSizeID", "MTClothesSize", false, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]"),
-                "id-ID" => new Lookup<DbField>("BoilersuitSize_ClothesSizeID", "MTClothesSize", false, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]"),
-                _ => new Lookup<DbField>("BoilersuitSize_ClothesSizeID", "MTClothesSize", false, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]")
-            };
-            Fields.Add("BoilersuitSize_ClothesSizeID", BoilersuitSize_ClothesSizeID);
-
             // SocialSecurityNumber
             SocialSecurityNumber = new (this, "x_SocialSecurityNumber", 202, SqlDbType.NVarChar) {
                 Name = "SocialSecurityNumber",
@@ -1923,217 +1572,6 @@ public partial class PCM {
                 IsUpload = false
             };
             Fields.Add("NomineeMobileNumber", NomineeMobileNumber);
-
-            // NomineeValidVisa
-            NomineeValidVisa = new (this, "x_NomineeValidVisa", 202, SqlDbType.NVarChar) {
-                Name = "NomineeValidVisa",
-                Expression = "[NomineeValidVisa]",
-                BasicSearchExpression = "[NomineeValidVisa]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[NomineeValidVisa]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                OptionCount = 6,
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "NomineeValidVisa", "CustomMsg"),
-                IsUpload = false
-            };
-            NomineeValidVisa.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("NomineeValidVisa", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("NomineeValidVisa", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("NomineeValidVisa", "MTCrew", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
-            };
-            Fields.Add("NomineeValidVisa", NomineeValidVisa);
-
-            // BankName
-            BankName = new (this, "x_BankName", 202, SqlDbType.NVarChar) {
-                Name = "BankName",
-                Expression = "[BankName]",
-                BasicSearchExpression = "[BankName]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[BankName]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Required = true, // Required field
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "BankName", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("BankName", BankName);
-
-            // BankAddress
-            BankAddress = new (this, "x_BankAddress", 202, SqlDbType.NVarChar) {
-                Name = "BankAddress",
-                Expression = "[BankAddress]",
-                BasicSearchExpression = "[BankAddress]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[BankAddress]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXTAREA",
-                InputTextType = "text",
-                Required = true, // Required field
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "BankAddress", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("BankAddress", BankAddress);
-
-            // BankAccountName
-            BankAccountName = new (this, "x_BankAccountName", 202, SqlDbType.NVarChar) {
-                Name = "BankAccountName",
-                Expression = "[BankAccountName]",
-                BasicSearchExpression = "[BankAccountName]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[BankAccountName]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Required = true, // Required field
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "BankAccountName", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("BankAccountName", BankAccountName);
-
-            // BankAccountNumber
-            BankAccountNumber = new (this, "x_BankAccountNumber", 202, SqlDbType.NVarChar) {
-                Name = "BankAccountNumber",
-                Expression = "[BankAccountNumber]",
-                BasicSearchExpression = "[BankAccountNumber]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[BankAccountNumber]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "number",
-                Required = true, // Required field
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "BankAccountNumber", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("BankAccountNumber", BankAccountNumber);
-
-            // BankSortCode
-            BankSortCode = new (this, "x_BankSortCode", 202, SqlDbType.NVarChar) {
-                Name = "BankSortCode",
-                Expression = "[BankSortCode]",
-                BasicSearchExpression = "[BankSortCode]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[BankSortCode]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Required = true, // Required field
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "BankSortCode", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("BankSortCode", BankSortCode);
-
-            // MNOPF
-            MNOPF = new (this, "x_MNOPF", 202, SqlDbType.NVarChar) {
-                Name = "MNOPF",
-                Expression = "[MNOPF]",
-                BasicSearchExpression = "[MNOPF]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[MNOPF]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "MNOPF", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("MNOPF", MNOPF);
-
-            // MembershipNumber
-            MembershipNumber = new (this, "x_MembershipNumber", 202, SqlDbType.NVarChar) {
-                Name = "MembershipNumber",
-                Expression = "[MembershipNumber]",
-                BasicSearchExpression = "[MembershipNumber]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[MembershipNumber]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "MembershipNumber", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("MembershipNumber", MembershipNumber);
-
-            // NationalInsuranceNumber
-            NationalInsuranceNumber = new (this, "x_NationalInsuranceNumber", 202, SqlDbType.NVarChar) {
-                Name = "NationalInsuranceNumber",
-                Expression = "[NationalInsuranceNumber]",
-                BasicSearchExpression = "[NationalInsuranceNumber]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[NationalInsuranceNumber]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "NationalInsuranceNumber", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("NationalInsuranceNumber", NationalInsuranceNumber);
-
-            // AVC
-            AVC = new (this, "x_AVC", 202, SqlDbType.NVarChar) {
-                Name = "AVC",
-                Expression = "[AVC]",
-                BasicSearchExpression = "[AVC]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[AVC]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "AVC", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("AVC", AVC);
 
             // ForeignVisaHasBeenDenied
             ForeignVisaHasBeenDenied = new (this, "x_ForeignVisaHasBeenDenied", 11, SqlDbType.Bit) {
@@ -2681,94 +2119,6 @@ public partial class PCM {
             };
             Fields.Add("MTUserID", MTUserID);
 
-            // DocumentCheckDateTime
-            DocumentCheckDateTime = new (this, "x_DocumentCheckDateTime", 146, SqlDbType.DateTimeOffset) {
-                Name = "DocumentCheckDateTime",
-                Expression = "[DocumentCheckDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[DocumentCheckDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
-                VirtualExpression = "[DocumentCheckDateTime]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "DocumentCheckDateTime", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("DocumentCheckDateTime", DocumentCheckDateTime);
-
-            // InterviewManagerDateTime
-            InterviewManagerDateTime = new (this, "x_InterviewManagerDateTime", 146, SqlDbType.DateTimeOffset) {
-                Name = "InterviewManagerDateTime",
-                Expression = "[InterviewManagerDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[InterviewManagerDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
-                VirtualExpression = "[InterviewManagerDateTime]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "InterviewManagerDateTime", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("InterviewManagerDateTime", InterviewManagerDateTime);
-
-            // InterviewGMDateTime
-            InterviewGMDateTime = new (this, "x_InterviewGMDateTime", 146, SqlDbType.DateTimeOffset) {
-                Name = "InterviewGMDateTime",
-                Expression = "[InterviewGMDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[InterviewGMDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
-                VirtualExpression = "[InterviewGMDateTime]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "InterviewGMDateTime", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("InterviewGMDateTime", InterviewGMDateTime);
-
-            // MCUScheduleDateTime
-            MCUScheduleDateTime = new (this, "x_MCUScheduleDateTime", 146, SqlDbType.DateTimeOffset) {
-                Name = "MCUScheduleDateTime",
-                Expression = "[MCUScheduleDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[MCUScheduleDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
-                VirtualExpression = "[MCUScheduleDateTime]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("MTCrew", "MCUScheduleDateTime", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("MCUScheduleDateTime", MCUScheduleDateTime);
-
             // RejectedReason
             RejectedReason = new (this, "x_RejectedReason", 202, SqlDbType.NVarChar) {
                 Name = "RejectedReason",
@@ -3288,6 +2638,27 @@ public partial class PCM {
                 IsUpload = false
             };
             Fields.Add("RevisedDateTime", RevisedDateTime);
+
+            // MTManningAgentID
+            MTManningAgentID = new (this, "x_MTManningAgentID", 3, SqlDbType.Int) {
+                Name = "MTManningAgentID",
+                Expression = "[MTManningAgentID]",
+                BasicSearchExpression = "CAST([MTManningAgentID] AS NVARCHAR)",
+                DateTimeFormat = -1,
+                VirtualExpression = "[MTManningAgentID]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXT",
+                InputTextType = "text",
+                DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("MTCrew", "MTManningAgentID", "CustomMsg"),
+                IsUpload = false
+            };
+            Fields.Add("MTManningAgentID", MTManningAgentID);
 
             // Call Table Load event
             TableLoad();
@@ -3918,18 +3289,6 @@ public partial class PCM {
                 AlternativeAddressCountryID.DbValue = row["AlternativeAddressCountryID"]; // Set DB value only
                 MobileNumber.DbValue = row["MobileNumber"]; // Set DB value only
                 _Email.DbValue = row["Email"]; // Set DB value only
-                ContactMethodEmail.DbValue = (ConvertToBool(row["ContactMethodEmail"]) ? "1" : "0"); // Set DB value only
-                ContactMethodFax.DbValue = (ConvertToBool(row["ContactMethodFax"]) ? "1" : "0"); // Set DB value only
-                ContactMethodMobilePhone.DbValue = (ConvertToBool(row["ContactMethodMobilePhone"]) ? "1" : "0"); // Set DB value only
-                ContactMethodHomePhone.DbValue = (ConvertToBool(row["ContactMethodHomePhone"]) ? "1" : "0"); // Set DB value only
-                ContactMethodPost.DbValue = (ConvertToBool(row["ContactMethodPost"]) ? "1" : "0"); // Set DB value only
-                CollarSize.DbValue = row["CollarSize"]; // Set DB value only
-                ChestSize.DbValue = row["ChestSize"]; // Set DB value only
-                WaistSize.DbValue = row["WaistSize"]; // Set DB value only
-                InsideLegSize.DbValue = row["InsideLegSize"]; // Set DB value only
-                CapSize.DbValue = row["CapSize"]; // Set DB value only
-                SweaterSize_ClothesSizeID.DbValue = row["SweaterSize_ClothesSizeID"]; // Set DB value only
-                BoilersuitSize_ClothesSizeID.DbValue = row["BoilersuitSize_ClothesSizeID"]; // Set DB value only
                 SocialSecurityNumber.DbValue = row["SocialSecurityNumber"]; // Set DB value only
                 SocialSecurityIssuingCountryID.DbValue = row["SocialSecurityIssuingCountryID"]; // Set DB value only
                 SocialSecurityImage.Upload.DbValue = row["SocialSecurityImage"];
@@ -3947,16 +3306,6 @@ public partial class PCM {
                 NomineeAddressHomeTel.DbValue = row["NomineeAddressHomeTel"]; // Set DB value only
                 NomineeEmail.DbValue = row["NomineeEmail"]; // Set DB value only
                 NomineeMobileNumber.DbValue = row["NomineeMobileNumber"]; // Set DB value only
-                NomineeValidVisa.DbValue = row["NomineeValidVisa"]; // Set DB value only
-                BankName.DbValue = row["BankName"]; // Set DB value only
-                BankAddress.DbValue = row["BankAddress"]; // Set DB value only
-                BankAccountName.DbValue = row["BankAccountName"]; // Set DB value only
-                BankAccountNumber.DbValue = row["BankAccountNumber"]; // Set DB value only
-                BankSortCode.DbValue = row["BankSortCode"]; // Set DB value only
-                MNOPF.DbValue = row["MNOPF"]; // Set DB value only
-                MembershipNumber.DbValue = row["MembershipNumber"]; // Set DB value only
-                NationalInsuranceNumber.DbValue = row["NationalInsuranceNumber"]; // Set DB value only
-                AVC.DbValue = row["AVC"]; // Set DB value only
                 ForeignVisaHasBeenDenied.DbValue = (ConvertToBool(row["ForeignVisaHasBeenDenied"]) ? "1" : "0"); // Set DB value only
                 ForeignVisaDenied_CountryID.DbValue = row["ForeignVisaDenied_CountryID"]; // Set DB value only
                 ForeignVisaDeniedReason.DbValue = row["ForeignVisaDeniedReason"]; // Set DB value only
@@ -3980,10 +3329,6 @@ public partial class PCM {
                 LastUpdatedByUserID.DbValue = row["LastUpdatedByUserID"]; // Set DB value only
                 LastUpdatedDateTime.DbValue = row["LastUpdatedDateTime"]; // Set DB value only
                 MTUserID.DbValue = row["MTUserID"]; // Set DB value only
-                DocumentCheckDateTime.DbValue = row["DocumentCheckDateTime"]; // Set DB value only
-                InterviewManagerDateTime.DbValue = row["InterviewManagerDateTime"]; // Set DB value only
-                InterviewGMDateTime.DbValue = row["InterviewGMDateTime"]; // Set DB value only
-                MCUScheduleDateTime.DbValue = row["MCUScheduleDateTime"]; // Set DB value only
                 RejectedReason.DbValue = row["RejectedReason"]; // Set DB value only
                 RejectedDateTime.DbValue = row["RejectedDateTime"]; // Set DB value only
                 Status.DbValue = row["Status"]; // Set DB value only
@@ -4006,6 +3351,7 @@ public partial class PCM {
                 NomineeMobileNumberCode_CountryID.DbValue = row["NomineeMobileNumberCode_CountryID"]; // Set DB value only
                 RevisedReason.DbValue = row["RevisedReason"]; // Set DB value only
                 RevisedDateTime.DbValue = row["RevisedDateTime"]; // Set DB value only
+                MTManningAgentID.DbValue = row["MTManningAgentID"]; // Set DB value only
             } catch {}
         }
 
@@ -4433,18 +3779,6 @@ public partial class PCM {
             AlternativeAddressCountryID.SetDbValue(dr["AlternativeAddressCountryID"]);
             MobileNumber.SetDbValue(dr["MobileNumber"]);
             _Email.SetDbValue(dr["Email"]);
-            ContactMethodEmail.SetDbValue(ConvertToBool(dr["ContactMethodEmail"]) ? "1" : "0");
-            ContactMethodFax.SetDbValue(ConvertToBool(dr["ContactMethodFax"]) ? "1" : "0");
-            ContactMethodMobilePhone.SetDbValue(ConvertToBool(dr["ContactMethodMobilePhone"]) ? "1" : "0");
-            ContactMethodHomePhone.SetDbValue(ConvertToBool(dr["ContactMethodHomePhone"]) ? "1" : "0");
-            ContactMethodPost.SetDbValue(ConvertToBool(dr["ContactMethodPost"]) ? "1" : "0");
-            CollarSize.SetDbValue(dr["CollarSize"]);
-            ChestSize.SetDbValue(dr["ChestSize"]);
-            WaistSize.SetDbValue(dr["WaistSize"]);
-            InsideLegSize.SetDbValue(dr["InsideLegSize"]);
-            CapSize.SetDbValue(dr["CapSize"]);
-            SweaterSize_ClothesSizeID.SetDbValue(dr["SweaterSize_ClothesSizeID"]);
-            BoilersuitSize_ClothesSizeID.SetDbValue(dr["BoilersuitSize_ClothesSizeID"]);
             SocialSecurityNumber.SetDbValue(dr["SocialSecurityNumber"]);
             SocialSecurityIssuingCountryID.SetDbValue(dr["SocialSecurityIssuingCountryID"]);
             SocialSecurityImage.Upload.DbValue = dr["SocialSecurityImage"];
@@ -4464,16 +3798,6 @@ public partial class PCM {
             NomineeAddressHomeTel.SetDbValue(dr["NomineeAddressHomeTel"]);
             NomineeEmail.SetDbValue(dr["NomineeEmail"]);
             NomineeMobileNumber.SetDbValue(dr["NomineeMobileNumber"]);
-            NomineeValidVisa.SetDbValue(dr["NomineeValidVisa"]);
-            BankName.SetDbValue(dr["BankName"]);
-            BankAddress.SetDbValue(dr["BankAddress"]);
-            BankAccountName.SetDbValue(dr["BankAccountName"]);
-            BankAccountNumber.SetDbValue(dr["BankAccountNumber"]);
-            BankSortCode.SetDbValue(dr["BankSortCode"]);
-            MNOPF.SetDbValue(dr["MNOPF"]);
-            MembershipNumber.SetDbValue(dr["MembershipNumber"]);
-            NationalInsuranceNumber.SetDbValue(dr["NationalInsuranceNumber"]);
-            AVC.SetDbValue(dr["AVC"]);
             ForeignVisaHasBeenDenied.SetDbValue(ConvertToBool(dr["ForeignVisaHasBeenDenied"]) ? "1" : "0");
             ForeignVisaDenied_CountryID.SetDbValue(dr["ForeignVisaDenied_CountryID"]);
             ForeignVisaDeniedReason.SetDbValue(dr["ForeignVisaDeniedReason"]);
@@ -4497,10 +3821,6 @@ public partial class PCM {
             LastUpdatedByUserID.SetDbValue(dr["LastUpdatedByUserID"]);
             LastUpdatedDateTime.SetDbValue(dr["LastUpdatedDateTime"]);
             MTUserID.SetDbValue(dr["MTUserID"]);
-            DocumentCheckDateTime.SetDbValue(dr["DocumentCheckDateTime"]);
-            InterviewManagerDateTime.SetDbValue(dr["InterviewManagerDateTime"]);
-            InterviewGMDateTime.SetDbValue(dr["InterviewGMDateTime"]);
-            MCUScheduleDateTime.SetDbValue(dr["MCUScheduleDateTime"]);
             RejectedReason.SetDbValue(dr["RejectedReason"]);
             RejectedDateTime.SetDbValue(dr["RejectedDateTime"]);
             Status.SetDbValue(dr["Status"]);
@@ -4523,6 +3843,7 @@ public partial class PCM {
             NomineeMobileNumberCode_CountryID.SetDbValue(dr["NomineeMobileNumberCode_CountryID"]);
             RevisedReason.SetDbValue(dr["RevisedReason"]);
             RevisedDateTime.SetDbValue(dr["RevisedDateTime"]);
+            MTManningAgentID.SetDbValue(dr["MTManningAgentID"]);
         }
 
         // Render list content
@@ -4657,42 +3978,6 @@ public partial class PCM {
             // Email
             _Email.CellCssStyle = "white-space: nowrap;";
 
-            // ContactMethodEmail
-            ContactMethodEmail.CellCssStyle = "white-space: nowrap;";
-
-            // ContactMethodFax
-            ContactMethodFax.CellCssStyle = "white-space: nowrap;";
-
-            // ContactMethodMobilePhone
-            ContactMethodMobilePhone.CellCssStyle = "white-space: nowrap;";
-
-            // ContactMethodHomePhone
-            ContactMethodHomePhone.CellCssStyle = "white-space: nowrap;";
-
-            // ContactMethodPost
-            ContactMethodPost.CellCssStyle = "white-space: nowrap;";
-
-            // CollarSize
-            CollarSize.CellCssStyle = "white-space: nowrap;";
-
-            // ChestSize
-            ChestSize.CellCssStyle = "white-space: nowrap;";
-
-            // WaistSize
-            WaistSize.CellCssStyle = "white-space: nowrap;";
-
-            // InsideLegSize
-            InsideLegSize.CellCssStyle = "white-space: nowrap;";
-
-            // CapSize
-            CapSize.CellCssStyle = "white-space: nowrap;";
-
-            // SweaterSize_ClothesSizeID
-            SweaterSize_ClothesSizeID.CellCssStyle = "white-space: nowrap;";
-
-            // BoilersuitSize_ClothesSizeID
-            BoilersuitSize_ClothesSizeID.CellCssStyle = "white-space: nowrap;";
-
             // SocialSecurityNumber
             SocialSecurityNumber.CellCssStyle = "white-space: nowrap;";
 
@@ -4743,36 +4028,6 @@ public partial class PCM {
 
             // NomineeMobileNumber
             NomineeMobileNumber.CellCssStyle = "white-space: nowrap;";
-
-            // NomineeValidVisa
-            NomineeValidVisa.CellCssStyle = "white-space: nowrap;";
-
-            // BankName
-            BankName.CellCssStyle = "white-space: nowrap;";
-
-            // BankAddress
-            BankAddress.CellCssStyle = "white-space: nowrap;";
-
-            // BankAccountName
-            BankAccountName.CellCssStyle = "white-space: nowrap;";
-
-            // BankAccountNumber
-            BankAccountNumber.CellCssStyle = "white-space: nowrap;";
-
-            // BankSortCode
-            BankSortCode.CellCssStyle = "white-space: nowrap;";
-
-            // MNOPF
-            MNOPF.CellCssStyle = "white-space: nowrap;";
-
-            // MembershipNumber
-            MembershipNumber.CellCssStyle = "white-space: nowrap;";
-
-            // NationalInsuranceNumber
-            NationalInsuranceNumber.CellCssStyle = "white-space: nowrap;";
-
-            // AVC
-            AVC.CellCssStyle = "white-space: nowrap;";
 
             // ForeignVisaHasBeenDenied
             ForeignVisaHasBeenDenied.CellCssStyle = "white-space: nowrap;";
@@ -4843,18 +4098,6 @@ public partial class PCM {
             // MTUserID
             MTUserID.CellCssStyle = "white-space: nowrap;";
 
-            // DocumentCheckDateTime
-            DocumentCheckDateTime.CellCssStyle = "white-space: nowrap;";
-
-            // InterviewManagerDateTime
-            InterviewManagerDateTime.CellCssStyle = "white-space: nowrap;";
-
-            // InterviewGMDateTime
-            InterviewGMDateTime.CellCssStyle = "white-space: nowrap;";
-
-            // MCUScheduleDateTime
-            MCUScheduleDateTime.CellCssStyle = "white-space: nowrap;";
-
             // RejectedReason
             RejectedReason.CellCssStyle = "white-space: nowrap;";
 
@@ -4920,6 +4163,8 @@ public partial class PCM {
 
             // RevisedDateTime
             RevisedDateTime.CellCssStyle = "white-space: nowrap;";
+
+            // MTManningAgentID
 
             // ID
             ID.ViewValue = ID.CurrentValue;
@@ -5204,113 +4449,6 @@ public partial class PCM {
             _Email.ViewValue = ConvertToString(_Email.CurrentValue); // DN
             _Email.ViewCustomAttributes = "";
 
-            // ContactMethodEmail
-            if (ConvertToBool(ContactMethodEmail.CurrentValue)) {
-                ContactMethodEmail.ViewValue = ContactMethodEmail.TagCaption(1) != "" ? ContactMethodEmail.TagCaption(1) : "Yes";
-            } else {
-                ContactMethodEmail.ViewValue = ContactMethodEmail.TagCaption(2) != "" ? ContactMethodEmail.TagCaption(2) : "No";
-            }
-            ContactMethodEmail.ViewCustomAttributes = "";
-
-            // ContactMethodFax
-            if (ConvertToBool(ContactMethodFax.CurrentValue)) {
-                ContactMethodFax.ViewValue = ContactMethodFax.TagCaption(1) != "" ? ContactMethodFax.TagCaption(1) : "Yes";
-            } else {
-                ContactMethodFax.ViewValue = ContactMethodFax.TagCaption(2) != "" ? ContactMethodFax.TagCaption(2) : "No";
-            }
-            ContactMethodFax.ViewCustomAttributes = "";
-
-            // ContactMethodMobilePhone
-            if (ConvertToBool(ContactMethodMobilePhone.CurrentValue)) {
-                ContactMethodMobilePhone.ViewValue = ContactMethodMobilePhone.TagCaption(1) != "" ? ContactMethodMobilePhone.TagCaption(1) : "Yes";
-            } else {
-                ContactMethodMobilePhone.ViewValue = ContactMethodMobilePhone.TagCaption(2) != "" ? ContactMethodMobilePhone.TagCaption(2) : "No";
-            }
-            ContactMethodMobilePhone.ViewCustomAttributes = "";
-
-            // ContactMethodHomePhone
-            if (ConvertToBool(ContactMethodHomePhone.CurrentValue)) {
-                ContactMethodHomePhone.ViewValue = ContactMethodHomePhone.TagCaption(1) != "" ? ContactMethodHomePhone.TagCaption(1) : "Yes";
-            } else {
-                ContactMethodHomePhone.ViewValue = ContactMethodHomePhone.TagCaption(2) != "" ? ContactMethodHomePhone.TagCaption(2) : "No";
-            }
-            ContactMethodHomePhone.ViewCustomAttributes = "";
-
-            // ContactMethodPost
-            if (ConvertToBool(ContactMethodPost.CurrentValue)) {
-                ContactMethodPost.ViewValue = ContactMethodPost.TagCaption(1) != "" ? ContactMethodPost.TagCaption(1) : "Yes";
-            } else {
-                ContactMethodPost.ViewValue = ContactMethodPost.TagCaption(2) != "" ? ContactMethodPost.TagCaption(2) : "No";
-            }
-            ContactMethodPost.ViewCustomAttributes = "";
-
-            // CollarSize
-            CollarSize.ViewValue = CollarSize.CurrentValue;
-            CollarSize.ViewValue = FormatNumber(CollarSize.ViewValue, CollarSize.FormatPattern);
-            CollarSize.ViewCustomAttributes = "";
-
-            // ChestSize
-            ChestSize.ViewValue = ChestSize.CurrentValue;
-            ChestSize.ViewValue = FormatNumber(ChestSize.ViewValue, ChestSize.FormatPattern);
-            ChestSize.ViewCustomAttributes = "";
-
-            // WaistSize
-            WaistSize.ViewValue = WaistSize.CurrentValue;
-            WaistSize.ViewValue = FormatNumber(WaistSize.ViewValue, WaistSize.FormatPattern);
-            WaistSize.ViewCustomAttributes = "";
-
-            // InsideLegSize
-            InsideLegSize.ViewValue = InsideLegSize.CurrentValue;
-            InsideLegSize.ViewValue = FormatNumber(InsideLegSize.ViewValue, InsideLegSize.FormatPattern);
-            InsideLegSize.ViewCustomAttributes = "";
-
-            // CapSize
-            CapSize.ViewValue = CapSize.CurrentValue;
-            CapSize.ViewValue = FormatNumber(CapSize.ViewValue, CapSize.FormatPattern);
-            CapSize.ViewCustomAttributes = "";
-
-            // SweaterSize_ClothesSizeID
-            curVal = ConvertToString(SweaterSize_ClothesSizeID.CurrentValue);
-            if (!Empty(curVal)) {
-                if (SweaterSize_ClothesSizeID.Lookup != null && IsDictionary(SweaterSize_ClothesSizeID.Lookup?.Options) && SweaterSize_ClothesSizeID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
-                    SweaterSize_ClothesSizeID.ViewValue = SweaterSize_ClothesSizeID.LookupCacheOption(curVal);
-                } else { // Lookup from database // DN
-                    filterWrk = SearchFilter("[ID]", "=", SweaterSize_ClothesSizeID.CurrentValue, DataType.Number, "");
-                    sqlWrk = SweaterSize_ClothesSizeID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
-                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
-                    if (rswrk?.Count > 0 && SweaterSize_ClothesSizeID.Lookup != null) { // Lookup values found
-                        var listwrk = SweaterSize_ClothesSizeID.Lookup?.RenderViewRow(rswrk[0]);
-                        SweaterSize_ClothesSizeID.ViewValue = SweaterSize_ClothesSizeID.HighlightLookup(ConvertToString(rswrk[0]), SweaterSize_ClothesSizeID.DisplayValue(listwrk));
-                    } else {
-                        SweaterSize_ClothesSizeID.ViewValue = FormatNumber(SweaterSize_ClothesSizeID.CurrentValue, SweaterSize_ClothesSizeID.FormatPattern);
-                    }
-                }
-            } else {
-                SweaterSize_ClothesSizeID.ViewValue = DbNullValue;
-            }
-            SweaterSize_ClothesSizeID.ViewCustomAttributes = "";
-
-            // BoilersuitSize_ClothesSizeID
-            curVal = ConvertToString(BoilersuitSize_ClothesSizeID.CurrentValue);
-            if (!Empty(curVal)) {
-                if (BoilersuitSize_ClothesSizeID.Lookup != null && IsDictionary(BoilersuitSize_ClothesSizeID.Lookup?.Options) && BoilersuitSize_ClothesSizeID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
-                    BoilersuitSize_ClothesSizeID.ViewValue = BoilersuitSize_ClothesSizeID.LookupCacheOption(curVal);
-                } else { // Lookup from database // DN
-                    filterWrk = SearchFilter("[ID]", "=", BoilersuitSize_ClothesSizeID.CurrentValue, DataType.Number, "");
-                    sqlWrk = BoilersuitSize_ClothesSizeID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
-                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
-                    if (rswrk?.Count > 0 && BoilersuitSize_ClothesSizeID.Lookup != null) { // Lookup values found
-                        var listwrk = BoilersuitSize_ClothesSizeID.Lookup?.RenderViewRow(rswrk[0]);
-                        BoilersuitSize_ClothesSizeID.ViewValue = BoilersuitSize_ClothesSizeID.HighlightLookup(ConvertToString(rswrk[0]), BoilersuitSize_ClothesSizeID.DisplayValue(listwrk));
-                    } else {
-                        BoilersuitSize_ClothesSizeID.ViewValue = FormatNumber(BoilersuitSize_ClothesSizeID.CurrentValue, BoilersuitSize_ClothesSizeID.FormatPattern);
-                    }
-                }
-            } else {
-                BoilersuitSize_ClothesSizeID.ViewValue = DbNullValue;
-            }
-            BoilersuitSize_ClothesSizeID.ViewCustomAttributes = "";
-
             // SocialSecurityNumber
             SocialSecurityNumber.ViewValue = ConvertToString(SocialSecurityNumber.CurrentValue); // DN
             SocialSecurityNumber.ViewCustomAttributes = "";
@@ -5460,46 +4598,6 @@ public partial class PCM {
             // NomineeMobileNumber
             NomineeMobileNumber.ViewValue = ConvertToString(NomineeMobileNumber.CurrentValue); // DN
             NomineeMobileNumber.ViewCustomAttributes = "";
-
-            // NomineeValidVisa
-            NomineeValidVisa.ViewValue = ConvertToString(NomineeValidVisa.CurrentValue); // DN
-            NomineeValidVisa.ViewCustomAttributes = "";
-
-            // BankName
-            BankName.ViewValue = ConvertToString(BankName.CurrentValue); // DN
-            BankName.ViewCustomAttributes = "";
-
-            // BankAddress
-            BankAddress.ViewValue = BankAddress.CurrentValue;
-            BankAddress.ViewCustomAttributes = "";
-
-            // BankAccountName
-            BankAccountName.ViewValue = ConvertToString(BankAccountName.CurrentValue); // DN
-            BankAccountName.ViewCustomAttributes = "";
-
-            // BankAccountNumber
-            BankAccountNumber.ViewValue = ConvertToString(BankAccountNumber.CurrentValue); // DN
-            BankAccountNumber.ViewCustomAttributes = "";
-
-            // BankSortCode
-            BankSortCode.ViewValue = ConvertToString(BankSortCode.CurrentValue); // DN
-            BankSortCode.ViewCustomAttributes = "";
-
-            // MNOPF
-            MNOPF.ViewValue = ConvertToString(MNOPF.CurrentValue); // DN
-            MNOPF.ViewCustomAttributes = "";
-
-            // MembershipNumber
-            MembershipNumber.ViewValue = ConvertToString(MembershipNumber.CurrentValue); // DN
-            MembershipNumber.ViewCustomAttributes = "";
-
-            // NationalInsuranceNumber
-            NationalInsuranceNumber.ViewValue = ConvertToString(NationalInsuranceNumber.CurrentValue); // DN
-            NationalInsuranceNumber.ViewCustomAttributes = "";
-
-            // AVC
-            AVC.ViewValue = ConvertToString(AVC.CurrentValue); // DN
-            AVC.ViewCustomAttributes = "";
 
             // ForeignVisaHasBeenDenied
             if (ConvertToBool(ForeignVisaHasBeenDenied.CurrentValue)) {
@@ -5689,26 +4787,6 @@ public partial class PCM {
             MTUserID.ViewValue = MTUserID.CurrentValue;
             MTUserID.ViewValue = FormatNumber(MTUserID.ViewValue, MTUserID.FormatPattern);
             MTUserID.ViewCustomAttributes = "";
-
-            // DocumentCheckDateTime
-            DocumentCheckDateTime.ViewValue = DocumentCheckDateTime.CurrentValue;
-            DocumentCheckDateTime.ViewValue = FormatDateTime(DocumentCheckDateTime.ViewValue, DocumentCheckDateTime.FormatPattern);
-            DocumentCheckDateTime.ViewCustomAttributes = "";
-
-            // InterviewManagerDateTime
-            InterviewManagerDateTime.ViewValue = InterviewManagerDateTime.CurrentValue;
-            InterviewManagerDateTime.ViewValue = FormatDateTime(InterviewManagerDateTime.ViewValue, InterviewManagerDateTime.FormatPattern);
-            InterviewManagerDateTime.ViewCustomAttributes = "";
-
-            // InterviewGMDateTime
-            InterviewGMDateTime.ViewValue = InterviewGMDateTime.CurrentValue;
-            InterviewGMDateTime.ViewValue = FormatDateTime(InterviewGMDateTime.ViewValue, InterviewGMDateTime.FormatPattern);
-            InterviewGMDateTime.ViewCustomAttributes = "";
-
-            // MCUScheduleDateTime
-            MCUScheduleDateTime.ViewValue = MCUScheduleDateTime.CurrentValue;
-            MCUScheduleDateTime.ViewValue = FormatDateTime(MCUScheduleDateTime.ViewValue, MCUScheduleDateTime.FormatPattern);
-            MCUScheduleDateTime.ViewCustomAttributes = "";
 
             // RejectedReason
             RejectedReason.ViewValue = RejectedReason.CurrentValue;
@@ -5923,6 +5001,11 @@ public partial class PCM {
             RevisedDateTime.ViewValue = FormatDateTime(RevisedDateTime.ViewValue, RevisedDateTime.FormatPattern);
             RevisedDateTime.ViewCustomAttributes = "";
 
+            // MTManningAgentID
+            MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+            MTManningAgentID.ViewValue = FormatNumber(MTManningAgentID.ViewValue, MTManningAgentID.FormatPattern);
+            MTManningAgentID.ViewCustomAttributes = "";
+
             // ID
             ID.HrefValue = "";
             ID.TooltipValue = "";
@@ -6105,54 +5188,6 @@ public partial class PCM {
             _Email.HrefValue = "";
             _Email.TooltipValue = "";
 
-            // ContactMethodEmail
-            ContactMethodEmail.HrefValue = "";
-            ContactMethodEmail.TooltipValue = "";
-
-            // ContactMethodFax
-            ContactMethodFax.HrefValue = "";
-            ContactMethodFax.TooltipValue = "";
-
-            // ContactMethodMobilePhone
-            ContactMethodMobilePhone.HrefValue = "";
-            ContactMethodMobilePhone.TooltipValue = "";
-
-            // ContactMethodHomePhone
-            ContactMethodHomePhone.HrefValue = "";
-            ContactMethodHomePhone.TooltipValue = "";
-
-            // ContactMethodPost
-            ContactMethodPost.HrefValue = "";
-            ContactMethodPost.TooltipValue = "";
-
-            // CollarSize
-            CollarSize.HrefValue = "";
-            CollarSize.TooltipValue = "";
-
-            // ChestSize
-            ChestSize.HrefValue = "";
-            ChestSize.TooltipValue = "";
-
-            // WaistSize
-            WaistSize.HrefValue = "";
-            WaistSize.TooltipValue = "";
-
-            // InsideLegSize
-            InsideLegSize.HrefValue = "";
-            InsideLegSize.TooltipValue = "";
-
-            // CapSize
-            CapSize.HrefValue = "";
-            CapSize.TooltipValue = "";
-
-            // SweaterSize_ClothesSizeID
-            SweaterSize_ClothesSizeID.HrefValue = "";
-            SweaterSize_ClothesSizeID.TooltipValue = "";
-
-            // BoilersuitSize_ClothesSizeID
-            BoilersuitSize_ClothesSizeID.HrefValue = "";
-            BoilersuitSize_ClothesSizeID.TooltipValue = "";
-
             // SocialSecurityNumber
             SocialSecurityNumber.HrefValue = "";
             SocialSecurityNumber.TooltipValue = "";
@@ -6238,46 +5273,6 @@ public partial class PCM {
             // NomineeMobileNumber
             NomineeMobileNumber.HrefValue = "";
             NomineeMobileNumber.TooltipValue = "";
-
-            // NomineeValidVisa
-            NomineeValidVisa.HrefValue = "";
-            NomineeValidVisa.TooltipValue = "";
-
-            // BankName
-            BankName.HrefValue = "";
-            BankName.TooltipValue = "";
-
-            // BankAddress
-            BankAddress.HrefValue = "";
-            BankAddress.TooltipValue = "";
-
-            // BankAccountName
-            BankAccountName.HrefValue = "";
-            BankAccountName.TooltipValue = "";
-
-            // BankAccountNumber
-            BankAccountNumber.HrefValue = "";
-            BankAccountNumber.TooltipValue = "";
-
-            // BankSortCode
-            BankSortCode.HrefValue = "";
-            BankSortCode.TooltipValue = "";
-
-            // MNOPF
-            MNOPF.HrefValue = "";
-            MNOPF.TooltipValue = "";
-
-            // MembershipNumber
-            MembershipNumber.HrefValue = "";
-            MembershipNumber.TooltipValue = "";
-
-            // NationalInsuranceNumber
-            NationalInsuranceNumber.HrefValue = "";
-            NationalInsuranceNumber.TooltipValue = "";
-
-            // AVC
-            AVC.HrefValue = "";
-            AVC.TooltipValue = "";
 
             // ForeignVisaHasBeenDenied
             ForeignVisaHasBeenDenied.HrefValue = "";
@@ -6371,22 +5366,6 @@ public partial class PCM {
             MTUserID.HrefValue = "";
             MTUserID.TooltipValue = "";
 
-            // DocumentCheckDateTime
-            DocumentCheckDateTime.HrefValue = "";
-            DocumentCheckDateTime.TooltipValue = "";
-
-            // InterviewManagerDateTime
-            InterviewManagerDateTime.HrefValue = "";
-            InterviewManagerDateTime.TooltipValue = "";
-
-            // InterviewGMDateTime
-            InterviewGMDateTime.HrefValue = "";
-            InterviewGMDateTime.TooltipValue = "";
-
-            // MCUScheduleDateTime
-            MCUScheduleDateTime.HrefValue = "";
-            MCUScheduleDateTime.TooltipValue = "";
-
             // RejectedReason
             RejectedReason.HrefValue = "";
             RejectedReason.TooltipValue = "";
@@ -6474,6 +5453,10 @@ public partial class PCM {
             // RevisedDateTime
             RevisedDateTime.HrefValue = "";
             RevisedDateTime.TooltipValue = "";
+
+            // MTManningAgentID
+            MTManningAgentID.HrefValue = "";
+            MTManningAgentID.TooltipValue = "";
 
             // Call Row Rendered event
             RowRendered();
@@ -6769,73 +5752,6 @@ public partial class PCM {
             _Email.EditValue = HtmlEncode(_Email.CurrentValue);
             _Email.PlaceHolder = RemoveHtml(_Email.Caption);
 
-            // ContactMethodEmail
-            ContactMethodEmail.EditValue = ContactMethodEmail.Options(false);
-            ContactMethodEmail.PlaceHolder = RemoveHtml(ContactMethodEmail.Caption);
-
-            // ContactMethodFax
-            ContactMethodFax.EditValue = ContactMethodFax.Options(false);
-            ContactMethodFax.PlaceHolder = RemoveHtml(ContactMethodFax.Caption);
-
-            // ContactMethodMobilePhone
-            ContactMethodMobilePhone.EditValue = ContactMethodMobilePhone.Options(false);
-            ContactMethodMobilePhone.PlaceHolder = RemoveHtml(ContactMethodMobilePhone.Caption);
-
-            // ContactMethodHomePhone
-            ContactMethodHomePhone.EditValue = ContactMethodHomePhone.Options(false);
-            ContactMethodHomePhone.PlaceHolder = RemoveHtml(ContactMethodHomePhone.Caption);
-
-            // ContactMethodPost
-            ContactMethodPost.EditValue = ContactMethodPost.Options(false);
-            ContactMethodPost.PlaceHolder = RemoveHtml(ContactMethodPost.Caption);
-
-            // CollarSize
-            CollarSize.SetupEditAttributes();
-            CollarSize.EditValue = CollarSize.CurrentValue; // DN
-            CollarSize.PlaceHolder = RemoveHtml(CollarSize.Caption);
-            if (!Empty(CollarSize.EditValue) && IsNumeric(CollarSize.EditValue))
-                CollarSize.EditValue = FormatNumber(CollarSize.EditValue, null);
-
-            // ChestSize
-            ChestSize.SetupEditAttributes();
-            ChestSize.EditValue = ChestSize.CurrentValue; // DN
-            ChestSize.PlaceHolder = RemoveHtml(ChestSize.Caption);
-            if (!Empty(ChestSize.EditValue) && IsNumeric(ChestSize.EditValue))
-                ChestSize.EditValue = FormatNumber(ChestSize.EditValue, null);
-
-            // WaistSize
-            WaistSize.SetupEditAttributes();
-            WaistSize.EditValue = WaistSize.CurrentValue; // DN
-            WaistSize.PlaceHolder = RemoveHtml(WaistSize.Caption);
-            if (!Empty(WaistSize.EditValue) && IsNumeric(WaistSize.EditValue))
-                WaistSize.EditValue = FormatNumber(WaistSize.EditValue, null);
-
-            // InsideLegSize
-            InsideLegSize.SetupEditAttributes();
-            InsideLegSize.EditValue = InsideLegSize.CurrentValue; // DN
-            InsideLegSize.PlaceHolder = RemoveHtml(InsideLegSize.Caption);
-            if (!Empty(InsideLegSize.EditValue) && IsNumeric(InsideLegSize.EditValue))
-                InsideLegSize.EditValue = FormatNumber(InsideLegSize.EditValue, null);
-
-            // CapSize
-            CapSize.SetupEditAttributes();
-            CapSize.EditValue = CapSize.CurrentValue; // DN
-            CapSize.PlaceHolder = RemoveHtml(CapSize.Caption);
-            if (!Empty(CapSize.EditValue) && IsNumeric(CapSize.EditValue))
-                CapSize.EditValue = FormatNumber(CapSize.EditValue, null);
-
-            // SweaterSize_ClothesSizeID
-            SweaterSize_ClothesSizeID.SetupEditAttributes();
-            SweaterSize_ClothesSizeID.PlaceHolder = RemoveHtml(SweaterSize_ClothesSizeID.Caption);
-            if (!Empty(SweaterSize_ClothesSizeID.EditValue) && IsNumeric(SweaterSize_ClothesSizeID.EditValue))
-                SweaterSize_ClothesSizeID.EditValue = FormatNumber(SweaterSize_ClothesSizeID.EditValue, null);
-
-            // BoilersuitSize_ClothesSizeID
-            BoilersuitSize_ClothesSizeID.SetupEditAttributes();
-            BoilersuitSize_ClothesSizeID.PlaceHolder = RemoveHtml(BoilersuitSize_ClothesSizeID.Caption);
-            if (!Empty(BoilersuitSize_ClothesSizeID.EditValue) && IsNumeric(BoilersuitSize_ClothesSizeID.EditValue))
-                BoilersuitSize_ClothesSizeID.EditValue = FormatNumber(BoilersuitSize_ClothesSizeID.EditValue, null);
-
             // SocialSecurityNumber
             SocialSecurityNumber.SetupEditAttributes();
             if (!SocialSecurityNumber.Raw)
@@ -6956,74 +5872,6 @@ public partial class PCM {
                 NomineeMobileNumber.CurrentValue = HtmlDecode(NomineeMobileNumber.CurrentValue);
             NomineeMobileNumber.EditValue = HtmlEncode(NomineeMobileNumber.CurrentValue);
             NomineeMobileNumber.PlaceHolder = RemoveHtml(NomineeMobileNumber.Caption);
-
-            // NomineeValidVisa
-            NomineeValidVisa.SetupEditAttributes();
-            if (!NomineeValidVisa.Raw)
-                NomineeValidVisa.CurrentValue = HtmlDecode(NomineeValidVisa.CurrentValue);
-            NomineeValidVisa.EditValue = HtmlEncode(NomineeValidVisa.CurrentValue);
-            NomineeValidVisa.PlaceHolder = RemoveHtml(NomineeValidVisa.Caption);
-
-            // BankName
-            BankName.SetupEditAttributes();
-            if (!BankName.Raw)
-                BankName.CurrentValue = HtmlDecode(BankName.CurrentValue);
-            BankName.EditValue = HtmlEncode(BankName.CurrentValue);
-            BankName.PlaceHolder = RemoveHtml(BankName.Caption);
-
-            // BankAddress
-            BankAddress.SetupEditAttributes();
-            BankAddress.EditValue = BankAddress.CurrentValue; // DN
-            BankAddress.PlaceHolder = RemoveHtml(BankAddress.Caption);
-
-            // BankAccountName
-            BankAccountName.SetupEditAttributes();
-            if (!BankAccountName.Raw)
-                BankAccountName.CurrentValue = HtmlDecode(BankAccountName.CurrentValue);
-            BankAccountName.EditValue = HtmlEncode(BankAccountName.CurrentValue);
-            BankAccountName.PlaceHolder = RemoveHtml(BankAccountName.Caption);
-
-            // BankAccountNumber
-            BankAccountNumber.SetupEditAttributes();
-            if (!BankAccountNumber.Raw)
-                BankAccountNumber.CurrentValue = HtmlDecode(BankAccountNumber.CurrentValue);
-            BankAccountNumber.EditValue = HtmlEncode(BankAccountNumber.CurrentValue);
-            BankAccountNumber.PlaceHolder = RemoveHtml(BankAccountNumber.Caption);
-
-            // BankSortCode
-            BankSortCode.SetupEditAttributes();
-            if (!BankSortCode.Raw)
-                BankSortCode.CurrentValue = HtmlDecode(BankSortCode.CurrentValue);
-            BankSortCode.EditValue = HtmlEncode(BankSortCode.CurrentValue);
-            BankSortCode.PlaceHolder = RemoveHtml(BankSortCode.Caption);
-
-            // MNOPF
-            MNOPF.SetupEditAttributes();
-            if (!MNOPF.Raw)
-                MNOPF.CurrentValue = HtmlDecode(MNOPF.CurrentValue);
-            MNOPF.EditValue = HtmlEncode(MNOPF.CurrentValue);
-            MNOPF.PlaceHolder = RemoveHtml(MNOPF.Caption);
-
-            // MembershipNumber
-            MembershipNumber.SetupEditAttributes();
-            if (!MembershipNumber.Raw)
-                MembershipNumber.CurrentValue = HtmlDecode(MembershipNumber.CurrentValue);
-            MembershipNumber.EditValue = HtmlEncode(MembershipNumber.CurrentValue);
-            MembershipNumber.PlaceHolder = RemoveHtml(MembershipNumber.Caption);
-
-            // NationalInsuranceNumber
-            NationalInsuranceNumber.SetupEditAttributes();
-            if (!NationalInsuranceNumber.Raw)
-                NationalInsuranceNumber.CurrentValue = HtmlDecode(NationalInsuranceNumber.CurrentValue);
-            NationalInsuranceNumber.EditValue = HtmlEncode(NationalInsuranceNumber.CurrentValue);
-            NationalInsuranceNumber.PlaceHolder = RemoveHtml(NationalInsuranceNumber.Caption);
-
-            // AVC
-            AVC.SetupEditAttributes();
-            if (!AVC.Raw)
-                AVC.CurrentValue = HtmlDecode(AVC.CurrentValue);
-            AVC.EditValue = HtmlEncode(AVC.CurrentValue);
-            AVC.PlaceHolder = RemoveHtml(AVC.Caption);
 
             // ForeignVisaHasBeenDenied
             ForeignVisaHasBeenDenied.EditValue = ForeignVisaHasBeenDenied.Options(false);
@@ -7186,26 +6034,6 @@ public partial class PCM {
                     MTUserID.EditValue = FormatNumber(MTUserID.EditValue, null);
             }
 
-            // DocumentCheckDateTime
-            DocumentCheckDateTime.SetupEditAttributes();
-            DocumentCheckDateTime.EditValue = FormatDateTime(DocumentCheckDateTime.CurrentValue, DocumentCheckDateTime.FormatPattern); // DN
-            DocumentCheckDateTime.PlaceHolder = RemoveHtml(DocumentCheckDateTime.Caption);
-
-            // InterviewManagerDateTime
-            InterviewManagerDateTime.SetupEditAttributes();
-            InterviewManagerDateTime.EditValue = FormatDateTime(InterviewManagerDateTime.CurrentValue, InterviewManagerDateTime.FormatPattern); // DN
-            InterviewManagerDateTime.PlaceHolder = RemoveHtml(InterviewManagerDateTime.Caption);
-
-            // InterviewGMDateTime
-            InterviewGMDateTime.SetupEditAttributes();
-            InterviewGMDateTime.EditValue = FormatDateTime(InterviewGMDateTime.CurrentValue, InterviewGMDateTime.FormatPattern); // DN
-            InterviewGMDateTime.PlaceHolder = RemoveHtml(InterviewGMDateTime.Caption);
-
-            // MCUScheduleDateTime
-            MCUScheduleDateTime.SetupEditAttributes();
-            MCUScheduleDateTime.EditValue = FormatDateTime(MCUScheduleDateTime.CurrentValue, MCUScheduleDateTime.FormatPattern); // DN
-            MCUScheduleDateTime.PlaceHolder = RemoveHtml(MCUScheduleDateTime.Caption);
-
             // RejectedReason
             RejectedReason.SetupEditAttributes();
             RejectedReason.EditValue = RejectedReason.CurrentValue; // DN
@@ -7331,6 +6159,13 @@ public partial class PCM {
             RevisedDateTime.EditValue = FormatDateTime(RevisedDateTime.CurrentValue, RevisedDateTime.FormatPattern); // DN
             RevisedDateTime.PlaceHolder = RemoveHtml(RevisedDateTime.Caption);
 
+            // MTManningAgentID
+            MTManningAgentID.SetupEditAttributes();
+            MTManningAgentID.EditValue = MTManningAgentID.CurrentValue; // DN
+            MTManningAgentID.PlaceHolder = RemoveHtml(MTManningAgentID.Caption);
+            if (!Empty(MTManningAgentID.EditValue) && IsNumeric(MTManningAgentID.EditValue))
+                MTManningAgentID.EditValue = FormatNumber(MTManningAgentID.EditValue, null);
+
             // Call Row Rendered event
             RowRendered();
         }
@@ -7395,18 +6230,6 @@ public partial class PCM {
                         doc.ExportCaption(AlternativeAddressCountryID);
                         doc.ExportCaption(MobileNumber);
                         doc.ExportCaption(_Email);
-                        doc.ExportCaption(ContactMethodEmail);
-                        doc.ExportCaption(ContactMethodFax);
-                        doc.ExportCaption(ContactMethodMobilePhone);
-                        doc.ExportCaption(ContactMethodHomePhone);
-                        doc.ExportCaption(ContactMethodPost);
-                        doc.ExportCaption(CollarSize);
-                        doc.ExportCaption(ChestSize);
-                        doc.ExportCaption(WaistSize);
-                        doc.ExportCaption(InsideLegSize);
-                        doc.ExportCaption(CapSize);
-                        doc.ExportCaption(SweaterSize_ClothesSizeID);
-                        doc.ExportCaption(BoilersuitSize_ClothesSizeID);
                         doc.ExportCaption(SocialSecurityNumber);
                         doc.ExportCaption(SocialSecurityIssuingCountryID);
                         doc.ExportCaption(SocialSecurityImage);
@@ -7424,16 +6247,6 @@ public partial class PCM {
                         doc.ExportCaption(NomineeAddressHomeTel);
                         doc.ExportCaption(NomineeEmail);
                         doc.ExportCaption(NomineeMobileNumber);
-                        doc.ExportCaption(NomineeValidVisa);
-                        doc.ExportCaption(BankName);
-                        doc.ExportCaption(BankAddress);
-                        doc.ExportCaption(BankAccountName);
-                        doc.ExportCaption(BankAccountNumber);
-                        doc.ExportCaption(BankSortCode);
-                        doc.ExportCaption(MNOPF);
-                        doc.ExportCaption(MembershipNumber);
-                        doc.ExportCaption(NationalInsuranceNumber);
-                        doc.ExportCaption(AVC);
                         doc.ExportCaption(ForeignVisaHasBeenDenied);
                         doc.ExportCaption(ForeignVisaDenied_CountryID);
                         doc.ExportCaption(ForeignVisaDeniedReason);
@@ -7475,6 +6288,7 @@ public partial class PCM {
                         doc.ExportCaption(NomineeMobileNumberCode_CountryID);
                         doc.ExportCaption(RevisedReason);
                         doc.ExportCaption(RevisedDateTime);
+                        doc.ExportCaption(MTManningAgentID);
                     } else {
                         doc.ExportCaption(IndividualCodeNumber);
                         doc.ExportCaption(FullName);
@@ -7508,18 +6322,6 @@ public partial class PCM {
                         doc.ExportCaption(AlternativeAddressCountryID);
                         doc.ExportCaption(MobileNumber);
                         doc.ExportCaption(_Email);
-                        doc.ExportCaption(ContactMethodEmail);
-                        doc.ExportCaption(ContactMethodFax);
-                        doc.ExportCaption(ContactMethodMobilePhone);
-                        doc.ExportCaption(ContactMethodHomePhone);
-                        doc.ExportCaption(ContactMethodPost);
-                        doc.ExportCaption(CollarSize);
-                        doc.ExportCaption(ChestSize);
-                        doc.ExportCaption(WaistSize);
-                        doc.ExportCaption(InsideLegSize);
-                        doc.ExportCaption(CapSize);
-                        doc.ExportCaption(SweaterSize_ClothesSizeID);
-                        doc.ExportCaption(BoilersuitSize_ClothesSizeID);
                         doc.ExportCaption(SocialSecurityNumber);
                         doc.ExportCaption(SocialSecurityIssuingCountryID);
                         doc.ExportCaption(SocialSecurityImage);
@@ -7537,16 +6339,6 @@ public partial class PCM {
                         doc.ExportCaption(NomineeAddressHomeTel);
                         doc.ExportCaption(NomineeEmail);
                         doc.ExportCaption(NomineeMobileNumber);
-                        doc.ExportCaption(NomineeValidVisa);
-                        doc.ExportCaption(BankName);
-                        doc.ExportCaption(BankAddress);
-                        doc.ExportCaption(BankAccountName);
-                        doc.ExportCaption(BankAccountNumber);
-                        doc.ExportCaption(BankSortCode);
-                        doc.ExportCaption(MNOPF);
-                        doc.ExportCaption(MembershipNumber);
-                        doc.ExportCaption(NationalInsuranceNumber);
-                        doc.ExportCaption(AVC);
                         doc.ExportCaption(ForeignVisaHasBeenDenied);
                         doc.ExportCaption(ForeignVisaDenied_CountryID);
                         doc.ExportCaption(ForeignVisaDeniedReason);
@@ -7568,10 +6360,6 @@ public partial class PCM {
                         doc.ExportCaption(CreatedDateTime);
                         doc.ExportCaption(LastUpdatedByUserID);
                         doc.ExportCaption(LastUpdatedDateTime);
-                        doc.ExportCaption(DocumentCheckDateTime);
-                        doc.ExportCaption(InterviewManagerDateTime);
-                        doc.ExportCaption(InterviewGMDateTime);
-                        doc.ExportCaption(MCUScheduleDateTime);
                         doc.ExportCaption(RejectedReason);
                         doc.ExportCaption(RejectedDateTime);
                         doc.ExportCaption(Status);
@@ -7594,6 +6382,7 @@ public partial class PCM {
                         doc.ExportCaption(NomineeMobileNumberCode_CountryID);
                         doc.ExportCaption(RevisedReason);
                         doc.ExportCaption(RevisedDateTime);
+                        doc.ExportCaption(MTManningAgentID);
                     }
                     doc.EndExportRow();
                 }
@@ -7663,18 +6452,6 @@ public partial class PCM {
                             await doc.ExportField(AlternativeAddressCountryID);
                             await doc.ExportField(MobileNumber);
                             await doc.ExportField(_Email);
-                            await doc.ExportField(ContactMethodEmail);
-                            await doc.ExportField(ContactMethodFax);
-                            await doc.ExportField(ContactMethodMobilePhone);
-                            await doc.ExportField(ContactMethodHomePhone);
-                            await doc.ExportField(ContactMethodPost);
-                            await doc.ExportField(CollarSize);
-                            await doc.ExportField(ChestSize);
-                            await doc.ExportField(WaistSize);
-                            await doc.ExportField(InsideLegSize);
-                            await doc.ExportField(CapSize);
-                            await doc.ExportField(SweaterSize_ClothesSizeID);
-                            await doc.ExportField(BoilersuitSize_ClothesSizeID);
                             await doc.ExportField(SocialSecurityNumber);
                             await doc.ExportField(SocialSecurityIssuingCountryID);
                             await doc.ExportField(SocialSecurityImage);
@@ -7692,16 +6469,6 @@ public partial class PCM {
                             await doc.ExportField(NomineeAddressHomeTel);
                             await doc.ExportField(NomineeEmail);
                             await doc.ExportField(NomineeMobileNumber);
-                            await doc.ExportField(NomineeValidVisa);
-                            await doc.ExportField(BankName);
-                            await doc.ExportField(BankAddress);
-                            await doc.ExportField(BankAccountName);
-                            await doc.ExportField(BankAccountNumber);
-                            await doc.ExportField(BankSortCode);
-                            await doc.ExportField(MNOPF);
-                            await doc.ExportField(MembershipNumber);
-                            await doc.ExportField(NationalInsuranceNumber);
-                            await doc.ExportField(AVC);
                             await doc.ExportField(ForeignVisaHasBeenDenied);
                             await doc.ExportField(ForeignVisaDenied_CountryID);
                             await doc.ExportField(ForeignVisaDeniedReason);
@@ -7743,6 +6510,7 @@ public partial class PCM {
                             await doc.ExportField(NomineeMobileNumberCode_CountryID);
                             await doc.ExportField(RevisedReason);
                             await doc.ExportField(RevisedDateTime);
+                            await doc.ExportField(MTManningAgentID);
                         } else {
                             await doc.ExportField(IndividualCodeNumber);
                             await doc.ExportField(FullName);
@@ -7776,18 +6544,6 @@ public partial class PCM {
                             await doc.ExportField(AlternativeAddressCountryID);
                             await doc.ExportField(MobileNumber);
                             await doc.ExportField(_Email);
-                            await doc.ExportField(ContactMethodEmail);
-                            await doc.ExportField(ContactMethodFax);
-                            await doc.ExportField(ContactMethodMobilePhone);
-                            await doc.ExportField(ContactMethodHomePhone);
-                            await doc.ExportField(ContactMethodPost);
-                            await doc.ExportField(CollarSize);
-                            await doc.ExportField(ChestSize);
-                            await doc.ExportField(WaistSize);
-                            await doc.ExportField(InsideLegSize);
-                            await doc.ExportField(CapSize);
-                            await doc.ExportField(SweaterSize_ClothesSizeID);
-                            await doc.ExportField(BoilersuitSize_ClothesSizeID);
                             await doc.ExportField(SocialSecurityNumber);
                             await doc.ExportField(SocialSecurityIssuingCountryID);
                             await doc.ExportField(SocialSecurityImage);
@@ -7805,16 +6561,6 @@ public partial class PCM {
                             await doc.ExportField(NomineeAddressHomeTel);
                             await doc.ExportField(NomineeEmail);
                             await doc.ExportField(NomineeMobileNumber);
-                            await doc.ExportField(NomineeValidVisa);
-                            await doc.ExportField(BankName);
-                            await doc.ExportField(BankAddress);
-                            await doc.ExportField(BankAccountName);
-                            await doc.ExportField(BankAccountNumber);
-                            await doc.ExportField(BankSortCode);
-                            await doc.ExportField(MNOPF);
-                            await doc.ExportField(MembershipNumber);
-                            await doc.ExportField(NationalInsuranceNumber);
-                            await doc.ExportField(AVC);
                             await doc.ExportField(ForeignVisaHasBeenDenied);
                             await doc.ExportField(ForeignVisaDenied_CountryID);
                             await doc.ExportField(ForeignVisaDeniedReason);
@@ -7836,10 +6582,6 @@ public partial class PCM {
                             await doc.ExportField(CreatedDateTime);
                             await doc.ExportField(LastUpdatedByUserID);
                             await doc.ExportField(LastUpdatedDateTime);
-                            await doc.ExportField(DocumentCheckDateTime);
-                            await doc.ExportField(InterviewManagerDateTime);
-                            await doc.ExportField(InterviewGMDateTime);
-                            await doc.ExportField(MCUScheduleDateTime);
                             await doc.ExportField(RejectedReason);
                             await doc.ExportField(RejectedDateTime);
                             await doc.ExportField(Status);
@@ -7862,6 +6604,7 @@ public partial class PCM {
                             await doc.ExportField(NomineeMobileNumberCode_CountryID);
                             await doc.ExportField(RevisedReason);
                             await doc.ExportField(RevisedDateTime);
+                            await doc.ExportField(MTManningAgentID);
                         }
                         doc.EndExportRow(rowcnt);
                     }

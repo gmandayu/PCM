@@ -287,6 +287,7 @@ public partial class PCM {
             EmployeeStatus.Visible = false;
             FormSubmittedDateTime.SetVisibility();
             ActiveDescription.Visible = false;
+            ManningAgentName.SetVisibility();
             CreatedBy.SetVisibility();
             CreatedDateTime.SetVisibility();
             LastUpdatedBy.SetVisibility();
@@ -475,6 +476,8 @@ public partial class PCM {
         protected void HideFieldsForAddEdit() {
             if (IsAddOrEdit)
                 RankAppliedFor.Visible = false;
+            if (IsAddOrEdit)
+                ManningAgentName.Visible = false;
             if (IsAddOrEdit)
                 CreatedBy.Visible = false;
             if (IsAddOrEdit)
@@ -1119,6 +1122,7 @@ public partial class PCM {
             filters.Merge(JObject.Parse(AvailableFrom.AdvancedSearch.ToJson())); // Field AvailableFrom
             filters.Merge(JObject.Parse(AvailableUntil.AdvancedSearch.ToJson())); // Field AvailableUntil
             filters.Merge(JObject.Parse(FormSubmittedDateTime.AdvancedSearch.ToJson())); // Field FormSubmittedDateTime
+            filters.Merge(JObject.Parse(ManningAgentName.AdvancedSearch.ToJson())); // Field ManningAgentName
             filters.Merge(JObject.Parse(CreatedBy.AdvancedSearch.ToJson())); // Field CreatedBy
             filters.Merge(JObject.Parse(CreatedDateTime.AdvancedSearch.ToJson())); // Field CreatedDateTime
             filters.Merge(JObject.Parse(LastUpdatedBy.AdvancedSearch.ToJson())); // Field LastUpdatedBy
@@ -1229,6 +1233,16 @@ public partial class PCM {
                 FormSubmittedDateTime.AdvancedSearch.Save();
             }
 
+            // Field ManningAgentName
+            if (filter?.TryGetValue("x_ManningAgentName", out sv) ?? false) {
+                ManningAgentName.AdvancedSearch.SearchValue = sv;
+                ManningAgentName.AdvancedSearch.SearchOperator = filter["z_ManningAgentName"];
+                ManningAgentName.AdvancedSearch.SearchCondition = filter["v_ManningAgentName"];
+                ManningAgentName.AdvancedSearch.SearchValue2 = filter["y_ManningAgentName"];
+                ManningAgentName.AdvancedSearch.SearchOperator2 = filter["w_ManningAgentName"];
+                ManningAgentName.AdvancedSearch.Save();
+            }
+
             // Field CreatedBy
             if (filter?.TryGetValue("x_CreatedBy", out sv) ?? false) {
                 CreatedBy.AdvancedSearch.SearchValue = sv;
@@ -1290,6 +1304,7 @@ public partial class PCM {
             BuildSearchSql(ref where, AvailableFrom, def, true); // AvailableFrom
             BuildSearchSql(ref where, AvailableUntil, def, true); // AvailableUntil
             BuildSearchSql(ref where, FormSubmittedDateTime, def, true); // FormSubmittedDateTime
+            BuildSearchSql(ref where, ManningAgentName, def, true); // ManningAgentName
             BuildSearchSql(ref where, CreatedBy, def, true); // CreatedBy
             BuildSearchSql(ref where, CreatedDateTime, def, true); // CreatedDateTime
             BuildSearchSql(ref where, LastUpdatedBy, def, true); // LastUpdatedBy
@@ -1307,6 +1322,7 @@ public partial class PCM {
                 AvailableFrom.AdvancedSearch.Save(); // AvailableFrom
                 AvailableUntil.AdvancedSearch.Save(); // AvailableUntil
                 FormSubmittedDateTime.AdvancedSearch.Save(); // FormSubmittedDateTime
+                ManningAgentName.AdvancedSearch.Save(); // ManningAgentName
                 CreatedBy.AdvancedSearch.Save(); // CreatedBy
                 CreatedDateTime.AdvancedSearch.Save(); // CreatedDateTime
                 LastUpdatedBy.AdvancedSearch.Save(); // LastUpdatedBy
@@ -1521,6 +1537,13 @@ public partial class PCM {
             if (!Empty(filter))
                 filterList += "<div><span class=\"" + captionClass + "\">" + FormSubmittedDateTime.Caption + "</span>" + captionSuffix + filter + "</div>";
 
+            // Field ManningAgentName
+            filter = QueryBuilderWhere("ManningAgentName");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, ManningAgentName, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + ManningAgentName.Caption + "</span>" + captionSuffix + filter + "</div>";
+
             // Field CreatedBy
             filter = QueryBuilderWhere("CreatedBy");
             if (Empty(filter))
@@ -1574,6 +1597,7 @@ public partial class PCM {
             searchFlds.Add(FullName);
             searchFlds.Add(Gender);
             searchFlds.Add(RankAppliedFor);
+            searchFlds.Add(ManningAgentName);
             string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
             string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
 
@@ -1618,6 +1642,8 @@ public partial class PCM {
             if (AvailableUntil.AdvancedSearch.IssetSession)
                 return true;
             if (FormSubmittedDateTime.AdvancedSearch.IssetSession)
+                return true;
+            if (ManningAgentName.AdvancedSearch.IssetSession)
                 return true;
             if (CreatedBy.AdvancedSearch.IssetSession)
                 return true;
@@ -1667,6 +1693,7 @@ public partial class PCM {
             AvailableFrom.AdvancedSearch.UnsetSession();
             AvailableUntil.AdvancedSearch.UnsetSession();
             FormSubmittedDateTime.AdvancedSearch.UnsetSession();
+            ManningAgentName.AdvancedSearch.UnsetSession();
             CreatedBy.AdvancedSearch.UnsetSession();
             CreatedDateTime.AdvancedSearch.UnsetSession();
             LastUpdatedBy.AdvancedSearch.UnsetSession();
@@ -1691,6 +1718,7 @@ public partial class PCM {
             AvailableFrom.AdvancedSearch.Load();
             AvailableUntil.AdvancedSearch.Load();
             FormSubmittedDateTime.AdvancedSearch.Load();
+            ManningAgentName.AdvancedSearch.Load();
             CreatedBy.AdvancedSearch.Load();
             CreatedDateTime.AdvancedSearch.Load();
             LastUpdatedBy.AdvancedSearch.Load();
@@ -1723,6 +1751,7 @@ public partial class PCM {
                 UpdateSort(AvailableFrom, ctrl); // AvailableFrom
                 UpdateSort(AvailableUntil, ctrl); // AvailableUntil
                 UpdateSort(FormSubmittedDateTime, ctrl); // FormSubmittedDateTime
+                UpdateSort(ManningAgentName, ctrl); // ManningAgentName
                 UpdateSort(CreatedBy, ctrl); // CreatedBy
                 UpdateSort(CreatedDateTime, ctrl); // CreatedDateTime
                 UpdateSort(LastUpdatedBy, ctrl); // LastUpdatedBy
@@ -1764,6 +1793,7 @@ public partial class PCM {
                     EmployeeStatus.Sort = "";
                     FormSubmittedDateTime.Sort = "";
                     ActiveDescription.Sort = "";
+                    ManningAgentName.Sort = "";
                     CreatedBy.Sort = "";
                     CreatedDateTime.Sort = "";
                     LastUpdatedBy.Sort = "";
@@ -1943,6 +1973,7 @@ public partial class PCM {
                 CreateColumnOption(option.Add("AvailableFrom")); // DN
                 CreateColumnOption(option.Add("AvailableUntil")); // DN
                 CreateColumnOption(option.Add("FormSubmittedDateTime")); // DN
+                CreateColumnOption(option.Add("ManningAgentName")); // DN
                 CreateColumnOption(option.Add("CreatedBy")); // DN
                 CreateColumnOption(option.Add("CreatedDateTime")); // DN
                 CreateColumnOption(option.Add("LastUpdatedBy")); // DN
@@ -2350,6 +2381,17 @@ public partial class PCM {
             if (Query.ContainsKey("z_FormSubmittedDateTime"))
                 FormSubmittedDateTime.AdvancedSearch.SearchOperator = Get("z_FormSubmittedDateTime");
 
+            // ManningAgentName
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_ManningAgentName[]"))
+                    ManningAgentName.AdvancedSearch.SearchValue = Get("x_ManningAgentName[]");
+                else
+                    ManningAgentName.AdvancedSearch.SearchValue = Get("ManningAgentName"); // Default Value // DN
+            if (!Empty(ManningAgentName.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_ManningAgentName"))
+                ManningAgentName.AdvancedSearch.SearchOperator = Get("z_ManningAgentName");
+
             // CreatedBy
             if (!IsAddOrEdit)
                 if (Query.ContainsKey("x_CreatedBy[]"))
@@ -2475,6 +2517,7 @@ public partial class PCM {
             EmployeeStatus.SetDbValue(row["EmployeeStatus"]);
             FormSubmittedDateTime.SetDbValue(row["FormSubmittedDateTime"]);
             ActiveDescription.SetDbValue(row["ActiveDescription"]);
+            ManningAgentName.SetDbValue(row["ManningAgentName"]);
             CreatedBy.SetDbValue(row["CreatedBy"]);
             CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
             LastUpdatedBy.SetDbValue(row["LastUpdatedBy"]);
@@ -2499,6 +2542,7 @@ public partial class PCM {
             row.Add("EmployeeStatus", EmployeeStatus.DefaultValue ?? DbNullValue); // DN
             row.Add("FormSubmittedDateTime", FormSubmittedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("ActiveDescription", ActiveDescription.DefaultValue ?? DbNullValue); // DN
+            row.Add("ManningAgentName", ManningAgentName.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedBy", CreatedBy.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedBy", LastUpdatedBy.DefaultValue ?? DbNullValue); // DN
@@ -2575,6 +2619,9 @@ public partial class PCM {
 
             // ActiveDescription
             ActiveDescription.CellCssStyle = "white-space: nowrap;";
+
+            // ManningAgentName
+            ManningAgentName.CellCssStyle = "white-space: nowrap;";
 
             // CreatedBy
             CreatedBy.CellCssStyle = "white-space: nowrap;";
@@ -2668,6 +2715,10 @@ public partial class PCM {
                 FormSubmittedDateTime.ViewValue = FormatDateTime(FormSubmittedDateTime.ViewValue, FormSubmittedDateTime.FormatPattern);
                 FormSubmittedDateTime.ViewCustomAttributes = "";
 
+                // ManningAgentName
+                ManningAgentName.ViewValue = ConvertToString(ManningAgentName.CurrentValue); // DN
+                ManningAgentName.ViewCustomAttributes = "";
+
                 // CreatedBy
                 CreatedBy.ViewValue = ConvertToString(CreatedBy.CurrentValue); // DN
                 CreatedBy.ViewCustomAttributes = "";
@@ -2744,6 +2795,10 @@ public partial class PCM {
                 FormSubmittedDateTime.HrefValue = "";
                 FormSubmittedDateTime.TooltipValue = "";
 
+                // ManningAgentName
+                ManningAgentName.HrefValue = "";
+                ManningAgentName.TooltipValue = "";
+
                 // CreatedBy
                 CreatedBy.HrefValue = "";
                 CreatedBy.TooltipValue = "";
@@ -2808,6 +2863,11 @@ public partial class PCM {
                 // FormSubmittedDateTime
                 if (FormSubmittedDateTime.UseFilter && !Empty(FormSubmittedDateTime.AdvancedSearch.SearchValue)) {
                     FormSubmittedDateTime.EditValue = ConvertToString(FormSubmittedDateTime.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // ManningAgentName
+                if (ManningAgentName.UseFilter && !Empty(ManningAgentName.AdvancedSearch.SearchValue)) {
+                    ManningAgentName.EditValue = ConvertToString(ManningAgentName.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
                 }
 
                 // CreatedBy
@@ -3241,6 +3301,7 @@ public partial class PCM {
             AvailableFrom.AdvancedSearch.Load();
             AvailableUntil.AdvancedSearch.Load();
             FormSubmittedDateTime.AdvancedSearch.Load();
+            ManningAgentName.AdvancedSearch.Load();
             CreatedBy.AdvancedSearch.Load();
             CreatedDateTime.AdvancedSearch.Load();
             LastUpdatedBy.AdvancedSearch.Load();

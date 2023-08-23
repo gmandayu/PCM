@@ -80,4 +80,26 @@ ew.startupScript = function() {
     $('ul#ew-navbar-end').prepend(chatSupportNavItem);
     const chatSupportEl = document.getElementById('chat-support');
     const chatSupportTooltip = new bootstrap.Tooltip(chatSupportEl);
+
+    // gmandayu: mengubah "Registration (560)" menjadi "Personal Data" untuk Candidate - Accepted
+    const parentUrl = ew.PATH_BASE;
+    const getEmployeeStatusUrl = `${parentUrl}api/Registration/get-employee-status`;
+    function loadPage() {
+        $.ajax({
+            url: getEmployeeStatusUrl,
+            method: 'GET',
+            success: function(response) { 
+                const employeeStatus = response.data;
+                if (employeeStatus === 'Candidate - Accepted') {
+                    $('[data-name="mi_Registration"] p').text(selectedLanguage.id === 'en-US' ? 'Personal Data' : 'Data Pribadi');
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.error('Kesalahan saat memuat status karyawan kru: ', errorThrown);
+            }
+        }); 
+    }
+    $(document).ready(function() {
+        loadPage();
+    });
 };

@@ -210,6 +210,7 @@ public partial class PCM {
             SeafarerID.Visible = false;
             IdentificationImage.Visible = false;
             CrewAgency.Visible = false;
+            MTManningAgentID.SetVisibility();
         }
 
         // Constructor
@@ -525,6 +526,7 @@ public partial class PCM {
             // Set up lookup cache
             await SetupLookupOptions(MTUserLevelID);
             await SetupLookupOptions(CrewAgency);
+            await SetupLookupOptions(MTManningAgentID);
 
             // Load default values for add
             LoadDefaultValues();
@@ -716,6 +718,15 @@ public partial class PCM {
                     MTUserLevelID.SetFormValue(val);
             }
 
+            // Check field name 'MTManningAgentID' before field var 'x_MTManningAgentID'
+            val = CurrentForm.HasValue("MTManningAgentID") ? CurrentForm.GetValue("MTManningAgentID") : CurrentForm.GetValue("x_MTManningAgentID");
+            if (!MTManningAgentID.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("MTManningAgentID") && !CurrentForm.HasValue("x_MTManningAgentID")) // DN
+                    MTManningAgentID.Visible = false; // Disable update for API request
+                else
+                    MTManningAgentID.SetFormValue(val);
+            }
+
             // Check field name 'ID' before field var 'x_ID'
             val = CurrentForm.HasValue("ID") ? CurrentForm.GetValue("ID") : CurrentForm.GetValue("x_ID");
         }
@@ -728,6 +739,7 @@ public partial class PCM {
             Password.CurrentValue = Password.FormValue;
             FullName.CurrentValue = FullName.FormValue;
             MTUserLevelID.CurrentValue = MTUserLevelID.FormValue;
+            MTManningAgentID.CurrentValue = MTManningAgentID.FormValue;
         }
 
         // Load row based on key values
@@ -784,6 +796,7 @@ public partial class PCM {
             IdentificationImage.Upload.DbValue = row["IdentificationImage"];
             IdentificationImage.SetDbValue(IdentificationImage.Upload.DbValue);
             CrewAgency.SetDbValue(row["CrewAgency"]);
+            MTManningAgentID.SetDbValue(row["MTManningAgentID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -798,6 +811,7 @@ public partial class PCM {
             row.Add("SeafarerID", SeafarerID.DefaultValue ?? DbNullValue); // DN
             row.Add("IdentificationImage", IdentificationImage.DefaultValue ?? DbNullValue); // DN
             row.Add("CrewAgency", CrewAgency.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTManningAgentID", MTManningAgentID.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -855,6 +869,9 @@ public partial class PCM {
             // CrewAgency
             CrewAgency.RowCssClass = "row";
 
+            // MTManningAgentID
+            MTManningAgentID.RowCssClass = "row";
+
             // View row
             if (RowType == RowType.View) {
                 // Email
@@ -898,13 +915,26 @@ public partial class PCM {
                 SeafarerID.ViewValue = ConvertToString(SeafarerID.CurrentValue); // DN
                 SeafarerID.ViewCustomAttributes = "";
 
-                // CrewAgency
-                if (!Empty(CrewAgency.CurrentValue)) {
-                    CrewAgency.ViewValue = CrewAgency.HighlightLookup(ConvertToString(CrewAgency.CurrentValue), CrewAgency.OptionCaption(ConvertToString(CrewAgency.CurrentValue)));
+                // MTManningAgentID
+                curVal = ConvertToString(MTManningAgentID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (MTManningAgentID.Lookup != null && IsDictionary(MTManningAgentID.Lookup?.Options) && MTManningAgentID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        MTManningAgentID.ViewValue = MTManningAgentID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[ID]", "=", MTManningAgentID.CurrentValue, DataType.Number, "");
+                        sqlWrk = MTManningAgentID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && MTManningAgentID.Lookup != null) { // Lookup values found
+                            var listwrk = MTManningAgentID.Lookup?.RenderViewRow(rswrk[0]);
+                            MTManningAgentID.ViewValue = MTManningAgentID.HighlightLookup(ConvertToString(rswrk[0]), MTManningAgentID.DisplayValue(listwrk));
+                        } else {
+                            MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+                        }
+                    }
                 } else {
-                    CrewAgency.ViewValue = DbNullValue;
+                    MTManningAgentID.ViewValue = DbNullValue;
                 }
-                CrewAgency.ViewCustomAttributes = "";
+                MTManningAgentID.ViewCustomAttributes = "";
 
                 // Email
                 _Email.HrefValue = "";
@@ -917,6 +947,9 @@ public partial class PCM {
 
                 // MTUserLevelID
                 MTUserLevelID.HrefValue = "";
+
+                // MTManningAgentID
+                MTManningAgentID.HrefValue = "";
             } else if (RowType == RowType.Add) {
                 // Email
                 _Email.SetupEditAttributes();
@@ -958,6 +991,23 @@ public partial class PCM {
                     MTUserLevelID.PlaceHolder = RemoveHtml(MTUserLevelID.Caption);
                 }
 
+                // MTManningAgentID
+                MTManningAgentID.SetupEditAttributes();
+                curVal = ConvertToString(MTManningAgentID.CurrentValue)?.Trim() ?? "";
+                if (MTManningAgentID.Lookup != null && IsDictionary(MTManningAgentID.Lookup?.Options) && MTManningAgentID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                    MTManningAgentID.EditValue = MTManningAgentID.Lookup?.Options.Values.ToList();
+                } else { // Lookup from database
+                    if (curVal == "") {
+                        filterWrk = "0=1";
+                    } else {
+                        filterWrk = SearchFilter("[ID]", "=", MTManningAgentID.CurrentValue, DataType.Number, "");
+                    }
+                    sqlWrk = MTManningAgentID.Lookup?.GetSql(true, filterWrk, null, this, false, true);
+                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                    MTManningAgentID.EditValue = rswrk;
+                }
+                MTManningAgentID.PlaceHolder = RemoveHtml(MTManningAgentID.Caption);
+
                 // Add refer script
 
                 // Email
@@ -971,6 +1021,9 @@ public partial class PCM {
 
                 // MTUserLevelID
                 MTUserLevelID.HrefValue = "";
+
+                // MTManningAgentID
+                MTManningAgentID.HrefValue = "";
             }
             if (RowType == RowType.Add || RowType == RowType.Edit || RowType == RowType.Search) // Add/Edit/Search row
                 SetupFieldTitles();
@@ -1017,6 +1070,11 @@ public partial class PCM {
                     MTUserLevelID.AddErrorMessage(ConvertToString(MTUserLevelID.RequiredErrorMessage).Replace("%s", MTUserLevelID.Caption));
                 }
             }
+            if (MTManningAgentID.Required) {
+                if (!MTManningAgentID.IsDetailKey && Empty(MTManningAgentID.FormValue)) {
+                    MTManningAgentID.AddErrorMessage(ConvertToString(MTManningAgentID.RequiredErrorMessage).Replace("%s", MTManningAgentID.Caption));
+                }
+            }
 
             // Return validate result
             validateForm = validateForm && !HasInvalidFields();
@@ -1055,6 +1113,9 @@ public partial class PCM {
                 if (Security.CanAdmin) { // System admin
                 MTUserLevelID.SetDbValue(rsnew, MTUserLevelID.CurrentValue, Empty(MTUserLevelID.CurrentValue));
                 }
+
+                // MTManningAgentID
+                MTManningAgentID.SetDbValue(rsnew, MTManningAgentID.CurrentValue);
 
                 // ID
             } catch (Exception e) {

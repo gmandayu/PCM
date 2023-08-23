@@ -227,12 +227,6 @@ public partial class PCM {
             CreatedDateTime.SetVisibility();
             LastUpdatedByUserID.SetVisibility();
             LastUpdatedDateTime.SetVisibility();
-            PassportValidUntil.Visible = false;
-            PassportPlaceIssued.Visible = false;
-            PassportDateIssued.Visible = false;
-            PassportNumber.Visible = false;
-            FirstName.Visible = false;
-            LastName.Visible = false;
             MTUserID.Visible = false;
         }
 
@@ -547,12 +541,6 @@ public partial class PCM {
                     CreatedDateTime.Sort = "";
                     LastUpdatedByUserID.Sort = "";
                     LastUpdatedDateTime.Sort = "";
-                    PassportValidUntil.Sort = "";
-                    PassportPlaceIssued.Sort = "";
-                    PassportDateIssued.Sort = "";
-                    PassportNumber.Sort = "";
-                    FirstName.Sort = "";
-                    LastName.Sort = "";
                     MTUserID.Sort = "";
 
                     // Save sort to session
@@ -755,12 +743,6 @@ public partial class PCM {
             CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
             LastUpdatedByUserID.SetDbValue(row["LastUpdatedByUserID"]);
             LastUpdatedDateTime.SetDbValue(row["LastUpdatedDateTime"]);
-            PassportValidUntil.SetDbValue(row["PassportValidUntil"]);
-            PassportPlaceIssued.SetDbValue(row["PassportPlaceIssued"]);
-            PassportDateIssued.SetDbValue(row["PassportDateIssued"]);
-            PassportNumber.SetDbValue(row["PassportNumber"]);
-            FirstName.SetDbValue(row["FirstName"]);
-            LastName.SetDbValue(row["LastName"]);
             MTUserID.SetDbValue(row["MTUserID"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
@@ -785,12 +767,6 @@ public partial class PCM {
             row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedByUserID", LastUpdatedByUserID.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedDateTime", LastUpdatedDateTime.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportValidUntil", PassportValidUntil.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportPlaceIssued", PassportPlaceIssued.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportDateIssued", PassportDateIssued.DefaultValue ?? DbNullValue); // DN
-            row.Add("PassportNumber", PassportNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("FirstName", FirstName.DefaultValue ?? DbNullValue); // DN
-            row.Add("LastName", LastName.DefaultValue ?? DbNullValue); // DN
             row.Add("MTUserID", MTUserID.DefaultValue ?? DbNullValue); // DN
             return row;
         }

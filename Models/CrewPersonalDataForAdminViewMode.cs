@@ -199,6 +199,8 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> NomineeMobileNumberCode_CountryID;
 
+        public readonly DbField<SqlDbType> MTManningAgentID;
+
         // Constructor
         public CrewPersonalDataForAdminViewMode()
         {
@@ -264,7 +266,6 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("CrewPersonalDataForAdminViewMode", "IndividualCodeNumber", "CustomMsg"),
@@ -2056,6 +2057,27 @@ public partial class PCM {
             };
             Fields.Add("NomineeMobileNumberCode_CountryID", NomineeMobileNumberCode_CountryID);
 
+            // MTManningAgentID
+            MTManningAgentID = new (this, "x_MTManningAgentID", 3, SqlDbType.Int) {
+                Name = "MTManningAgentID",
+                Expression = "dbo.MTCrew.MTManningAgentID",
+                BasicSearchExpression = "CAST(dbo.MTCrew.MTManningAgentID AS NVARCHAR)",
+                DateTimeFormat = -1,
+                VirtualExpression = "dbo.MTCrew.MTManningAgentID",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "TEXT",
+                InputTextType = "text",
+                Sortable = false, // Allow sort
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("CrewPersonalDataForAdminViewMode", "MTManningAgentID", "CustomMsg"),
+                IsUpload = false
+            };
+            Fields.Add("MTManningAgentID", MTManningAgentID);
+
             // Call Table Load event
             TableLoad();
         }
@@ -2217,7 +2239,7 @@ public partial class PCM {
         private string? _sqlSelect = null;
 
         public string SqlSelect { // Select
-            get => _sqlSelect ?? "SELECT dbo.MTCrew.ID, dbo.MTCrew.FullName, dbo.MTCrew.NSSF_Health_Number, dbo.MTCrew.NSSF_Occupation_Number, dbo.MTCrew.IndividualCodeNumber, dbo.MTCrew.Nationality_CountryID, dbo.MTCrew.CountryOfOrigin_CountryID, dbo.MTCrew.DateOfBirth, dbo.MTCrew.CityOfBirth, dbo.MTCrew.Gender, dbo.MTCrew.MaritalStatus, dbo.MTCrew.ReligionID, dbo.MTCrew.RankAppliedFor_RankID, dbo.MTCrew.WillAcceptLowRank, dbo.MTCrew.AvailableFrom, dbo.MTCrew.AvailableUntil, dbo.MTCrew.PrimaryAddressDetail, dbo.MTCrew.PrimaryAddressCity, dbo.MTCrew.PrimaryAddressNearestAirport, dbo.MTCrew.PrimaryAddressState, dbo.MTCrew.PrimaryAddressPostCode, dbo.MTCrew.PrimaryAddressCountryID, dbo.MTCrew.PrimaryAddressHomeTel, dbo.MTCrew.AlternativeAddressDetail, dbo.MTCrew.AlternativeAddressState, dbo.MTCrew.AlternativeAddressCity, dbo.MTCrew.AlternativeAddressHomeTel, dbo.MTCrew.AlternativeAddressPostCode, dbo.MTCrew.AlternativeAddressCountryID, dbo.MTCrew.MobileNumber, dbo.MTCrew.Email, dbo.MTCrew.EmployeeStatus, dbo.MTCrew.FormSubmittedDateTime, dbo.MTCrew.ActiveDescription, dbo.MTCrew.CreatedByUserID, dbo.MTCrew.CreatedDateTime, dbo.MTCrew.LastUpdatedByUserID, dbo.MTCrew.LastUpdatedDateTime, dbo.MTCrew.MTUserID, dbo.MTCrew.SocialSecurityNumber, dbo.MTCrew.SocialSecurityIssuingCountryID, dbo.MTCrew.SocialSecurityImage, dbo.MTCrew.PersonalTaxNumber, dbo.MTCrew.PersonalTaxIssuingCountryID, dbo.MTCrew.PersonalTaxImage, dbo.MTCrew.BloodType, dbo.MTCrew.RequiredPhoto, dbo.MTCrew.VisaPhoto, dbo.MTCrew.Status, dbo.MTCrew.Reason, dbo.MTCrew.Weight, dbo.MTCrew.Height, dbo.MTCrew.CoverallSize, dbo.MTCrew.SafetyShoesSize, dbo.MTCrew.ShirtSize, dbo.MTCrew.TrousersSize, dbo.MTCrew.NomineeFullName, dbo.MTCrew.NomineeRelationship, dbo.MTCrew.NomineeGender, dbo.MTCrew.NomineeNationality_CountryID, dbo.MTCrew.NomineeAddressDetail, dbo.MTCrew.NomineeAddressCity, dbo.MTCrew.NomineeAddressPostCode, dbo.MTCrew.NomineeAddressCountryID, dbo.MTCrew.NomineeAddressHomeTel, dbo.MTCrew.NomineeEmail, dbo.MTCrew.NomineeMobileNumber, dbo.MTCrew.MobileNumberCode_CountryID, dbo.MTCrew.PrimaryAddressHomeTelCode_CountryID, dbo.MTCrew.AlternativeAddressHomeTelCode_CountryID, dbo.MTCrew.NomineeAddressHomeTelCode_CountryID, dbo.MTCrew.NomineeMobileNumberCode_CountryID, '' AS [NomineeRelationshipSelect], '' AS [NomineeRelationshipDetail] FROM " + SqlFrom;
+            get => _sqlSelect ?? "SELECT dbo.MTCrew.ID, dbo.MTCrew.FullName, dbo.MTCrew.NSSF_Health_Number, dbo.MTCrew.NSSF_Occupation_Number, dbo.MTCrew.IndividualCodeNumber, dbo.MTCrew.Nationality_CountryID, dbo.MTCrew.CountryOfOrigin_CountryID, dbo.MTCrew.DateOfBirth, dbo.MTCrew.CityOfBirth, dbo.MTCrew.Gender, dbo.MTCrew.MaritalStatus, dbo.MTCrew.ReligionID, dbo.MTCrew.RankAppliedFor_RankID, dbo.MTCrew.WillAcceptLowRank, dbo.MTCrew.AvailableFrom, dbo.MTCrew.AvailableUntil, dbo.MTCrew.PrimaryAddressDetail, dbo.MTCrew.PrimaryAddressCity, dbo.MTCrew.PrimaryAddressNearestAirport, dbo.MTCrew.PrimaryAddressState, dbo.MTCrew.PrimaryAddressPostCode, dbo.MTCrew.PrimaryAddressCountryID, dbo.MTCrew.PrimaryAddressHomeTel, dbo.MTCrew.AlternativeAddressDetail, dbo.MTCrew.AlternativeAddressState, dbo.MTCrew.AlternativeAddressCity, dbo.MTCrew.AlternativeAddressHomeTel, dbo.MTCrew.AlternativeAddressPostCode, dbo.MTCrew.AlternativeAddressCountryID, dbo.MTCrew.MobileNumber, dbo.MTCrew.Email, dbo.MTCrew.EmployeeStatus, dbo.MTCrew.FormSubmittedDateTime, dbo.MTCrew.ActiveDescription, dbo.MTCrew.CreatedByUserID, dbo.MTCrew.CreatedDateTime, dbo.MTCrew.LastUpdatedByUserID, dbo.MTCrew.LastUpdatedDateTime, dbo.MTCrew.MTUserID, dbo.MTCrew.SocialSecurityNumber, dbo.MTCrew.SocialSecurityIssuingCountryID, dbo.MTCrew.SocialSecurityImage, dbo.MTCrew.PersonalTaxNumber, dbo.MTCrew.PersonalTaxIssuingCountryID, dbo.MTCrew.PersonalTaxImage, dbo.MTCrew.BloodType, dbo.MTCrew.RequiredPhoto, dbo.MTCrew.VisaPhoto, dbo.MTCrew.Status, dbo.MTCrew.Reason, dbo.MTCrew.Weight, dbo.MTCrew.Height, dbo.MTCrew.CoverallSize, dbo.MTCrew.SafetyShoesSize, dbo.MTCrew.ShirtSize, dbo.MTCrew.TrousersSize, dbo.MTCrew.NomineeFullName, dbo.MTCrew.NomineeRelationship, dbo.MTCrew.NomineeGender, dbo.MTCrew.NomineeNationality_CountryID, dbo.MTCrew.NomineeAddressDetail, dbo.MTCrew.NomineeAddressCity, dbo.MTCrew.NomineeAddressPostCode, dbo.MTCrew.NomineeAddressCountryID, dbo.MTCrew.NomineeAddressHomeTel, dbo.MTCrew.NomineeEmail, dbo.MTCrew.NomineeMobileNumber, dbo.MTCrew.MobileNumberCode_CountryID, dbo.MTCrew.PrimaryAddressHomeTelCode_CountryID, dbo.MTCrew.AlternativeAddressHomeTelCode_CountryID, dbo.MTCrew.NomineeAddressHomeTelCode_CountryID, dbo.MTCrew.NomineeMobileNumberCode_CountryID, dbo.MTCrew.MTManningAgentID, '' AS [NomineeRelationshipSelect], '' AS [NomineeRelationshipDetail] FROM " + SqlFrom;
             set => _sqlSelect = value;
         }
 
@@ -2674,6 +2696,7 @@ public partial class PCM {
                 AlternativeAddressHomeTelCode_CountryID.DbValue = row["AlternativeAddressHomeTelCode_CountryID"]; // Set DB value only
                 NomineeAddressHomeTelCode_CountryID.DbValue = row["NomineeAddressHomeTelCode_CountryID"]; // Set DB value only
                 NomineeMobileNumberCode_CountryID.DbValue = row["NomineeMobileNumberCode_CountryID"]; // Set DB value only
+                MTManningAgentID.DbValue = row["MTManningAgentID"]; // Set DB value only
             } catch {}
         }
 
@@ -3135,6 +3158,7 @@ public partial class PCM {
             AlternativeAddressHomeTelCode_CountryID.SetDbValue(dr["AlternativeAddressHomeTelCode_CountryID"]);
             NomineeAddressHomeTelCode_CountryID.SetDbValue(dr["NomineeAddressHomeTelCode_CountryID"]);
             NomineeMobileNumberCode_CountryID.SetDbValue(dr["NomineeMobileNumberCode_CountryID"]);
+            MTManningAgentID.SetDbValue(dr["MTManningAgentID"]);
         }
 
         // Render list content
@@ -3382,6 +3406,9 @@ public partial class PCM {
 
             // NomineeMobileNumberCode_CountryID
             NomineeMobileNumberCode_CountryID.CellCssStyle = "white-space: nowrap;";
+
+            // MTManningAgentID
+            MTManningAgentID.CellCssStyle = "white-space: nowrap;";
 
             // ID
             ID.ViewValue = ID.CurrentValue;
@@ -4058,6 +4085,10 @@ public partial class PCM {
             }
             NomineeMobileNumberCode_CountryID.ViewCustomAttributes = "";
 
+            // MTManningAgentID
+            MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+            MTManningAgentID.ViewCustomAttributes = "";
+
             // ID
             ID.HrefValue = "";
             ID.TooltipValue = "";
@@ -4430,6 +4461,10 @@ public partial class PCM {
             NomineeMobileNumberCode_CountryID.HrefValue = "";
             NomineeMobileNumberCode_CountryID.TooltipValue = "";
 
+            // MTManningAgentID
+            MTManningAgentID.HrefValue = "";
+            MTManningAgentID.TooltipValue = "";
+
             // Call Row Rendered event
             RowRendered();
 
@@ -4452,10 +4487,8 @@ public partial class PCM {
 
             // IndividualCodeNumber
             IndividualCodeNumber.SetupEditAttributes();
-            if (!IndividualCodeNumber.Raw)
-                IndividualCodeNumber.CurrentValue = HtmlDecode(IndividualCodeNumber.CurrentValue);
-            IndividualCodeNumber.EditValue = HtmlEncode(IndividualCodeNumber.CurrentValue);
-            IndividualCodeNumber.PlaceHolder = RemoveHtml(IndividualCodeNumber.Caption);
+            IndividualCodeNumber.EditValue = ConvertToString(IndividualCodeNumber.CurrentValue); // DN
+            IndividualCodeNumber.ViewCustomAttributes = "";
 
             // FullName
             FullName.SetupEditAttributes();
@@ -4969,6 +5002,11 @@ public partial class PCM {
             NomineeMobileNumberCode_CountryID.SetupEditAttributes();
             NomineeMobileNumberCode_CountryID.PlaceHolder = RemoveHtml(NomineeMobileNumberCode_CountryID.Caption);
 
+            // MTManningAgentID
+            MTManningAgentID.SetupEditAttributes();
+            MTManningAgentID.EditValue = MTManningAgentID.CurrentValue; // DN
+            MTManningAgentID.PlaceHolder = RemoveHtml(MTManningAgentID.Caption);
+
             // Call Row Rendered event
             RowRendered();
         }
@@ -5072,6 +5110,7 @@ public partial class PCM {
                         doc.ExportCaption(AlternativeAddressHomeTelCode_CountryID);
                         doc.ExportCaption(NomineeAddressHomeTelCode_CountryID);
                         doc.ExportCaption(NomineeMobileNumberCode_CountryID);
+                        doc.ExportCaption(MTManningAgentID);
                     } else {
                         doc.ExportCaption(IndividualCodeNumber);
                         doc.ExportCaption(FullName);
@@ -5144,6 +5183,7 @@ public partial class PCM {
                         doc.ExportCaption(AlternativeAddressHomeTelCode_CountryID);
                         doc.ExportCaption(NomineeAddressHomeTelCode_CountryID);
                         doc.ExportCaption(NomineeMobileNumberCode_CountryID);
+                        doc.ExportCaption(MTManningAgentID);
                     }
                     doc.EndExportRow();
                 }
@@ -5252,6 +5292,7 @@ public partial class PCM {
                             await doc.ExportField(AlternativeAddressHomeTelCode_CountryID);
                             await doc.ExportField(NomineeAddressHomeTelCode_CountryID);
                             await doc.ExportField(NomineeMobileNumberCode_CountryID);
+                            await doc.ExportField(MTManningAgentID);
                         } else {
                             await doc.ExportField(IndividualCodeNumber);
                             await doc.ExportField(FullName);
@@ -5324,6 +5365,7 @@ public partial class PCM {
                             await doc.ExportField(AlternativeAddressHomeTelCode_CountryID);
                             await doc.ExportField(NomineeAddressHomeTelCode_CountryID);
                             await doc.ExportField(NomineeMobileNumberCode_CountryID);
+                            await doc.ExportField(MTManningAgentID);
                         }
                         doc.EndExportRow(rowcnt);
                     }
@@ -5548,25 +5590,29 @@ public partial class PCM {
             {
                 string requiredPhotoFileName = rsnew["RequiredPhoto"].ToString();
                 string requiredPhotoFileExtension = System.IO.Path.GetExtension(requiredPhotoFileName);
-                rsnew["RequiredPhoto"] =  rsnew["IndividualCodeNumber"].ToString() + "-pp" + requiredPhotoFileExtension;
+                string individualCodeNumber = IndividualCodeNumber.DbValue.ToString();
+                rsnew["RequiredPhoto"] =  individualCodeNumber + "-pp" + requiredPhotoFileExtension;
             }
             if (rsnew.ContainsKey("VisaPhoto") && rsnew["VisaPhoto"] != null)
             {
                 string visaPhotoFileName = rsnew["VisaPhoto"].ToString();
                 string visaPhotoFileExtension = System.IO.Path.GetExtension(visaPhotoFileName);
-                rsnew["VisaPhoto"] =  rsnew["IndividualCodeNumber"].ToString() + "-vp" + visaPhotoFileExtension;
+                string individualCodeNumber = IndividualCodeNumber.DbValue.ToString();
+                rsnew["VisaPhoto"] =  individualCodeNumber + "-vp" + visaPhotoFileExtension;
             }
             if (rsnew.ContainsKey("SocialSecurityImage") && rsnew["SocialSecurityImage"] != null)
             {
                 string socialSecurityImageFileName = rsnew["SocialSecurityImage"].ToString();
                 string socialSecurityImageFileExtension = System.IO.Path.GetExtension(socialSecurityImageFileName);
-                rsnew["SocialSecurityImage"] =  rsnew["IndividualCodeNumber"].ToString() + "-ss" + socialSecurityImageFileExtension;
+                string individualCodeNumber = IndividualCodeNumber.DbValue.ToString();
+                rsnew["SocialSecurityImage"] =  individualCodeNumber + "-ss" + socialSecurityImageFileExtension;
             }
             if (rsnew.ContainsKey("PersonalTaxImage") && rsnew["PersonalTaxImage"] != null)
             {
                 string personalTaxImageFileName = rsnew["PersonalTaxImage"].ToString();
                 string personalTaxImageFileExtension = System.IO.Path.GetExtension(personalTaxImageFileName);
-                rsnew["PersonalTaxImage"] =  rsnew["IndividualCodeNumber"].ToString() + "-pt" + personalTaxImageFileExtension;
+                string individualCodeNumber = IndividualCodeNumber.DbValue.ToString();
+                rsnew["PersonalTaxImage"] =  individualCodeNumber + "-pt" + personalTaxImageFileExtension;
             }
 
             // add required but not yet exist certificates and delete unfilled but not required certificates

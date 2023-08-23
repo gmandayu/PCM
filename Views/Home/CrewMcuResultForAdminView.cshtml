@@ -521,11 +521,6 @@ loadjs.ready("load", function() {
                 } else {
                     $('div#r_crew_AvailableUntil div').append($('<span>').html('&nbsp;'));
                 }
-                if (crewData.McuScheduleDateTime !== '') {
-                    $('div#r_crew_McuScheduleDateTime div').append($('<span>').text(crewData.McuScheduleDateTime));
-                } else {
-                    $('div#r_crew_McuScheduleDateTime div').append($('<span>').html('&nbsp;'));
-                }
                 if (crewData.RankAppliedFor !== '' && crewData.EmployeeStatus !== '' && crewData.ID !== '' && crewData.EmployeeStatus === 'Candidate - MCU') {
                     // Button Initialization
                     const editButton = $("<a></a>", {
@@ -658,6 +653,29 @@ loadjs.ready("load", function() {
                     card.append(cardBody);
                     $('form#fCrewMcuResultForAdminview').append(card);
                 }
+
+                // Pengecekan untuk tombol Accept dan Reject active atau disabled.
+                const healthStatusCheck = document.getElementById("el_CrewMcuResultForAdmin_HealthStatus").innerText;
+                const mcuDateCheck = document.getElementById("el_CrewMcuResultForAdmin_McuDate").innerText;
+                const mcuExpirationDateCheck = document.getElementById("el_CrewMcuResultForAdmin_McuExpirationDate").innerText;
+                const mcuLocationCheck = document.getElementById("el_CrewMcuResultForAdmin_McuLocation").innerText;
+                const mcuAttachmentCheck = document.getElementById("el_CrewMcuResultForAdmin_McuAttachment").innerText;
+                console.log(healthStatusCheck, mcuDateCheck, mcuExpirationDateCheck, mcuLocationCheck, mcuAttachmentCheck);
+                if(healthStatusCheck === '' && mcuDateCheck === '' && mcuExpirationDateCheck === '' && mcuLocationCheck === '' && mcuAttachmentCheck === '') {
+                    $("#btn-invoke-final-accept-modal").prop("disabled", true);
+                    $("#btn-invoke-reject-modal").prop("disabled", true);
+                }
+                else 
+                {
+                    $("#btn-invoke-final-accept-modal").prop("disabled", false);
+                    $("#btn-invoke-reject-modal").prop("disabled", false);
+                    if (healthStatusCheck === "Unfit Temporary" || healthStatusCheck === "Unfit Permanent") {
+                        $("#btn-invoke-final-accept-modal").prop("disabled", true);
+                    } else if (healthStatusCheck === "Fit To Work" || healthStatusCheck === "Fit With Note") {
+                        $("#btn-invoke-reject-modal").prop("disabled", true);
+                    }
+                }
+
                 // Button Click Event
                 $('#btn-invoke-final-accept-modal').click(function () {
                     $('#accept-modal-dialog').modal('show');
@@ -708,7 +726,6 @@ loadjs.ready("load", function() {
                         }
                     });
                 });
-                //const rejectSingleCrewApiUrl = "reject-single-crew";
                 const rejectCrewFinalApiUrl = "reject-final-crew";
                 $("#btn-reject").click(function() {
                     const rejectedReasonValue = $('#x_RejectedReason').val();

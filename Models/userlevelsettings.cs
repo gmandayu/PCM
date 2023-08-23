@@ -172,7 +172,19 @@ public partial class PCM {
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}IdamanUserNotRegistered", Id = -2, Permission = 0 },
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}IdamanUserNotRegistered", Id = 0, Permission = 0 },
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTBank", Id = -2, Permission = 0 },
-            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTBank", Id = 0, Permission = 0 }
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTBank", Id = 0, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}EmailHistory", Id = -2, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}EmailHistory", Id = 0, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}vw_InactiveCrew", Id = -2, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}vw_InactiveCrew", Id = 0, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}PageNotFound", Id = -2, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}PageNotFound", Id = 0, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTManningAgent", Id = -2, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTManningAgent", Id = 0, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}WaitingForAgencyReview", Id = -2, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}WaitingForAgencyReview", Id = 0, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}UpdateTracking", Id = -2, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}UpdateTracking", Id = 0, Permission = 0 }
         };
 
         // User level table info // DN
@@ -254,7 +266,13 @@ public partial class PCM {
             new () { TableName = "MTRecruitmentStatusTracking", TableVar = "MTRecruitmentStatusTracking", Caption = "MTRecruitment Status Tracking", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "MtRecruitmentStatusTrackingList" },
             new () { TableName = "v_CrewTrackingStatus", TableVar = "v_CrewTrackingStatus", Caption = "Crew Tracking Status", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "VCrewTrackingStatusList" },
             new () { TableName = "IdamanUserNotRegistered", TableVar = "IdamanUserNotRegistered", Caption = "", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "IdamanUserNotRegistered" },
-            new () { TableName = "MTBank", TableVar = "MTBank", Caption = "MTBank", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "MtBankList" }
+            new () { TableName = "MTBank", TableVar = "MTBank", Caption = "MTBank", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "MtBankList" },
+            new () { TableName = "EmailHistory", TableVar = "EmailHistory", Caption = "Email History", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "EmailHistoryList" },
+            new () { TableName = "vw_InactiveCrew", TableVar = "vw_InactiveCrew", Caption = "vw Inactive Crew", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "" },
+            new () { TableName = "PageNotFound", TableVar = "PageNotFound", Caption = "Page Not Found", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "PageNotFound" },
+            new () { TableName = "MTManningAgent", TableVar = "MTManningAgent", Caption = "MTManning Agent", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "MtManningAgentList" },
+            new () { TableName = "WaitingForAgencyReview", TableVar = "WaitingForAgencyReview", Caption = "Waiting For PDEReview", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "WaitingForAgencyReviewList" },
+            new () { TableName = "UpdateTracking", TableVar = "UpdateTracking", Caption = "Records Chage", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "UpdateTrackingList" }
         };
     }
 } // End Partial class

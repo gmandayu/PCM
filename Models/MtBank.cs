@@ -227,8 +227,8 @@ public partial class PCM {
             CreatedDateTime = new (this, "x_CreatedDateTime", 146, SqlDbType.DateTimeOffset) {
                 Name = "CreatedDateTime",
                 Expression = "[CreatedDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[CreatedDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
+                BasicSearchExpression = CastDateFieldForLike("[CreatedDateTime]", 1, "DB"),
+                DateTimeFormat = 1,
                 VirtualExpression = "[CreatedDateTime]",
                 IsVirtual = false,
                 ForceSelection = false,
@@ -238,7 +238,7 @@ public partial class PCM {
                 HtmlTag = "TEXT",
                 InputTextType = "text",
                 UseFilter = true, // Table header filter
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
+                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", DateFormat(1)),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("MTBank", "CreatedDateTime", "CustomMsg"),
                 IsUpload = false
@@ -281,8 +281,8 @@ public partial class PCM {
             LastUpdatedDateTime = new (this, "x_LastUpdatedDateTime", 146, SqlDbType.DateTimeOffset) {
                 Name = "LastUpdatedDateTime",
                 Expression = "[LastUpdatedDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[LastUpdatedDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
+                BasicSearchExpression = CastDateFieldForLike("[LastUpdatedDateTime]", 1, "DB"),
+                DateTimeFormat = 1,
                 VirtualExpression = "[LastUpdatedDateTime]",
                 IsVirtual = false,
                 ForceSelection = false,
@@ -292,7 +292,7 @@ public partial class PCM {
                 HtmlTag = "TEXT",
                 InputTextType = "text",
                 UseFilter = true, // Table header filter
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
+                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", DateFormat(1)),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("MTBank", "LastUpdatedDateTime", "CustomMsg"),
                 IsUpload = false

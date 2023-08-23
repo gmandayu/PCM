@@ -213,7 +213,8 @@ public partial class PCM {
             EmployeeStatus.SetVisibility();
             Draft.SetVisibility();
             Submitted.SetVisibility();
-            Reviewed.SetVisibility();
+            AgencyReviewed.SetVisibility();
+            PDEReviewed.SetVisibility();
             RegistrationForm.SetVisibility();
             PreScreeningInterview.SetVisibility();
             MinimumRecruitmentCheck.SetVisibility();
@@ -228,8 +229,8 @@ public partial class PCM {
             Interviewed.SetVisibility();
             Approved.SetVisibility();
             MedicalCheckup.SetVisibility();
-            CreatedBy.SetVisibility();
-            LastUpdatedBy.SetVisibility();
+            CreatedBy.Visible = false;
+            LastUpdatedBy.Visible = false;
         }
 
         // Constructor
@@ -395,7 +396,9 @@ public partial class PCM {
             if (IsAddOrEdit)
                 Submitted.Visible = false;
             if (IsAddOrEdit)
-                Reviewed.Visible = false;
+                AgencyReviewed.Visible = false;
+            if (IsAddOrEdit)
+                PDEReviewed.Visible = false;
             if (IsAddOrEdit)
                 RegistrationForm.Visible = false;
             if (IsAddOrEdit)
@@ -632,7 +635,8 @@ public partial class PCM {
             BuildSearchUrl(ref srchUrl, EmployeeStatus); // EmployeeStatus
             BuildSearchUrl(ref srchUrl, Draft); // Draft
             BuildSearchUrl(ref srchUrl, Submitted); // Submitted
-            BuildSearchUrl(ref srchUrl, Reviewed); // Reviewed
+            BuildSearchUrl(ref srchUrl, AgencyReviewed); // AgencyReviewed
+            BuildSearchUrl(ref srchUrl, PDEReviewed); // PDEReviewed
             BuildSearchUrl(ref srchUrl, RegistrationForm); // RegistrationForm
             BuildSearchUrl(ref srchUrl, PreScreeningInterview); // PreScreeningInterview
             BuildSearchUrl(ref srchUrl, MinimumRecruitmentCheck); // MinimumRecruitmentCheck
@@ -647,8 +651,6 @@ public partial class PCM {
             BuildSearchUrl(ref srchUrl, Interviewed); // Interviewed
             BuildSearchUrl(ref srchUrl, Approved); // Approved
             BuildSearchUrl(ref srchUrl, MedicalCheckup); // MedicalCheckup
-            BuildSearchUrl(ref srchUrl, CreatedBy); // CreatedBy
-            BuildSearchUrl(ref srchUrl, LastUpdatedBy); // LastUpdatedBy
             if (!Empty(srchUrl))
                 srchUrl += "&";
             srchUrl += "cmd=search";
@@ -777,12 +779,19 @@ public partial class PCM {
             if (Form.ContainsKey("z_Submitted"))
                 Submitted.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_Submitted");
 
-            // Reviewed
+            // AgencyReviewed
             if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_Reviewed"))
-                    Reviewed.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_Reviewed");
-            if (Form.ContainsKey("z_Reviewed"))
-                Reviewed.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_Reviewed");
+                if (Form.ContainsKey("x_AgencyReviewed"))
+                    AgencyReviewed.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_AgencyReviewed");
+            if (Form.ContainsKey("z_AgencyReviewed"))
+                AgencyReviewed.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_AgencyReviewed");
+
+            // PDEReviewed
+            if (!IsAddOrEdit)
+                if (Form.ContainsKey("x_PDEReviewed"))
+                    PDEReviewed.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_PDEReviewed");
+            if (Form.ContainsKey("z_PDEReviewed"))
+                PDEReviewed.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_PDEReviewed");
 
             // RegistrationForm
             if (!IsAddOrEdit)
@@ -881,20 +890,6 @@ public partial class PCM {
                     MedicalCheckup.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_MedicalCheckup");
             if (Form.ContainsKey("z_MedicalCheckup"))
                 MedicalCheckup.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_MedicalCheckup");
-
-            // CreatedBy
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_CreatedBy"))
-                    CreatedBy.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_CreatedBy");
-            if (Form.ContainsKey("z_CreatedBy"))
-                CreatedBy.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_CreatedBy");
-
-            // LastUpdatedBy
-            if (!IsAddOrEdit)
-                if (Form.ContainsKey("x_LastUpdatedBy"))
-                    LastUpdatedBy.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_LastUpdatedBy");
-            if (Form.ContainsKey("z_LastUpdatedBy"))
-                LastUpdatedBy.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_LastUpdatedBy");
         }
 
         // Load row based on key values
@@ -946,7 +941,8 @@ public partial class PCM {
             EmployeeStatus.SetDbValue(row["EmployeeStatus"]);
             Draft.SetDbValue(row["Draft"]);
             Submitted.SetDbValue(row["Submitted"]);
-            Reviewed.SetDbValue(row["Reviewed"]);
+            AgencyReviewed.SetDbValue(row["AgencyReviewed"]);
+            PDEReviewed.SetDbValue(row["PDEReviewed"]);
             RegistrationForm.SetDbValue(row["RegistrationForm"]);
             PreScreeningInterview.SetDbValue(row["PreScreeningInterview"]);
             MinimumRecruitmentCheck.SetDbValue(row["MinimumRecruitmentCheck"]);
@@ -980,7 +976,8 @@ public partial class PCM {
             row.Add("EmployeeStatus", EmployeeStatus.DefaultValue ?? DbNullValue); // DN
             row.Add("Draft", Draft.DefaultValue ?? DbNullValue); // DN
             row.Add("Submitted", Submitted.DefaultValue ?? DbNullValue); // DN
-            row.Add("Reviewed", Reviewed.DefaultValue ?? DbNullValue); // DN
+            row.Add("AgencyReviewed", AgencyReviewed.DefaultValue ?? DbNullValue); // DN
+            row.Add("PDEReviewed", PDEReviewed.DefaultValue ?? DbNullValue); // DN
             row.Add("RegistrationForm", RegistrationForm.DefaultValue ?? DbNullValue); // DN
             row.Add("PreScreeningInterview", PreScreeningInterview.DefaultValue ?? DbNullValue); // DN
             row.Add("MinimumRecruitmentCheck", MinimumRecruitmentCheck.DefaultValue ?? DbNullValue); // DN
@@ -1042,8 +1039,11 @@ public partial class PCM {
             // Submitted
             Submitted.RowCssClass = "row";
 
-            // Reviewed
-            Reviewed.RowCssClass = "row";
+            // AgencyReviewed
+            AgencyReviewed.RowCssClass = "row";
+
+            // PDEReviewed
+            PDEReviewed.RowCssClass = "row";
 
             // RegistrationForm
             RegistrationForm.RowCssClass = "row";
@@ -1127,6 +1127,7 @@ public partial class PCM {
                 } else {
                     WillAcceptLowRank.ViewValue = WillAcceptLowRank.TagCaption(2) != "" ? WillAcceptLowRank.TagCaption(2) : "No";
                 }
+                WillAcceptLowRank.CellCssStyle += "text-align: center;";
                 WillAcceptLowRank.ViewCustomAttributes = "";
 
                 // EmployeeStatus
@@ -1145,11 +1146,17 @@ public partial class PCM {
                 Submitted.CellCssStyle += "text-align: center;";
                 Submitted.ViewCustomAttributes = "";
 
-                // Reviewed
-                Reviewed.ViewValue = Reviewed.CurrentValue;
-                Reviewed.ViewValue = FormatNumber(Reviewed.ViewValue, Reviewed.FormatPattern);
-                Reviewed.CellCssStyle += "text-align: center;";
-                Reviewed.ViewCustomAttributes = "";
+                // AgencyReviewed
+                AgencyReviewed.ViewValue = AgencyReviewed.CurrentValue;
+                AgencyReviewed.ViewValue = FormatNumber(AgencyReviewed.ViewValue, AgencyReviewed.FormatPattern);
+                AgencyReviewed.CellCssStyle += "text-align: center;";
+                AgencyReviewed.ViewCustomAttributes = "";
+
+                // PDEReviewed
+                PDEReviewed.ViewValue = PDEReviewed.CurrentValue;
+                PDEReviewed.ViewValue = FormatNumber(PDEReviewed.ViewValue, PDEReviewed.FormatPattern);
+                PDEReviewed.CellCssStyle += "text-align: center;";
+                PDEReviewed.ViewCustomAttributes = "";
 
                 // RegistrationForm
                 RegistrationForm.ViewValue = RegistrationForm.CurrentValue;
@@ -1235,14 +1242,6 @@ public partial class PCM {
                 MedicalCheckup.CellCssStyle += "text-align: center;";
                 MedicalCheckup.ViewCustomAttributes = "";
 
-                // CreatedBy
-                CreatedBy.ViewValue = ConvertToString(CreatedBy.CurrentValue); // DN
-                CreatedBy.ViewCustomAttributes = "";
-
-                // LastUpdatedBy
-                LastUpdatedBy.ViewValue = ConvertToString(LastUpdatedBy.CurrentValue); // DN
-                LastUpdatedBy.ViewCustomAttributes = "";
-
                 // IndividualCodeNumber
                 IndividualCodeNumber.HrefValue = "";
                 IndividualCodeNumber.TooltipValue = "";
@@ -1283,9 +1282,13 @@ public partial class PCM {
                 Submitted.HrefValue = "";
                 Submitted.TooltipValue = "";
 
-                // Reviewed
-                Reviewed.HrefValue = "";
-                Reviewed.TooltipValue = "";
+                // AgencyReviewed
+                AgencyReviewed.HrefValue = "";
+                AgencyReviewed.TooltipValue = "";
+
+                // PDEReviewed
+                PDEReviewed.HrefValue = "";
+                PDEReviewed.TooltipValue = "";
 
                 // RegistrationForm
                 RegistrationForm.HrefValue = "";
@@ -1342,14 +1345,6 @@ public partial class PCM {
                 // MedicalCheckup
                 MedicalCheckup.HrefValue = "";
                 MedicalCheckup.TooltipValue = "";
-
-                // CreatedBy
-                CreatedBy.HrefValue = "";
-                CreatedBy.TooltipValue = "";
-
-                // LastUpdatedBy
-                LastUpdatedBy.HrefValue = "";
-                LastUpdatedBy.TooltipValue = "";
             } else if (RowType == RowType.Search) {
                 // IndividualCodeNumber
                 IndividualCodeNumber.SetupEditAttributes();
@@ -1414,10 +1409,15 @@ public partial class PCM {
                 Submitted.EditValue = Submitted.AdvancedSearch.SearchValue; // DN
                 Submitted.PlaceHolder = RemoveHtml(Submitted.Caption);
 
-                // Reviewed
-                Reviewed.SetupEditAttributes();
-                Reviewed.EditValue = Reviewed.AdvancedSearch.SearchValue; // DN
-                Reviewed.PlaceHolder = RemoveHtml(Reviewed.Caption);
+                // AgencyReviewed
+                AgencyReviewed.SetupEditAttributes();
+                AgencyReviewed.EditValue = AgencyReviewed.AdvancedSearch.SearchValue; // DN
+                AgencyReviewed.PlaceHolder = RemoveHtml(AgencyReviewed.Caption);
+
+                // PDEReviewed
+                PDEReviewed.SetupEditAttributes();
+                PDEReviewed.EditValue = PDEReviewed.AdvancedSearch.SearchValue; // DN
+                PDEReviewed.PlaceHolder = RemoveHtml(PDEReviewed.Caption);
 
                 // RegistrationForm
                 RegistrationForm.SetupEditAttributes();
@@ -1488,20 +1488,6 @@ public partial class PCM {
                 MedicalCheckup.SetupEditAttributes();
                 MedicalCheckup.EditValue = MedicalCheckup.AdvancedSearch.SearchValue; // DN
                 MedicalCheckup.PlaceHolder = RemoveHtml(MedicalCheckup.Caption);
-
-                // CreatedBy
-                CreatedBy.SetupEditAttributes();
-                if (!CreatedBy.Raw)
-                    CreatedBy.AdvancedSearch.SearchValue = HtmlDecode(CreatedBy.AdvancedSearch.SearchValue);
-                CreatedBy.EditValue = HtmlEncode(CreatedBy.AdvancedSearch.SearchValue);
-                CreatedBy.PlaceHolder = RemoveHtml(CreatedBy.Caption);
-
-                // LastUpdatedBy
-                LastUpdatedBy.SetupEditAttributes();
-                if (!LastUpdatedBy.Raw)
-                    LastUpdatedBy.AdvancedSearch.SearchValue = HtmlDecode(LastUpdatedBy.AdvancedSearch.SearchValue);
-                LastUpdatedBy.EditValue = HtmlEncode(LastUpdatedBy.AdvancedSearch.SearchValue);
-                LastUpdatedBy.PlaceHolder = RemoveHtml(LastUpdatedBy.Caption);
             }
             if (RowType == RowType.Add || RowType == RowType.Edit || RowType == RowType.Search) // Add/Edit/Search row
                 SetupFieldTitles();
@@ -1523,8 +1509,11 @@ public partial class PCM {
             if (!CheckInteger(ConvertToString(Submitted.AdvancedSearch.SearchValue))) {
                 Submitted.AddErrorMessage(Submitted.GetErrorMessage(false));
             }
-            if (!CheckInteger(ConvertToString(Reviewed.AdvancedSearch.SearchValue))) {
-                Reviewed.AddErrorMessage(Reviewed.GetErrorMessage(false));
+            if (!CheckInteger(ConvertToString(AgencyReviewed.AdvancedSearch.SearchValue))) {
+                AgencyReviewed.AddErrorMessage(AgencyReviewed.GetErrorMessage(false));
+            }
+            if (!CheckInteger(ConvertToString(PDEReviewed.AdvancedSearch.SearchValue))) {
+                PDEReviewed.AddErrorMessage(PDEReviewed.GetErrorMessage(false));
             }
             if (!CheckInteger(ConvertToString(RegistrationForm.AdvancedSearch.SearchValue))) {
                 RegistrationForm.AddErrorMessage(RegistrationForm.GetErrorMessage(false));
@@ -1593,7 +1582,8 @@ public partial class PCM {
             EmployeeStatus.AdvancedSearch.Load();
             Draft.AdvancedSearch.Load();
             Submitted.AdvancedSearch.Load();
-            Reviewed.AdvancedSearch.Load();
+            AgencyReviewed.AdvancedSearch.Load();
+            PDEReviewed.AdvancedSearch.Load();
             RegistrationForm.AdvancedSearch.Load();
             PreScreeningInterview.AdvancedSearch.Load();
             MinimumRecruitmentCheck.AdvancedSearch.Load();
@@ -1608,8 +1598,6 @@ public partial class PCM {
             Interviewed.AdvancedSearch.Load();
             Approved.AdvancedSearch.Load();
             MedicalCheckup.AdvancedSearch.Load();
-            CreatedBy.AdvancedSearch.Load();
-            LastUpdatedBy.AdvancedSearch.Load();
         }
 
         // Set up Breadcrumb

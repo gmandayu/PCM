@@ -269,12 +269,12 @@ public partial class PCM {
         public void SetVisibility()
         {
             Id.SetVisibility();
-            MTEmailTemplate_ID.SetVisibility();
             To.SetVisibility();
-            From.SetVisibility();
-            Cc.SetVisibility();
-            Bcc.SetVisibility();
             MTCrew_ID.SetVisibility();
+            Subject.SetVisibility();
+            _Message.SetVisibility();
+            IsSent.SetVisibility();
+            SentDateTime.SetVisibility();
         }
 
         // Constructor
@@ -446,11 +446,14 @@ public partial class PCM {
         // Get record key value from array
         protected string GetRecordKeyValue(Dictionary<string, object> dict) {
             string key = "";
+            key += UrlEncode(ConvertToString(dict.ContainsKey("Id") ? dict["Id"] : Id.CurrentValue));
             return key;
         }
 
         // Hide fields for Add/Edit
         protected void HideFieldsForAddEdit() {
+            if (IsAdd || IsCopy || IsGridAdd)
+                Id.Visible = false;
         }
 
         #pragma warning disable 219
@@ -729,6 +732,9 @@ public partial class PCM {
 
             // Set up custom action (compatible with old version)
             ListActions.Add(CustomActions);
+
+            // Set up lookup cache
+            await SetupLookupOptions(IsSent);
 
             // Update form name to avoid conflict
             if (IsModal)
@@ -1040,12 +1046,12 @@ public partial class PCM {
             // Initialize
             var filters = new JObject(); // DN
             filters.Merge(JObject.Parse(Id.AdvancedSearch.ToJson())); // Field Id
-            filters.Merge(JObject.Parse(MTEmailTemplate_ID.AdvancedSearch.ToJson())); // Field MTEmailTemplate_ID
             filters.Merge(JObject.Parse(To.AdvancedSearch.ToJson())); // Field To
-            filters.Merge(JObject.Parse(From.AdvancedSearch.ToJson())); // Field From
-            filters.Merge(JObject.Parse(Cc.AdvancedSearch.ToJson())); // Field Cc
-            filters.Merge(JObject.Parse(Bcc.AdvancedSearch.ToJson())); // Field Bcc
             filters.Merge(JObject.Parse(MTCrew_ID.AdvancedSearch.ToJson())); // Field MTCrew_ID
+            filters.Merge(JObject.Parse(Subject.AdvancedSearch.ToJson())); // Field Subject
+            filters.Merge(JObject.Parse(_Message.AdvancedSearch.ToJson())); // Field Message
+            filters.Merge(JObject.Parse(IsSent.AdvancedSearch.ToJson())); // Field IsSent
+            filters.Merge(JObject.Parse(SentDateTime.AdvancedSearch.ToJson())); // Field SentDateTime
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1082,16 +1088,6 @@ public partial class PCM {
                 Id.AdvancedSearch.Save();
             }
 
-            // Field MTEmailTemplate_ID
-            if (filter?.TryGetValue("x_MTEmailTemplate_ID", out sv) ?? false) {
-                MTEmailTemplate_ID.AdvancedSearch.SearchValue = sv;
-                MTEmailTemplate_ID.AdvancedSearch.SearchOperator = filter["z_MTEmailTemplate_ID"];
-                MTEmailTemplate_ID.AdvancedSearch.SearchCondition = filter["v_MTEmailTemplate_ID"];
-                MTEmailTemplate_ID.AdvancedSearch.SearchValue2 = filter["y_MTEmailTemplate_ID"];
-                MTEmailTemplate_ID.AdvancedSearch.SearchOperator2 = filter["w_MTEmailTemplate_ID"];
-                MTEmailTemplate_ID.AdvancedSearch.Save();
-            }
-
             // Field To
             if (filter?.TryGetValue("x_To", out sv) ?? false) {
                 To.AdvancedSearch.SearchValue = sv;
@@ -1102,36 +1098,6 @@ public partial class PCM {
                 To.AdvancedSearch.Save();
             }
 
-            // Field From
-            if (filter?.TryGetValue("x_From", out sv) ?? false) {
-                From.AdvancedSearch.SearchValue = sv;
-                From.AdvancedSearch.SearchOperator = filter["z_From"];
-                From.AdvancedSearch.SearchCondition = filter["v_From"];
-                From.AdvancedSearch.SearchValue2 = filter["y_From"];
-                From.AdvancedSearch.SearchOperator2 = filter["w_From"];
-                From.AdvancedSearch.Save();
-            }
-
-            // Field Cc
-            if (filter?.TryGetValue("x_Cc", out sv) ?? false) {
-                Cc.AdvancedSearch.SearchValue = sv;
-                Cc.AdvancedSearch.SearchOperator = filter["z_Cc"];
-                Cc.AdvancedSearch.SearchCondition = filter["v_Cc"];
-                Cc.AdvancedSearch.SearchValue2 = filter["y_Cc"];
-                Cc.AdvancedSearch.SearchOperator2 = filter["w_Cc"];
-                Cc.AdvancedSearch.Save();
-            }
-
-            // Field Bcc
-            if (filter?.TryGetValue("x_Bcc", out sv) ?? false) {
-                Bcc.AdvancedSearch.SearchValue = sv;
-                Bcc.AdvancedSearch.SearchOperator = filter["z_Bcc"];
-                Bcc.AdvancedSearch.SearchCondition = filter["v_Bcc"];
-                Bcc.AdvancedSearch.SearchValue2 = filter["y_Bcc"];
-                Bcc.AdvancedSearch.SearchOperator2 = filter["w_Bcc"];
-                Bcc.AdvancedSearch.Save();
-            }
-
             // Field MTCrew_ID
             if (filter?.TryGetValue("x_MTCrew_ID", out sv) ?? false) {
                 MTCrew_ID.AdvancedSearch.SearchValue = sv;
@@ -1140,6 +1106,46 @@ public partial class PCM {
                 MTCrew_ID.AdvancedSearch.SearchValue2 = filter["y_MTCrew_ID"];
                 MTCrew_ID.AdvancedSearch.SearchOperator2 = filter["w_MTCrew_ID"];
                 MTCrew_ID.AdvancedSearch.Save();
+            }
+
+            // Field Subject
+            if (filter?.TryGetValue("x_Subject", out sv) ?? false) {
+                Subject.AdvancedSearch.SearchValue = sv;
+                Subject.AdvancedSearch.SearchOperator = filter["z_Subject"];
+                Subject.AdvancedSearch.SearchCondition = filter["v_Subject"];
+                Subject.AdvancedSearch.SearchValue2 = filter["y_Subject"];
+                Subject.AdvancedSearch.SearchOperator2 = filter["w_Subject"];
+                Subject.AdvancedSearch.Save();
+            }
+
+            // Field Message
+            if (filter?.TryGetValue("x__Message", out sv) ?? false) {
+                _Message.AdvancedSearch.SearchValue = sv;
+                _Message.AdvancedSearch.SearchOperator = filter["z__Message"];
+                _Message.AdvancedSearch.SearchCondition = filter["v__Message"];
+                _Message.AdvancedSearch.SearchValue2 = filter["y__Message"];
+                _Message.AdvancedSearch.SearchOperator2 = filter["w__Message"];
+                _Message.AdvancedSearch.Save();
+            }
+
+            // Field IsSent
+            if (filter?.TryGetValue("x_IsSent", out sv) ?? false) {
+                IsSent.AdvancedSearch.SearchValue = sv;
+                IsSent.AdvancedSearch.SearchOperator = filter["z_IsSent"];
+                IsSent.AdvancedSearch.SearchCondition = filter["v_IsSent"];
+                IsSent.AdvancedSearch.SearchValue2 = filter["y_IsSent"];
+                IsSent.AdvancedSearch.SearchOperator2 = filter["w_IsSent"];
+                IsSent.AdvancedSearch.Save();
+            }
+
+            // Field SentDateTime
+            if (filter?.TryGetValue("x_SentDateTime", out sv) ?? false) {
+                SentDateTime.AdvancedSearch.SearchValue = sv;
+                SentDateTime.AdvancedSearch.SearchOperator = filter["z_SentDateTime"];
+                SentDateTime.AdvancedSearch.SearchCondition = filter["v_SentDateTime"];
+                SentDateTime.AdvancedSearch.SearchValue2 = filter["y_SentDateTime"];
+                SentDateTime.AdvancedSearch.SearchOperator2 = filter["w_SentDateTime"];
+                SentDateTime.AdvancedSearch.Save();
             }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
@@ -1178,9 +1184,8 @@ public partial class PCM {
             // Fields to search
             List<DbField> searchFlds = new ();
             searchFlds.Add(To);
-            searchFlds.Add(From);
-            searchFlds.Add(Cc);
-            searchFlds.Add(Bcc);
+            searchFlds.Add(Subject);
+            searchFlds.Add(_Message);
             string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
             string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
 
@@ -1256,12 +1261,12 @@ public partial class PCM {
                 CurrentOrder = sv.ToString();
                 CurrentOrderType = Get("ordertype");
                 UpdateSort(Id, ctrl); // Id
-                UpdateSort(MTEmailTemplate_ID, ctrl); // MTEmailTemplate_ID
                 UpdateSort(To, ctrl); // To
-                UpdateSort(From, ctrl); // From
-                UpdateSort(Cc, ctrl); // Cc
-                UpdateSort(Bcc, ctrl); // Bcc
                 UpdateSort(MTCrew_ID, ctrl); // MTCrew_ID
+                UpdateSort(Subject, ctrl); // Subject
+                UpdateSort(_Message, ctrl); // Message
+                UpdateSort(IsSent, ctrl); // IsSent
+                UpdateSort(SentDateTime, ctrl); // SentDateTime
                 StartRecordNumber = 1; // Reset start position
             }
 
@@ -1287,12 +1292,12 @@ public partial class PCM {
                     string orderBy = "";
                     SessionOrderBy = orderBy;
                     Id.Sort = "";
-                    MTEmailTemplate_ID.Sort = "";
                     To.Sort = "";
-                    From.Sort = "";
-                    Cc.Sort = "";
-                    Bcc.Sort = "";
                     MTCrew_ID.Sort = "";
+                    Subject.Sort = "";
+                    _Message.Sort = "";
+                    IsSent.Sort = "";
+                    SentDateTime.Sort = "";
                 }
 
                 // Reset start position
@@ -1401,6 +1406,7 @@ public partial class PCM {
 
             // "checkbox"
             listOption = ListOptions["checkbox"];
+            listOption?.SetBody("<div class=\"form-check\"><input type=\"checkbox\" id=\"key_m_" + RowCount + "\" name=\"key_m[]\" class=\"form-check-input ew-multi-select\" value=\"" + HtmlEncode(Id.CurrentValue) + "\" data-ew-action=\"select-key\"></div>");
             RenderListOptionsExt();
 
             // Call ListOptions Rendered event
@@ -1426,12 +1432,12 @@ public partial class PCM {
                 item.Body = "";
                 item.Visible = UseColumnVisibility;
                 CreateColumnOption(option.Add("Id")); // DN
-                CreateColumnOption(option.Add("MTEmailTemplate_ID")); // DN
                 CreateColumnOption(option.Add("To")); // DN
-                CreateColumnOption(option.Add("From")); // DN
-                CreateColumnOption(option.Add("Cc")); // DN
-                CreateColumnOption(option.Add("Bcc")); // DN
                 CreateColumnOption(option.Add("MTCrew_ID")); // DN
+                CreateColumnOption(option.Add("Subject")); // DN
+                CreateColumnOption(option.Add("Message")); // DN
+                CreateColumnOption(option.Add("IsSent")); // DN
+                CreateColumnOption(option.Add("SentDateTime")); // DN
             }
 
             // Set up options default
@@ -1782,12 +1788,12 @@ public partial class PCM {
             // Call Row Selected event
             RowSelected(row);
             Id.SetDbValue(row["Id"]);
-            MTEmailTemplate_ID.SetDbValue(row["MTEmailTemplate_ID"]);
             To.SetDbValue(row["To"]);
-            From.SetDbValue(row["From"]);
-            Cc.SetDbValue(row["Cc"]);
-            Bcc.SetDbValue(row["Bcc"]);
             MTCrew_ID.SetDbValue(row["MTCrew_ID"]);
+            Subject.SetDbValue(row["Subject"]);
+            _Message.SetDbValue(row["Message"]);
+            IsSent.SetDbValue((ConvertToBool(row["IsSent"]) ? "1" : "0"));
+            SentDateTime.SetDbValue(row["SentDateTime"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -1795,20 +1801,33 @@ public partial class PCM {
         protected Dictionary<string, object> NewRow() {
             var row = new Dictionary<string, object>();
             row.Add("Id", Id.DefaultValue ?? DbNullValue); // DN
-            row.Add("MTEmailTemplate_ID", MTEmailTemplate_ID.DefaultValue ?? DbNullValue); // DN
             row.Add("To", To.DefaultValue ?? DbNullValue); // DN
-            row.Add("From", From.DefaultValue ?? DbNullValue); // DN
-            row.Add("Cc", Cc.DefaultValue ?? DbNullValue); // DN
-            row.Add("Bcc", Bcc.DefaultValue ?? DbNullValue); // DN
             row.Add("MTCrew_ID", MTCrew_ID.DefaultValue ?? DbNullValue); // DN
+            row.Add("Subject", Subject.DefaultValue ?? DbNullValue); // DN
+            row.Add("Message", _Message.DefaultValue ?? DbNullValue); // DN
+            row.Add("IsSent", IsSent.DefaultValue ?? DbNullValue); // DN
+            row.Add("SentDateTime", SentDateTime.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
         #pragma warning disable 618, 1998
         // Load old record
         protected async Task<Dictionary<string, object>?> LoadOldRecord(DatabaseConnectionBase<SqlConnection, SqlCommand, SqlDataReader, SqlDbType>? cnn = null) {
-            await LoadRowValues(); // Load default row values
-            return null;
+            // Load old record
+            Dictionary<string, object>? row = null;
+            bool validKey = !Empty(OldKey);
+            if (validKey) {
+                SetKey(OldKey);
+                CurrentFilter = GetRecordFilter();
+                string sql = CurrentSql;
+                try {
+                    row = await (cnn ?? Connection).GetRowAsync(sql);
+                } catch {
+                    row = null;
+                }
+            }
+            await LoadRowValues(row); // Load row values
+            return row;
         }
         #pragma warning restore 618, 1998
 
@@ -1824,23 +1843,19 @@ public partial class PCM {
             // Id
             Id.CellCssStyle = "white-space: nowrap;";
 
-            // MTEmailTemplate_ID
-            MTEmailTemplate_ID.CellCssStyle = "white-space: nowrap;";
-
             // To
             To.CellCssStyle = "white-space: nowrap;";
 
-            // From
-            From.CellCssStyle = "white-space: nowrap;";
-
-            // Cc
-            Cc.CellCssStyle = "white-space: nowrap;";
-
-            // Bcc
-            Bcc.CellCssStyle = "white-space: nowrap;";
-
             // MTCrew_ID
             MTCrew_ID.CellCssStyle = "white-space: nowrap;";
+
+            // Subject
+
+            // Message
+
+            // IsSent
+
+            // SentDateTime
 
             // View row
             if (RowType == RowType.View) {
@@ -1849,59 +1864,63 @@ public partial class PCM {
                 Id.ViewValue = FormatNumber(Id.ViewValue, Id.FormatPattern);
                 Id.ViewCustomAttributes = "";
 
-                // MTEmailTemplate_ID
-                MTEmailTemplate_ID.ViewValue = MTEmailTemplate_ID.CurrentValue;
-                MTEmailTemplate_ID.ViewValue = FormatNumber(MTEmailTemplate_ID.ViewValue, MTEmailTemplate_ID.FormatPattern);
-                MTEmailTemplate_ID.ViewCustomAttributes = "";
-
                 // To
                 To.ViewValue = ConvertToString(To.CurrentValue); // DN
                 To.ViewCustomAttributes = "";
-
-                // From
-                From.ViewValue = ConvertToString(From.CurrentValue); // DN
-                From.ViewCustomAttributes = "";
-
-                // Cc
-                Cc.ViewValue = ConvertToString(Cc.CurrentValue); // DN
-                Cc.ViewCustomAttributes = "";
-
-                // Bcc
-                Bcc.ViewValue = ConvertToString(Bcc.CurrentValue); // DN
-                Bcc.ViewCustomAttributes = "";
 
                 // MTCrew_ID
                 MTCrew_ID.ViewValue = MTCrew_ID.CurrentValue;
                 MTCrew_ID.ViewValue = FormatNumber(MTCrew_ID.ViewValue, MTCrew_ID.FormatPattern);
                 MTCrew_ID.ViewCustomAttributes = "";
 
+                // Subject
+                Subject.ViewValue = ConvertToString(Subject.CurrentValue); // DN
+                Subject.ViewCustomAttributes = "";
+
+                // Message
+                _Message.ViewValue = ConvertToString(_Message.CurrentValue); // DN
+                _Message.ViewCustomAttributes = "";
+
+                // IsSent
+                if (ConvertToBool(IsSent.CurrentValue)) {
+                    IsSent.ViewValue = IsSent.TagCaption(1) != "" ? IsSent.TagCaption(1) : "Yes";
+                } else {
+                    IsSent.ViewValue = IsSent.TagCaption(2) != "" ? IsSent.TagCaption(2) : "No";
+                }
+                IsSent.ViewCustomAttributes = "";
+
+                // SentDateTime
+                SentDateTime.ViewValue = SentDateTime.CurrentValue;
+                SentDateTime.ViewValue = FormatDateTime(SentDateTime.ViewValue, SentDateTime.FormatPattern);
+                SentDateTime.ViewCustomAttributes = "";
+
                 // Id
                 Id.HrefValue = "";
                 Id.TooltipValue = "";
-
-                // MTEmailTemplate_ID
-                MTEmailTemplate_ID.HrefValue = "";
-                MTEmailTemplate_ID.TooltipValue = "";
 
                 // To
                 To.HrefValue = "";
                 To.TooltipValue = "";
 
-                // From
-                From.HrefValue = "";
-                From.TooltipValue = "";
-
-                // Cc
-                Cc.HrefValue = "";
-                Cc.TooltipValue = "";
-
-                // Bcc
-                Bcc.HrefValue = "";
-                Bcc.TooltipValue = "";
-
                 // MTCrew_ID
                 MTCrew_ID.HrefValue = "";
                 MTCrew_ID.TooltipValue = "";
+
+                // Subject
+                Subject.HrefValue = "";
+                Subject.TooltipValue = "";
+
+                // Message
+                _Message.HrefValue = "";
+                _Message.TooltipValue = "";
+
+                // IsSent
+                IsSent.HrefValue = "";
+                IsSent.TooltipValue = "";
+
+                // SentDateTime
+                SentDateTime.HrefValue = "";
+                SentDateTime.TooltipValue = "";
             }
 
             // Call Row Rendered event

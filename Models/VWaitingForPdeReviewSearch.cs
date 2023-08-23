@@ -215,6 +215,7 @@ public partial class PCM {
             EmployeeStatus.Visible = false;
             FormSubmittedDateTime.SetVisibility();
             ActiveDescription.Visible = false;
+            ManningAgentName.SetVisibility();
             CreatedBy.SetVisibility();
             CreatedDateTime.SetVisibility();
             LastUpdatedBy.SetVisibility();
@@ -384,6 +385,8 @@ public partial class PCM {
         protected void HideFieldsForAddEdit() {
             if (IsAddOrEdit)
                 RankAppliedFor.Visible = false;
+            if (IsAddOrEdit)
+                ManningAgentName.Visible = false;
             if (IsAddOrEdit)
                 CreatedBy.Visible = false;
             if (IsAddOrEdit)
@@ -590,6 +593,7 @@ public partial class PCM {
             BuildSearchUrl(ref srchUrl, AvailableFrom); // AvailableFrom
             BuildSearchUrl(ref srchUrl, AvailableUntil); // AvailableUntil
             BuildSearchUrl(ref srchUrl, FormSubmittedDateTime); // FormSubmittedDateTime
+            BuildSearchUrl(ref srchUrl, ManningAgentName); // ManningAgentName
             BuildSearchUrl(ref srchUrl, CreatedBy); // CreatedBy
             BuildSearchUrl(ref srchUrl, CreatedDateTime); // CreatedDateTime
             BuildSearchUrl(ref srchUrl, LastUpdatedBy); // LastUpdatedBy
@@ -722,6 +726,13 @@ public partial class PCM {
             if (Form.ContainsKey("z_FormSubmittedDateTime"))
                 FormSubmittedDateTime.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_FormSubmittedDateTime");
 
+            // ManningAgentName
+            if (!IsAddOrEdit)
+                if (Form.ContainsKey("x_ManningAgentName"))
+                    ManningAgentName.AdvancedSearch.SearchValue = CurrentForm.GetValue("x_ManningAgentName");
+            if (Form.ContainsKey("z_ManningAgentName"))
+                ManningAgentName.AdvancedSearch.SearchOperator = CurrentForm.GetValue("z_ManningAgentName");
+
             // CreatedBy
             if (!IsAddOrEdit)
                 if (Form.ContainsKey("x_CreatedBy"))
@@ -804,6 +815,7 @@ public partial class PCM {
             EmployeeStatus.SetDbValue(row["EmployeeStatus"]);
             FormSubmittedDateTime.SetDbValue(row["FormSubmittedDateTime"]);
             ActiveDescription.SetDbValue(row["ActiveDescription"]);
+            ManningAgentName.SetDbValue(row["ManningAgentName"]);
             CreatedBy.SetDbValue(row["CreatedBy"]);
             CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
             LastUpdatedBy.SetDbValue(row["LastUpdatedBy"]);
@@ -828,6 +840,7 @@ public partial class PCM {
             row.Add("EmployeeStatus", EmployeeStatus.DefaultValue ?? DbNullValue); // DN
             row.Add("FormSubmittedDateTime", FormSubmittedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("ActiveDescription", ActiveDescription.DefaultValue ?? DbNullValue); // DN
+            row.Add("ManningAgentName", ManningAgentName.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedBy", CreatedBy.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedBy", LastUpdatedBy.DefaultValue ?? DbNullValue); // DN
@@ -883,6 +896,9 @@ public partial class PCM {
 
             // ActiveDescription
             ActiveDescription.RowCssClass = "row";
+
+            // ManningAgentName
+            ManningAgentName.RowCssClass = "row";
 
             // CreatedBy
             CreatedBy.RowCssClass = "row";
@@ -976,6 +992,10 @@ public partial class PCM {
                 FormSubmittedDateTime.ViewValue = FormatDateTime(FormSubmittedDateTime.ViewValue, FormSubmittedDateTime.FormatPattern);
                 FormSubmittedDateTime.ViewCustomAttributes = "";
 
+                // ManningAgentName
+                ManningAgentName.ViewValue = ConvertToString(ManningAgentName.CurrentValue); // DN
+                ManningAgentName.ViewCustomAttributes = "";
+
                 // CreatedBy
                 CreatedBy.ViewValue = ConvertToString(CreatedBy.CurrentValue); // DN
                 CreatedBy.ViewCustomAttributes = "";
@@ -1025,6 +1045,10 @@ public partial class PCM {
                 // FormSubmittedDateTime
                 FormSubmittedDateTime.HrefValue = "";
                 FormSubmittedDateTime.TooltipValue = "";
+
+                // ManningAgentName
+                ManningAgentName.HrefValue = "";
+                ManningAgentName.TooltipValue = "";
 
                 // CreatedBy
                 CreatedBy.HrefValue = "";
@@ -1086,6 +1110,13 @@ public partial class PCM {
                 FormSubmittedDateTime.SetupEditAttributes();
                 FormSubmittedDateTime.EditValue = FormatDateTime(UnformatDateTime(FormSubmittedDateTime.AdvancedSearch.SearchValue, FormSubmittedDateTime.FormatPattern), FormSubmittedDateTime.FormatPattern); // DN
                 FormSubmittedDateTime.PlaceHolder = RemoveHtml(FormSubmittedDateTime.Caption);
+
+                // ManningAgentName
+                ManningAgentName.SetupEditAttributes();
+                if (!ManningAgentName.Raw)
+                    ManningAgentName.AdvancedSearch.SearchValue = HtmlDecode(ManningAgentName.AdvancedSearch.SearchValue);
+                ManningAgentName.EditValue = HtmlEncode(ManningAgentName.AdvancedSearch.SearchValue);
+                ManningAgentName.PlaceHolder = RemoveHtml(ManningAgentName.Caption);
 
                 // CreatedBy
                 CreatedBy.SetupEditAttributes();
@@ -1169,6 +1200,7 @@ public partial class PCM {
             AvailableFrom.AdvancedSearch.Load();
             AvailableUntil.AdvancedSearch.Load();
             FormSubmittedDateTime.AdvancedSearch.Load();
+            ManningAgentName.AdvancedSearch.Load();
             CreatedBy.AdvancedSearch.Load();
             CreatedDateTime.AdvancedSearch.Load();
             LastUpdatedBy.AdvancedSearch.Load();

@@ -247,6 +247,7 @@ public partial class PCM {
             EmployeeStatus.SetVisibility();
             FormSubmittedDateTime.SetVisibility();
             ActiveDescription.SetVisibility();
+            ManningAgentName.SetVisibility();
             CreatedBy.SetVisibility();
             CreatedDateTime.SetVisibility();
             LastUpdatedBy.SetVisibility();
@@ -416,6 +417,8 @@ public partial class PCM {
         protected void HideFieldsForAddEdit() {
             if (IsAddOrEdit)
                 RankAppliedFor.Visible = false;
+            if (IsAddOrEdit)
+                ManningAgentName.Visible = false;
             if (IsAddOrEdit)
                 CreatedBy.Visible = false;
             if (IsAddOrEdit)
@@ -722,6 +725,7 @@ public partial class PCM {
             EmployeeStatus.SetDbValue(row["EmployeeStatus"]);
             FormSubmittedDateTime.SetDbValue(row["FormSubmittedDateTime"]);
             ActiveDescription.SetDbValue(row["ActiveDescription"]);
+            ManningAgentName.SetDbValue(row["ManningAgentName"]);
             CreatedBy.SetDbValue(row["CreatedBy"]);
             CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
             LastUpdatedBy.SetDbValue(row["LastUpdatedBy"]);
@@ -746,6 +750,7 @@ public partial class PCM {
             row.Add("EmployeeStatus", EmployeeStatus.DefaultValue ?? DbNullValue); // DN
             row.Add("FormSubmittedDateTime", FormSubmittedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("ActiveDescription", ActiveDescription.DefaultValue ?? DbNullValue); // DN
+            row.Add("ManningAgentName", ManningAgentName.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedBy", CreatedBy.DefaultValue ?? DbNullValue); // DN
             row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
             row.Add("LastUpdatedBy", LastUpdatedBy.DefaultValue ?? DbNullValue); // DN
@@ -790,6 +795,8 @@ public partial class PCM {
             // FormSubmittedDateTime
 
             // ActiveDescription
+
+            // ManningAgentName
 
             // CreatedBy
 
@@ -878,6 +885,10 @@ public partial class PCM {
                 FormSubmittedDateTime.ViewValue = FormatDateTime(FormSubmittedDateTime.ViewValue, FormSubmittedDateTime.FormatPattern);
                 FormSubmittedDateTime.ViewCustomAttributes = "";
 
+                // ManningAgentName
+                ManningAgentName.ViewValue = ConvertToString(ManningAgentName.CurrentValue); // DN
+                ManningAgentName.ViewCustomAttributes = "";
+
                 // CreatedBy
                 CreatedBy.ViewValue = ConvertToString(CreatedBy.CurrentValue); // DN
                 CreatedBy.ViewCustomAttributes = "";
@@ -953,6 +964,10 @@ public partial class PCM {
                 // FormSubmittedDateTime
                 FormSubmittedDateTime.HrefValue = "";
                 FormSubmittedDateTime.TooltipValue = "";
+
+                // ManningAgentName
+                ManningAgentName.HrefValue = "";
+                ManningAgentName.TooltipValue = "";
 
                 // CreatedBy
                 CreatedBy.HrefValue = "";

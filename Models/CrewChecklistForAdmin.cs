@@ -4787,19 +4787,36 @@ public partial class PCM {
                             LastUpdatedDateTime = DateTimeOffset.Now,
                         });
                 }
-                if (item.AssistantManagerPdeReviewed && item.CrewingManagerApproval)
+                if (item.AssistantManagerPdeReviewed)
                 {
-                    flag = 1; flagDescription = "Selesai";
-                    affectedRows = QueryBuilder("MTRecruitmentStatusTracking")
-                        .Where("MTCrewID", rsnew["MTCrewID"].ToString())
-                        .WhereIn("MTRecruitmentStatusID", new int[] { 120 })
-                        .Update(new
-                        {
-                            Flag = flag,
-                            FlagDescription = flagDescription,
-                            LastUpdatedByUserID = CurrentUserID(),
-                            LastUpdatedDateTime = DateTimeOffset.Now,
-                        });
+                    if(item.CrewingManagerApproval) 
+                    {
+                        flag = 1; flagDescription = "Selesai";
+                        affectedRows = QueryBuilder("MTRecruitmentStatusTracking")
+                            .Where("MTCrewID", rsnew["MTCrewID"].ToString())
+                            .WhereIn("MTRecruitmentStatusID", new int[] { 120 })
+                            .Update(new
+                            {
+                                Flag = flag,
+                                FlagDescription = flagDescription,
+                                LastUpdatedByUserID = CurrentUserID(),
+                                LastUpdatedDateTime = DateTimeOffset.Now,
+                            });
+                    }
+                    else 
+                    {
+                        flag = 2; flagDescription = "Menunggu";
+                        affectedRows = QueryBuilder("MTRecruitmentStatusTracking")
+                            .Where("MTCrewID", rsnew["MTCrewID"].ToString())
+                            .WhereIn("MTRecruitmentStatusID", new int[] { 120 })
+                            .Update(new
+                            {
+                                Flag = flag,
+                                FlagDescription = flagDescription,
+                                LastUpdatedByUserID = CurrentUserID(),
+                                LastUpdatedDateTime = DateTimeOffset.Now,
+                            });
+                    }
                 }
                 else
                 {

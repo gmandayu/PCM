@@ -67,6 +67,8 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> CrewAgency;
 
+        public readonly DbField<SqlDbType> MTManningAgentID;
+
         // Constructor
         public MtUser()
         {
@@ -290,7 +292,6 @@ public partial class PCM {
             CrewAgency = new (this, "x_CrewAgency", 202, SqlDbType.NVarChar) {
                 Name = "CrewAgency",
                 Expression = "[CrewAgency]",
-                UseBasicSearch = true,
                 BasicSearchExpression = "[CrewAgency]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[CrewAgency]",
@@ -301,21 +302,49 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "SELECT",
                 InputTextType = "text",
-                Required = true, // Required field
+                Sortable = false, // Allow sort
                 UsePleaseSelect = true, // Use PleaseSelect by default
                 PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
-                UseFilter = true, // Table header filter
                 OptionCount = 4,
                 SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("MTUser", "CrewAgency", "CustomMsg"),
                 IsUpload = false
             };
             CrewAgency.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>("CrewAgency", "MTUser", true, "CrewAgency", new List<string> {"CrewAgency", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>("CrewAgency", "MTUser", true, "CrewAgency", new List<string> {"CrewAgency", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>("CrewAgency", "MTUser", true, "CrewAgency", new List<string> {"CrewAgency", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
+                "en-US" => new Lookup<DbField>("CrewAgency", "MTUser", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>("CrewAgency", "MTUser", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>("CrewAgency", "MTUser", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             Fields.Add("CrewAgency", CrewAgency);
+
+            // MTManningAgentID
+            MTManningAgentID = new (this, "x_MTManningAgentID", 3, SqlDbType.Int) {
+                Name = "MTManningAgentID",
+                Expression = "[MTManningAgentID]",
+                BasicSearchExpression = "CAST([MTManningAgentID] AS NVARCHAR)",
+                DateTimeFormat = -1,
+                VirtualExpression = "[MTManningAgentID]",
+                IsVirtual = false,
+                ForceSelection = false,
+                SelectMultiple = false,
+                VirtualSearch = false,
+                ViewTag = "FORMATTED TEXT",
+                HtmlTag = "SELECT",
+                InputTextType = "text",
+                UsePleaseSelect = true, // Use PleaseSelect by default
+                PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
+                UseFilter = true, // Table header filter
+                DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
+                SearchOperators = new () { "=", "<>", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("MTUser", "MTManningAgentID", "CustomMsg"),
+                IsUpload = false
+            };
+            MTManningAgentID.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>("MTManningAgentID", "MTManningAgent", true, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]"),
+                "id-ID" => new Lookup<DbField>("MTManningAgentID", "MTManningAgent", true, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]"),
+                _ => new Lookup<DbField>("MTManningAgentID", "MTManningAgent", true, "ID", new List<string> {"Name", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Name]")
+            };
+            Fields.Add("MTManningAgentID", MTManningAgentID);
 
             // Call Table Load event
             TableLoad();
@@ -869,6 +898,7 @@ public partial class PCM {
                 SeafarerID.DbValue = row["SeafarerID"]; // Set DB value only
                 IdentificationImage.Upload.DbValue = row["IdentificationImage"];
                 CrewAgency.DbValue = row["CrewAgency"]; // Set DB value only
+                MTManningAgentID.DbValue = row["MTManningAgentID"]; // Set DB value only
             } catch {}
         }
 
@@ -1249,6 +1279,7 @@ public partial class PCM {
             IdentificationImage.Upload.DbValue = dr["IdentificationImage"];
             IdentificationImage.SetDbValue(IdentificationImage.Upload.DbValue);
             CrewAgency.SetDbValue(dr["CrewAgency"]);
+            MTManningAgentID.SetDbValue(dr["MTManningAgentID"]);
         }
 
         // Render list content
@@ -1298,6 +1329,9 @@ public partial class PCM {
 
             // CrewAgency
             CrewAgency.CellCssStyle = "white-space: nowrap;";
+
+            // MTManningAgentID
+            MTManningAgentID.CellCssStyle = "white-space: nowrap;";
 
             // ID
             ID.ViewValue = ID.CurrentValue;
@@ -1365,6 +1399,27 @@ public partial class PCM {
             }
             CrewAgency.ViewCustomAttributes = "";
 
+            // MTManningAgentID
+            curVal = ConvertToString(MTManningAgentID.CurrentValue);
+            if (!Empty(curVal)) {
+                if (MTManningAgentID.Lookup != null && IsDictionary(MTManningAgentID.Lookup?.Options) && MTManningAgentID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                    MTManningAgentID.ViewValue = MTManningAgentID.LookupCacheOption(curVal);
+                } else { // Lookup from database // DN
+                    filterWrk = SearchFilter("[ID]", "=", MTManningAgentID.CurrentValue, DataType.Number, "");
+                    sqlWrk = MTManningAgentID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                    if (rswrk?.Count > 0 && MTManningAgentID.Lookup != null) { // Lookup values found
+                        var listwrk = MTManningAgentID.Lookup?.RenderViewRow(rswrk[0]);
+                        MTManningAgentID.ViewValue = MTManningAgentID.HighlightLookup(ConvertToString(rswrk[0]), MTManningAgentID.DisplayValue(listwrk));
+                    } else {
+                        MTManningAgentID.ViewValue = MTManningAgentID.CurrentValue;
+                    }
+                }
+            } else {
+                MTManningAgentID.ViewValue = DbNullValue;
+            }
+            MTManningAgentID.ViewCustomAttributes = "";
+
             // ID
             ID.HrefValue = "";
             ID.TooltipValue = "";
@@ -1415,6 +1470,10 @@ public partial class PCM {
             // CrewAgency
             CrewAgency.HrefValue = "";
             CrewAgency.TooltipValue = "";
+
+            // MTManningAgentID
+            MTManningAgentID.HrefValue = "";
+            MTManningAgentID.TooltipValue = "";
 
             // Call Row Rendered event
             RowRendered();
@@ -1500,6 +1559,19 @@ public partial class PCM {
             CrewAgency.EditValue = CrewAgency.Options(true);
             CrewAgency.PlaceHolder = RemoveHtml(CrewAgency.Caption);
 
+            // MTManningAgentID
+            MTManningAgentID.SetupEditAttributes();
+            curVal = ConvertToString(MTManningAgentID.CurrentValue)?.Trim() ?? "";
+            if (MTManningAgentID.Lookup != null && IsDictionary(MTManningAgentID.Lookup?.Options) && MTManningAgentID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                MTManningAgentID.EditValue = MTManningAgentID.Lookup?.Options.Values.ToList();
+            } else { // Lookup from database
+                filterWrk = "";
+                sqlWrk = MTManningAgentID.Lookup?.GetSql(true, filterWrk, null, this, false, true);
+                rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                MTManningAgentID.EditValue = rswrk;
+            }
+            MTManningAgentID.PlaceHolder = RemoveHtml(MTManningAgentID.Caption);
+
             // Call Row Rendered event
             RowRendered();
         }
@@ -1536,13 +1608,13 @@ public partial class PCM {
                         doc.ExportCaption(FullName);
                         doc.ExportCaption(MTUserLevelID);
                         doc.ExportCaption(SeafarerID);
-                        doc.ExportCaption(CrewAgency);
+                        doc.ExportCaption(MTManningAgentID);
                     } else {
                         doc.ExportCaption(_Email);
                         doc.ExportCaption(FullName);
                         doc.ExportCaption(MTUserLevelID);
                         doc.ExportCaption(SeafarerID);
-                        doc.ExportCaption(CrewAgency);
+                        doc.ExportCaption(MTManningAgentID);
                     }
                     doc.EndExportRow();
                 }
@@ -1584,13 +1656,13 @@ public partial class PCM {
                             await doc.ExportField(FullName);
                             await doc.ExportField(MTUserLevelID);
                             await doc.ExportField(SeafarerID);
-                            await doc.ExportField(CrewAgency);
+                            await doc.ExportField(MTManningAgentID);
                         } else {
                             await doc.ExportField(_Email);
                             await doc.ExportField(FullName);
                             await doc.ExportField(MTUserLevelID);
                             await doc.ExportField(SeafarerID);
-                            await doc.ExportField(CrewAgency);
+                            await doc.ExportField(MTManningAgentID);
                         }
                         doc.EndExportRow(rowcnt);
                     }

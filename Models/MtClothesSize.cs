@@ -61,18 +61,6 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> TrouserSizeDescription;
 
-        public readonly DbField<SqlDbType> ChestSize;
-
-        public readonly DbField<SqlDbType> WaistSize;
-
-        public readonly DbField<SqlDbType> ShoulderSize;
-
-        public readonly DbField<SqlDbType> LongSleeveSize;
-
-        public readonly DbField<SqlDbType> FrontLengthSize;
-
-        public readonly DbField<SqlDbType> CollarSize;
-
         public readonly DbField<SqlDbType> ActiveDescription;
 
         public readonly DbField<SqlDbType> CreatedByUserID;
@@ -241,150 +229,6 @@ public partial class PCM {
                 _ => new Lookup<DbField>("TrouserSizeDescription", "MTClothesSize", true, "TrouserSizeDescription", new List<string> {"TrouserSizeDescription", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             Fields.Add("TrouserSizeDescription", TrouserSizeDescription);
-
-            // ChestSize
-            ChestSize = new (this, "x_ChestSize", 131, SqlDbType.Decimal) {
-                Name = "ChestSize",
-                Expression = "[ChestSize]",
-                BasicSearchExpression = "CAST([ChestSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ChestSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Nullable = false, // NOT NULL field
-                Required = true, // Required field
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
-                CustomMessage = Language.FieldPhrase("MTClothesSize", "ChestSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("ChestSize", ChestSize);
-
-            // WaistSize
-            WaistSize = new (this, "x_WaistSize", 131, SqlDbType.Decimal) {
-                Name = "WaistSize",
-                Expression = "[WaistSize]",
-                BasicSearchExpression = "CAST([WaistSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[WaistSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Nullable = false, // NOT NULL field
-                Required = true, // Required field
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
-                CustomMessage = Language.FieldPhrase("MTClothesSize", "WaistSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("WaistSize", WaistSize);
-
-            // ShoulderSize
-            ShoulderSize = new (this, "x_ShoulderSize", 131, SqlDbType.Decimal) {
-                Name = "ShoulderSize",
-                Expression = "[ShoulderSize]",
-                BasicSearchExpression = "CAST([ShoulderSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[ShoulderSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Nullable = false, // NOT NULL field
-                Required = true, // Required field
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
-                CustomMessage = Language.FieldPhrase("MTClothesSize", "ShoulderSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("ShoulderSize", ShoulderSize);
-
-            // LongSleeveSize
-            LongSleeveSize = new (this, "x_LongSleeveSize", 131, SqlDbType.Decimal) {
-                Name = "LongSleeveSize",
-                Expression = "[LongSleeveSize]",
-                BasicSearchExpression = "CAST([LongSleeveSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[LongSleeveSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Nullable = false, // NOT NULL field
-                Required = true, // Required field
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
-                CustomMessage = Language.FieldPhrase("MTClothesSize", "LongSleeveSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("LongSleeveSize", LongSleeveSize);
-
-            // FrontLengthSize
-            FrontLengthSize = new (this, "x_FrontLengthSize", 131, SqlDbType.Decimal) {
-                Name = "FrontLengthSize",
-                Expression = "[FrontLengthSize]",
-                BasicSearchExpression = "CAST([FrontLengthSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[FrontLengthSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Nullable = false, // NOT NULL field
-                Required = true, // Required field
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
-                CustomMessage = Language.FieldPhrase("MTClothesSize", "FrontLengthSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("FrontLengthSize", FrontLengthSize);
-
-            // CollarSize
-            CollarSize = new (this, "x_CollarSize", 131, SqlDbType.Decimal) {
-                Name = "CollarSize",
-                Expression = "[CollarSize]",
-                BasicSearchExpression = "CAST([CollarSize] AS NVARCHAR)",
-                DateTimeFormat = -1,
-                VirtualExpression = "[CollarSize]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                Nullable = false, // NOT NULL field
-                Required = true, // Required field
-                Sortable = false, // Allow sort
-                DefaultErrorMessage = Language.Phrase("IncorrectFloat"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
-                CustomMessage = Language.FieldPhrase("MTClothesSize", "CollarSize", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("CollarSize", CollarSize);
 
             // ActiveDescription
             ActiveDescription = new (this, "x_ActiveDescription", 202, SqlDbType.NVarChar) {
@@ -1065,12 +909,6 @@ public partial class PCM {
                 CoverallSizeDescription.DbValue = row["CoverallSizeDescription"]; // Set DB value only
                 ShirtSizeDescription.DbValue = row["ShirtSizeDescription"]; // Set DB value only
                 TrouserSizeDescription.DbValue = row["TrouserSizeDescription"]; // Set DB value only
-                ChestSize.DbValue = row["ChestSize"]; // Set DB value only
-                WaistSize.DbValue = row["WaistSize"]; // Set DB value only
-                ShoulderSize.DbValue = row["ShoulderSize"]; // Set DB value only
-                LongSleeveSize.DbValue = row["LongSleeveSize"]; // Set DB value only
-                FrontLengthSize.DbValue = row["FrontLengthSize"]; // Set DB value only
-                CollarSize.DbValue = row["CollarSize"]; // Set DB value only
                 ActiveDescription.DbValue = row["ActiveDescription"]; // Set DB value only
                 CreatedByUserID.DbValue = row["CreatedByUserID"]; // Set DB value only
                 CreatedDateTime.DbValue = row["CreatedDateTime"]; // Set DB value only
@@ -1448,12 +1286,6 @@ public partial class PCM {
             CoverallSizeDescription.SetDbValue(dr["CoverallSizeDescription"]);
             ShirtSizeDescription.SetDbValue(dr["ShirtSizeDescription"]);
             TrouserSizeDescription.SetDbValue(dr["TrouserSizeDescription"]);
-            ChestSize.SetDbValue(dr["ChestSize"]);
-            WaistSize.SetDbValue(dr["WaistSize"]);
-            ShoulderSize.SetDbValue(dr["ShoulderSize"]);
-            LongSleeveSize.SetDbValue(dr["LongSleeveSize"]);
-            FrontLengthSize.SetDbValue(dr["FrontLengthSize"]);
-            CollarSize.SetDbValue(dr["CollarSize"]);
             ActiveDescription.SetDbValue(dr["ActiveDescription"]);
             CreatedByUserID.SetDbValue(dr["CreatedByUserID"]);
             CreatedDateTime.SetDbValue(dr["CreatedDateTime"]);
@@ -1500,24 +1332,6 @@ public partial class PCM {
             // TrouserSizeDescription
             TrouserSizeDescription.CellCssStyle = "white-space: nowrap;";
 
-            // ChestSize
-            ChestSize.CellCssStyle = "white-space: nowrap;";
-
-            // WaistSize
-            WaistSize.CellCssStyle = "white-space: nowrap;";
-
-            // ShoulderSize
-            ShoulderSize.CellCssStyle = "white-space: nowrap;";
-
-            // LongSleeveSize
-            LongSleeveSize.CellCssStyle = "white-space: nowrap;";
-
-            // FrontLengthSize
-            FrontLengthSize.CellCssStyle = "white-space: nowrap;";
-
-            // CollarSize
-            CollarSize.CellCssStyle = "white-space: nowrap;";
-
             // ActiveDescription
             ActiveDescription.CellCssStyle = "white-space: nowrap;";
 
@@ -1552,36 +1366,6 @@ public partial class PCM {
             // TrouserSizeDescription
             TrouserSizeDescription.ViewValue = ConvertToString(TrouserSizeDescription.CurrentValue); // DN
             TrouserSizeDescription.ViewCustomAttributes = "";
-
-            // ChestSize
-            ChestSize.ViewValue = ChestSize.CurrentValue;
-            ChestSize.ViewValue = FormatNumber(ChestSize.ViewValue, ChestSize.FormatPattern);
-            ChestSize.ViewCustomAttributes = "";
-
-            // WaistSize
-            WaistSize.ViewValue = WaistSize.CurrentValue;
-            WaistSize.ViewValue = FormatNumber(WaistSize.ViewValue, WaistSize.FormatPattern);
-            WaistSize.ViewCustomAttributes = "";
-
-            // ShoulderSize
-            ShoulderSize.ViewValue = ShoulderSize.CurrentValue;
-            ShoulderSize.ViewValue = FormatNumber(ShoulderSize.ViewValue, ShoulderSize.FormatPattern);
-            ShoulderSize.ViewCustomAttributes = "";
-
-            // LongSleeveSize
-            LongSleeveSize.ViewValue = LongSleeveSize.CurrentValue;
-            LongSleeveSize.ViewValue = FormatNumber(LongSleeveSize.ViewValue, LongSleeveSize.FormatPattern);
-            LongSleeveSize.ViewCustomAttributes = "";
-
-            // FrontLengthSize
-            FrontLengthSize.ViewValue = FrontLengthSize.CurrentValue;
-            FrontLengthSize.ViewValue = FormatNumber(FrontLengthSize.ViewValue, FrontLengthSize.FormatPattern);
-            FrontLengthSize.ViewCustomAttributes = "";
-
-            // CollarSize
-            CollarSize.ViewValue = CollarSize.CurrentValue;
-            CollarSize.ViewValue = FormatNumber(CollarSize.ViewValue, CollarSize.FormatPattern);
-            CollarSize.ViewCustomAttributes = "";
 
             // ActiveDescription
             ActiveDescription.ViewValue = ConvertToString(ActiveDescription.CurrentValue); // DN
@@ -1659,30 +1443,6 @@ public partial class PCM {
             TrouserSizeDescription.HrefValue = "";
             TrouserSizeDescription.TooltipValue = "";
 
-            // ChestSize
-            ChestSize.HrefValue = "";
-            ChestSize.TooltipValue = "";
-
-            // WaistSize
-            WaistSize.HrefValue = "";
-            WaistSize.TooltipValue = "";
-
-            // ShoulderSize
-            ShoulderSize.HrefValue = "";
-            ShoulderSize.TooltipValue = "";
-
-            // LongSleeveSize
-            LongSleeveSize.HrefValue = "";
-            LongSleeveSize.TooltipValue = "";
-
-            // FrontLengthSize
-            FrontLengthSize.HrefValue = "";
-            FrontLengthSize.TooltipValue = "";
-
-            // CollarSize
-            CollarSize.HrefValue = "";
-            CollarSize.TooltipValue = "";
-
             // ActiveDescription
             ActiveDescription.HrefValue = "";
             ActiveDescription.TooltipValue = "";
@@ -1750,48 +1510,6 @@ public partial class PCM {
                 TrouserSizeDescription.CurrentValue = HtmlDecode(TrouserSizeDescription.CurrentValue);
             TrouserSizeDescription.EditValue = HtmlEncode(TrouserSizeDescription.CurrentValue);
             TrouserSizeDescription.PlaceHolder = RemoveHtml(TrouserSizeDescription.Caption);
-
-            // ChestSize
-            ChestSize.SetupEditAttributes();
-            ChestSize.EditValue = ChestSize.CurrentValue; // DN
-            ChestSize.PlaceHolder = RemoveHtml(ChestSize.Caption);
-            if (!Empty(ChestSize.EditValue) && IsNumeric(ChestSize.EditValue))
-                ChestSize.EditValue = FormatNumber(ChestSize.EditValue, null);
-
-            // WaistSize
-            WaistSize.SetupEditAttributes();
-            WaistSize.EditValue = WaistSize.CurrentValue; // DN
-            WaistSize.PlaceHolder = RemoveHtml(WaistSize.Caption);
-            if (!Empty(WaistSize.EditValue) && IsNumeric(WaistSize.EditValue))
-                WaistSize.EditValue = FormatNumber(WaistSize.EditValue, null);
-
-            // ShoulderSize
-            ShoulderSize.SetupEditAttributes();
-            ShoulderSize.EditValue = ShoulderSize.CurrentValue; // DN
-            ShoulderSize.PlaceHolder = RemoveHtml(ShoulderSize.Caption);
-            if (!Empty(ShoulderSize.EditValue) && IsNumeric(ShoulderSize.EditValue))
-                ShoulderSize.EditValue = FormatNumber(ShoulderSize.EditValue, null);
-
-            // LongSleeveSize
-            LongSleeveSize.SetupEditAttributes();
-            LongSleeveSize.EditValue = LongSleeveSize.CurrentValue; // DN
-            LongSleeveSize.PlaceHolder = RemoveHtml(LongSleeveSize.Caption);
-            if (!Empty(LongSleeveSize.EditValue) && IsNumeric(LongSleeveSize.EditValue))
-                LongSleeveSize.EditValue = FormatNumber(LongSleeveSize.EditValue, null);
-
-            // FrontLengthSize
-            FrontLengthSize.SetupEditAttributes();
-            FrontLengthSize.EditValue = FrontLengthSize.CurrentValue; // DN
-            FrontLengthSize.PlaceHolder = RemoveHtml(FrontLengthSize.Caption);
-            if (!Empty(FrontLengthSize.EditValue) && IsNumeric(FrontLengthSize.EditValue))
-                FrontLengthSize.EditValue = FormatNumber(FrontLengthSize.EditValue, null);
-
-            // CollarSize
-            CollarSize.SetupEditAttributes();
-            CollarSize.EditValue = CollarSize.CurrentValue; // DN
-            CollarSize.PlaceHolder = RemoveHtml(CollarSize.Caption);
-            if (!Empty(CollarSize.EditValue) && IsNumeric(CollarSize.EditValue))
-                CollarSize.EditValue = FormatNumber(CollarSize.EditValue, null);
 
             // ActiveDescription
             ActiveDescription.SetupEditAttributes();

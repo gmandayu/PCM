@@ -4,8 +4,8 @@ namespace PCM.Controllers;
 public partial class HomeController : Controller
 {
     // list
-    [Route("TrEmailHistoryList", Name = "TrEmailHistoryList-TREmailHistory-list")]
-    [Route("Home/TrEmailHistoryList", Name = "TrEmailHistoryList-TREmailHistory-list-2")]
+    [Route("TrEmailHistoryList/{Id?}", Name = "TrEmailHistoryList-TREmailHistory-list")]
+    [Route("Home/TrEmailHistoryList/{Id?}", Name = "TrEmailHistoryList-TREmailHistory-list-2")]
     public async Task<IActionResult> TrEmailHistoryList()
     {
         // Create page object

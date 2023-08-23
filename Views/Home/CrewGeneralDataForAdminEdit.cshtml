@@ -792,6 +792,7 @@ loadjs.ready("load", function() {
                                 method: 'POST',
                                 success: function(response) {
                                     $('#loading-modal-dialog').modal('hide');
+                                    isChangeTabApproved = true;
                                     if (response.success) {
                                         if (isAdmin) {
                                             if (response.crewStatus === "Candidate - Blacklist") {
@@ -833,17 +834,36 @@ loadjs.ready("load", function() {
                                     } else {
                                         const errorMessage = response.errorMessage;
                                         const regex = /Error\s*(.*?)\s*:\s{1}(.*)/;
-                                        const matches = errorMessage.match(regex);
-                                        const targetTabName = matches[1];
-                                        const errorDetail = matches[2];
-                                        const targetHref = $(`ul.nav-tabs li.nav-item a.nav-link:contains("${targetTabName}")`).first().attr('href');
-                                        const baseUrl = new URL(window.location.href).origin;
-                                        const targetUrl = new URL(baseUrl + targetHref);
-                                        const encodedErrorDetail = encodeURIComponent(errorDetail);
-                                        const params = new URLSearchParams(targetUrl.search);
-                                        params.set('errorMessage', encodedErrorDetail);
-                                        targetUrl.search = params.toString();
-                                        window.location.href = targetUrl.href;
+                                        if (regex.test(errorMessage)) {
+                                            const matches = errorMessage.match(regex);
+                                            const targetTabName = matches[1];
+                                            const errorDetail = matches[2];
+                                            const targetHref = $(`ul.nav-tabs li.nav-item a.nav-link:contains("${targetTabName}")`).first().attr('href');
+                                            const baseUrl = new URL(window.location.href).origin;
+                                            const targetUrl = new URL(baseUrl + targetHref);
+                                            const encodedErrorDetail = encodeURIComponent(errorDetail);
+                                            const params = new URLSearchParams(targetUrl.search);
+                                            params.set('errorMessage', encodedErrorDetail);
+                                            targetUrl.search = params.toString();
+                                            window.location.href = targetUrl.href;
+                                        } else {
+                                            if (response.data.IsAlreadySubmitted) {
+                                                const baseUrl = new URL(window.location.href).origin;
+                                                let targetUrl = "";
+                                                if (isAdmin) {
+                                                    targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}RegistrationList`);
+                                                } else {
+                                                    targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}NotificationForCrewList`);
+                                                }
+                                                const encodedErrorMessage = encodeURIComponent(errorMessage);
+                                                const params = new URLSearchParams(targetUrl.search);
+                                                params.set('errorMessage', encodedErrorMessage);
+                                                targetUrl.search = params.toString();
+                                                window.location.href = targetUrl.href;
+                                            } else {
+                                                ew.showToast(errorMessage);
+                                            }
+                                        }
                                     }
                                 },
                                 error: function(xhr, textStatus, errorThrown) {

@@ -2497,6 +2497,8 @@ public partial class PCM {
 
                 // McuAttachment
                 if (!IsNull(McuAttachment.Upload.DbValue)) {
+                    McuAttachment.ImageWidth = 120;
+                    McuAttachment.ImageHeight = 0;
                     McuAttachment.ImageAlt = McuAttachment.Alt;
                     McuAttachment.ImageCssClass = "ew-image";
                     McuAttachment.ViewValue = McuAttachment.Upload.DbValue;

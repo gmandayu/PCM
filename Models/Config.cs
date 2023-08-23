@@ -78,7 +78,7 @@ public partial class PCM {
 
         public const string ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}"; // Project ID (GUID)
 
-        public static string RandomKey = "gu6kvNwICOSqypGs"; // Random key for encryption
+        public static string RandomKey = "GIoKVTu2mhpQRbkB"; // Random key for encryption
 
         public static string EncryptionKey = ""; // Encryption key for data protection
 
@@ -615,7 +615,7 @@ public partial class PCM {
 
         public static string SmtpServerPassword = ""; // SMTP server password
 
-        public static string SenderEmail = "martinus@mitral.co.id"; // Sender email
+        public static string SenderEmail = "noreply.pis@pertamina.com"; // Sender email
 
         public static string RecipientEmail = ""; // Recipient email
 
@@ -1032,6 +1032,10 @@ public partial class PCM {
             {"MTRecruitmentStatusTracking", typeof(MtRecruitmentStatusTracking)},
             {"v_CrewTrackingStatus", typeof(VCrewTrackingStatus)},
             {"MTBank", typeof(MtBank)},
+            {"EmailHistory", typeof(EmailHistory)},
+            {"MTManningAgent", typeof(MtManningAgent)},
+            {"WaitingForAgencyReview", typeof(WaitingForAgencyReview)},
+            {"UpdateTracking", typeof(UpdateTracking)},
             {"Register", typeof(Register)}, // Lookup for register page // DN
             {"usertable", typeof(MtUser)},
         };
@@ -1107,6 +1111,10 @@ public partial class PCM {
             {"MTRecruitmentStatusTracking", "DB"},
             {"v_CrewTrackingStatus", "DB"},
             {"MTBank", "DB"},
+            {"EmailHistory", "DB"},
+            {"MTManningAgent", "DB"},
+            {"WaitingForAgencyReview", "DB"},
+            {"UpdateTracking", "DB"},
         };
 
         // Secondary connection name // DN
@@ -1120,11 +1128,14 @@ public partial class PCM {
         // Menu items // DN
         public static List<object[]> MenuItems = new ()
         {
+            new object[] { 298, "mi_UpdateTracking", "298", "UpdateTrackingList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}UpdateTracking", false, false, "fa-file-lines", "", false, true },
             new object[] { 286, "mi_NotificationForCrew", "286", "NotificationForCrewList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}NotificationForCrew", false, false, "fa-bell", "", false, true },
             new object[] { 118, "mi_HomePageAdminPDE", "118", "HomePageAdminPde", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}HomePageAdminPDE", false, false, "fa-house", "", false, true },
             new object[] { 285, "mi_NotificationForAdmin", "285", "NotificationForAdminList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}NotificationForAdmin", false, false, "fa-bell", "", false, true },
+            new object[] { 294, "mi_EmailHistory", "294", "EmailHistoryList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}EmailHistory", false, false, "fa-envelope", "", false, true },
             new object[] { 24, "mci_Recruitment", "24", "", -1, "", false, false, true, "fa-people-arrows", "", false, true },
             new object[] { 195, "mi_Registration", "195", "RegistrationList", 24, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}Registration", false, false, "", "", false, true },
+            new object[] { 296, "mi_WaitingForAgencyReview", "296", "WaitingForAgencyReviewList", 24, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}WaitingForAgencyReview", false, false, "", "", false, true },
             new object[] { 109, "mi_v_WaitingForPDEReview", "109", "VWaitingForPdeReviewList", 24, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}v_WaitingForPDEReview", false, false, "", "", false, true },
             new object[] { 196, "mi_Checklist", "196", "ChecklistList", 24, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}Checklist", false, false, "", "", false, true },
             new object[] { 203, "mi_McuResult", "203", "McuResultList", 24, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}McuResult", false, false, "", "", false, true },
@@ -1146,6 +1157,7 @@ public partial class PCM {
             new object[] { 55, "mi_MTReligion", "55", "MtReligionList", 20, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTReligion", false, false, "", "", false, true },
             new object[] { 197, "mi_MTCurrency", "197", "MtCurrencyList", 20, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTCurrency", false, false, "", "", false, true },
             new object[] { 292, "mi_MTBank", "292", "MtBankList", 20, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTBank", false, false, "", "", false, true },
+            new object[] { 295, "mi_MTManningAgent", "295", "MtManningAgentList", 20, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTManningAgent", false, false, "", "", false, true },
             new object[] { 39, "mci_Crew_Data", "39", "", -1, "", false, false, true, "fa-file", "", false, true },
             new object[] { 49, "mi_MTCrewDocument", "49", "MtCrewDocumentList?cmd=resetall", 39, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTCrewDocument", false, false, "", "", false, true },
             new object[] { 51, "mi_MTCrewFamily", "51", "MtCrewFamilyList?cmd=resetall", 39, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTCrewFamily", false, false, "", "", false, true },

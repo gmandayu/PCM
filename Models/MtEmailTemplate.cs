@@ -102,6 +102,7 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
+                IsPrimaryKey = true, // Primary key field
                 Nullable = false, // NOT NULL field
                 Required = true, // Required field
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
@@ -748,7 +749,7 @@ public partial class PCM {
         }
 
         // Record filter WHERE clause
-        private string _sqlKeyFilter => "";
+        private string _sqlKeyFilter => "[Id] = @Id@";
 
         #pragma warning disable 168, 219
         // Get record filter as string
@@ -756,6 +757,14 @@ public partial class PCM {
         {
             string keyFilter = _sqlKeyFilter;
             object? val = null, result = "";
+            val = row?.TryGetValue("Id", out result) ?? false
+                ? result
+                : !Empty(Id.OldValue) && !current ? Id.OldValue : Id.CurrentValue;
+            if (!IsNumeric(val))
+                return "0=1"; // Invalid key
+            if (val == null)
+                return "0=1"; // Invalid key
+            keyFilter = keyFilter.Replace("@Id@", AdjustSql(val, DbId)); // Replace key value
             return keyFilter;
         }
 
@@ -764,6 +773,14 @@ public partial class PCM {
         {
             Dictionary<string, object>? keyFilter = new ();
             object? val = null, result;
+            val = row?.TryGetValue("Id", out result) ?? false
+                ? result
+                : !Empty(Id.OldValue) ? Id.OldValue : Id.CurrentValue;
+            if (!IsNumeric(val))
+                return null; // Invalid key
+            if (Empty(val))
+                return null; // Invalid key
+            keyFilter.Add("Id", val); // Add key value
             return keyFilter.Count > 0 ? keyFilter : null;
         }
         #pragma warning restore 168, 219
@@ -910,6 +927,7 @@ public partial class PCM {
         public string KeyToJson(bool htmlEncode = false)
         {
             string json = "";
+            json += "\"Id\":" + ConvertToJson(Id.CurrentValue, "number", true);
             json = "{" + json + "}";
             if (htmlEncode)
                 json = HtmlEncode(json);
@@ -918,6 +936,11 @@ public partial class PCM {
 
         // Add key value to URL
         public string KeyUrl(string url, string parm = "") { // DN
+            if (!IsNull(Id.CurrentValue)) {
+                url += "/" + Id.CurrentValue;
+            } else {
+                return "javascript:ew.alert(ew.language.phrase('InvalidRecord'));";
+            }
             if (Empty(parm))
                 return url;
             else
@@ -972,6 +995,10 @@ public partial class PCM {
         {
             List<string> keys = new ();
             string val;
+            val = current ? ConvertToString(Id.CurrentValue) ?? "" : ConvertToString(Id.OldValue) ?? "";
+            if (Empty(val))
+                return String.Empty;
+            keys.Add(val);
             return String.Join(Config.CompositeKeySeparator, keys);
         }
 
@@ -980,6 +1007,10 @@ public partial class PCM {
         {
             List<string> keys = new ();
             object? val = null, result;
+            val = row?.TryGetValue("Id", out result) ?? false ? ConvertToString(result) : null;
+            if (Empty(val))
+                return String.Empty; // Invalid key
+            keys.Add(ConvertToString(val)); // Add key value
             return String.Join(Config.CompositeKeySeparator, keys);
         }
         #pragma warning restore 168, 219
@@ -989,7 +1020,12 @@ public partial class PCM {
         {
             OldKey = key;
             string[] keys = OldKey.Split(Convert.ToChar(Config.CompositeKeySeparator));
-            if (keys.Length == 0) {
+            if (keys.Length == 1) {
+                if (current) {
+                    Id.CurrentValue = keys[0];
+                } else {
+                    Id.OldValue = keys[0];
+                }
             }
         }
 
@@ -1003,14 +1039,25 @@ public partial class PCM {
             if (Post("key_m[]", out sv) || Get("key_m[]", out sv)) { // DN
                 keysList = ((StringValues)sv).Select(k => ConvertToString(k)).ToList();
             } else if (RouteValues.Count > 0 || Query.Count > 0 || Form.Count > 0) { // DN
+                string key = "";
                 string[] keyValues = {};
                 if (IsApi() && RouteValues.TryGetValue("key", out object? k)) {
                     string str = ConvertToString(k);
                     keyValues = str.Split('/');
                 }
+                if (RouteValues.TryGetValue("Id", out object? v0)) { // Id // DN
+                    key = UrlDecode(v0); // DN
+                } else if (IsApi() && !Empty(keyValues)) {
+                    key = keyValues[0];
+                } else {
+                    key = Param("Id");
+                }
+                keysList.Add(key);
             }
             // Check keys
             foreach (var keys in keysList) {
+                if (!IsNumeric(keys)) // Id
+                    continue;
                 result.Add(keys);
             }
             return result;
@@ -1029,6 +1076,10 @@ public partial class PCM {
             foreach (var keys in recordKeys) {
                 if (!Empty(keyFilter))
                     keyFilter += " OR ";
+                if (setCurrent)
+                    Id.CurrentValue = keys;
+                else
+                    Id.OldValue = keys;
                 keyFilter += "(" + GetRecordFilter() + ")";
             }
             return keyFilter;
@@ -1157,8 +1208,6 @@ public partial class PCM {
             Id.SetupEditAttributes();
             Id.EditValue = Id.CurrentValue; // DN
             Id.PlaceHolder = RemoveHtml(Id.Caption);
-            if (!Empty(Id.EditValue) && IsNumeric(Id.EditValue))
-                Id.EditValue = FormatNumber(Id.EditValue, null);
 
             // Category
             Category.SetupEditAttributes();

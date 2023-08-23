@@ -276,12 +276,10 @@ public partial class PCM {
         {
             ID.Visible = false;
             MTCrewID.SetVisibility();
-            BankName.Visible = false;
             MTBankID.SetVisibility();
             OtherBankName.SetVisibility();
             AccountNumber.SetVisibility();
             Beneficiary.SetVisibility();
-            Currency.Visible = false;
             MTCurrencyID.SetVisibility();
             MainAcc.SetVisibility();
             Attachment.SetVisibility();
@@ -1107,7 +1105,6 @@ public partial class PCM {
             // Initialize
             var filters = new JObject(); // DN
             filters.Merge(JObject.Parse(MTCrewID.AdvancedSearch.ToJson())); // Field MTCrewID
-            filters.Merge(JObject.Parse(BankName.AdvancedSearch.ToJson())); // Field BankName
             filters.Merge(JObject.Parse(MTBankID.AdvancedSearch.ToJson())); // Field MTBankID
             filters.Merge(JObject.Parse(OtherBankName.AdvancedSearch.ToJson())); // Field OtherBankName
             filters.Merge(JObject.Parse(AccountNumber.AdvancedSearch.ToJson())); // Field AccountNumber
@@ -1152,16 +1149,6 @@ public partial class PCM {
                 MTCrewID.AdvancedSearch.SearchValue2 = filter["y_MTCrewID"];
                 MTCrewID.AdvancedSearch.SearchOperator2 = filter["w_MTCrewID"];
                 MTCrewID.AdvancedSearch.Save();
-            }
-
-            // Field BankName
-            if (filter?.TryGetValue("x_BankName", out sv) ?? false) {
-                BankName.AdvancedSearch.SearchValue = sv;
-                BankName.AdvancedSearch.SearchOperator = filter["z_BankName"];
-                BankName.AdvancedSearch.SearchCondition = filter["v_BankName"];
-                BankName.AdvancedSearch.SearchValue2 = filter["y_BankName"];
-                BankName.AdvancedSearch.SearchOperator2 = filter["w_BankName"];
-                BankName.AdvancedSearch.Save();
             }
 
             // Field MTBankID
@@ -1276,7 +1263,6 @@ public partial class PCM {
             if (!Security.CanSearch)
                 return "";
             BuildSearchSql(ref where, MTCrewID, def, true); // MTCrewID
-            BuildSearchSql(ref where, BankName, def, true); // BankName
             BuildSearchSql(ref where, MTBankID, def, false); // MTBankID
             BuildSearchSql(ref where, OtherBankName, def, false); // OtherBankName
             BuildSearchSql(ref where, AccountNumber, def, true); // AccountNumber
@@ -1294,7 +1280,6 @@ public partial class PCM {
                 Command = "search";
             if (!def && Command == "search") {
                 MTCrewID.AdvancedSearch.Save(); // MTCrewID
-                BankName.AdvancedSearch.Save(); // BankName
                 MTBankID.AdvancedSearch.Save(); // MTBankID
                 OtherBankName.AdvancedSearch.Save(); // OtherBankName
                 AccountNumber.AdvancedSearch.Save(); // AccountNumber
@@ -1550,7 +1535,6 @@ public partial class PCM {
 
             // Fields to search
             List<DbField> searchFlds = new ();
-            searchFlds.Add(BankName);
             searchFlds.Add(OtherBankName);
             searchFlds.Add(AccountNumber);
             searchFlds.Add(Beneficiary);
@@ -1580,8 +1564,6 @@ public partial class PCM {
             if (BasicSearch.IssetSession)
                 return true;
             if (MTCrewID.AdvancedSearch.IssetSession)
-                return true;
-            if (BankName.AdvancedSearch.IssetSession)
                 return true;
             if (MTBankID.AdvancedSearch.IssetSession)
                 return true;
@@ -1636,7 +1618,6 @@ public partial class PCM {
         // Clear all advanced search parameters
         protected void ResetAdvancedSearchParms() {
             MTCrewID.AdvancedSearch.UnsetSession();
-            BankName.AdvancedSearch.UnsetSession();
             MTBankID.AdvancedSearch.UnsetSession();
             OtherBankName.AdvancedSearch.UnsetSession();
             AccountNumber.AdvancedSearch.UnsetSession();
@@ -1659,7 +1640,6 @@ public partial class PCM {
 
             // Restore advanced search values
             MTCrewID.AdvancedSearch.Load();
-            BankName.AdvancedSearch.Load();
             MTBankID.AdvancedSearch.Load();
             OtherBankName.AdvancedSearch.Load();
             AccountNumber.AdvancedSearch.Load();
@@ -1727,12 +1707,10 @@ public partial class PCM {
                     SessionOrderBy = orderBy;
                     ID.Sort = "";
                     MTCrewID.Sort = "";
-                    BankName.Sort = "";
                     MTBankID.Sort = "";
                     OtherBankName.Sort = "";
                     AccountNumber.Sort = "";
                     Beneficiary.Sort = "";
-                    Currency.Sort = "";
                     MTCurrencyID.Sort = "";
                     MainAcc.Sort = "";
                     Attachment.Sort = "";
@@ -2203,17 +2181,6 @@ public partial class PCM {
             if (Query.ContainsKey("z_MTCrewID"))
                 MTCrewID.AdvancedSearch.SearchOperator = Get("z_MTCrewID");
 
-            // BankName
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_BankName[]"))
-                    BankName.AdvancedSearch.SearchValue = Get("x_BankName[]");
-                else
-                    BankName.AdvancedSearch.SearchValue = Get("BankName"); // Default Value // DN
-            if (!Empty(BankName.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_BankName"))
-                BankName.AdvancedSearch.SearchOperator = Get("z_BankName");
-
             // MTBankID
             if (!IsAddOrEdit)
                 if (Query.ContainsKey("x_MTBankID"))
@@ -2403,12 +2370,10 @@ public partial class PCM {
             RowSelected(row);
             ID.SetDbValue(row["ID"]);
             MTCrewID.SetDbValue(row["MTCrewID"]);
-            BankName.SetDbValue(row["BankName"]);
             MTBankID.SetDbValue(row["MTBankID"]);
             OtherBankName.SetDbValue(row["OtherBankName"]);
             AccountNumber.SetDbValue(row["AccountNumber"]);
             Beneficiary.SetDbValue(row["Beneficiary"]);
-            Currency.SetDbValue(row["Currency"]);
             MTCurrencyID.SetDbValue(row["MTCurrencyID"]);
             MainAcc.SetDbValue((ConvertToBool(row["MainAcc"]) ? "1" : "0"));
             Attachment.Upload.DbValue = row["Attachment"];
@@ -2427,12 +2392,10 @@ public partial class PCM {
             var row = new Dictionary<string, object>();
             row.Add("ID", ID.DefaultValue ?? DbNullValue); // DN
             row.Add("MTCrewID", MTCrewID.DefaultValue ?? DbNullValue); // DN
-            row.Add("BankName", BankName.DefaultValue ?? DbNullValue); // DN
             row.Add("MTBankID", MTBankID.DefaultValue ?? DbNullValue); // DN
             row.Add("OtherBankName", OtherBankName.DefaultValue ?? DbNullValue); // DN
             row.Add("AccountNumber", AccountNumber.DefaultValue ?? DbNullValue); // DN
             row.Add("Beneficiary", Beneficiary.DefaultValue ?? DbNullValue); // DN
-            row.Add("Currency", Currency.DefaultValue ?? DbNullValue); // DN
             row.Add("MTCurrencyID", MTCurrencyID.DefaultValue ?? DbNullValue); // DN
             row.Add("MainAcc", MainAcc.DefaultValue ?? DbNullValue); // DN
             row.Add("Attachment", Attachment.DefaultValue ?? DbNullValue); // DN
@@ -2481,9 +2444,6 @@ public partial class PCM {
             // MTCrewID
             MTCrewID.CellCssStyle = "white-space: nowrap;";
 
-            // BankName
-            BankName.CellCssStyle = "white-space: nowrap;";
-
             // MTBankID
 
             // OtherBankName
@@ -2493,9 +2453,6 @@ public partial class PCM {
 
             // Beneficiary
             Beneficiary.CellCssStyle = "white-space: nowrap;";
-
-            // Currency
-            Currency.CellCssStyle = "white-space: nowrap;";
 
             // MTCurrencyID
             MTCurrencyID.CellCssStyle = "white-space: nowrap;";
@@ -2547,10 +2504,6 @@ public partial class PCM {
                     MTCrewID.ViewValue = DbNullValue;
                 }
                 MTCrewID.ViewCustomAttributes = "";
-
-                // BankName
-                BankName.ViewValue = ConvertToString(BankName.CurrentValue); // DN
-                BankName.ViewCustomAttributes = "";
 
                 // MTBankID
                 curVal = ConvertToString(MTBankID.CurrentValue);
@@ -3200,7 +3153,6 @@ public partial class PCM {
         public void LoadAdvancedSearch()
         {
             MTCrewID.AdvancedSearch.Load();
-            BankName.AdvancedSearch.Load();
             MTBankID.AdvancedSearch.Load();
             OtherBankName.AdvancedSearch.Load();
             AccountNumber.AdvancedSearch.Load();
