@@ -78,7 +78,7 @@ public partial class PCM {
 
         public const string ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}"; // Project ID (GUID)
 
-        public static string RandomKey = "GIoKVTu2mhpQRbkB"; // Random key for encryption
+        public static string RandomKey = "Mxvg7K7uJnS8Lfjx"; // Random key for encryption
 
         public static string EncryptionKey = ""; // Encryption key for data protection
 
@@ -1035,6 +1035,7 @@ public partial class PCM {
             {"EmailHistory", typeof(EmailHistory)},
             {"MTManningAgent", typeof(MtManningAgent)},
             {"WaitingForAgencyReview", typeof(WaitingForAgencyReview)},
+            {"TRUpdateTracking", typeof(TrUpdateTracking)},
             {"UpdateTracking", typeof(UpdateTracking)},
             {"Register", typeof(Register)}, // Lookup for register page // DN
             {"usertable", typeof(MtUser)},
@@ -1114,6 +1115,7 @@ public partial class PCM {
             {"EmailHistory", "DB"},
             {"MTManningAgent", "DB"},
             {"WaitingForAgencyReview", "DB"},
+            {"TRUpdateTracking", "DB"},
             {"UpdateTracking", "DB"},
         };
 
@@ -1128,7 +1130,6 @@ public partial class PCM {
         // Menu items // DN
         public static List<object[]> MenuItems = new ()
         {
-            new object[] { 298, "mi_UpdateTracking", "298", "UpdateTrackingList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}UpdateTracking", false, false, "fa-file-lines", "", false, true },
             new object[] { 286, "mi_NotificationForCrew", "286", "NotificationForCrewList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}NotificationForCrew", false, false, "fa-bell", "", false, true },
             new object[] { 118, "mi_HomePageAdminPDE", "118", "HomePageAdminPde", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}HomePageAdminPDE", false, false, "fa-house", "", false, true },
             new object[] { 285, "mi_NotificationForAdmin", "285", "NotificationForAdminList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}NotificationForAdmin", false, false, "fa-bell", "", false, true },
@@ -1144,6 +1145,7 @@ public partial class PCM {
             new object[] { 207, "mi_v_CrewBlacklistForAdmin", "207", "VCrewBlacklistForAdminList", 283, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}v_CrewBlacklistForAdmin", false, false, "", "", false, true },
             new object[] { 208, "mi_v_CrewRejectedForAdmin", "208", "VCrewRejectedForAdminList", 283, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}v_CrewRejectedForAdmin", false, false, "", "", false, true },
             new object[] { 209, "mi_v_CrewTemporaryRejectedForAdmin", "209", "VCrewTemporaryRejectedForAdminList", 283, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}v_CrewTemporaryRejectedForAdmin", false, false, "", "", false, true },
+            new object[] { 298, "mi_UpdateTracking", "298", "UpdateTrackingList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}UpdateTracking", false, false, "fa-file-lines", "", false, true },
             new object[] { 287, "mi_v_CrewTrackingStatus", "287", "VCrewTrackingStatusList", -1, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}v_CrewTrackingStatus", false, false, "fa-shuffle", "", false, true },
             new object[] { 20, "mci_Master", "20", "", -1, "", false, false, true, "fa-database", "", false, true },
             new object[] { 45, "mi_MTCertificate", "45", "MtCertificateList", 20, "", "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTCertificate", false, false, "", "", false, true },

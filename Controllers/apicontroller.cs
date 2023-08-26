@@ -490,7 +490,26 @@ public class PermissionsController : ApiController
 }
 
 // Custom API actions
-// GMANDAYU: Start
+// Custom API actions
+public class AcceptCrewPersonalDataUpdateRequest
+{
+    public string updateIDArray { get; set; }
+}
+
+public class RevisedCrewPersonalDataUpdateRequest 
+{
+    public string revisedReason { get; set; }
+
+    public string updateIDArray { get; set; }
+}
+
+public class ChangeEmployeeStatusRequest
+{
+    public string? CurrentEmployeeStatus { get; set; }
+
+    public int CrewID { get; set; }
+}
+
 public class ChecklistItemsRequest
 {
     public string EmployeeStatus { get; set; }
@@ -2069,7 +2088,7 @@ public partial class RegistrationController : ApiController
                                 .Where("ID", crewID)
                                 .Select("EmployeeStatus")
                                 .FirstOrDefault();
-                            if ((object)currentEmployeeStatus != null && (object)currentEmployeeStatus.EmployeeStatus != null) 
+                            if ((object)currentEmployeeStatus != null && (object)currentEmployeeStatus.EmployeeStatus != null)
                             {
                                 string empStatus = currentEmployeeStatus.EmployeeStatus.ToString();
                                 // Jika sekarang candidate merupakan "Candidate Draft"
@@ -2244,51 +2263,358 @@ public partial class RegistrationController : ApiController
                                     return Json(jsonResponse);
                                 }
                                 // Jika sekarang candidate merupakan selain "Candidate Draft"
-                                else
+                                else if (empStatus == "Candidate - Accepted - Draft")
                                 {
                                     int affectedRows = QueryBuilder("MTCrew")
                                         .Where("ID", crewID)
                                         .Update(new
                                         {
-                                            EmployeeStatus = empStatus + " - Waiting for PDE Review", // currentEmployeeStatus or "Candidate - Accepted - Waiting For PDE Review "
+                                            EmployeeStatus = "Candidate - Accepted - Waiting for PDE Review",
                                             FormSubmittedDateTime = DateTimeOffset.Now,
                                             LastUpdatedByUserID = CurrentUserID(),
                                             LastUpdatedDateTime = DateTimeOffset.Now,
                                         });
-                                    if (affectedRows == 0)
+                                    if (affectedRows <= 0)
                                     {
                                         jsonResponse.errorMessage = (CurrentLanguage == "en-US")
                                             ? "Failed to Update Crew Data"
                                             : "Gagal Mengubah Data Kru";
                                         return Json(jsonResponse);
                                     }
+                                    jsonResponse.data = new
+                                    {
+                                        IsAlreadySubmitted = true
+                                    };
 
                                     // Proses lain disini
+                                    affectedRows += QueryBuilder("TRUpdateTracking").Insert(new
+                                    {
+                                        MTCrewID = crewID,
+                                        TabName = "TabName disini",
+                                        ColumnName = "ColumnName disini",
+                                        ChangeType = "ChangeType disini",
+                                    });
+                                    if (affectedRows <= 0)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Failed to insert data update tracking"
+                                            : "Gagal menambahkan pelacakan perubahan data";
+                                        return Json(jsonResponse);
+                                    }
+
                                     // INSERT TREmployeeStatus
                                     affectedRows += QueryBuilder("TREmployeeStatus").Insert(new
                                     {
-                                        MTCrewID = crewID, 
+                                        MTCrewID = crewID,
                                         MTUserID = CurrentUserID(),
                                         PreviousStatus = empStatus,
-                                        CurrentStatus = empStatus + " - Waiting for PDE Review", 
+                                        CurrentStatus = "Candidate - Accepted - Waiting for PDE Review",
                                         ChangedDateTime = DateTimeOffset.Now,
                                     });
-                                    if (affectedRows == 0) 
+                                    if (affectedRows <= 0)
                                     {
-                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US") 
-                                            ? "Failed to Update Crew Employee Status History" 
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Failed to Update Crew Employee Status History"
                                             : "Gagal Mengubah Data Histori Status Karyawan Kru";
                                         return Json(jsonResponse);
                                     }
 
                                     // INSERT TRNotification
                                     string subject = "Update personal data successful";
-
-                                    // Jangan diubah
+                                    string body = "Your updated form is successfully submitted. Please wait for further announcement.";
+                                    var row = ExecuteRow("SELECT MTUserID FROM MTCrew WHERE ID = '" + crewID.ToString() + "'");
+                                    if (row.ContainsKey("MTUserID") && row["MTUserID"] != null)
+                                    {
+                                        var userID = Convert.ToInt32(row["MTUserID"]);
+                                        affectedRows = QueryBuilder("TRNotification").Insert(new
+                                        {
+                                            MTUserID = userID,
+                                            Subject = subject,
+                                            Body = body,
+                                            CreatedByUserID = CurrentUserID(),
+                                            CreatedDateTime = DateTimeOffset.Now,
+                                            LastUpdatedByUserID = CurrentUserID(),
+                                            LastUpdatedDateTime = DateTimeOffset.Now,
+                                        });
+                                        if (affectedRows == 0)
+                                        {
+                                            jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                                ? "Failed to Create Submit Notification"
+                                                : "Gagal Membuat Notifikasi Submit";
+                                            return Json(jsonResponse);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Crew Not Found"
+                                            : "Kru Tidak Ditemukan";
+                                        return Json(jsonResponse);
+                                    }
+                                    var emailTemplateCategory = "Crew Updated Personal Data Submitted Succesfully";
+                                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, " +
+                                        "MTCrew.FullName, " +
+                                        "MTRank.Name AS RankAppliedFor " +
+                                        "FROM MTCrew INNER JOIN MTRank " +
+                                        "ON MTCrew.RankAppliedFor_RankID = MTRank.ID " +
+                                        "WHERE MTCrew.ID = '" + crewID.ToString() + "'");
+                                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null || crewInfo["RankAppliedFor"] == null)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Crew email, full name, and rank applied for cannot be empty"
+                                            : "Email, nama lengkap, dan rank yang akan dipilih crew tidak boleh kosong";
+                                        return Json(jsonResponse);
+                                    }
+                                    var email = new Email();
+                                    email.Sender = Config.SenderEmail;
+                                    email.Recipient = crewInfo["Email"].ToString();
+                                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate " +
+                                        "WHERE Category = '" + emailTemplateCategory + "';");
+                                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Email template not found or the subject and message column is empty"
+                                            : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                                        return Json(jsonResponse);
+                                    }
+                                    email.Subject = emailTemplate["Subject"].ToString();
+                                    email.Content = emailTemplate["Message"].ToString();
+                                    email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                                    email.ReplaceContent("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+                                    if (Email.Mailer == null)
+                                    {
+                                        var smtpClient = new SmtpClient();
+                                        smtpClient.CheckCertificateRevocation = false;
+                                        Email.Mailer = smtpClient;
+                                    }
+                                    else if (Email.Mailer.CheckCertificateRevocation)
+                                    {
+                                        Email.Mailer.CheckCertificateRevocation = false;
+                                    }
+                                    bool isEmailSent = false;
+                                    Task.Run(async () =>
+                                    {
+                                        isEmailSent = await email.SendAsync();
+                                    }).GetAwaiter().GetResult();
+                                    if (isEmailSent)
+                                    {
+                                        affectedRows = QueryBuilder("TREmailHistory").Insert(new
+                                        {
+                                            MTCrew_ID = crewID,
+                                            Subject = email.Subject,
+                                            Message = email.Content,
+                                            To = email.Recipient,
+                                            IsSent = 1,
+                                            SentDateTime = DateTimeOffset.Now
+                                        });
+                                        if (affectedRows == 0)
+                                        {
+                                            jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                                ? "Failed to Insert Email To Database"
+                                                : "Gagal Menyimpan Email Ke Database";
+                                            return Json(jsonResponse);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        affectedRows = QueryBuilder("TREmailHistory").Insert(new
+                                        {
+                                            MTCrew_ID = crewID,
+                                            Subject = email.Subject,
+                                            Message = email.Content,
+                                            To = email.Recipient,
+                                            IsSent = 0,
+                                            SentDateTime = DateTimeOffset.Now
+                                        });
+                                        if (affectedRows == 0)
+                                        {
+                                            jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                                ? "Failed to Insert Email To Database"
+                                                : "Gagal Menyimpan Email Ke Database";
+                                            return Json(jsonResponse);
+                                        }
+                                        jsonResponse.errorMessage = email.SendError;
+                                        return Json(jsonResponse);
+                                    }
+                                    jsonResponse.success = true;
+                                    return Json(jsonResponse);
+                                }
+                                // Status lainnya
+                                else 
+                                {
+                                    int affectedRows = QueryBuilder("MTCrew")
+                                        .Where("ID", crewID)
+                                        .Update(new
+                                        {
+                                            EmployeeStatus = empStatus,
+                                            FormSubmittedDateTime = DateTimeOffset.Now,
+                                            LastUpdatedByUserID = CurrentUserID(),
+                                            LastUpdatedDateTime = DateTimeOffset.Now,
+                                        });
+                                    if (affectedRows <= 0)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Failed to Update Crew Data"
+                                            : "Gagal Mengubah Data Kru";
+                                        return Json(jsonResponse);
+                                    }
                                     jsonResponse.data = new
                                     {
                                         IsAlreadySubmitted = true
                                     };
+
+                                    // Proses lain disini
+                                    affectedRows += QueryBuilder("TRUpdateTracking").Insert(new
+                                    {
+                                        MTCrewID = crewID,
+                                        TabName = "TabName disini",
+                                        ColumnName = "ColumnName disini",
+                                        ChangeType = "ChangeType disini",
+                                    });
+                                    if (affectedRows <= 0)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Failed to insert data update tracking"
+                                            : "Gagal menambahkan pelacakan perubahan data";
+                                        return Json(jsonResponse);
+                                    }
+
+                                    // INSERT TREmployeeStatus
+                                    affectedRows += QueryBuilder("TREmployeeStatus").Insert(new
+                                    {
+                                        MTCrewID = crewID,
+                                        MTUserID = CurrentUserID(),
+                                        PreviousStatus = empStatus,
+                                        CurrentStatus = empStatus,
+                                        ChangedDateTime = DateTimeOffset.Now,
+                                    });
+                                    if (affectedRows <= 0)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Failed to Update Crew Employee Status History"
+                                            : "Gagal Mengubah Data Histori Status Karyawan Kru";
+                                        return Json(jsonResponse);
+                                    }
+
+                                    // INSERT TRNotification
+                                    string subject = "Update personal data successful";
+                                    string body = "Your updated form is successfully submitted. Please wait for further announcement.";
+                                    var row = ExecuteRow("SELECT MTUserID FROM MTCrew WHERE ID = '" + crewID.ToString() + "'");
+                                    if (row.ContainsKey("MTUserID") && row["MTUserID"] != null)
+                                    {
+                                        var userID = Convert.ToInt32(row["MTUserID"]);
+                                        affectedRows = QueryBuilder("TRNotification").Insert(new
+                                        {
+                                            MTUserID = userID,
+                                            Subject = subject,
+                                            Body = body,
+                                            CreatedByUserID = CurrentUserID(),
+                                            CreatedDateTime = DateTimeOffset.Now,
+                                            LastUpdatedByUserID = CurrentUserID(),
+                                            LastUpdatedDateTime = DateTimeOffset.Now,
+                                        });
+                                        if (affectedRows == 0)
+                                        {
+                                            jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                                ? "Failed to Create Submit Notification"
+                                                : "Gagal Membuat Notifikasi Submit";
+                                            return Json(jsonResponse);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Crew Not Found"
+                                            : "Kru Tidak Ditemukan";
+                                        return Json(jsonResponse);
+                                    }
+                                    var emailTemplateCategory = "Crew Updated Personal Data Submitted Succesfully";
+                                    var crewInfo = ExecuteRow("SELECT MTCrew.Email, " +
+                                        "MTCrew.FullName, " +
+                                        "MTRank.Name AS RankAppliedFor " +
+                                        "FROM MTCrew INNER JOIN MTRank " +
+                                        "ON MTCrew.RankAppliedFor_RankID = MTRank.ID " +
+                                        "WHERE MTCrew.ID = '" + crewID.ToString() + "'");
+                                    if (crewInfo["Email"] == null || crewInfo["FullName"] == null || crewInfo["RankAppliedFor"] == null)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Crew email, full name, and rank applied for cannot be empty"
+                                            : "Email, nama lengkap, dan rank yang akan dipilih crew tidak boleh kosong";
+                                        return Json(jsonResponse);
+                                    }
+                                    var email = new Email();
+                                    email.Sender = Config.SenderEmail;
+                                    email.Recipient = crewInfo["Email"].ToString();
+                                    var emailTemplate = ExecuteRow("SELECT Subject, Message FROM MTEmailTemplate " +
+                                        "WHERE Category = '" + emailTemplateCategory + "';");
+                                    if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+                                    {
+                                        jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                            ? "Email template not found or the subject and message column is empty"
+                                            : "Template email tidak ditemukan atau kolom subject dan message bernilai kosong";
+                                        return Json(jsonResponse);
+                                    }
+                                    email.Subject = emailTemplate["Subject"].ToString();
+                                    email.Content = emailTemplate["Message"].ToString();
+                                    email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+                                    email.ReplaceContent("{{rankAppliedFor}}", crewInfo["RankAppliedFor"].ToString());
+                                    if (Email.Mailer == null)
+                                    {
+                                        var smtpClient = new SmtpClient();
+                                        smtpClient.CheckCertificateRevocation = false;
+                                        Email.Mailer = smtpClient;
+                                    }
+                                    else if (Email.Mailer.CheckCertificateRevocation)
+                                    {
+                                        Email.Mailer.CheckCertificateRevocation = false;
+                                    }
+                                    bool isEmailSent = false;
+                                    Task.Run(async () =>
+                                    {
+                                        isEmailSent = await email.SendAsync();
+                                    }).GetAwaiter().GetResult();
+                                    if (isEmailSent)
+                                    {
+                                        affectedRows = QueryBuilder("TREmailHistory").Insert(new
+                                        {
+                                            MTCrew_ID = crewID,
+                                            Subject = email.Subject,
+                                            Message = email.Content,
+                                            To = email.Recipient,
+                                            IsSent = 1,
+                                            SentDateTime = DateTimeOffset.Now
+                                        });
+                                        if (affectedRows == 0)
+                                        {
+                                            jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                                ? "Failed to Insert Email To Database"
+                                                : "Gagal Menyimpan Email Ke Database";
+                                            return Json(jsonResponse);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        affectedRows = QueryBuilder("TREmailHistory").Insert(new
+                                        {
+                                            MTCrew_ID = crewID,
+                                            Subject = email.Subject,
+                                            Message = email.Content,
+                                            To = email.Recipient,
+                                            IsSent = 0,
+                                            SentDateTime = DateTimeOffset.Now
+                                        });
+                                        if (affectedRows == 0)
+                                        {
+                                            jsonResponse.errorMessage = (CurrentLanguage == "en-US")
+                                                ? "Failed to Insert Email To Database"
+                                                : "Gagal Menyimpan Email Ke Database";
+                                            return Json(jsonResponse);
+                                        }
+                                        jsonResponse.errorMessage = email.SendError;
+                                        return Json(jsonResponse);
+                                    }
+                                    jsonResponse.success = true;
+                                    return Json(jsonResponse);
                                 }
                             }
                         }
@@ -5596,6 +5922,292 @@ public partial class RegistrationController : ApiController
                 : "Tidak diizinkan";
         }
         return Json(jsonResponse);
+    }
+
+    [HttpPost("change-employee-status")]
+    public IActionResult ChangeEmployeeStatus([FromBody] ChangeEmployeeStatusRequest request)
+    {
+        JsonResponse jsonResponse = new JsonResponse
+        {
+            success = false,
+            data = new object(),
+            errorMessage = "",
+        };
+        if (!IsLoggedIn())
+        {
+            jsonResponse.errorMessage = GetLocalizedErrorMessage("Not authorized.", "Tidak diizinkan.");
+        }
+        else 
+        {
+            int affectedRows = 0;
+            string currentEmployeeStatus = request.CurrentEmployeeStatus.ToString();
+            string crewID = request.CrewID.ToString();
+            string newEmployeeStatus = "";
+            try 
+            {
+                if (currentEmployeeStatus == "Candidate - Accepted") 
+                {
+                    newEmployeeStatus = currentEmployeeStatus + " - Draft";
+                    affectedRows += QueryBuilder("MTCrew")
+                        .Where("ID", crewID)
+                        .Update(new { 
+                            EmployeeStatus = newEmployeeStatus,
+                            LastUpdatedByUserID = CurrentUserID(),
+                            LastUpdatedDateTime = DateTimeOffset.Now
+                        });
+                    if (affectedRows <= 0)
+                    {
+                        jsonResponse.errorMessage = GetLocalizedErrorMessage("Failed to change crew employee status.", "Gagal mengubah status karyawan kru.");
+                    }
+                    else 
+                    {
+                        jsonResponse.success = true;
+                        jsonResponse.data = "Status changed successfully";
+                    }
+                    if (!InsertEmployeeStatusHistory(Convert.ToInt32(crewID), currentEmployeeStatus, newEmployeeStatus))
+                    {
+                        jsonResponse.errorMessage = GetLocalizedErrorMessage("Failed to insert employee status history.", "Gagal memasukkan riwayat status karyawan.");
+                    }
+                }
+            }
+            catch (Exception ex) 
+            {
+                jsonResponse.errorMessage = ex.Message;
+            }
+        }
+        return Json(jsonResponse);
+    }
+
+    // !gmandayu: crew personal data update tracking approval and revise proccess
+    [HttpPost("accept-crew-data-update")]
+    public IActionResult AcceptCrewDataUpdate([FromBody] AcceptCrewPersonalDataUpdateRequest request) 
+    {
+        JsonResponse jsonResponse = new JsonResponse {
+            success = false,
+            data = new object(),
+            errorMessage = "",
+        };
+        if (!IsLoggedIn())
+        {
+            jsonResponse.errorMessage = GetLocalizedErrorMessage("Not authorized.", "Tidak diizinkan.");
+        }
+        else
+        {            
+            try 
+            {
+                IEnumerable<dynamic> updateIdArray = (IEnumerable<dynamic>)JsonConvert.DeserializeObject(request.updateIDArray);
+                foreach (string updateId in updateIdArray) 
+                {
+                    if (!TryUpdateCrewData(updateId, "Candidate - Accepted", "Candidate - Accepted - Waiting for PDE Review", "Crew Updated Personal Data Approved", out string errorMessage))
+                        jsonResponse.errorMessage = GetLocalizedErrorMessage(errorMessage, errorMessage);
+                    else
+                        jsonResponse.success = true;
+
+                    // Delete update tracking jika crew disetujui
+                    /*
+                    if (!TryDeleteCrewDataUpdateTracking(updateId))
+                        jsonResponse.errorMessage = GetLocalizedErrorMessage("Failed to delete crew personal data update tracking.", "Gagal menghapus riwayat pembaharuan data pribadi kru.");
+                    */
+                }
+            }
+            catch (Exception ex)
+            {
+                jsonResponse.errorMessage = ex.Message;
+            }
+        }
+        return Json(jsonResponse);
+    }
+
+    [HttpPost("revise-crew-data-update")]
+    public IActionResult ReviseCrewDataUpdate([FromBody] RevisedCrewPersonalDataUpdateRequest request)
+    {
+        JsonResponse jsonResponse = new JsonResponse
+        {
+            success = false,
+            data = new object(),
+            errorMessage = "",
+        };
+        if (!IsLoggedIn())
+        {
+            jsonResponse.errorMessage = GetLocalizedErrorMessage("Not authorized.", "Tidak diizinkan.");
+        }
+        else
+        {
+            try {
+                IEnumerable<dynamic> updateIdArray = (IEnumerable<dynamic>)JsonConvert.DeserializeObject(request.updateIDArray);
+                foreach (string updateId in updateIdArray) 
+                {
+                    if (!TryUpdateCrewData(updateId, "Candidate - Accepted - Draft", "Candidate - Accepted - Waiting for PDE Review", "Crew Updated Personal Data Revised", out string errorMessage))
+                        jsonResponse.errorMessage = GetLocalizedErrorMessage(errorMessage, errorMessage);
+                    else
+                        jsonResponse.success = true;
+                }
+            }
+            catch (Exception ex) {
+                jsonResponse.errorMessage = ex.Message;
+            }
+        }
+        return Json(jsonResponse);
+    }
+
+    private bool TryUpdateCrewData(string updateId, string newEmployeeStatus, string previousEmployeeStatus, string emailTemplateCategory, out string errorMessage)
+    {
+        errorMessage = null;
+        var mtCrewRow = ExecuteRow($"SELECT MTCrewID FROM TRUpdateTracking " +
+            $"WHERE ID = '{updateId}'");
+        if (mtCrewRow.TryGetValue("MTCrewID", out var mtCrewID) && mtCrewID != null)
+        {
+            var crewID = Convert.ToInt32(mtCrewRow["MTCrewID"]);
+            var mtUserRow = ExecuteRow($"SELECT MTUserID FROM MTCrew WHERE ID = '{crewID}'");
+            if (mtUserRow.TryGetValue("MTUserID", out var mtUserID) && mtUserID != null)
+            {
+                var userID = Convert.ToInt32(mtUserRow["MTUserID"]);
+                var currentEmpStatus = ExecuteRow($"SELECT EmployeeStatus FROM MTCrew WHERE ID = '{crewID}'");
+                if (!UpdateEmployeeStatus(crewID, newEmployeeStatus) || !InsertEmployeeStatusHistory(crewID, previousEmployeeStatus, newEmployeeStatus) ||
+                    !CreateNotification(userID, newEmployeeStatus) || !TrySendEmail(crewID, emailTemplateCategory, out errorMessage) || !TryDeleteCrewDataUpdateTracking(updateId))
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                errorMessage = GetLocalizedErrorMessage("User not found.", "Pengguna tidak ditemukan.");
+                return false;
+            }
+        }
+        else 
+        {
+            errorMessage = GetLocalizedErrorMessage("Crew not found.", "Kru tidak ditemukan.");
+            return false;
+        }
+    }
+
+    private bool TryDeleteCrewDataUpdateTracking(string updateId)
+    {
+        var affectedRows = QueryBuilder("TRUpdateTracking")
+            .Where("ID", updateId)
+            .Delete();
+        return affectedRows > 0;
+    }
+
+    private bool TrySendEmail(int crewID, string emailTemplateCategory,  out string errorMessage)
+    {
+        errorMessage = null;
+        var crewInfo = ExecuteRow($"SELECT MTCrew.Email, MTCrew.FullName FROM MTCrew WHERE MTCrew.ID = '{crewID}'");
+        if (crewInfo["Email"] == null || crewInfo["FullName"] == null)
+        {
+            errorMessage = GetLocalizedErrorMessage("Crew email, full name cannot be empty", "Email, nama lengkap crew tidak boleh kosong");
+            return false;
+        }
+        var emailTemplate = ExecuteRow($"SELECT Subject, Message FROM MTEmailTemplate WHERE Category = '{emailTemplateCategory}'");
+        if (emailTemplate["Subject"] == null || emailTemplate["Message"] == null)
+        {
+            errorMessage = GetLocalizedErrorMessage("Email template not found or the subject and message column is empty", "Template email tidak ditemukan atau kolom subject dan message bernilai kosong");
+            return false;
+        }
+        var email = new Email
+        {
+            Sender = Config.SenderEmail,
+            Recipient = crewInfo["Email"].ToString(),
+            Subject = emailTemplate["Subject"].ToString(),
+            Content = emailTemplate["Message"].ToString(),
+        };
+        email.ReplaceContent("{{crewCandidateFullName}}", crewInfo["FullName"].ToString());
+        if (Email.Mailer == null)
+        {
+            var smtpClient = new SmtpClient();
+            smtpClient.CheckCertificateRevocation = false;
+            Email.Mailer = smtpClient;
+        }
+        else if (Email.Mailer.CheckCertificateRevocation)
+        {
+            Email.Mailer.CheckCertificateRevocation = false;
+        }
+        bool isEmailSent = false;
+        try
+        {
+            isEmailSent = email.SendAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            isEmailSent = false;
+        }
+        var affectedRows = QueryBuilder("TREmailHistory").Insert(new
+        {
+            MTCrew_ID = crewID,
+            Subject = email.Subject,
+            Message = email.Content,
+            To = email.Recipient,
+            IsSent = isEmailSent ? 1 : 0,
+            SentDateTime = DateTimeOffset.Now
+        });
+        return affectedRows > 0;
+    }
+
+    private bool InsertEmployeeStatusHistory(int crewID, string previousStatus, string currentStatus)
+    {
+        var affectedRows = QueryBuilder("TREmployeeStatus").Insert(new
+        {
+            MTCrewID = crewID,
+            MTUserID = CurrentUserID(),
+            PreviousStatus = previousStatus,
+            CurrentStatus = currentStatus,
+            ChangedDateTime = DateTimeOffset.Now,
+        });
+        return affectedRows > 0;
+    }
+
+    private bool UpdateEmployeeStatus(int crewID, string employeeStatus)
+    {
+        var affectedRows = QueryBuilder("MTCrew")
+        .Where("ID", crewID)
+        .Update(new
+        {
+            EmployeeStatus = employeeStatus,
+            LastUpdatedByUserID = CurrentUserID(),
+            LastUpdatedDateTime = DateTimeOffset.Now,
+        });
+        return affectedRows > 0;
+    }
+
+    private bool CreateNotification(int userID, string newEmployeeStatus)
+    {
+        string notificationSubject = "";
+        string notificationBody = "";
+        if (newEmployeeStatus == "Candidate - Accepted")
+        {
+            notificationSubject = "Approved Crew Data Update Notification";
+            notificationBody = "Your updated form was approved. Please wait for further announcement";
+        }
+        else {
+            notificationSubject = "Revised Crew Data Update Notification";
+            notificationBody = "Your updated form need to be revised. Please renew your data.";
+        }
+        try
+        {
+            var affectedRows = QueryBuilder("TRNotification").Insert(new
+            {
+                MTUserID = userID,
+                Subject = notificationSubject,
+                Body = notificationBody,
+                CreatedByUserID = CurrentUserID(),
+                CreatedDateTime = DateTimeOffset.Now,
+                LastUpdatedByUserID = CurrentUserID(),
+                LastUpdatedDateTime = DateTimeOffset.Now,
+            });
+            return affectedRows > 0;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
+    private string GetLocalizedErrorMessage(string enMessage, string localizedMessage)
+    {
+        return (CurrentLanguage == "en-US") ? enMessage : localizedMessage;
     }
 }
 

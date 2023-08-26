@@ -90,7 +90,7 @@ ew.startupScript = function() {
             method: 'GET',
             success: function(response) { 
                 const employeeStatus = response.data;
-                if (employeeStatus === 'Candidate - Accepted') {
+                if (employeeStatus === 'Candidate - Accepted' || employeeStatus === 'Candidate - Accepted - Draft' || employeeStatus === 'Candidate - Accepted - Waiting for PDE Review') {
                     $('[data-name="mi_Registration"] p').text(selectedLanguage.id === 'en-US' ? 'Personal Data' : 'Data Pribadi');
                 }
             },

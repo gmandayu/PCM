@@ -183,6 +183,8 @@ public partial class PCM {
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}MTManningAgent", Id = 0, Permission = 0 },
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}WaitingForAgencyReview", Id = -2, Permission = 0 },
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}WaitingForAgencyReview", Id = 0, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}TRUpdateTracking", Id = -2, Permission = 0 },
+            new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}TRUpdateTracking", Id = 0, Permission = 0 },
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}UpdateTracking", Id = -2, Permission = 0 },
             new () { Table = "{858E8D60-55D9-41E6-8104-7B793C2843C4}UpdateTracking", Id = 0, Permission = 0 }
         };
@@ -272,6 +274,7 @@ public partial class PCM {
             new () { TableName = "PageNotFound", TableVar = "PageNotFound", Caption = "Page Not Found", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "PageNotFound" },
             new () { TableName = "MTManningAgent", TableVar = "MTManningAgent", Caption = "MTManning Agent", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "MtManningAgentList" },
             new () { TableName = "WaitingForAgencyReview", TableVar = "WaitingForAgencyReview", Caption = "Waiting For PDEReview", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "WaitingForAgencyReviewList" },
+            new () { TableName = "TRUpdateTracking", TableVar = "TRUpdateTracking", Caption = "TRUpdate Tracking", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "TrUpdateTrackingList" },
             new () { TableName = "UpdateTracking", TableVar = "UpdateTracking", Caption = "Records Chage", Allowed = true, ProjectId = "{858E8D60-55D9-41E6-8104-7B793C2843C4}", Url = "UpdateTrackingList" }
         };
     }

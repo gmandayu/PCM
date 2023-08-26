@@ -2972,53 +2972,51 @@ loadjs.ready("load", function() {
                     }
                 } 
                 // gmandayu: nambahin untuk status selain draft dan submitted.
-                else if(employeeStatus === 'Candidate - Accepted') 
-                {
-                    const editPersonalDataButton = $("<a></a>", {
-                        text: (selectedLanguage.id === 'en-US') ? "Edit" : "Ubah",
-                        class: "btn btn-default ew-btn me-3 primary-black-clr gray-bg",
-                        id: "btn-edit-personal-data",
-                        name: "btn-edit-personal-data",
-                        href: `${parentUrl}PrintCV?id=${currentlyEditedCrewID}`,
-                    });
-                    const printButton = $("<a></a>", { 
-                        text: (selectedLanguage.id === 'en-US') ? "Print V1" : "Cetak V1",
-                        class: "btn btn-default ew-btn me-3 primary-black-clr gray-bg", 
-                        id: "btn-print",
-                        name: "btn-print",
-                        href: `${parentUrl}PrintCV?id=${currentlyEditedCrewID}`,
-                    });
-                    const printButton2 = $("<a></a>", { 
-                        text: (selectedLanguage.id === 'en-US') ? "Print V2" : "Cetak V2",
-                        class: "btn btn-default ew-btn me-3 primary-black-clr gray-bg", 
-                        id: "btn-print2",
-                        name: "btn-print2",
-                        href: `${parentUrl}PrintCV2?crewid=${currentlyEditedCrewID}`,
-                    });                
-                    const backButton = $("<a></a>", { 
-                        text: (selectedLanguage.id === 'en-US') ? "Back" : "Kembali",
-                        class: "btn btn-default ew-btn primary-black-clr gray-bg", 
-                        id: "btn-back",
-                        name: "btn-back",
-                        href: `${parentUrl}VCrewAcceptedForAdminList`,
-                    });
+                else if (employeeStatus === 'Candidate - Accepted' || employeeStatus === 'Candidate - Accepted - Draft') {
+                    const createButton = (textKey, href, id, name) => {
+                        return $("<a></a>", {
+                            text: (selectedLanguage.id === 'en-US') ? textKey : textKey.replace("Print", "Cetak"),
+                            class: "btn btn-default ew-btn me-3 primary-black-clr gray-bg",
+                            id: id,
+                            name: name,
+                            href: href,
+                        });
+                    };
+                    const editPersonalDataButton = createButton("Edit", `${parentUrl}CrewPersonalDataForAdminEdit/${currentlyEditedCrewID}`, "btn-edit-personal-data", "btn-edit-personal-data");
+                    const printButton = createButton("Print V1", `${parentUrl}PrintCV?id=${currentlyEditedCrewID}`, "btn-print", "btn-print");
+                    const printButton2 = createButton("Print V2", `${parentUrl}PrintCV2?crewid=${currentlyEditedCrewID}`, "btn-print2", "btn-print2");
+                    const backButton = createButton("Back", `${parentUrl}VCrewAcceptedForAdminList`, "btn-back", "btn-back");
                     const flexDiv = $("<div class='d-flex mb-3'></div>");
-                    flexDiv.append(editPersonalDataButton);
-                    flexDiv.append(printButton);
-                    flexDiv.append(printButton2);
+                    flexDiv.append(editPersonalDataButton, printButton, printButton2);
                     if (isAdmin) {
                         flexDiv.append(backButton);
                     }
                     const buttonsDiv = $("<div class='row ew-buttons'></div>");
                     buttonsDiv.append(flexDiv);
                     $('form#fCrewPersonalDataForAdminViewModeview').append(buttonsDiv);
-                    $("#btn-edit-personal-data").on("click", function(event) {
+                    $("#btn-edit-personal-data").on("click", function (event) {
                         event.preventDefault();
                         $("#modal-dialog-edit-accepted-crew").modal("show");
                     });
-                    $(document).ready(function () {
-                        $("#modal-dialog-edit-accepted-crew").on("click", ".btn-primary", function () {
-                            window.location.href = `${parentUrl}CrewPersonalDataForAdminEdit/${currentlyEditedCrewID}`;
+                    const changeEmployeeStatusApiUrl = "change-employee-status";
+                    $("#modal-dialog-edit-accepted-crew").on("click", ".btn-primary", function () {
+                        const changeEmployeeStatusRequest = {
+                            crewID: currentlyEditedCrewID,
+                            currentEmployeeStatus: employeeStatus
+                        };
+                        $.ajax({
+                            url: `${parentUrl}api/Registration/${changeEmployeeStatusApiUrl}`,
+                            method: "POST",
+                            data: JSON.stringify(changeEmployeeStatusRequest),
+                            contentType: "application/json",
+                            success: function (response) {
+                                if (response.data != null) {
+                                    window.location.href = `${parentUrl}CrewPersonalDataForAdminEdit/${currentlyEditedCrewID}`;
+                                }
+                            },
+                            error: function (e) {
+                                console.error(e);
+                            }
                         });
                     });
                 }

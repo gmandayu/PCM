@@ -81,6 +81,9 @@ loadjs.ready("head", function() {
 }
 </div>
 }
+@if (updateTrackingList.ShowCurrentFilter) {
+    updateTrackingList.ShowFilterList();
+}
 @if (!updateTrackingList.IsModal) {
 <form name="fUpdateTrackingsrch" id="fUpdateTrackingsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
 <div id="fUpdateTrackingsrch_search_panel" class="mb-2 mb-sm-0 @(updateTrackingList.SearchPanelClass)"><!-- .ew-search-panel -->
@@ -101,6 +104,49 @@ loadjs.ready(["wrapper", "head"], function () {
         <text>.setSubmitWithFetch(true)</text>
 }
 
+        // Add fields
+        .setFields([
+
+            ["IndividualCodeNumber", [], fields.IndividualCodeNumber.isInvalid],
+            ["FullName", [], fields.FullName.isInvalid],
+            ["EmployeeStatus", [], fields.EmployeeStatus.isInvalid],
+            ["RequiredPhoto", [], fields.RequiredPhoto.isInvalid],
+            ["VisaPhoto", [], fields.VisaPhoto.isInvalid],
+            ["ColumnName", [], fields.ColumnName.isInvalid],
+            ["ChangeType", [], fields.ChangeType.isInvalid],
+            ["TabName", [], fields.TabName.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
         // Dynamic selection lists
         .setLists({
         })
@@ -117,6 +163,204 @@ loadjs.ready(["wrapper", "head"], function () {
 @if (Security.CanSearch) {
 if (!updateTrackingList.IsExport() && Empty(updateTrackingList.CurrentAction) && updateTrackingList.HasSearchFields()) { @* Show search form (begin) *@
 <div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0 d-none@(updateTrackingList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + updateTrackingList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    updateTrackingList.RowType = RowType.Search;
+    updateTrackingList.ResetAttributes();
+    await updateTrackingList.RenderRow();
+}
+@if (updateTrackingList.IndividualCodeNumber.Visible) { // updateTrackingList.IndividualCodeNumber.Visible (begin)
+    if (!updateTrackingList.IndividualCodeNumber.UseFilter) {
+        updateTrackingList.SearchColumnCount++;
+    }
+    <div id="xs_IndividualCodeNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(updateTrackingList.IndividualCodeNumber.UseFilter ? " ew-filter-field" : "")">
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpsc_UpdateTracking_IndividualCodeNumber"><label for="x_IndividualCodeNumber" class="ew-search-caption ew-label">@Html.Raw(updateTrackingList.IndividualCodeNumber.Caption)</label></template>
+            <template id="tpz_UpdateTracking_IndividualCodeNumber"><div class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_IndividualCodeNumber" id="z_IndividualCodeNumber" value="LIKE">
+</div></template>
+        </div>
+        <template id="tpx_UpdateTracking_IndividualCodeNumber"><div id="el_UpdateTracking_IndividualCodeNumber" class="ew-search-field">
+<input type="@(updateTrackingList.IndividualCodeNumber.InputTextType)" name="x_IndividualCodeNumber" id="x_IndividualCodeNumber" data-table="UpdateTracking" data-field="x_IndividualCodeNumber" value="@Html.Raw(updateTrackingList.IndividualCodeNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(updateTrackingList.IndividualCodeNumber.PlaceHolder))" data-format-pattern="@(updateTrackingList.IndividualCodeNumber.FormatPattern)"@Html.Raw(updateTrackingList.IndividualCodeNumber.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingList.IndividualCodeNumber.GetErrorMessage(false))</div>
+</div></template>
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpv_UpdateTracking_IndividualCodeNumber">
+            </template>
+        </div><!-- /.ew-search-field -->
+    </div><!-- /.col-sm-auto -->
+} @* updateTrackingList.IndividualCodeNumber.Visible (end) *@
+@if (updateTrackingList.FullName.Visible) { // updateTrackingList.FullName.Visible (begin)
+    if (!updateTrackingList.FullName.UseFilter) {
+        updateTrackingList.SearchColumnCount++;
+    }
+    <div id="xs_FullName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(updateTrackingList.FullName.UseFilter ? " ew-filter-field" : "")">
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpsc_UpdateTracking_FullName"><label for="x_FullName" class="ew-search-caption ew-label">@Html.Raw(updateTrackingList.FullName.Caption)</label></template>
+            <template id="tpz_UpdateTracking_FullName"><div class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_FullName" id="z_FullName" value="LIKE">
+</div></template>
+        </div>
+        <template id="tpx_UpdateTracking_FullName"><div id="el_UpdateTracking_FullName" class="ew-search-field">
+<input type="@(updateTrackingList.FullName.InputTextType)" name="x_FullName" id="x_FullName" data-table="UpdateTracking" data-field="x_FullName" value="@Html.Raw(updateTrackingList.FullName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingList.FullName.PlaceHolder))" data-format-pattern="@(updateTrackingList.FullName.FormatPattern)"@Html.Raw(updateTrackingList.FullName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingList.FullName.GetErrorMessage(false))</div>
+</div></template>
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpv_UpdateTracking_FullName">
+            </template>
+        </div><!-- /.ew-search-field -->
+    </div><!-- /.col-sm-auto -->
+} @* updateTrackingList.FullName.Visible (end) *@
+@if (updateTrackingList.EmployeeStatus.Visible) { // updateTrackingList.EmployeeStatus.Visible (begin)
+    if (!updateTrackingList.EmployeeStatus.UseFilter) {
+        updateTrackingList.SearchColumnCount++;
+    }
+    <div id="xs_EmployeeStatus" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(updateTrackingList.EmployeeStatus.UseFilter ? " ew-filter-field" : "")">
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpsc_UpdateTracking_EmployeeStatus"><label for="x_EmployeeStatus" class="ew-search-caption ew-label">@Html.Raw(updateTrackingList.EmployeeStatus.Caption)</label></template>
+            <template id="tpz_UpdateTracking_EmployeeStatus"><div class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_EmployeeStatus" id="z_EmployeeStatus" value="LIKE">
+</div></template>
+        </div>
+        <template id="tpx_UpdateTracking_EmployeeStatus"><div id="el_UpdateTracking_EmployeeStatus" class="ew-search-field">
+<input type="@(updateTrackingList.EmployeeStatus.InputTextType)" name="x_EmployeeStatus" id="x_EmployeeStatus" data-table="UpdateTracking" data-field="x_EmployeeStatus" value="@Html.Raw(updateTrackingList.EmployeeStatus.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(updateTrackingList.EmployeeStatus.PlaceHolder))" data-format-pattern="@(updateTrackingList.EmployeeStatus.FormatPattern)"@Html.Raw(updateTrackingList.EmployeeStatus.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingList.EmployeeStatus.GetErrorMessage(false))</div>
+</div></template>
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpv_UpdateTracking_EmployeeStatus">
+            </template>
+        </div><!-- /.ew-search-field -->
+    </div><!-- /.col-sm-auto -->
+} @* updateTrackingList.EmployeeStatus.Visible (end) *@
+@if (updateTrackingList.ColumnName.Visible) { // updateTrackingList.ColumnName.Visible (begin)
+    if (!updateTrackingList.ColumnName.UseFilter) {
+        updateTrackingList.SearchColumnCount++;
+    }
+    <div id="xs_ColumnName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(updateTrackingList.ColumnName.UseFilter ? " ew-filter-field" : "")">
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpsc_UpdateTracking_ColumnName"><label for="x_ColumnName" class="ew-search-caption ew-label">@Html.Raw(updateTrackingList.ColumnName.Caption)</label></template>
+            <template id="tpz_UpdateTracking_ColumnName"><div class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_ColumnName" id="z_ColumnName" value="LIKE">
+</div></template>
+        </div>
+        <template id="tpx_UpdateTracking_ColumnName"><div id="el_UpdateTracking_ColumnName" class="ew-search-field">
+<input type="@(updateTrackingList.ColumnName.InputTextType)" name="x_ColumnName" id="x_ColumnName" data-table="UpdateTracking" data-field="x_ColumnName" value="@Html.Raw(updateTrackingList.ColumnName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingList.ColumnName.PlaceHolder))" data-format-pattern="@(updateTrackingList.ColumnName.FormatPattern)"@Html.Raw(updateTrackingList.ColumnName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingList.ColumnName.GetErrorMessage(false))</div>
+</div></template>
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpv_UpdateTracking_ColumnName">
+            </template>
+        </div><!-- /.ew-search-field -->
+    </div><!-- /.col-sm-auto -->
+} @* updateTrackingList.ColumnName.Visible (end) *@
+@if (updateTrackingList.ChangeType.Visible) { // updateTrackingList.ChangeType.Visible (begin)
+    if (!updateTrackingList.ChangeType.UseFilter) {
+        updateTrackingList.SearchColumnCount++;
+    }
+    <div id="xs_ChangeType" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(updateTrackingList.ChangeType.UseFilter ? " ew-filter-field" : "")">
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpsc_UpdateTracking_ChangeType"><label for="x_ChangeType" class="ew-search-caption ew-label">@Html.Raw(updateTrackingList.ChangeType.Caption)</label></template>
+            <template id="tpz_UpdateTracking_ChangeType"><div class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_ChangeType" id="z_ChangeType" value="LIKE">
+</div></template>
+        </div>
+        <template id="tpx_UpdateTracking_ChangeType"><div id="el_UpdateTracking_ChangeType" class="ew-search-field">
+<input type="@(updateTrackingList.ChangeType.InputTextType)" name="x_ChangeType" id="x_ChangeType" data-table="UpdateTracking" data-field="x_ChangeType" value="@Html.Raw(updateTrackingList.ChangeType.EditValue)" size="30" maxlength="25" placeholder="@Html.Raw(HtmlEncode(updateTrackingList.ChangeType.PlaceHolder))" data-format-pattern="@(updateTrackingList.ChangeType.FormatPattern)"@Html.Raw(updateTrackingList.ChangeType.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingList.ChangeType.GetErrorMessage(false))</div>
+</div></template>
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpv_UpdateTracking_ChangeType">
+            </template>
+        </div><!-- /.ew-search-field -->
+    </div><!-- /.col-sm-auto -->
+} @* updateTrackingList.ChangeType.Visible (end) *@
+@if (updateTrackingList.TabName.Visible) { // updateTrackingList.TabName.Visible (begin)
+    if (!updateTrackingList.TabName.UseFilter) {
+        updateTrackingList.SearchColumnCount++;
+    }
+    <div id="xs_TabName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(updateTrackingList.TabName.UseFilter ? " ew-filter-field" : "")">
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpsc_UpdateTracking_TabName"><label for="x_TabName" class="ew-search-caption ew-label">@Html.Raw(updateTrackingList.TabName.Caption)</label></template>
+            <template id="tpz_UpdateTracking_TabName"><div class="ew-search-operator">
+@Html.Raw(Language.Phrase("LIKE"))
+<input type="hidden" name="z_TabName" id="z_TabName" value="LIKE">
+</div></template>
+        </div>
+        <template id="tpx_UpdateTracking_TabName"><div id="el_UpdateTracking_TabName" class="ew-search-field">
+<input type="@(updateTrackingList.TabName.InputTextType)" name="x_TabName" id="x_TabName" data-table="UpdateTracking" data-field="x_TabName" value="@Html.Raw(updateTrackingList.TabName.EditValue)" size="30" maxlength="100" placeholder="@Html.Raw(HtmlEncode(updateTrackingList.TabName.PlaceHolder))" data-format-pattern="@(updateTrackingList.TabName.FormatPattern)"@Html.Raw(updateTrackingList.TabName.EditAttributes)>
+<div class="invalid-feedback">@Html.Raw(updateTrackingList.TabName.GetErrorMessage(false))</div>
+</div></template>
+        <div class="d-flex my-1 my-sm-0">
+            <template id="tpv_UpdateTracking_TabName">
+            </template>
+        </div><!-- /.ew-search-field -->
+    </div><!-- /.col-sm-auto -->
+} @* updateTrackingList.TabName.Visible (end) *@
+</div><!-- /.row -->
+<div id="tpsd_UpdateTrackinglist" class="ew-custom-template-search"></div>
+<template id="tpsm_UpdateTrackinglist">
+<div id="UpdateTrackinglist"><div id="revise-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ew-modal-dialog-title" class="modal-title">
+                    @(CurrentLanguage == "en-US" ? "Revise Crew Personal Data Update" : "Peninjauan Perbaharuan Data Pribadi Kru")
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="revise-form" class="ew-form ew-add-form" autocomplete="off">
+                    <div id="r_RevisedReason" class="row">
+                        <label for="x_RevisedReason" class="col-sm-4 col-form-label ew-label">
+                            @(CurrentLanguage == "en-US" ? "Revised Reason" : "Alasan Tinjau Ulang")
+                        </label>
+                        <div class="col-sm-8">
+                            <div>
+                                <span id="el_RevisedReason">
+                                    <textarea
+                                        name="x_RevisedReason"
+                                        id="x_RevisedReason"
+                                        cols="50"
+                                        rows="4"
+                                        maxlength="255"
+                                        placeholder="Revised Reason"
+                                        class="form-control"
+                                    ></textarea>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger ew-btn" id="btn-revise" type="button">
+                    @(CurrentLanguage == "en-US" ? "Revise" : "Tinjau Ulang")
+                </button>
+                <button class="btn btn-default ew-btn" id="btn-cancel" type="button" data-bs-dismiss="modal">
+                    @(CurrentLanguage == "en-US" ? "Cancel" : "Batal")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loading-modal-dialog" class="modal" aria-hidden="true" data-bs-backdrop="static" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="text-center mb-0">
+                    @(CurrentLanguage == "en-US" ? "Processing..." : "Sedang memproses...")
+                </p>
+            </div>
+        </div>
+    </div>
+</div></div>
+</template>
 <div class="row mb-0">
     <div class="col-sm-auto px-0 pe-sm-2">
         <div class="ew-basic-search input-group">
@@ -138,6 +382,9 @@ if (!updateTrackingList.IsExport() && Empty(updateTrackingList.CurrentAction) &&
     </div>
 </div>
 </div><!-- /.ew-extended-search -->
+<script>
+loadjs.ready(ew.applyTemplateId, () => ew.applyTemplate("tpsd_UpdateTrackinglist", "tpsm_UpdateTrackinglist"));
+</script>
 } @* Show search form (end) *@
 }
 </div><!-- /.ew-search-panel -->
@@ -193,7 +440,7 @@ if (!updateTrackingList.IsExport() && Empty(updateTrackingList.CurrentAction) &&
         <th data-name="ChangeType" class="@(updateTrackingList.ChangeType.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UpdateTracking_ChangeType" class="UpdateTracking_ChangeType">@Html.Raw(updateTrackingList.RenderFieldHeader(updateTrackingList.ChangeType))</div></th>
 } @* updateTrackingList.ChangeType.Visible (end) *@
 @if (updateTrackingList.TabName.Visible) { // updateTrackingList.TabName.Visible (begin)
-        <th data-name="TabName" class="@(updateTrackingList.TabName.HeaderCellClass)"><div id="elh_UpdateTracking_TabName" class="UpdateTracking_TabName">@Html.Raw(updateTrackingList.RenderFieldHeader(updateTrackingList.TabName))</div></th>
+        <th data-name="TabName" class="@(updateTrackingList.TabName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UpdateTracking_TabName" class="UpdateTracking_TabName">@Html.Raw(updateTrackingList.RenderFieldHeader(updateTrackingList.TabName))</div></th>
 } @* updateTrackingList.TabName.Visible (end) *@
 @* Render list options (header, right) *@
 @updateTrackingList.ListOptions.RenderHeader("right")
@@ -234,24 +481,31 @@ if (!updateTrackingList.IsExport() && Empty(updateTrackingList.CurrentAction) &&
     @if (updateTrackingList.EmployeeStatus.Visible) { // updateTrackingList.EmployeeStatus.Visible (begin)
         <td data-name="EmployeeStatus" @Html.Raw(updateTrackingList.EmployeeStatus.CellAttributes)>
 <span id="el@(updateTrackingList.RowCount)_UpdateTracking_EmployeeStatus" class="el_UpdateTracking_EmployeeStatus">
-<span @Html.Raw(updateTrackingList.EmployeeStatus.ViewAttributes)>
-@Html.Raw(updateTrackingList.EmployeeStatus.GetViewValue())</span>
+<span @Html.Raw(updateTrackingList.EmployeeStatus.ViewAttributes)>@if (ConvertToString(updateTrackingList.EmployeeStatus.GetViewValue()) == "Candidate - Accepted - Draft")
+{
+    <span>@((CurrentLanguage == "en-US") ? "Draft" : "Draf")</span>
+}
+else
+{
+    <span>@((CurrentLanguage == "en-US") ? "Waiting for review" : "Menunggu Peninjauan")</span>
+}
+</span>
 </span>
 </td>
     } @* updateTrackingList.EmployeeStatus.Visible (end) *@
     @if (updateTrackingList.RequiredPhoto.Visible) { // updateTrackingList.RequiredPhoto.Visible (begin)
         <td data-name="RequiredPhoto" @Html.Raw(updateTrackingList.RequiredPhoto.CellAttributes)>
 <span id="el@(updateTrackingList.RowCount)_UpdateTracking_RequiredPhoto" class="el_UpdateTracking_RequiredPhoto">
-<span @Html.Raw(updateTrackingList.RequiredPhoto.ViewAttributes)>
-@Html.Raw(updateTrackingList.RequiredPhoto.GetViewValue())</span>
+<span><a href="uploads/@ConvertToString(updateTrackingList.IndividualCodeNumber.GetViewValue())/@ConvertToString(updateTrackingList.RequiredPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
 </span>
 </td>
     } @* updateTrackingList.RequiredPhoto.Visible (end) *@
     @if (updateTrackingList.VisaPhoto.Visible) { // updateTrackingList.VisaPhoto.Visible (begin)
         <td data-name="VisaPhoto" @Html.Raw(updateTrackingList.VisaPhoto.CellAttributes)>
 <span id="el@(updateTrackingList.RowCount)_UpdateTracking_VisaPhoto" class="el_UpdateTracking_VisaPhoto">
-<span @Html.Raw(updateTrackingList.VisaPhoto.ViewAttributes)>
-@Html.Raw(updateTrackingList.VisaPhoto.GetViewValue())</span>
+<span><a href="uploads/@ConvertToString(updateTrackingList.IndividualCodeNumber.GetViewValue())/@ConvertToString(updateTrackingList.VisaPhoto.GetViewValue())" target="_blank">Attachment</a>
+</span>
 </span>
 </td>
     } @* updateTrackingList.VisaPhoto.Visible (end) *@
@@ -331,8 +585,157 @@ loadjs.ready("head", function() {
 </script>
 <script>
 loadjs.ready("load", function() {
-    // Write your table-specific startup script here
-    // document.write("page loaded");
+    // Startup script
+    const currentUrlObject = new URL(window.location.href);
+    const parentUrl = ew.PATH_BASE;
+    const selectedLanguage = ew.vars.languages.languages.find(obj => obj.selected === true);
+    const translations = {
+        'en-US': {
+            dataSelectionRequired: 'Data selection is required.',
+            acceptConfirmation: 'Are you sure you want to accept the selected crew(s) personal data update?',
+            acceptButton: 'Accept',
+            reviseButton: 'Revise',
+            successMessage: 'Crew data update approved.',
+        },
+        'id-ID': {
+            dataSelectionRequired: 'Pemilihan data diperlukan.',
+            acceptConfirmation: 'Apakah Anda yakin untuk menerima perubahan data pribadi kru yang telah dipilih?',
+            acceptButton: 'Terima',
+            reviseButton: 'Tinjau',
+            successMessage: 'Berhasil menyetujui perubahan data kru.',
+        },
+    };
+    const translate = (key) => translations[selectedLanguage.id][key];
+    const getRowSelectedKeys = () => $(".ew-table-selected-row").map(function () { return $(this).attr("data-key"); }).get();
+    const showToast = (message) => ew.showToast(message);
+    const showModal = () => $('#loading-modal-dialog').modal('show');
+    const hideModal = () => $('#loading-modal-dialog').modal('hide');
+    const redirectToUpdateTrackingList = (baseUrl, successMessage) => {
+        const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}UpdateTrackingList`);
+        const encodedSuccessMessage = encodeURIComponent(successMessage);
+        const params = new URLSearchParams(targetUrl.search);
+        params.set('successMessage', encodedSuccessMessage);
+        targetUrl.search = params.toString();
+        window.location.href = targetUrl.href;
+    };
+    const nonTableHeightTotal = [
+        'nav.main-header',
+        'div.content-header',
+        'div.btn-toolbar.ew-toolbar',
+        'form.ew-form.ew-ext-search-form',
+        'div.card-footer'
+    ].reduce((totalHeight, selector) => totalHeight + $(selector).outerHeight(), 0);
+    const marginBottom = '20px';
+    const acceptButtonText = translate('acceptButton');
+    const reviseButtonText = translate('reviseButton');
+    const createButton = (className, name, id, text, clickHandler) =>
+        $('<button/>', {
+            'class': `btn ${className} ew-btn ms-3 primary-white-clr`,
+            'name': name,
+            'id': id,
+            'type': 'button',
+            'text': text,
+        }).on('click', clickHandler);
+    const handleAcceptButtonClick = () => {
+        const translationKey = 'dataSelectionRequired';
+        if (getRowSelectedKeys().length <= 0) {
+            showToast(translate(translationKey));
+            return false;
+        }
+        const confirmationMessage = translate('acceptConfirmation');
+        ew.prompt(confirmationMessage, result => {
+            if (result) {
+                showModal();
+                const acceptedCrewDataUpdateUrl = "accept-crew-data-update";
+                const acceptedCrewDataUpdateRequest = {
+                    updateIDArray: JSON.stringify(getRowSelectedKeys()),
+                };
+                $.ajax({
+                    url: `${parentUrl}api/Registration/${acceptedCrewDataUpdateUrl}`,
+                    method: "POST",
+                    data: JSON.stringify(acceptedCrewDataUpdateRequest),
+                    contentType: "application/json",
+                    success: function (response) {
+                        hideModal();
+                        if (response.success) {
+                            const successMessage = translate('successMessage');
+                            const baseUrl = new URL(window.location.href).origin;
+                            redirectToUpdateTrackingList(baseUrl, successMessage);
+                        } else {
+                            showToast(response.errorMessage);
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        hideModal();
+                        showToast(errorThrown);
+                    }
+                });
+            }
+        });
+    };
+    const handleReviseButtonClick = () => {
+        if ($(".ew-table-selected-row").length <= 0) {
+            showToast(translate('dataSelectionRequired'));
+            return false;
+        } else {
+            $('#revise-modal-dialog').modal('show');
+        }
+    };
+    const handleReviseButtonInModalClick = () => {
+        const revisedReasonValue = $('#x_RevisedReason').val();
+        const revisedReasonCaption = $(`label[for="x_RevisedReason"]`).text();
+        if (revisedReasonValue.trim() === '') {
+            const errorMessage = selectedLanguage.id === 'en-US'
+                ? `Please enter required field - ${revisedReasonCaption}`
+                : `Masukkan input yang dibutuhkan - ${revisedReasonCaption}`;
+            showToast(errorMessage);
+        } else {
+            $('#revise-modal-dialog').modal('hide');
+            $('#loading-modal-dialog').modal('show');
+            const rowSelected = $(".ew-table-selected-row");
+            const arrDataKey = rowSelected.map(function () {
+                return $(this).attr("data-key");
+            }).get();
+            const revisedMultipleCrewDataUpdateApiUrl = "revise-crew-data-update";
+            const revisedCrewPersonalDataUpdateRequest = {
+                revisedReason: revisedReasonValue,
+                updateIDArray: JSON.stringify(arrDataKey)
+            };
+            $.ajax({
+                method: "POST",
+                url: `${parentUrl}api/Registration/${revisedMultipleCrewDataUpdateApiUrl}`, 
+                data: JSON.stringify(revisedCrewPersonalDataUpdateRequest),
+                contentType: "application/json",
+                success: function(response) {
+                    hideModal();
+                    if(response.success) {
+                        const successMessage = selectedLanguage.id === 'en-US'
+                            ? `Add ${revisedReasonCaption} Successful`
+                            : `Menambahkan ${revisedReasonCaption} Berhasil`;
+                        const baseUrl = new URL(window.location.href).origin;
+                        const targetUrl = new URL(`${baseUrl}${ew.PATH_BASE}UpdateTrackingList`);
+                        const encodedSuccessMessage = encodeURIComponent(successMessage);
+                        const params = new URLSearchParams(targetUrl.search);
+                        params.set('successMessage', encodedSuccessMessage);
+                        targetUrl.search = params.toString();
+                        redirectToUpdateTrackingList(baseUrl, successMessage);
+                    } else {
+                        showToast(response.errorMessage);
+                    }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    hideModal();
+                    showToast(errorThrown);
+                }
+            });
+        }
+    };
+    $('#btn-submit').after(
+        createButton('btn-default primary-green-bg', 'btn-accepted-modal', 'btn-accepted-modal', acceptButtonText, handleAcceptButtonClick)
+    ).next().after(
+        createButton('btn-primary', 'btn-revised-modal', 'btn-revised-modal', reviseButtonText, handleReviseButtonClick)
+    );
+    $("#btn-revise").click(handleReviseButtonInModalClick);
 });
 </script>
 }

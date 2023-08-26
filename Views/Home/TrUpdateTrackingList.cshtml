@@ -1,0 +1,305 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (trUpdateTrackingList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!trUpdateTrackingList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!trUpdateTrackingList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trUpdateTrackingList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRUpdateTracking: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(trUpdateTrackingList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(trUpdateTrackingList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(trUpdateTrackingList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(trUpdateTrackingList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+ew.PREVIEW_SELECTOR = ".ew-preview-btn";
+ew.PREVIEW_MODAL_CLASS = "modal modal-fullscreen-sm-down";
+ew.PREVIEW_ROW = true;
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW || ew.ready("head", ew.PATH_BASE + "js/preview.min.js?v=20.1.0", "preview");
+</script>
+<script>
+window.Tabulator || loadjs([
+    ew.PATH_BASE + "js/tabulator.min.js?v=20.1.5",
+    ew.PATH_BASE + "css/@CssFile("tabulator_bootstrap5.css", false)?v=20.1.5"
+], "import");
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!trUpdateTrackingList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (trUpdateTrackingList.TotalRecords > 0 && trUpdateTrackingList.ExportOptions.Visible) {
+    trUpdateTrackingList.ExportOptions.Render("body");
+}
+@if (trUpdateTrackingList.ImportOptions.Visible) {
+    trUpdateTrackingList.ImportOptions.Render("body");
+}
+@if (trUpdateTrackingList.SearchOptions.Visible) {
+    trUpdateTrackingList.SearchOptions.Render("body");
+}
+@if (trUpdateTrackingList.FilterOptions.Visible) {
+    trUpdateTrackingList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!trUpdateTrackingList.IsModal) {
+<form name="fTRUpdateTrackingsrch" id="fTRUpdateTrackingsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" autocomplete="on">
+<div id="fTRUpdateTrackingsrch_search_panel" class="mb-2 mb-sm-0 @(trUpdateTrackingList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(trUpdateTrackingList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { TRUpdateTracking: currentTable } });
+var currentForm;
+var fTRUpdateTrackingsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fTRUpdateTrackingsrch")
+        .setPageId("list")
+@if (trUpdateTrackingList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await trUpdateTrackingList.GetFilterList()))
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!trUpdateTrackingList.IsExport() && Empty(trUpdateTrackingList.CurrentAction) && trUpdateTrackingList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(trUpdateTrackingList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(trUpdateTrackingList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(trUpdateTrackingList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(trUpdateTrackingList.BasicSearch.SessionType == "" ? " active" : "")" form="fTRUpdateTrackingsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(trUpdateTrackingList.BasicSearch.SessionType == "=" ? " active" : "")" form="fTRUpdateTrackingsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(trUpdateTrackingList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fTRUpdateTrackingsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(trUpdateTrackingList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fTRUpdateTrackingsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@trUpdateTrackingList.ShowPageHeader()
+@trUpdateTrackingList.ShowMessages()
+<main class="list @(trUpdateTrackingList.TotalRecords == 0 && !trUpdateTrackingList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (trUpdateTrackingList.TotalRecords > 0 || !Empty(trUpdateTrackingList.CurrentAction)) {
+<div class="card ew-card ew-grid@(trUpdateTrackingList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(trUpdateTrackingList.TableGridClass)">
+<form name="@(trUpdateTrackingList.FormName)" id="@(trUpdateTrackingList.FormName)" class="ew-form ew-list-form" action="@AppPath(trUpdateTrackingList.PageName)" method="post" autocomplete="on">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (trUpdateTrackingList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_TRUpdateTracking" class="card-body ew-grid-middle-panel @(trUpdateTrackingList.TableContainerClass)" style="@(trUpdateTrackingList.TableContainerStyle)">
+@if (trUpdateTrackingList.TotalRecords > 0 || trUpdateTrackingList.IsGridEdit || trUpdateTrackingList.IsMultiEdit) {
+<table id="tbl_TRUpdateTrackinglist" class="@(trUpdateTrackingList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    trUpdateTrackingList.RowType = RowType.Header;
+
+    // Render list options
+    await trUpdateTrackingList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@trUpdateTrackingList.ListOptions.RenderHeader("left")
+@if (trUpdateTrackingList.ID.Visible) { // trUpdateTrackingList.ID.Visible (begin)
+        <th data-name="ID" class="@(trUpdateTrackingList.ID.HeaderCellClass)"><div id="elh_TRUpdateTracking_ID" class="TRUpdateTracking_ID">@Html.Raw(trUpdateTrackingList.RenderFieldHeader(trUpdateTrackingList.ID))</div></th>
+} @* trUpdateTrackingList.ID.Visible (end) *@
+@if (trUpdateTrackingList.MTCrewID.Visible) { // trUpdateTrackingList.MTCrewID.Visible (begin)
+        <th data-name="MTCrewID" class="@(trUpdateTrackingList.MTCrewID.HeaderCellClass)"><div id="elh_TRUpdateTracking_MTCrewID" class="TRUpdateTracking_MTCrewID">@Html.Raw(trUpdateTrackingList.RenderFieldHeader(trUpdateTrackingList.MTCrewID))</div></th>
+} @* trUpdateTrackingList.MTCrewID.Visible (end) *@
+@if (trUpdateTrackingList.TabName.Visible) { // trUpdateTrackingList.TabName.Visible (begin)
+        <th data-name="TabName" class="@(trUpdateTrackingList.TabName.HeaderCellClass)"><div id="elh_TRUpdateTracking_TabName" class="TRUpdateTracking_TabName">@Html.Raw(trUpdateTrackingList.RenderFieldHeader(trUpdateTrackingList.TabName))</div></th>
+} @* trUpdateTrackingList.TabName.Visible (end) *@
+@if (trUpdateTrackingList.ColumnName.Visible) { // trUpdateTrackingList.ColumnName.Visible (begin)
+        <th data-name="ColumnName" class="@(trUpdateTrackingList.ColumnName.HeaderCellClass)"><div id="elh_TRUpdateTracking_ColumnName" class="TRUpdateTracking_ColumnName">@Html.Raw(trUpdateTrackingList.RenderFieldHeader(trUpdateTrackingList.ColumnName))</div></th>
+} @* trUpdateTrackingList.ColumnName.Visible (end) *@
+@if (trUpdateTrackingList.ChangeType.Visible) { // trUpdateTrackingList.ChangeType.Visible (begin)
+        <th data-name="ChangeType" class="@(trUpdateTrackingList.ChangeType.HeaderCellClass)"><div id="elh_TRUpdateTracking_ChangeType" class="TRUpdateTracking_ChangeType">@Html.Raw(trUpdateTrackingList.RenderFieldHeader(trUpdateTrackingList.ChangeType))</div></th>
+} @* trUpdateTrackingList.ChangeType.Visible (end) *@
+@* Render list options (header, right) *@
+@trUpdateTrackingList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(trUpdateTrackingList.PageNumber)">
+@{
+    await trUpdateTrackingList.SetupGrid();
+    bool eof = trUpdateTrackingList.Recordset == null; // DN
+}
+@while (trUpdateTrackingList.RecordCount < trUpdateTrackingList.StopRecord || SameString(trUpdateTrackingList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(trUpdateTrackingList.RowIndex, "$rowindex$") &&
+        (!trUpdateTrackingList.IsGridAdd || trUpdateTrackingList.CurrentMode == "copy") &&
+        (!((trUpdateTrackingList.IsCopy || trUpdateTrackingList.IsAdd) && trUpdateTrackingList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await trUpdateTrackingList.Recordset.ReadAsync();
+    trUpdateTrackingList.RecordCount++;
+    if (trUpdateTrackingList.RecordCount >= trUpdateTrackingList.StartRecord) {
+        await trUpdateTrackingList.SetupRow();
+    <tr @Html.Raw(trUpdateTrackingList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @trUpdateTrackingList.ListOptions.RenderBody("left", trUpdateTrackingList.RowCount)
+    @if (trUpdateTrackingList.ID.Visible) { // trUpdateTrackingList.ID.Visible (begin)
+        <td data-name="ID" @Html.Raw(trUpdateTrackingList.ID.CellAttributes)>
+<span id="el@(trUpdateTrackingList.RowCount)_TRUpdateTracking_ID" class="el_TRUpdateTracking_ID">
+<span @Html.Raw(trUpdateTrackingList.ID.ViewAttributes)>
+@Html.Raw(trUpdateTrackingList.ID.GetViewValue())</span>
+</span>
+</td>
+    } @* trUpdateTrackingList.ID.Visible (end) *@
+    @if (trUpdateTrackingList.MTCrewID.Visible) { // trUpdateTrackingList.MTCrewID.Visible (begin)
+        <td data-name="MTCrewID" @Html.Raw(trUpdateTrackingList.MTCrewID.CellAttributes)>
+<span id="el@(trUpdateTrackingList.RowCount)_TRUpdateTracking_MTCrewID" class="el_TRUpdateTracking_MTCrewID">
+<span @Html.Raw(trUpdateTrackingList.MTCrewID.ViewAttributes)>
+@Html.Raw(trUpdateTrackingList.MTCrewID.GetViewValue())</span>
+</span>
+</td>
+    } @* trUpdateTrackingList.MTCrewID.Visible (end) *@
+    @if (trUpdateTrackingList.TabName.Visible) { // trUpdateTrackingList.TabName.Visible (begin)
+        <td data-name="TabName" @Html.Raw(trUpdateTrackingList.TabName.CellAttributes)>
+<span id="el@(trUpdateTrackingList.RowCount)_TRUpdateTracking_TabName" class="el_TRUpdateTracking_TabName">
+<span @Html.Raw(trUpdateTrackingList.TabName.ViewAttributes)>
+@Html.Raw(trUpdateTrackingList.TabName.GetViewValue())</span>
+</span>
+</td>
+    } @* trUpdateTrackingList.TabName.Visible (end) *@
+    @if (trUpdateTrackingList.ColumnName.Visible) { // trUpdateTrackingList.ColumnName.Visible (begin)
+        <td data-name="ColumnName" @Html.Raw(trUpdateTrackingList.ColumnName.CellAttributes)>
+<span id="el@(trUpdateTrackingList.RowCount)_TRUpdateTracking_ColumnName" class="el_TRUpdateTracking_ColumnName">
+<span @Html.Raw(trUpdateTrackingList.ColumnName.ViewAttributes)>
+@Html.Raw(trUpdateTrackingList.ColumnName.GetViewValue())</span>
+</span>
+</td>
+    } @* trUpdateTrackingList.ColumnName.Visible (end) *@
+    @if (trUpdateTrackingList.ChangeType.Visible) { // trUpdateTrackingList.ChangeType.Visible (begin)
+        <td data-name="ChangeType" @Html.Raw(trUpdateTrackingList.ChangeType.CellAttributes)>
+<span id="el@(trUpdateTrackingList.RowCount)_TRUpdateTracking_ChangeType" class="el_TRUpdateTracking_ChangeType">
+<span @Html.Raw(trUpdateTrackingList.ChangeType.ViewAttributes)>
+@Html.Raw(trUpdateTrackingList.ChangeType.GetViewValue())</span>
+</span>
+</td>
+    } @* trUpdateTrackingList.ChangeType.Visible (end) *@
+    @* Render list options (body, right) *@
+    @trUpdateTrackingList.ListOptions.RenderBody("right", trUpdateTrackingList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(trUpdateTrackingList.RowIndex, "$rowindex$"))
+        trUpdateTrackingList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((trUpdateTrackingList.IsCopy || trUpdateTrackingList.IsAdd) && trUpdateTrackingList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        trUpdateTrackingList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(trUpdateTrackingList.CurrentAction) && !trUpdateTrackingList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ trUpdateTrackingList.CloseRecordset(); }
+@if (!trUpdateTrackingList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!trUpdateTrackingList.IsGridAdd && !(trUpdateTrackingList.IsGridEdit && trUpdateTrackingList.ModalGridEdit) && !trUpdateTrackingList.IsMultiEdit) {
+@Html.Raw(trUpdateTrackingList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@trUpdateTrackingList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@trUpdateTrackingList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@trUpdateTrackingList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!trUpdateTrackingList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("TRUpdateTracking");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

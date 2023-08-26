@@ -3,19 +3,19 @@ namespace PCM.Models;
 // Partial class
 public partial class PCM {
     /// <summary>
-    /// updateTracking
+    /// trUpdateTracking
     /// </summary>
     [MaybeNull]
-    public static UpdateTracking updateTracking
+    public static TrUpdateTracking trUpdateTracking
     {
-        get => HttpData.Resolve<UpdateTracking>("UpdateTracking");
-        set => HttpData["UpdateTracking"] = value;
+        get => HttpData.Resolve<TrUpdateTracking>("TRUpdateTracking");
+        set => HttpData["TRUpdateTracking"] = value;
     }
 
     /// <summary>
-    /// Table class for UpdateTracking
+    /// Table class for TRUpdateTracking
     /// </summary>
-    public class UpdateTracking : DbTable, IQueryFactory
+    public class TrUpdateTracking : DbTable, IQueryFactory
     {
         public int RowCount = 0; // DN
 
@@ -35,7 +35,7 @@ public partial class PCM {
 
         public bool ModalSearch = false;
 
-        public bool ModalView = true;
+        public bool ModalView = false;
 
         public bool ModalAdd = false;
 
@@ -53,33 +53,23 @@ public partial class PCM {
 
         public readonly DbField<SqlDbType> ID;
 
-        public readonly DbField<SqlDbType> _Action;
+        public readonly DbField<SqlDbType> MTCrewID;
 
-        public readonly DbField<SqlDbType> IndividualCodeNumber;
-
-        public readonly DbField<SqlDbType> FullName;
-
-        public readonly DbField<SqlDbType> EmployeeStatus;
-
-        public readonly DbField<SqlDbType> RequiredPhoto;
-
-        public readonly DbField<SqlDbType> VisaPhoto;
+        public readonly DbField<SqlDbType> TabName;
 
         public readonly DbField<SqlDbType> ColumnName;
 
         public readonly DbField<SqlDbType> ChangeType;
 
-        public readonly DbField<SqlDbType> TabName;
-
         // Constructor
-        public UpdateTracking()
+        public TrUpdateTracking()
         {
             // Language object // DN
             Language = ResolveLanguage();
-            TableVar = "UpdateTracking";
-            Name = "UpdateTracking";
-            Type = "VIEW";
-            UpdateTable = "dbo.UpdateTracking"; // Update Table
+            TableVar = "TRUpdateTracking";
+            Name = "TRUpdateTracking";
+            Type = "TABLE";
+            UpdateTable = "dbo.TRUpdateTracking"; // Update Table
             DbId = "DB"; // DN
             ExportAll = true;
             ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -110,24 +100,25 @@ public partial class PCM {
                 SelectMultiple = false,
                 VirtualSearch = false,
                 ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
+                HtmlTag = "NO",
                 InputTextType = "text",
+                IsAutoIncrement = true, // Autoincrement field
                 IsPrimaryKey = true, // Primary key field
-                Sortable = false, // Allow sort
+                Nullable = false, // NOT NULL field
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "ID", "CustomMsg"),
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
+                CustomMessage = Language.FieldPhrase("TRUpdateTracking", "ID", "CustomMsg"),
                 IsUpload = false
             };
             Fields.Add("ID", ID);
 
-            // Action
-            _Action = new (this, "x__Action", 200, SqlDbType.VarChar) {
-                Name = "Action",
-                Expression = "''",
-                BasicSearchExpression = "''",
+            // MTCrewID
+            MTCrewID = new (this, "x_MTCrewID", 3, SqlDbType.Int) {
+                Name = "MTCrewID",
+                Expression = "[MTCrewID]",
+                BasicSearchExpression = "CAST([MTCrewID] AS NVARCHAR)",
                 DateTimeFormat = -1,
-                VirtualExpression = "''",
+                VirtualExpression = "[MTCrewID]",
                 IsVirtual = false,
                 ForceSelection = false,
                 SelectMultiple = false,
@@ -135,22 +126,21 @@ public partial class PCM {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                IsCustom = true, // Custom field
-                Sortable = false, // Allow sort
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "_Action", "CustomMsg"),
+                DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
+                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                CustomMessage = Language.FieldPhrase("TRUpdateTracking", "MTCrewID", "CustomMsg"),
                 IsUpload = false
             };
-            Fields.Add("Action", _Action);
+            Fields.Add("MTCrewID", MTCrewID);
 
-            // IndividualCodeNumber
-            IndividualCodeNumber = new (this, "x_IndividualCodeNumber", 202, SqlDbType.NVarChar) {
-                Name = "IndividualCodeNumber",
-                Expression = "[IndividualCodeNumber]",
+            // TabName
+            TabName = new (this, "x_TabName", 202, SqlDbType.NVarChar) {
+                Name = "TabName",
+                Expression = "[TabName]",
                 UseBasicSearch = true,
-                BasicSearchExpression = "[IndividualCodeNumber]",
+                BasicSearchExpression = "[TabName]",
                 DateTimeFormat = -1,
-                VirtualExpression = "[IndividualCodeNumber]",
+                VirtualExpression = "[TabName]",
                 IsVirtual = false,
                 ForceSelection = false,
                 SelectMultiple = false,
@@ -159,92 +149,10 @@ public partial class PCM {
                 HtmlTag = "TEXT",
                 InputTextType = "text",
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "IndividualCodeNumber", "CustomMsg"),
+                CustomMessage = Language.FieldPhrase("TRUpdateTracking", "TabName", "CustomMsg"),
                 IsUpload = false
             };
-            Fields.Add("IndividualCodeNumber", IndividualCodeNumber);
-
-            // FullName
-            FullName = new (this, "x_FullName", 202, SqlDbType.NVarChar) {
-                Name = "FullName",
-                Expression = "[FullName]",
-                UseBasicSearch = true,
-                BasicSearchExpression = "[FullName]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[FullName]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "FullName", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("FullName", FullName);
-
-            // EmployeeStatus
-            EmployeeStatus = new (this, "x_EmployeeStatus", 202, SqlDbType.NVarChar) {
-                Name = "EmployeeStatus",
-                Expression = "[EmployeeStatus]",
-                UseBasicSearch = true,
-                BasicSearchExpression = "[EmployeeStatus]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[EmployeeStatus]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "EmployeeStatus", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("EmployeeStatus", EmployeeStatus);
-
-            // RequiredPhoto
-            RequiredPhoto = new (this, "x_RequiredPhoto", 202, SqlDbType.NVarChar) {
-                Name = "RequiredPhoto",
-                Expression = "[RequiredPhoto]",
-                BasicSearchExpression = "[RequiredPhoto]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[RequiredPhoto]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "IMAGE",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "RequiredPhoto", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("RequiredPhoto", RequiredPhoto);
-
-            // VisaPhoto
-            VisaPhoto = new (this, "x_VisaPhoto", 202, SqlDbType.NVarChar) {
-                Name = "VisaPhoto",
-                Expression = "[VisaPhoto]",
-                BasicSearchExpression = "[VisaPhoto]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[VisaPhoto]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "IMAGE",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "VisaPhoto", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("VisaPhoto", VisaPhoto);
+            Fields.Add("TabName", TabName);
 
             // ColumnName
             ColumnName = new (this, "x_ColumnName", 202, SqlDbType.NVarChar) {
@@ -262,7 +170,7 @@ public partial class PCM {
                 HtmlTag = "TEXT",
                 InputTextType = "text",
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "ColumnName", "CustomMsg"),
+                CustomMessage = Language.FieldPhrase("TRUpdateTracking", "ColumnName", "CustomMsg"),
                 IsUpload = false
             };
             Fields.Add("ColumnName", ColumnName);
@@ -283,31 +191,10 @@ public partial class PCM {
                 HtmlTag = "TEXT",
                 InputTextType = "text",
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "ChangeType", "CustomMsg"),
+                CustomMessage = Language.FieldPhrase("TRUpdateTracking", "ChangeType", "CustomMsg"),
                 IsUpload = false
             };
             Fields.Add("ChangeType", ChangeType);
-
-            // TabName
-            TabName = new (this, "x_TabName", 202, SqlDbType.NVarChar) {
-                Name = "TabName",
-                Expression = "[TabName]",
-                UseBasicSearch = true,
-                BasicSearchExpression = "[TabName]",
-                DateTimeFormat = -1,
-                VirtualExpression = "[TabName]",
-                IsVirtual = false,
-                ForceSelection = false,
-                SelectMultiple = false,
-                VirtualSearch = false,
-                ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
-                InputTextType = "text",
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
-                CustomMessage = Language.FieldPhrase("UpdateTracking", "TabName", "CustomMsg"),
-                IsUpload = false
-            };
-            Fields.Add("TabName", TabName);
 
             // Call Table Load event
             TableLoad();
@@ -462,7 +349,7 @@ public partial class PCM {
 
         public string SqlFrom
         {
-            get => _sqlFrom ?? "dbo.UpdateTracking";
+            get => _sqlFrom ?? "dbo.TRUpdateTracking";
             set => _sqlFrom = value;
         }
 
@@ -470,7 +357,7 @@ public partial class PCM {
         private string? _sqlSelect = null;
 
         public string SqlSelect { // Select
-            get => _sqlSelect ?? "SELECT *, '' AS [Action] FROM " + SqlFrom;
+            get => _sqlSelect ?? "SELECT * FROM " + SqlFrom;
             set => _sqlSelect = value;
         }
 
@@ -697,7 +584,9 @@ public partial class PCM {
                 return -1;
             var queryBuilder = GetQueryBuilder();
             try {
-                result = await queryBuilder.InsertAsync(row);
+                var lastInsertedId = await queryBuilder.InsertGetIdAsync<int>(row);
+                ID.SetDbValue(lastInsertedId);
+                result = 1;
             } catch (Exception e) {
                 CurrentPage?.SetFailureMessage(e.Message);
                 if (Config.Debug)
@@ -849,15 +738,10 @@ public partial class PCM {
                 return;
             try {
                 ID.DbValue = row["ID"]; // Set DB value only
-                _Action.DbValue = row["Action"]; // Set DB value only
-                IndividualCodeNumber.DbValue = row["IndividualCodeNumber"]; // Set DB value only
-                FullName.DbValue = row["FullName"]; // Set DB value only
-                EmployeeStatus.DbValue = row["EmployeeStatus"]; // Set DB value only
-                RequiredPhoto.DbValue = row["RequiredPhoto"]; // Set DB value only
-                VisaPhoto.DbValue = row["VisaPhoto"]; // Set DB value only
+                MTCrewID.DbValue = row["MTCrewID"]; // Set DB value only
+                TabName.DbValue = row["TabName"]; // Set DB value only
                 ColumnName.DbValue = row["ColumnName"]; // Set DB value only
                 ChangeType.DbValue = row["ChangeType"]; // Set DB value only
-                TabName.DbValue = row["TabName"]; // Set DB value only
             } catch {}
         }
 
@@ -916,7 +800,7 @@ public partial class PCM {
                 if (!Empty(Session[name])) {
                     return Session.GetString(name);
                 } else {
-                    return "UpdateTrackingList";
+                    return "TrUpdateTrackingList";
                 }
             }
             set {
@@ -927,11 +811,11 @@ public partial class PCM {
         // Get modal caption
         public string GetModalCaption(string pageName)
         {
-            if (SameString(pageName, "UpdateTrackingView"))
+            if (SameString(pageName, "TrUpdateTrackingView"))
                 return Language.Phrase("View");
-            else if (SameString(pageName, "UpdateTrackingEdit"))
+            else if (SameString(pageName, "TrUpdateTrackingEdit"))
                 return Language.Phrase("Edit");
-            else if (SameString(pageName, "UpdateTrackingAdd"))
+            else if (SameString(pageName, "TrUpdateTrackingAdd"))
                 return Language.Phrase("Add");
             else
                 return "";
@@ -941,7 +825,7 @@ public partial class PCM {
         public string DefaultRouteUrl
         {
             get {
-                return "UpdateTrackingList";
+                return "TrUpdateTrackingList";
             }
         }
 
@@ -949,11 +833,11 @@ public partial class PCM {
         public string GetApiPageName(string action)
         {
             return action.ToLowerInvariant() switch {
-                Config.ApiViewAction => "UpdateTrackingView",
-                Config.ApiAddAction => "UpdateTrackingAdd",
-                Config.ApiEditAction => "UpdateTrackingEdit",
-                Config.ApiDeleteAction => "UpdateTrackingDelete",
-                Config.ApiListAction => "UpdateTrackingList",
+                Config.ApiViewAction => "TrUpdateTrackingView",
+                Config.ApiAddAction => "TrUpdateTrackingAdd",
+                Config.ApiEditAction => "TrUpdateTrackingEdit",
+                Config.ApiDeleteAction => "TrUpdateTrackingDelete",
+                Config.ApiListAction => "TrUpdateTrackingList",
                 _ => String.Empty
             };
         }
@@ -970,7 +854,7 @@ public partial class PCM {
         }
 
         // List URL
-        public string ListUrl => "UpdateTrackingList";
+        public string ListUrl => "TrUpdateTrackingList";
 
         // View URL
         public string ViewUrl => GetViewUrl();
@@ -980,23 +864,23 @@ public partial class PCM {
         {
             string url = "";
             if (!Empty(parm))
-                url = KeyUrl("UpdateTrackingView", parm);
+                url = KeyUrl("TrUpdateTrackingView", parm);
             else
-                url = KeyUrl("UpdateTrackingView", Config.TableShowDetail + "=");
+                url = KeyUrl("TrUpdateTrackingView", Config.TableShowDetail + "=");
             return AddMasterUrl(url);
         }
 
         // Add URL
-        public string AddUrl { get; set; } = "UpdateTrackingAdd";
+        public string AddUrl { get; set; } = "TrUpdateTrackingAdd";
 
         // Add URL
         public string GetAddUrl(string parm = "")
         {
             string url = "";
             if (!Empty(parm))
-                url = "UpdateTrackingAdd?" + parm;
+                url = "TrUpdateTrackingAdd?" + parm;
             else
-                url = "UpdateTrackingAdd";
+                url = "TrUpdateTrackingAdd";
             return AppPath(AddMasterUrl(url));
         }
 
@@ -1007,13 +891,13 @@ public partial class PCM {
         public string GetEditUrl(string parm = "")
         {
             string url = "";
-            url = KeyUrl("UpdateTrackingEdit", parm);
+            url = KeyUrl("TrUpdateTrackingEdit", parm);
             return AppPath(AddMasterUrl(url)); // DN
         }
 
         // Inline edit URL
         public string InlineEditUrl =>
-            AppPath(AddMasterUrl(KeyUrl("UpdateTrackingList", "action=edit"))); // DN
+            AppPath(AddMasterUrl(KeyUrl("TrUpdateTrackingList", "action=edit"))); // DN
 
         // Copy URL
         public string CopyUrl => GetCopyUrl();
@@ -1022,18 +906,18 @@ public partial class PCM {
         public string GetCopyUrl(string parm = "")
         {
             string url = "";
-            url = KeyUrl("UpdateTrackingAdd", parm);
+            url = KeyUrl("TrUpdateTrackingAdd", parm);
             return AppPath(AddMasterUrl(url)); // DN
         }
 
         // Inline copy URL
         public string InlineCopyUrl =>
-            AppPath(AddMasterUrl(KeyUrl("UpdateTrackingList", "action=copy"))); // DN
+            AppPath(AddMasterUrl(KeyUrl("TrUpdateTrackingList", "action=copy"))); // DN
 
         // Delete URL
         public string DeleteUrl => UseAjaxActions && Param<bool>("infinitescroll") && CurrentPageID() == "list"
             ? AppPath(KeyUrl(Config.ApiUrl + Config.ApiDeleteAction + "/" + TableVar))
-            : AppPath(KeyUrl("UpdateTrackingDelete")); // DN
+            : AppPath(KeyUrl("TrUpdateTrackingDelete")); // DN
 
         // Add master URL
         public string AddMasterUrl(string url)
@@ -1226,21 +1110,16 @@ public partial class PCM {
             if (dr == null)
                 return;
             ID.SetDbValue(dr["ID"]);
-            _Action.SetDbValue(dr["Action"]);
-            IndividualCodeNumber.SetDbValue(dr["IndividualCodeNumber"]);
-            FullName.SetDbValue(dr["FullName"]);
-            EmployeeStatus.SetDbValue(dr["EmployeeStatus"]);
-            RequiredPhoto.SetDbValue(dr["RequiredPhoto"]);
-            VisaPhoto.SetDbValue(dr["VisaPhoto"]);
+            MTCrewID.SetDbValue(dr["MTCrewID"]);
+            TabName.SetDbValue(dr["TabName"]);
             ColumnName.SetDbValue(dr["ColumnName"]);
             ChangeType.SetDbValue(dr["ChangeType"]);
-            TabName.SetDbValue(dr["TabName"]);
         }
 
         // Render list content
         public async Task<string> RenderListContent(string filter)
         {
-            string pageName = "UpdateTrackingList";
+            string pageName = "TrUpdateTrackingList";
             dynamic? page = CreateInstance(pageName, new object[] { Controller }); // DN
             if (page != null) {
                 page.UseLayout = false; // DN
@@ -1262,67 +1141,27 @@ public partial class PCM {
             // Common render codes
 
             // ID
-            ID.CellCssStyle = "white-space: nowrap;";
 
-            // Action
-            _Action.CellCssStyle = "white-space: nowrap;";
-
-            // IndividualCodeNumber
-            IndividualCodeNumber.CellCssStyle = "white-space: nowrap;";
-
-            // FullName
-            FullName.CellCssStyle = "white-space: nowrap;";
-
-            // EmployeeStatus
-            EmployeeStatus.CellCssStyle = "white-space: nowrap;";
-
-            // RequiredPhoto
-            RequiredPhoto.CellCssStyle = "white-space: nowrap;";
-
-            // VisaPhoto
-            VisaPhoto.CellCssStyle = "white-space: nowrap;";
-
-            // ColumnName
-            ColumnName.CellCssStyle = "white-space: nowrap;";
-
-            // ChangeType
-            ChangeType.CellCssStyle = "white-space: nowrap;";
+            // MTCrewID
 
             // TabName
-            TabName.CellCssStyle = "white-space: nowrap;";
+
+            // ColumnName
+
+            // ChangeType
 
             // ID
             ID.ViewValue = ID.CurrentValue;
-            ID.ViewValue = FormatNumber(ID.ViewValue, ID.FormatPattern);
             ID.ViewCustomAttributes = "";
 
-            // Action
-            _Action.ViewValue = ConvertToString(_Action.CurrentValue); // DN
-            _Action.ViewCustomAttributes = "";
+            // MTCrewID
+            MTCrewID.ViewValue = MTCrewID.CurrentValue;
+            MTCrewID.ViewValue = FormatNumber(MTCrewID.ViewValue, MTCrewID.FormatPattern);
+            MTCrewID.ViewCustomAttributes = "";
 
-            // IndividualCodeNumber
-            IndividualCodeNumber.ViewValue = ConvertToString(IndividualCodeNumber.CurrentValue); // DN
-            IndividualCodeNumber.ViewCustomAttributes = "";
-
-            // FullName
-            FullName.ViewValue = ConvertToString(FullName.CurrentValue); // DN
-            FullName.ViewCustomAttributes = "";
-
-            // EmployeeStatus
-            EmployeeStatus.ViewValue = ConvertToString(EmployeeStatus.CurrentValue); // DN
-            EmployeeStatus.ViewCustomAttributes = "";
-
-            // RequiredPhoto
-            RequiredPhoto.ViewValue = ConvertToString(RequiredPhoto.CurrentValue); // DN
-            RequiredPhoto.ImageAlt = RequiredPhoto.Alt;
-                RequiredPhoto.ImageCssClass = "ew-image";
-            RequiredPhoto.ViewCustomAttributes = "";
-
-            // VisaPhoto
-            VisaPhoto.ViewValue = ConvertToString(VisaPhoto.CurrentValue); // DN
-            VisaPhoto.ImageAlt = VisaPhoto.Alt;
-                VisaPhoto.ImageCssClass = "ew-image";
-            VisaPhoto.ViewCustomAttributes = "";
+            // TabName
+            TabName.ViewValue = ConvertToString(TabName.CurrentValue); // DN
+            TabName.ViewCustomAttributes = "";
 
             // ColumnName
             ColumnName.ViewValue = ConvertToString(ColumnName.CurrentValue); // DN
@@ -1332,37 +1171,17 @@ public partial class PCM {
             ChangeType.ViewValue = ConvertToString(ChangeType.CurrentValue); // DN
             ChangeType.ViewCustomAttributes = "";
 
-            // TabName
-            TabName.ViewValue = ConvertToString(TabName.CurrentValue); // DN
-            TabName.ViewCustomAttributes = "";
-
             // ID
             ID.HrefValue = "";
             ID.TooltipValue = "";
 
-            // Action
-            _Action.HrefValue = "";
-            _Action.TooltipValue = "";
+            // MTCrewID
+            MTCrewID.HrefValue = "";
+            MTCrewID.TooltipValue = "";
 
-            // IndividualCodeNumber
-            IndividualCodeNumber.HrefValue = "";
-            IndividualCodeNumber.TooltipValue = "";
-
-            // FullName
-            FullName.HrefValue = "";
-            FullName.TooltipValue = "";
-
-            // EmployeeStatus
-            EmployeeStatus.HrefValue = "";
-            EmployeeStatus.TooltipValue = "";
-
-            // RequiredPhoto
-            RequiredPhoto.HrefValue = "";
-            RequiredPhoto.TooltipValue = "";
-
-            // VisaPhoto
-            VisaPhoto.HrefValue = "";
-            VisaPhoto.TooltipValue = "";
+            // TabName
+            TabName.HrefValue = "";
+            TabName.TooltipValue = "";
 
             // ColumnName
             ColumnName.HrefValue = "";
@@ -1371,10 +1190,6 @@ public partial class PCM {
             // ChangeType
             ChangeType.HrefValue = "";
             ChangeType.TooltipValue = "";
-
-            // TabName
-            TabName.HrefValue = "";
-            TabName.TooltipValue = "";
 
             // Call Row Rendered event
             RowRendered();
@@ -1393,50 +1208,22 @@ public partial class PCM {
 
             // ID
             ID.SetupEditAttributes();
-            ID.EditValue = ID.CurrentValue; // DN
-            ID.PlaceHolder = RemoveHtml(ID.Caption);
+            ID.EditValue = ID.CurrentValue;
+            ID.ViewCustomAttributes = "";
 
-            // Action
-            _Action.SetupEditAttributes();
-            if (!_Action.Raw)
-                _Action.CurrentValue = HtmlDecode(_Action.CurrentValue);
-            _Action.EditValue = HtmlEncode(_Action.CurrentValue);
-            _Action.PlaceHolder = RemoveHtml(_Action.Caption);
+            // MTCrewID
+            MTCrewID.SetupEditAttributes();
+            MTCrewID.EditValue = MTCrewID.CurrentValue; // DN
+            MTCrewID.PlaceHolder = RemoveHtml(MTCrewID.Caption);
+            if (!Empty(MTCrewID.EditValue) && IsNumeric(MTCrewID.EditValue))
+                MTCrewID.EditValue = FormatNumber(MTCrewID.EditValue, null);
 
-            // IndividualCodeNumber
-            IndividualCodeNumber.SetupEditAttributes();
-            if (!IndividualCodeNumber.Raw)
-                IndividualCodeNumber.CurrentValue = HtmlDecode(IndividualCodeNumber.CurrentValue);
-            IndividualCodeNumber.EditValue = HtmlEncode(IndividualCodeNumber.CurrentValue);
-            IndividualCodeNumber.PlaceHolder = RemoveHtml(IndividualCodeNumber.Caption);
-
-            // FullName
-            FullName.SetupEditAttributes();
-            if (!FullName.Raw)
-                FullName.CurrentValue = HtmlDecode(FullName.CurrentValue);
-            FullName.EditValue = HtmlEncode(FullName.CurrentValue);
-            FullName.PlaceHolder = RemoveHtml(FullName.Caption);
-
-            // EmployeeStatus
-            EmployeeStatus.SetupEditAttributes();
-            if (!EmployeeStatus.Raw)
-                EmployeeStatus.CurrentValue = HtmlDecode(EmployeeStatus.CurrentValue);
-            EmployeeStatus.EditValue = HtmlEncode(EmployeeStatus.CurrentValue);
-            EmployeeStatus.PlaceHolder = RemoveHtml(EmployeeStatus.Caption);
-
-            // RequiredPhoto
-            RequiredPhoto.SetupEditAttributes();
-            if (!RequiredPhoto.Raw)
-                RequiredPhoto.CurrentValue = HtmlDecode(RequiredPhoto.CurrentValue);
-            RequiredPhoto.EditValue = HtmlEncode(RequiredPhoto.CurrentValue);
-            RequiredPhoto.PlaceHolder = RemoveHtml(RequiredPhoto.Caption);
-
-            // VisaPhoto
-            VisaPhoto.SetupEditAttributes();
-            if (!VisaPhoto.Raw)
-                VisaPhoto.CurrentValue = HtmlDecode(VisaPhoto.CurrentValue);
-            VisaPhoto.EditValue = HtmlEncode(VisaPhoto.CurrentValue);
-            VisaPhoto.PlaceHolder = RemoveHtml(VisaPhoto.Caption);
+            // TabName
+            TabName.SetupEditAttributes();
+            if (!TabName.Raw)
+                TabName.CurrentValue = HtmlDecode(TabName.CurrentValue);
+            TabName.EditValue = HtmlEncode(TabName.CurrentValue);
+            TabName.PlaceHolder = RemoveHtml(TabName.Caption);
 
             // ColumnName
             ColumnName.SetupEditAttributes();
@@ -1451,13 +1238,6 @@ public partial class PCM {
                 ChangeType.CurrentValue = HtmlDecode(ChangeType.CurrentValue);
             ChangeType.EditValue = HtmlEncode(ChangeType.CurrentValue);
             ChangeType.PlaceHolder = RemoveHtml(ChangeType.Caption);
-
-            // TabName
-            TabName.SetupEditAttributes();
-            if (!TabName.Raw)
-                TabName.CurrentValue = HtmlDecode(TabName.CurrentValue);
-            TabName.EditValue = HtmlEncode(TabName.CurrentValue);
-            TabName.PlaceHolder = RemoveHtml(TabName.Caption);
 
             // Call Row Rendered event
             RowRendered();
@@ -1491,20 +1271,17 @@ public partial class PCM {
                 if (doc.Horizontal) { // Horizontal format, write header
                     doc.BeginExportRow();
                     if (exportType == "view") {
-                        doc.ExportCaption(IndividualCodeNumber);
-                        doc.ExportCaption(FullName);
+                        doc.ExportCaption(ID);
+                        doc.ExportCaption(MTCrewID);
+                        doc.ExportCaption(TabName);
                         doc.ExportCaption(ColumnName);
                         doc.ExportCaption(ChangeType);
-                        doc.ExportCaption(TabName);
                     } else {
-                        doc.ExportCaption(IndividualCodeNumber);
-                        doc.ExportCaption(FullName);
-                        doc.ExportCaption(EmployeeStatus);
-                        doc.ExportCaption(RequiredPhoto);
-                        doc.ExportCaption(VisaPhoto);
+                        doc.ExportCaption(ID);
+                        doc.ExportCaption(MTCrewID);
+                        doc.ExportCaption(TabName);
                         doc.ExportCaption(ColumnName);
                         doc.ExportCaption(ChangeType);
-                        doc.ExportCaption(TabName);
                     }
                     doc.EndExportRow();
                 }
@@ -1542,20 +1319,17 @@ public partial class PCM {
                     if (!doc.ExportCustom) {
                         doc.BeginExportRow(rowcnt); // Allow CSS styles if enabled
                         if (exportType == "view") {
-                            await doc.ExportField(IndividualCodeNumber);
-                            await doc.ExportField(FullName);
+                            await doc.ExportField(ID);
+                            await doc.ExportField(MTCrewID);
+                            await doc.ExportField(TabName);
                             await doc.ExportField(ColumnName);
                             await doc.ExportField(ChangeType);
-                            await doc.ExportField(TabName);
                         } else {
-                            await doc.ExportField(IndividualCodeNumber);
-                            await doc.ExportField(FullName);
-                            await doc.ExportField(EmployeeStatus);
-                            await doc.ExportField(RequiredPhoto);
-                            await doc.ExportField(VisaPhoto);
+                            await doc.ExportField(ID);
+                            await doc.ExportField(MTCrewID);
+                            await doc.ExportField(TabName);
                             await doc.ExportField(ColumnName);
                             await doc.ExportField(ChangeType);
-                            await doc.ExportField(TabName);
                         }
                         doc.EndExportRow(rowcnt);
                     }

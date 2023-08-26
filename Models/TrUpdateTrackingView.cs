@@ -3,26 +3,26 @@ namespace PCM.Models;
 // Partial class
 public partial class PCM {
     /// <summary>
-    /// updateTrackingView
+    /// trUpdateTrackingView
     /// </summary>
-    public static UpdateTrackingView updateTrackingView
+    public static TrUpdateTrackingView trUpdateTrackingView
     {
-        get => HttpData.Get<UpdateTrackingView>("updateTrackingView")!;
-        set => HttpData["updateTrackingView"] = value;
+        get => HttpData.Get<TrUpdateTrackingView>("trUpdateTrackingView")!;
+        set => HttpData["trUpdateTrackingView"] = value;
     }
 
     /// <summary>
-    /// Page class for UpdateTracking
+    /// Page class for TRUpdateTracking
     /// </summary>
-    public class UpdateTrackingView : UpdateTrackingViewBase
+    public class TrUpdateTrackingView : TrUpdateTrackingViewBase
     {
         // Constructor
-        public UpdateTrackingView(Controller controller) : base(controller)
+        public TrUpdateTrackingView(Controller controller) : base(controller)
         {
         }
 
         // Constructor
-        public UpdateTrackingView() : base()
+        public TrUpdateTrackingView() : base()
         {
         }
     }
@@ -30,7 +30,7 @@ public partial class PCM {
     /// <summary>
     /// Page base class
     /// </summary>
-    public class UpdateTrackingViewBase : UpdateTracking
+    public class TrUpdateTrackingViewBase : TrUpdateTracking
     {
         // Page ID
         public string PageID = "view";
@@ -39,10 +39,10 @@ public partial class PCM {
         public string ProjectID = "{858E8D60-55D9-41E6-8104-7B793C2843C4}";
 
         // Table name
-        public string TableName { get; set; } = "UpdateTracking";
+        public string TableName { get; set; } = "TRUpdateTracking";
 
         // Page object name
-        public string PageObjName = "updateTrackingView";
+        public string PageObjName = "trUpdateTrackingView";
 
         // Title
         public string? Title = null; // Title for <title> tag
@@ -92,7 +92,7 @@ public partial class PCM {
         private string _pageUrl = "";
 
         // Constructor
-        public UpdateTrackingViewBase()
+        public TrUpdateTrackingViewBase()
         {
             // Initialize
             CurrentPage = this;
@@ -103,9 +103,9 @@ public partial class PCM {
             // Language object
             Language = ResolveLanguage();
 
-            // Table object (updateTracking)
-            if (updateTracking == null || updateTracking is UpdateTracking)
-                updateTracking = this;
+            // Table object (trUpdateTracking)
+            if (trUpdateTracking == null || trUpdateTracking is TrUpdateTracking)
+                trUpdateTracking = this;
 
             // DN
             string[] keys = new string[0];
@@ -175,7 +175,7 @@ public partial class PCM {
         }
 
         // Page name
-        public string PageName => "UpdateTrackingView";
+        public string PageName => "TrUpdateTrackingView";
 
         // Page URL
         public string PageUrl
@@ -235,19 +235,14 @@ public partial class PCM {
         public void SetVisibility()
         {
             ID.SetVisibility();
-            _Action.SetVisibility();
-            IndividualCodeNumber.SetVisibility();
-            FullName.SetVisibility();
-            EmployeeStatus.SetVisibility();
-            RequiredPhoto.SetVisibility();
-            VisaPhoto.SetVisibility();
+            MTCrewID.SetVisibility();
+            TabName.SetVisibility();
             ColumnName.SetVisibility();
             ChangeType.SetVisibility();
-            TabName.SetVisibility();
         }
 
         // Constructor
-        public UpdateTrackingViewBase(Controller? controller = null): this() { // DN
+        public TrUpdateTrackingViewBase(Controller? controller = null): this() { // DN
             if (controller != null)
                 Controller = controller;
         }
@@ -298,7 +293,7 @@ public partial class PCM {
                         string pageName = GetPageName(url);
                         if (pageName != ListUrl) { // Not List page
                             result.Add("caption", GetModalCaption(pageName));
-                            result.Add("view", pageName == "UpdateTrackingView" ? "1" : "0"); // If View page, no primary button
+                            result.Add("view", pageName == "TrUpdateTrackingView" ? "1" : "0"); // If View page, no primary button
                         } else { // List page
                             // result.Add("list", PageID == "search" ? "1" : "0"); // Refresh List page if current page is Search page
                             result.Add("error", FailureMessage); // List page should not be shown as modal => error
@@ -402,16 +397,8 @@ public partial class PCM {
 
         // Hide fields for Add/Edit
         protected void HideFieldsForAddEdit() {
-            if (IsAddOrEdit)
-                IndividualCodeNumber.Visible = false;
-            if (IsAddOrEdit)
-                FullName.Visible = false;
-            if (IsAddOrEdit)
-                EmployeeStatus.Visible = false;
-            if (IsAddOrEdit)
-                RequiredPhoto.Visible = false;
-            if (IsAddOrEdit)
-                VisaPhoto.Visible = false;
+            if (IsAdd || IsCopy || IsGridAdd)
+                ID.Visible = false;
         }
 
         public int DisplayRecords = 1; // Number of display records
@@ -540,7 +527,7 @@ public partial class PCM {
                 ID.QueryValue = ConvertToString(keyValues[0]);
                 RecordKeys["ID"] = ID.QueryValue;
             } else if (!loadCurrentRecord) {
-                returnUrl = "UpdateTrackingList"; // Return to list
+                returnUrl = "TrUpdateTrackingList"; // Return to list
             }
 
             // Get action
@@ -567,7 +554,7 @@ public partial class PCM {
                                 else
                                     return new JsonBoolResult(new { success = false, error = FailureMessage, version = Config.ProductVersion }, false);
                             } else {
-                                return Terminate("UpdateTrackingList"); // Return to list page
+                                return Terminate("TrUpdateTrackingList"); // Return to list page
                             }
                         }
                     break;
@@ -603,7 +590,7 @@ public partial class PCM {
                 PageRendering();
 
                 // Page Render event
-                updateTrackingView?.PageRender();
+                trUpdateTrackingView?.PageRender();
             }
             return PageResult();
         }
@@ -618,6 +605,42 @@ public partial class PCM {
             var option = options["action"];
             ListOption item;
             string links = "";
+
+            // Add
+            item = option.Add("add");
+            string addTitle = Language.Phrase("ViewPageAddLink", true);
+            if (IsModal) // Modal
+                item.Body = "<a class=\"ew-action ew-add\" title=\"" + addTitle + "\" data-caption=\"" + addTitle + "\" data-ew-action=\"modal\" data-url=\"" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("ViewPageAddLink") + "</a>";
+            else
+                item.Body = "<a class=\"ew-action ew-add\" title=\"" + addTitle + "\" data-caption=\"" + addTitle + "\" href=\"" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("ViewPageAddLink") + "</a>";
+                item.Visible = AddUrl != "" && Security.CanAdd;
+
+            // Edit
+            item = option.Add("edit");
+            var editTitle = Language.Phrase("ViewPageEditLink", true);
+            if (IsModal) // Modal
+                item.Body = "<a class=\"ew-action ew-edit\" title=\"" + editTitle + "\" data-caption=\"" + editTitle + "\" data-ew-action=\"modal\" data-url=\"" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("ViewPageEditLink") + "</a>";
+            else
+                item.Body = "<a class=\"ew-action ew-edit\" title=\"" + editTitle + "\" data-caption=\"" + editTitle + "\" href=\"" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("ViewPageEditLink") + "</a>";
+                item.Visible = EditUrl != "" && Security.CanEdit;
+
+            // Copy
+            item = option.Add("copy");
+            var copyTitle = Language.Phrase("ViewPageCopyLink", true);
+            if (IsModal) // Modal
+                item.Body = "<a class=\"ew-action ew-copy\" title=\"" + copyTitle + "\" data-caption=\"" + copyTitle + "\" data-ew-action=\"modal\" data-url=\"" + HtmlEncode(AppPath(CopyUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("ViewPageCopyLink") + "</a>";
+            else
+                item.Body = "<a class=\"ew-action ew-copy\" title=\"" + copyTitle + "\" data-caption=\"" + copyTitle + "\" href=\"" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("ViewPageCopyLink") + "</a>";
+                item.Visible = CopyUrl != "" && Security.CanAdd;
+
+            // Delete
+            item = option.Add("delete");
+            string url = AppPath(DeleteUrl);
+            item.Body = "<a class=\"ew-action ew-delete\"" +
+                (InlineDelete || IsModal ? " data-ew-action=\"inline-delete\"" : "") +
+                " title=\"" + Language.Phrase("ViewPageDeleteLink", true) + "\" data-caption=\"" + Language.Phrase("ViewPageDeleteLink", true) +
+                "\" href=\"" + HtmlEncode(url) + "\">" + Language.Phrase("ViewPageDeleteLink") + "</a>";
+            item.Visible = DeleteUrl != "" && Security.CanDelete;
 
             // Set up action default
             option = options["action"];
@@ -696,15 +719,10 @@ public partial class PCM {
             // Call Row Selected event
             RowSelected(row);
             ID.SetDbValue(row["ID"]);
-            _Action.SetDbValue(row["Action"]);
-            IndividualCodeNumber.SetDbValue(row["IndividualCodeNumber"]);
-            FullName.SetDbValue(row["FullName"]);
-            EmployeeStatus.SetDbValue(row["EmployeeStatus"]);
-            RequiredPhoto.SetDbValue(row["RequiredPhoto"]);
-            VisaPhoto.SetDbValue(row["VisaPhoto"]);
+            MTCrewID.SetDbValue(row["MTCrewID"]);
+            TabName.SetDbValue(row["TabName"]);
             ColumnName.SetDbValue(row["ColumnName"]);
             ChangeType.SetDbValue(row["ChangeType"]);
-            TabName.SetDbValue(row["TabName"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -712,15 +730,10 @@ public partial class PCM {
         protected Dictionary<string, object> NewRow() {
             var row = new Dictionary<string, object>();
             row.Add("ID", ID.DefaultValue ?? DbNullValue); // DN
-            row.Add("Action", _Action.DefaultValue ?? DbNullValue); // DN
-            row.Add("IndividualCodeNumber", IndividualCodeNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("FullName", FullName.DefaultValue ?? DbNullValue); // DN
-            row.Add("EmployeeStatus", EmployeeStatus.DefaultValue ?? DbNullValue); // DN
-            row.Add("RequiredPhoto", RequiredPhoto.DefaultValue ?? DbNullValue); // DN
-            row.Add("VisaPhoto", VisaPhoto.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTCrewID", MTCrewID.DefaultValue ?? DbNullValue); // DN
+            row.Add("TabName", TabName.DefaultValue ?? DbNullValue); // DN
             row.Add("ColumnName", ColumnName.DefaultValue ?? DbNullValue); // DN
             row.Add("ChangeType", ChangeType.DefaultValue ?? DbNullValue); // DN
-            row.Add("TabName", TabName.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -737,49 +750,28 @@ public partial class PCM {
 
             // ID
 
-            // Action
+            // MTCrewID
 
-            // IndividualCodeNumber
-
-            // FullName
-
-            // EmployeeStatus
-
-            // RequiredPhoto
-
-            // VisaPhoto
+            // TabName
 
             // ColumnName
 
             // ChangeType
 
-            // TabName
-
             // View row
             if (RowType == RowType.View) {
-                // IndividualCodeNumber
-                IndividualCodeNumber.ViewValue = ConvertToString(IndividualCodeNumber.CurrentValue); // DN
-                IndividualCodeNumber.ViewCustomAttributes = "";
+                // ID
+                ID.ViewValue = ID.CurrentValue;
+                ID.ViewCustomAttributes = "";
 
-                // FullName
-                FullName.ViewValue = ConvertToString(FullName.CurrentValue); // DN
-                FullName.ViewCustomAttributes = "";
+                // MTCrewID
+                MTCrewID.ViewValue = MTCrewID.CurrentValue;
+                MTCrewID.ViewValue = FormatNumber(MTCrewID.ViewValue, MTCrewID.FormatPattern);
+                MTCrewID.ViewCustomAttributes = "";
 
-                // EmployeeStatus
-                EmployeeStatus.ViewValue = ConvertToString(EmployeeStatus.CurrentValue); // DN
-                EmployeeStatus.ViewCustomAttributes = "";
-
-                // RequiredPhoto
-                RequiredPhoto.ViewValue = ConvertToString(RequiredPhoto.CurrentValue); // DN
-                RequiredPhoto.ImageAlt = RequiredPhoto.Alt;
-                    RequiredPhoto.ImageCssClass = "ew-image";
-                RequiredPhoto.ViewCustomAttributes = "";
-
-                // VisaPhoto
-                VisaPhoto.ViewValue = ConvertToString(VisaPhoto.CurrentValue); // DN
-                VisaPhoto.ImageAlt = VisaPhoto.Alt;
-                    VisaPhoto.ImageCssClass = "ew-image";
-                VisaPhoto.ViewCustomAttributes = "";
+                // TabName
+                TabName.ViewValue = ConvertToString(TabName.CurrentValue); // DN
+                TabName.ViewCustomAttributes = "";
 
                 // ColumnName
                 ColumnName.ViewValue = ConvertToString(ColumnName.CurrentValue); // DN
@@ -789,17 +781,17 @@ public partial class PCM {
                 ChangeType.ViewValue = ConvertToString(ChangeType.CurrentValue); // DN
                 ChangeType.ViewCustomAttributes = "";
 
+                // ID
+                ID.HrefValue = "";
+                ID.TooltipValue = "";
+
+                // MTCrewID
+                MTCrewID.HrefValue = "";
+                MTCrewID.TooltipValue = "";
+
                 // TabName
-                TabName.ViewValue = ConvertToString(TabName.CurrentValue); // DN
-                TabName.ViewCustomAttributes = "";
-
-                // IndividualCodeNumber
-                IndividualCodeNumber.HrefValue = "";
-                IndividualCodeNumber.TooltipValue = "";
-
-                // FullName
-                FullName.HrefValue = "";
-                FullName.TooltipValue = "";
+                TabName.HrefValue = "";
+                TabName.TooltipValue = "";
 
                 // ColumnName
                 ColumnName.HrefValue = "";
@@ -808,10 +800,6 @@ public partial class PCM {
                 // ChangeType
                 ChangeType.HrefValue = "";
                 ChangeType.TooltipValue = "";
-
-                // TabName
-                TabName.HrefValue = "";
-                TabName.TooltipValue = "";
             }
 
             // Call Row Rendered event
@@ -834,17 +822,17 @@ public partial class PCM {
             }
             if (SameText(type, "excel")) {
                 if (custom)
-                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-excel\" title=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" form=\"fUpdateTrackingview\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"excel\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToExcel") + "</button>";
+                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-excel\" title=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" form=\"fTRUpdateTrackingview\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"excel\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToExcel") + "</button>";
                 else
                     return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-excel\" title=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\">" + Language.Phrase("ExportToExcel") + "</a>";
             } else if (SameText(type, "word")) {
                 if (custom)
-                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-word\" title=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" form=\"fUpdateTrackingview\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"word\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToWord") + "</button>";
+                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-word\" title=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" form=\"fTRUpdateTrackingview\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"word\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToWord") + "</button>";
                 else
                     return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-word\" title=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\">" + Language.Phrase("ExportToWord") + "</a>";
             } else if (SameText(type, "pdf")) {
                 if (custom)
-                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-pdf\" title=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" form=\"fUpdateTrackingview\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"pdf\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToPDF") + "</button>";
+                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-pdf\" title=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" form=\"fTRUpdateTrackingview\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"pdf\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToPDF") + "</button>";
                 else
                     return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-pdf\" title=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\">" + Language.Phrase("ExportToPDF") + "</a>";
             } else if (SameText(type, "html")) {
@@ -855,7 +843,7 @@ public partial class PCM {
                 return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-csv\" title=\"" + HtmlEncode(Language.Phrase("ExportToCsv", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToCsv", true)) + "\">" + Language.Phrase("ExportToCsv") + "</a>";
             } else if (SameText(type, "email")) {
                 string url = custom ? " data-url=\"" + exportUrl + "\"" : "";
-                return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-email\" title=\"" + Language.Phrase("ExportToEmail", true) + "\" data-caption=\"" + Language.Phrase("ExportToEmail", true) + "\" form=\"fUpdateTrackingview\" data-ew-action=\"email\" data-hdr=\"" + Language.Phrase("ExportToEmail", true) + "\" data-key='" + HtmlEncode(ConvertToJsonAttribute(RecordKeys)) + "' data-export-selected=\"false\"" + url + ">" + Language.Phrase("ExportToEmail") + "</button>";
+                return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-email\" title=\"" + Language.Phrase("ExportToEmail", true) + "\" data-caption=\"" + Language.Phrase("ExportToEmail", true) + "\" form=\"fTRUpdateTrackingview\" data-ew-action=\"email\" data-hdr=\"" + Language.Phrase("ExportToEmail", true) + "\" data-key='" + HtmlEncode(ConvertToJsonAttribute(RecordKeys)) + "' data-export-selected=\"false\"" + url + ">" + Language.Phrase("ExportToEmail") + "</button>";
             } else if (SameText(type, "print")) {
                 return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-print\" title=\"" + HtmlEncode(Language.Phrase("PrinterFriendly", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("PrinterFriendly", true)) + "\">" + Language.Phrase("PrinterFriendly") + "</a>";
             }
@@ -985,7 +973,7 @@ public partial class PCM {
         protected void SetupBreadcrumb() {
             var breadcrumb = new Breadcrumb();
             string url = CurrentUrl();
-            breadcrumb.Add("list", TableVar, AppPath(AddMasterUrl("UpdateTrackingList")), "", TableVar, true);
+            breadcrumb.Add("list", TableVar, AppPath(AddMasterUrl("TrUpdateTrackingList")), "", TableVar, true);
             string pageId = "view";
             breadcrumb.Add("view", pageId, url);
             CurrentBreadcrumb = breadcrumb;

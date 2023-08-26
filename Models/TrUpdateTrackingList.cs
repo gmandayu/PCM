@@ -3,40 +3,34 @@ namespace PCM.Models;
 // Partial class
 public partial class PCM {
     /// <summary>
-    /// updateTrackingList
+    /// trUpdateTrackingList
     /// </summary>
-    public static UpdateTrackingList updateTrackingList
+    public static TrUpdateTrackingList trUpdateTrackingList
     {
-        get => HttpData.Get<UpdateTrackingList>("updateTrackingList")!;
-        set => HttpData["updateTrackingList"] = value;
+        get => HttpData.Get<TrUpdateTrackingList>("trUpdateTrackingList")!;
+        set => HttpData["trUpdateTrackingList"] = value;
     }
 
     /// <summary>
-    /// Page class for UpdateTracking
+    /// Page class for TRUpdateTracking
     /// </summary>
-    public class UpdateTrackingList : UpdateTrackingListBase
+    public class TrUpdateTrackingList : TrUpdateTrackingListBase
     {
         // Constructor
-        public UpdateTrackingList(Controller controller) : base(controller)
+        public TrUpdateTrackingList(Controller controller) : base(controller)
         {
         }
 
         // Constructor
-        public UpdateTrackingList() : base()
+        public TrUpdateTrackingList() : base()
         {
-        }
-
-        // Page Load event
-        public override void PageLoad() {
-            //Log("Page Load");
-            ListOptions[0].Visible = true;
         }
     }
 
     /// <summary>
     /// Page base class
     /// </summary>
-    public class UpdateTrackingListBase : UpdateTracking
+    public class TrUpdateTrackingListBase : TrUpdateTracking
     {
         // Page ID
         public string PageID = "list";
@@ -45,16 +39,16 @@ public partial class PCM {
         public string ProjectID = "{858E8D60-55D9-41E6-8104-7B793C2843C4}";
 
         // Table name
-        public string TableName { get; set; } = "UpdateTracking";
+        public string TableName { get; set; } = "TRUpdateTracking";
 
         // Page object name
-        public string PageObjName = "updateTrackingList";
+        public string PageObjName = "trUpdateTrackingList";
 
         // Title
         public string? Title = null; // Title for <title> tag
 
         // Grid form hidden field names
-        public string FormName = "fUpdateTrackinglist";
+        public string FormName = "fTRUpdateTrackinglist";
 
         public string FormActionName = "";
 
@@ -107,10 +101,10 @@ public partial class PCM {
         private string _pageUrl = "";
 
         // Constructor
-        public UpdateTrackingListBase()
+        public TrUpdateTrackingListBase()
         {
             // CSS class name as context
-            TableVar = "UpdateTracking";
+            TableVar = "TRUpdateTracking";
             ContextClass = CheckClassName(TableVar);
             TableGridClass = AppendClass(TableGridClass, ContextClass);
             FormActionName = Config.FormRowActionName;
@@ -130,18 +124,18 @@ public partial class PCM {
             // Language object
             Language = ResolveLanguage();
 
-            // Table object (updateTracking)
-            if (updateTracking == null || updateTracking is UpdateTracking)
-                updateTracking = this;
+            // Table object (trUpdateTracking)
+            if (trUpdateTracking == null || trUpdateTracking is TrUpdateTracking)
+                trUpdateTracking = this;
 
             // Initialize URLs
-            AddUrl = "UpdateTrackingAdd";
+            AddUrl = "TrUpdateTrackingAdd";
             InlineAddUrl = PageUrl + "action=add";
             GridAddUrl = PageUrl + "action=gridadd";
             GridEditUrl = PageUrl + "action=gridedit";
             MultiEditUrl = PageUrl + "action=multiedit";
-            MultiDeleteUrl = "UpdateTrackingDelete";
-            MultiUpdateUrl = "UpdateTrackingUpdate";
+            MultiDeleteUrl = "TrUpdateTrackingDelete";
+            MultiUpdateUrl = "TrUpdateTrackingUpdate";
 
             // Start time
             StartTime = Environment.TickCount;
@@ -215,7 +209,7 @@ public partial class PCM {
         }
 
         // Page name
-        public string PageName => "UpdateTrackingList";
+        public string PageName => "TrUpdateTrackingList";
 
         // Page URL
         public string PageUrl
@@ -274,20 +268,15 @@ public partial class PCM {
         // Set field visibility
         public void SetVisibility()
         {
-            ID.Visible = false;
-            _Action.Visible = false;
-            IndividualCodeNumber.SetVisibility();
-            FullName.SetVisibility();
-            EmployeeStatus.SetVisibility();
-            RequiredPhoto.SetVisibility();
-            VisaPhoto.SetVisibility();
+            ID.SetVisibility();
+            MTCrewID.SetVisibility();
+            TabName.SetVisibility();
             ColumnName.SetVisibility();
             ChangeType.SetVisibility();
-            TabName.SetVisibility();
         }
 
         // Constructor
-        public UpdateTrackingListBase(Controller? controller = null): this() { // DN
+        public TrUpdateTrackingListBase(Controller? controller = null): this() { // DN
             if (controller != null)
                 Controller = controller;
         }
@@ -338,7 +327,7 @@ public partial class PCM {
                         string pageName = GetPageName(url);
                         if (pageName != ListUrl) { // Not List page
                             result.Add("caption", GetModalCaption(pageName));
-                            result.Add("view", pageName == "UpdateTrackingView" ? "1" : "0"); // If View page, no primary button
+                            result.Add("view", pageName == "TrUpdateTrackingView" ? "1" : "0"); // If View page, no primary button
                         } else { // List page
                             // result.Add("list", PageID == "search" ? "1" : "0"); // Refresh List page if current page is Search page
                             result.Add("error", FailureMessage); // List page should not be shown as modal => error
@@ -461,16 +450,8 @@ public partial class PCM {
 
         // Hide fields for Add/Edit
         protected void HideFieldsForAddEdit() {
-            if (IsAddOrEdit)
-                IndividualCodeNumber.Visible = false;
-            if (IsAddOrEdit)
-                FullName.Visible = false;
-            if (IsAddOrEdit)
-                EmployeeStatus.Visible = false;
-            if (IsAddOrEdit)
-                RequiredPhoto.Visible = false;
-            if (IsAddOrEdit)
-                VisaPhoto.Visible = false;
+            if (IsAdd || IsCopy || IsGridAdd)
+                ID.Visible = false;
         }
 
         #pragma warning disable 219
@@ -714,9 +695,6 @@ public partial class PCM {
 
             // Setup export options
             SetupExportOptions();
-
-            // Setup import options
-            SetupImportOptions();
             SetVisibility();
 
             // Do not use lookup cache
@@ -755,7 +733,7 @@ public partial class PCM {
 
             // Update form name to avoid conflict
             if (IsModal)
-                FormName = "fUpdateTrackinggrid";
+                FormName = "fTRUpdateTrackinggrid";
 
             // Set up infinite scroll
             UseInfiniteScroll = Param<bool>("infinitescroll");
@@ -784,13 +762,6 @@ public partial class PCM {
             if (!IsExport())
                 SetupBreadcrumb();
 
-            // Process import
-            if (IsImport) {
-                if (!Config.Debug)
-                    Response?.Clear();
-                return await Import(Param(Config.ApiFileTokenName), Param<bool>("rollback"));
-            }
-
             // Hide list options
             if (IsExport()) {
                 ListOptions.HideAllOptions(new () {"sequence"});
@@ -817,14 +788,9 @@ public partial class PCM {
 
             // Get default search criteria
             AddFilter(ref DefaultSearchWhere, BasicSearchWhere(true));
-            AddFilter(ref DefaultSearchWhere, AdvancedSearchWhere(true));
 
             // Get basic search values
             LoadBasicSearchValues();
-
-            // Get and validate search values for advanced search
-            if (Empty(UserAction)) // Skip if user action
-                LoadSearchValues(); // Get search values
 
             // Process filter list
             var filterResult = await ProcessFilterList();
@@ -833,9 +799,6 @@ public partial class PCM {
                 if (!Config.Debug)
                     Response?.Clear();
                 return Controller.Json(filterResult);
-            }
-            if (!ValidateSearch()) {
-                // Nothing to do
             }
 
             // Restore search parms from Session if not searching / reset / export
@@ -852,13 +815,6 @@ public partial class PCM {
             if (!HasInvalidFields())
                 srchBasic = BasicSearchWhere();
 
-            // Get search criteria for advanced search
-            if (!HasInvalidFields())
-                srchAdvanced = AdvancedSearchWhere();
-
-            // Get query builder criteria
-            query = QueryBuilderWhere();
-
             // Restore display records
             if (Command != "json" && (RecordsPerPage == -1 || RecordsPerPage > 0)) {
                 DisplayRecords = RecordsPerPage; // Restore from Session
@@ -873,15 +829,7 @@ public partial class PCM {
                 BasicSearch.LoadDefault();
                 if (!Empty(BasicSearch.Keyword))
                     srchBasic = BasicSearchWhere(); // Save to session
-
-                // Load advanced search from default
-                if (LoadAdvancedSearchDefault())
-                    srchAdvanced = AdvancedSearchWhere(); // Save to session
             }
-
-            // Restore search settings from Session
-            if (!HasInvalidFields())
-                LoadAdvancedSearch();
 
             // Build search criteria
             if (!Empty(query)) {
@@ -1024,7 +972,7 @@ public partial class PCM {
                 PageRendering();
 
                 // Page Render event
-                updateTrackingList?.PageRender();
+                trUpdateTrackingList?.PageRender();
             }
             return PageResult();
         }
@@ -1051,13 +999,6 @@ public partial class PCM {
                 StartRecord = 1;
                 StartRecordNumber = StartRecord;
             }
-        }
-
-        // Exit inline mode
-        protected void ClearInlineMode() {
-            LastAction = CurrentAction; // Save last action
-            CurrentAction = ""; // Clear action
-            Session[Config.SessionInlineMode] = ""; // Clear inline mode
         }
 
         // Build filter for all keys
@@ -1099,15 +1040,11 @@ public partial class PCM {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(_Action.AdvancedSearch.ToJson())); // Field Action
-            filters.Merge(JObject.Parse(IndividualCodeNumber.AdvancedSearch.ToJson())); // Field IndividualCodeNumber
-            filters.Merge(JObject.Parse(FullName.AdvancedSearch.ToJson())); // Field FullName
-            filters.Merge(JObject.Parse(EmployeeStatus.AdvancedSearch.ToJson())); // Field EmployeeStatus
-            filters.Merge(JObject.Parse(RequiredPhoto.AdvancedSearch.ToJson())); // Field RequiredPhoto
-            filters.Merge(JObject.Parse(VisaPhoto.AdvancedSearch.ToJson())); // Field VisaPhoto
+            filters.Merge(JObject.Parse(ID.AdvancedSearch.ToJson())); // Field ID
+            filters.Merge(JObject.Parse(MTCrewID.AdvancedSearch.ToJson())); // Field MTCrewID
+            filters.Merge(JObject.Parse(TabName.AdvancedSearch.ToJson())); // Field TabName
             filters.Merge(JObject.Parse(ColumnName.AdvancedSearch.ToJson())); // Field ColumnName
             filters.Merge(JObject.Parse(ChangeType.AdvancedSearch.ToJson())); // Field ChangeType
-            filters.Merge(JObject.Parse(TabName.AdvancedSearch.ToJson())); // Field TabName
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1134,64 +1071,34 @@ public partial class PCM {
             Command = "search";
             string? sv;
 
-            // Field Action
-            if (filter?.TryGetValue("x__Action", out sv) ?? false) {
-                _Action.AdvancedSearch.SearchValue = sv;
-                _Action.AdvancedSearch.SearchOperator = filter["z__Action"];
-                _Action.AdvancedSearch.SearchCondition = filter["v__Action"];
-                _Action.AdvancedSearch.SearchValue2 = filter["y__Action"];
-                _Action.AdvancedSearch.SearchOperator2 = filter["w__Action"];
-                _Action.AdvancedSearch.Save();
+            // Field ID
+            if (filter?.TryGetValue("x_ID", out sv) ?? false) {
+                ID.AdvancedSearch.SearchValue = sv;
+                ID.AdvancedSearch.SearchOperator = filter["z_ID"];
+                ID.AdvancedSearch.SearchCondition = filter["v_ID"];
+                ID.AdvancedSearch.SearchValue2 = filter["y_ID"];
+                ID.AdvancedSearch.SearchOperator2 = filter["w_ID"];
+                ID.AdvancedSearch.Save();
             }
 
-            // Field IndividualCodeNumber
-            if (filter?.TryGetValue("x_IndividualCodeNumber", out sv) ?? false) {
-                IndividualCodeNumber.AdvancedSearch.SearchValue = sv;
-                IndividualCodeNumber.AdvancedSearch.SearchOperator = filter["z_IndividualCodeNumber"];
-                IndividualCodeNumber.AdvancedSearch.SearchCondition = filter["v_IndividualCodeNumber"];
-                IndividualCodeNumber.AdvancedSearch.SearchValue2 = filter["y_IndividualCodeNumber"];
-                IndividualCodeNumber.AdvancedSearch.SearchOperator2 = filter["w_IndividualCodeNumber"];
-                IndividualCodeNumber.AdvancedSearch.Save();
+            // Field MTCrewID
+            if (filter?.TryGetValue("x_MTCrewID", out sv) ?? false) {
+                MTCrewID.AdvancedSearch.SearchValue = sv;
+                MTCrewID.AdvancedSearch.SearchOperator = filter["z_MTCrewID"];
+                MTCrewID.AdvancedSearch.SearchCondition = filter["v_MTCrewID"];
+                MTCrewID.AdvancedSearch.SearchValue2 = filter["y_MTCrewID"];
+                MTCrewID.AdvancedSearch.SearchOperator2 = filter["w_MTCrewID"];
+                MTCrewID.AdvancedSearch.Save();
             }
 
-            // Field FullName
-            if (filter?.TryGetValue("x_FullName", out sv) ?? false) {
-                FullName.AdvancedSearch.SearchValue = sv;
-                FullName.AdvancedSearch.SearchOperator = filter["z_FullName"];
-                FullName.AdvancedSearch.SearchCondition = filter["v_FullName"];
-                FullName.AdvancedSearch.SearchValue2 = filter["y_FullName"];
-                FullName.AdvancedSearch.SearchOperator2 = filter["w_FullName"];
-                FullName.AdvancedSearch.Save();
-            }
-
-            // Field EmployeeStatus
-            if (filter?.TryGetValue("x_EmployeeStatus", out sv) ?? false) {
-                EmployeeStatus.AdvancedSearch.SearchValue = sv;
-                EmployeeStatus.AdvancedSearch.SearchOperator = filter["z_EmployeeStatus"];
-                EmployeeStatus.AdvancedSearch.SearchCondition = filter["v_EmployeeStatus"];
-                EmployeeStatus.AdvancedSearch.SearchValue2 = filter["y_EmployeeStatus"];
-                EmployeeStatus.AdvancedSearch.SearchOperator2 = filter["w_EmployeeStatus"];
-                EmployeeStatus.AdvancedSearch.Save();
-            }
-
-            // Field RequiredPhoto
-            if (filter?.TryGetValue("x_RequiredPhoto", out sv) ?? false) {
-                RequiredPhoto.AdvancedSearch.SearchValue = sv;
-                RequiredPhoto.AdvancedSearch.SearchOperator = filter["z_RequiredPhoto"];
-                RequiredPhoto.AdvancedSearch.SearchCondition = filter["v_RequiredPhoto"];
-                RequiredPhoto.AdvancedSearch.SearchValue2 = filter["y_RequiredPhoto"];
-                RequiredPhoto.AdvancedSearch.SearchOperator2 = filter["w_RequiredPhoto"];
-                RequiredPhoto.AdvancedSearch.Save();
-            }
-
-            // Field VisaPhoto
-            if (filter?.TryGetValue("x_VisaPhoto", out sv) ?? false) {
-                VisaPhoto.AdvancedSearch.SearchValue = sv;
-                VisaPhoto.AdvancedSearch.SearchOperator = filter["z_VisaPhoto"];
-                VisaPhoto.AdvancedSearch.SearchCondition = filter["v_VisaPhoto"];
-                VisaPhoto.AdvancedSearch.SearchValue2 = filter["y_VisaPhoto"];
-                VisaPhoto.AdvancedSearch.SearchOperator2 = filter["w_VisaPhoto"];
-                VisaPhoto.AdvancedSearch.Save();
+            // Field TabName
+            if (filter?.TryGetValue("x_TabName", out sv) ?? false) {
+                TabName.AdvancedSearch.SearchValue = sv;
+                TabName.AdvancedSearch.SearchOperator = filter["z_TabName"];
+                TabName.AdvancedSearch.SearchCondition = filter["v_TabName"];
+                TabName.AdvancedSearch.SearchValue2 = filter["y_TabName"];
+                TabName.AdvancedSearch.SearchOperator2 = filter["w_TabName"];
+                TabName.AdvancedSearch.Save();
             }
 
             // Field ColumnName
@@ -1213,16 +1120,6 @@ public partial class PCM {
                 ChangeType.AdvancedSearch.SearchOperator2 = filter["w_ChangeType"];
                 ChangeType.AdvancedSearch.Save();
             }
-
-            // Field TabName
-            if (filter?.TryGetValue("x_TabName", out sv) ?? false) {
-                TabName.AdvancedSearch.SearchValue = sv;
-                TabName.AdvancedSearch.SearchOperator = filter["z_TabName"];
-                TabName.AdvancedSearch.SearchCondition = filter["v_TabName"];
-                TabName.AdvancedSearch.SearchValue2 = filter["y_TabName"];
-                TabName.AdvancedSearch.SearchOperator2 = filter["w_TabName"];
-                TabName.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1230,229 +1127,13 @@ public partial class PCM {
             return true;
         }
 
-        // Advanced search WHERE clause based on QueryString
-        public string AdvancedSearchWhere(bool def = false) {
-            string where = "";
-            if (!Security.CanSearch)
-                return "";
-            BuildSearchSql(ref where, _Action, def, false); // _Action
-            BuildSearchSql(ref where, IndividualCodeNumber, def, false); // IndividualCodeNumber
-            BuildSearchSql(ref where, FullName, def, false); // FullName
-            BuildSearchSql(ref where, EmployeeStatus, def, false); // EmployeeStatus
-            BuildSearchSql(ref where, RequiredPhoto, def, false); // RequiredPhoto
-            BuildSearchSql(ref where, VisaPhoto, def, false); // VisaPhoto
-            BuildSearchSql(ref where, ColumnName, def, false); // ColumnName
-            BuildSearchSql(ref where, ChangeType, def, false); // ChangeType
-            BuildSearchSql(ref where, TabName, def, false); // TabName
-
-            // Set up search command
-            if (!def && !Empty(where) && (new[] { "", "reset", "resetall" }).Contains(Command))
-                Command = "search";
-            if (!def && Command == "search") {
-                _Action.AdvancedSearch.Save(); // Action
-                IndividualCodeNumber.AdvancedSearch.Save(); // IndividualCodeNumber
-                FullName.AdvancedSearch.Save(); // FullName
-                EmployeeStatus.AdvancedSearch.Save(); // EmployeeStatus
-                RequiredPhoto.AdvancedSearch.Save(); // RequiredPhoto
-                VisaPhoto.AdvancedSearch.Save(); // VisaPhoto
-                ColumnName.AdvancedSearch.Save(); // ColumnName
-                ChangeType.AdvancedSearch.Save(); // ChangeType
-                TabName.AdvancedSearch.Save(); // TabName
-
-                // Clear rules for QueryBuilder
-                SessionRules = "";
-            }
-            return where;
-        }
-
-        // Parse query builder rule function
-        protected string ParseRules(Dictionary<string, object>? group, string fieldName = "") {
-            if (group == null)
-                return "";
-            string condition = group.ContainsKey("condition") ? ConvertToString(group["condition"]) : "AND";
-            if (!(new [] { "AND", "OR" }).Contains(condition))
-                throw new System.Exception("Unable to build SQL query with condition '" + condition + "'");
-            List<string> parts = new ();
-            string where = "";
-            var groupRules = group.ContainsKey("rules") ? group["rules"] : null;
-            if (groupRules is IEnumerable<object> rules) {
-                foreach (object rule in rules) {
-                    var subRules = JObject.FromObject(rule).ToObject<Dictionary<string, object>>();
-                    if (subRules == null)
-                        continue;
-                    if (subRules.ContainsKey("rules")) {
-                        parts.Add("(" + " " + ParseRules(subRules, fieldName) + " " + ")" + " ");
-                    } else {
-                        string field = subRules.ContainsKey("field") ? ConvertToString(subRules["field"]) : "";
-                        var fld = FieldByParam(field);
-                        if (fld == null)
-                            throw new System.Exception("Failed to find field '" + field + "'");
-                        if (Empty(fieldName) || fld.Name == fieldName) { // Field name not specified or matched field name
-                            string opr = subRules.ContainsKey("operator") ? ConvertToString(subRules["operator"]) : "";
-                            string fldOpr = Config.ClientSearchOperators.FirstOrDefault(o => o.Value == opr).Key;
-                            Dictionary<string, object>? ope = Config.QueryBuilderOperators.ContainsKey(opr) ? Config.QueryBuilderOperators[opr] : null;
-                            if (ope == null || Empty(fldOpr))
-                                throw new System.Exception("Unknown SQL operation for operator '" + opr + "'");
-                            int nb_inputs = ope.ContainsKey("nb_inputs") ? ConvertToInt(ope["nb_inputs"]) : 0;
-                            object val = subRules.ContainsKey("value") ? subRules["value"] : "";
-                            if (nb_inputs > 0 && !Empty(val) || IsNullOrEmptyOperator(fldOpr)) {
-                                string fldVal = val is List<object> list
-                                    ? (list[0] is IEnumerable<string> ? String.Join(Config.MultipleOptionSeparator, list[0]) : ConvertToString(list[0]))
-                                    : ConvertToString(val);
-                                bool useFilter = fld.UseFilter; // Query builder does not use filter
-                                try {
-                                    if (fld.IsMultiSelect) {
-                                        parts.Add(!Empty(fldVal) ? GetMultiSearchSql(fld, fldOpr, ConvertSearchValue(fldVal, fldOpr, fld), DbId) : "");
-                                    } else {
-                                        string fldVal2 = fldOpr.Contains("BETWEEN")
-                                            ? (val is List<object> list2 && list2.Count > 1
-                                                ? (list2[1] is IEnumerable<string> ? String.Join(Config.MultipleOptionSeparator, list2[1]) : ConvertToString(list2[1]))
-                                                : "")
-                                            : ""; // BETWEEN
-                                        parts.Add(GetSearchSql(
-                                            fld,
-                                            ConvertSearchValue(fldVal, fldOpr, fld), // fldVal
-                                            fldOpr,
-                                            "", // fldCond not used
-                                            ConvertSearchValue(fldVal2, fldOpr, fld), // $fldVal2
-                                            "", // fldOpr2 not used
-                                            DbId
-                                        ));
-                                    }
-                                } finally {
-                                    fld.UseFilter = useFilter;
-                                }
-                            }
-                        }
-                    }
-                }
-                where = String.Join(" " + condition + " ", parts);
-                bool not = group.ContainsKey("not") ? ConvertToBool(group["not"]) : false;
-                if (not)
-                    where = "NOT (" + where + ")";
-            }
-            return where;
-        }
-
-        // Quey builder WHERE clause
-        public string QueryBuilderWhere(string fieldName = "")
-        {
-            if (!Security.CanSearch)
-                return "";
-
-            // Get rules by query builder
-            string rules = "";
-            if (Post("rules", out StringValues sv))
-                rules = sv.ToString();
-            else
-                rules = SessionRules;
-
-            // Decode and parse rules
-            string where = !Empty(rules) ? ParseRules(JsonConvert.DeserializeObject<Dictionary<string, object>>(rules), fieldName) : "";
-
-            // Clear other search and save rules to session
-            if (!Empty(where) && Empty(fieldName)) { // Skip if get query for specific field
-                ResetSearchParms();
-                SessionRules = rules;
-            }
-
-            // Return query
-            return where;
-        }
-
-        // Build search SQL
-        public void BuildSearchSql(ref string where, DbField fld, bool def, bool multiValue)
-        {
-            string fldParm = fld.Param;
-            string fldVal = def ? ConvertToString(fld.AdvancedSearch.SearchValueDefault) : ConvertToString(fld.AdvancedSearch.SearchValue);
-            string fldOpr = def ? fld.AdvancedSearch.SearchOperatorDefault : fld.AdvancedSearch.SearchOperator;
-            string fldCond = def ? fld.AdvancedSearch.SearchConditionDefault : fld.AdvancedSearch.SearchCondition;
-            string fldVal2 = def ? ConvertToString(fld.AdvancedSearch.SearchValue2Default) : ConvertToString(fld.AdvancedSearch.SearchValue2);
-            string fldOpr2 = def ? fld.AdvancedSearch.SearchOperator2Default : fld.AdvancedSearch.SearchOperator2;
-            fldVal = ConvertSearchValue(fldVal, fldOpr, fld);
-            fldVal2 = ConvertSearchValue(fldVal2, fldOpr2, fld);
-            fldOpr = ConvertSearchOperator(fldOpr, fld, fldVal);
-            fldOpr2 = ConvertSearchOperator(fldOpr2, fld, fldVal2);
-            string wrk = "";
-            if (Config.SearchMultiValueOption == 1 && !fld.UseFilter || !IsMultiSearchOperator(fldOpr))
-                multiValue = false;
-            if (multiValue) {
-                wrk = !Empty(fldVal) ? GetMultiSearchSql(fld, fldOpr, fldVal, DbId) : ""; // Field value 1
-                string wrk2 = !Empty(fldVal2) ? GetMultiSearchSql(fld, fldOpr2, fldVal2, DbId) : ""; // Field value 2
-                AddFilter(ref wrk, wrk2, fldCond);
-            } else {
-                wrk = GetSearchSql(fld, fldVal, fldOpr, fldCond, fldVal2, fldOpr2, DbId);
-            }
-            string cond = SearchOption == "AUTO" && (new[] {"AND", "OR"}).Contains(BasicSearch.Type)
-                ? BasicSearch.Type
-                : SameText(SearchOption, "OR") ? "OR" : "AND";
-            AddFilter(ref where, wrk, cond);
-        }
-
         // Show list of filters
         public void ShowFilterList()
         {
             // Initialize
             string filterList = "",
-                filter = "",
                 captionClass = IsExport("email") ? "ew-filter-caption-email" : "ew-filter-caption",
                 captionSuffix = IsExport("email") ? ": " : "";
-
-            // Field IndividualCodeNumber
-            filter = QueryBuilderWhere("IndividualCodeNumber");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, IndividualCodeNumber, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + IndividualCodeNumber.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field FullName
-            filter = QueryBuilderWhere("FullName");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, FullName, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + FullName.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field EmployeeStatus
-            filter = QueryBuilderWhere("EmployeeStatus");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, EmployeeStatus, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + EmployeeStatus.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field RequiredPhoto
-            filter = QueryBuilderWhere("RequiredPhoto");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, RequiredPhoto, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + RequiredPhoto.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field VisaPhoto
-            filter = QueryBuilderWhere("VisaPhoto");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, VisaPhoto, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + VisaPhoto.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field ColumnName
-            filter = QueryBuilderWhere("ColumnName");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, ColumnName, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + ColumnName.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field ChangeType
-            filter = QueryBuilderWhere("ChangeType");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, ChangeType, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + ChangeType.Caption + "</span>" + captionSuffix + filter + "</div>";
-
-            // Field TabName
-            filter = QueryBuilderWhere("TabName");
-            if (Empty(filter))
-                BuildSearchSql(ref filter, TabName, false, false);
-            if (!Empty(filter))
-                filterList += "<div><span class=\"" + captionClass + "\">" + TabName.Caption + "</span>" + captionSuffix + filter + "</div>";
             if (!Empty(BasicSearch.Keyword))
                 filterList += "<div><span class=\"" + captionClass + "\">" + Language.Phrase("BasicSearchKeyword") + "</span>" + captionSuffix + BasicSearch.Keyword + "</div>";
 
@@ -1475,12 +1156,9 @@ public partial class PCM {
 
             // Fields to search
             List<DbField> searchFlds = new ();
-            searchFlds.Add(IndividualCodeNumber);
-            searchFlds.Add(FullName);
-            searchFlds.Add(EmployeeStatus);
+            searchFlds.Add(TabName);
             searchFlds.Add(ColumnName);
             searchFlds.Add(ChangeType);
-            searchFlds.Add(TabName);
             string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
             string searchType = def ? BasicSearch.TypeDefault : BasicSearch.Type;
 
@@ -1506,24 +1184,6 @@ public partial class PCM {
             // Check basic search
             if (BasicSearch.IssetSession)
                 return true;
-            if (_Action.AdvancedSearch.IssetSession)
-                return true;
-            if (IndividualCodeNumber.AdvancedSearch.IssetSession)
-                return true;
-            if (FullName.AdvancedSearch.IssetSession)
-                return true;
-            if (EmployeeStatus.AdvancedSearch.IssetSession)
-                return true;
-            if (RequiredPhoto.AdvancedSearch.IssetSession)
-                return true;
-            if (VisaPhoto.AdvancedSearch.IssetSession)
-                return true;
-            if (ColumnName.AdvancedSearch.IssetSession)
-                return true;
-            if (ChangeType.AdvancedSearch.IssetSession)
-                return true;
-            if (TabName.AdvancedSearch.IssetSession)
-                return true;
             return false;
         }
 
@@ -1534,9 +1194,6 @@ public partial class PCM {
 
             // Clear basic search parameters
             ResetBasicSearchParms();
-
-            // Clear advanced search parameters
-            ResetAdvancedSearchParms();
 
             // Clear queryBuilder
             SessionRules = "";
@@ -1552,43 +1209,19 @@ public partial class PCM {
             BasicSearch.UnsetSession();
         }
 
-        // Clear all advanced search parameters
-        protected void ResetAdvancedSearchParms() {
-            _Action.AdvancedSearch.UnsetSession();
-            IndividualCodeNumber.AdvancedSearch.UnsetSession();
-            FullName.AdvancedSearch.UnsetSession();
-            EmployeeStatus.AdvancedSearch.UnsetSession();
-            RequiredPhoto.AdvancedSearch.UnsetSession();
-            VisaPhoto.AdvancedSearch.UnsetSession();
-            ColumnName.AdvancedSearch.UnsetSession();
-            ChangeType.AdvancedSearch.UnsetSession();
-            TabName.AdvancedSearch.UnsetSession();
-        }
-
         // Restore all search parameters
         protected void RestoreSearchParms() {
             RestoreSearch = true;
 
             // Restore basic search values
             BasicSearch.Load();
-
-            // Restore advanced search values
-            _Action.AdvancedSearch.Load();
-            IndividualCodeNumber.AdvancedSearch.Load();
-            FullName.AdvancedSearch.Load();
-            EmployeeStatus.AdvancedSearch.Load();
-            RequiredPhoto.AdvancedSearch.Load();
-            VisaPhoto.AdvancedSearch.Load();
-            ColumnName.AdvancedSearch.Load();
-            ChangeType.AdvancedSearch.Load();
-            TabName.AdvancedSearch.Load();
         }
 
         // Set up sort parameters
         protected void SetupSortOrder() {
             // Load default Sorting Order
             if (Command != "json") {
-                string defaultSort = ID.Expression + " ASC"; // Set up default sort
+                string defaultSort = ""; // Set up default sort
                 if (Empty(SessionOrderBy) && !Empty(defaultSort))
                     SessionOrderBy = defaultSort;
             }
@@ -1600,14 +1233,11 @@ public partial class PCM {
             if (Get("order", out StringValues sv)) {
                 CurrentOrder = sv.ToString();
                 CurrentOrderType = Get("ordertype");
-                UpdateSort(IndividualCodeNumber, ctrl); // IndividualCodeNumber
-                UpdateSort(FullName, ctrl); // FullName
-                UpdateSort(EmployeeStatus, ctrl); // EmployeeStatus
-                UpdateSort(RequiredPhoto, ctrl); // RequiredPhoto
-                UpdateSort(VisaPhoto, ctrl); // VisaPhoto
+                UpdateSort(ID, ctrl); // ID
+                UpdateSort(MTCrewID, ctrl); // MTCrewID
+                UpdateSort(TabName, ctrl); // TabName
                 UpdateSort(ColumnName, ctrl); // ColumnName
                 UpdateSort(ChangeType, ctrl); // ChangeType
-                UpdateSort(TabName, ctrl); // TabName
                 StartRecordNumber = 1; // Reset start position
             }
 
@@ -1633,15 +1263,10 @@ public partial class PCM {
                     string orderBy = "";
                     SessionOrderBy = orderBy;
                     ID.Sort = "";
-                    _Action.Sort = "";
-                    IndividualCodeNumber.Sort = "";
-                    FullName.Sort = "";
-                    EmployeeStatus.Sort = "";
-                    RequiredPhoto.Sort = "";
-                    VisaPhoto.Sort = "";
+                    MTCrewID.Sort = "";
+                    TabName.Sort = "";
                     ColumnName.Sort = "";
                     ChangeType.Sort = "";
-                    TabName.Sort = "";
                 }
 
                 // Reset start position
@@ -1667,6 +1292,24 @@ public partial class PCM {
             item.Visible = Security.CanView;
             item.OnLeft = true;
 
+            // "edit"
+            item = ListOptions.Add("edit");
+            item.CssClass = "text-nowrap";
+            item.Visible = Security.CanEdit;
+            item.OnLeft = true;
+
+            // "copy"
+            item = ListOptions.Add("copy");
+            item.CssClass = "text-nowrap";
+            item.Visible = Security.CanAdd;
+            item.OnLeft = true;
+
+            // "delete"
+            item = ListOptions.Add("delete");
+            item.CssClass = "text-nowrap";
+            item.Visible = Security.CanDelete;
+            item.OnLeft = true;
+
             // List actions
             item = ListOptions.Add("listactions");
             item.CssClass = "text-nowrap";
@@ -1683,14 +1326,6 @@ public partial class PCM {
             item.Header = "<div class=\"form-check\"><input type=\"checkbox\" name=\"key\" id=\"key\" class=\"form-check-input\" data-ew-action=\"select-all-keys\"></div>";
             if (item.OnLeft)
                 item.MoveTo(0);
-            item.ShowInDropDown = false;
-            item.ShowInButtonGroup = false;
-
-            // "sequence"
-            item = ListOptions.Add("sequence");
-            item.CssClass = "text-nowrap";
-            item.Visible = true;
-            item.OnLeft = true; // Always on left
             item.ShowInDropDown = false;
             item.ShowInButtonGroup = false;
 
@@ -1734,19 +1369,57 @@ public partial class PCM {
             // Call ListOptions Rendering event
             ListOptionsRendering();
 
-            // "sequence"
-            listOption = ListOptions["sequence"];
-            listOption?.SetBody(FormatSequenceNumber(RecordCount));
-
             // "view"
             listOption = ListOptions["view"];
             string viewcaption = Language.Phrase("ViewLink", true);
             isVisible = Security.CanView;
             if (isVisible) {
                 if (ModalView && !IsMobile())
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-view"" title=""{viewcaption}"" data-table=""UpdateTracking"" data-caption=""{viewcaption}"" data-ew-action=""modal"" data-action=""view"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(ViewUrl)) + "\" data-btn=\"null\">" + Language.Phrase("ViewLink") + "</a>");
+                    listOption?.SetBody($@"<a class=""ew-row-link ew-view"" title=""{viewcaption}"" data-table=""TRUpdateTracking"" data-caption=""{viewcaption}"" data-ew-action=""modal"" data-action=""view"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(ViewUrl)) + "\" data-btn=\"null\">" + Language.Phrase("ViewLink") + "</a>");
                 else
                     listOption?.SetBody($@"<a class=""ew-row-link ew-view"" title=""{viewcaption}"" data-caption=""{viewcaption}"" href=""" + HtmlEncode(AppPath(ViewUrl)) + "\">" + Language.Phrase("ViewLink") + "</a>");
+            } else {
+                listOption?.Clear();
+            }
+
+            // "edit"
+            listOption = ListOptions["edit"];
+            string editcaption = Language.Phrase("EditLink", true);
+            isVisible = Security.CanEdit;
+            if (isVisible) {
+                if (ModalEdit && !IsMobile())
+                    listOption?.SetBody($@"<a class=""ew-row-link ew-edit"" title=""{editcaption}"" data-table=""TRUpdateTracking"" data-caption=""{editcaption}"" data-ew-action=""modal"" data-action=""edit"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(EditUrl)) + "\" data-btn=\"SaveBtn\">" + Language.Phrase("EditLink") + "</a>");
+                else
+                    listOption?.SetBody($@"<a class=""ew-row-link ew-edit"" title=""{editcaption}"" data-caption=""{editcaption}"" href=""" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("EditLink") + "</a>");
+            } else {
+                listOption?.Clear();
+            }
+
+            // "copy"
+            listOption = ListOptions["copy"];
+            string copycaption = Language.Phrase("CopyLink", true);
+            isVisible = Security.CanAdd;
+            if (isVisible) {
+                if (ModalAdd && !IsMobile())
+                    listOption?.SetBody($@"<a class=""ew-row-link ew-copy"" title=""{copycaption}"" data-table=""TRUpdateTracking"" data-caption=""{copycaption}"" data-ew-action=""modal"" data-action=""add"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(CopyUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("CopyLink") + "</a>");
+                else
+                    listOption?.SetBody($@"<a class=""ew-row-link ew-copy"" title=""{copycaption}"" data-caption=""{copycaption}"" href=""" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("CopyLink") + "</a>");
+            } else {
+                listOption?.Clear();
+            }
+
+            // "delete"
+            listOption = ListOptions["delete"];
+            isVisible = Security.CanDelete;
+            if (isVisible) {
+                string deleteCaption = Language.Phrase("DeleteLink");
+                string deleteTitle = Language.Phrase("DeleteLink", true);
+                if (UseAjaxActions)
+                    listOption?.SetBody($@"<a class=""ew-row-link ew-delete"" data-ew-action=""inline"" data-action=""delete"" title=""{deleteTitle}"" data-caption=""{deleteTitle}"" data-key=""" + HtmlEncode(GetKey(true)) + "\" data-url=\"" + HtmlEncode(AppPath(DeleteUrl)) + "\">" + deleteCaption + "</a>");
+                else
+                    listOption?.SetBody(@"<a class=""ew-row-link ew-delete""" +
+                        (InlineDelete ? @" data-ew-action=""inline-delete""" : "") +
+                        $@" title=""{deleteTitle}"" data-caption=""{deleteTitle}"" href=""" + HtmlEncode(AppPath(DeleteUrl)) + "\">" + deleteCaption + "</a>");
             } else {
                 listOption?.Clear();
             }
@@ -1761,11 +1434,11 @@ public partial class PCM {
                         var action = act.Action;
                         string caption = act.Caption;
                         var icon = (act.Icon != "") ? "<i class=\"" + HtmlEncode(act.Icon.Replace(" ew-icon", "")) + "\" data-caption=\"" + HtmlTitle(caption) + "\"></i> " : "";
-                        string link = "<li><button type=\"button\" class=\"dropdown-item ew-action ew-list-action\" data-caption=\"" + HtmlTitle(caption) + "\" data-ew-action=\"submit\" form=\"fUpdateTrackinglist\" data-key=\"" + KeyToJson(true) + "\"" + act.ToDataAttrs() + ">" + icon + " " + caption + "</button></li>";
+                        string link = "<li><button type=\"button\" class=\"dropdown-item ew-action ew-list-action\" data-caption=\"" + HtmlTitle(caption) + "\" data-ew-action=\"submit\" form=\"fTRUpdateTrackinglist\" data-key=\"" + KeyToJson(true) + "\"" + act.ToDataAttrs() + ">" + icon + " " + caption + "</button></li>";
                         if (!Empty(link)) {
                             links.Add(link);
                             if (Empty(body)) // Setup first button
-                                body = "<button type=\"button\" class=\"btn btn-default ew-action ew-list-action\" title=\"" + HtmlTitle(caption) + "\" data-caption=\"" + HtmlTitle(caption) + "\" data-ew-action=\"submit\" form=\"fUpdateTrackinglist\" data-key=\"" + KeyToJson(true) + "\"" + act.ToDataAttrs() + ">" + icon + caption + "</button>";
+                                body = "<button type=\"button\" class=\"btn btn-default ew-action ew-list-action\" title=\"" + HtmlTitle(caption) + "\" data-caption=\"" + HtmlTitle(caption) + "\" data-ew-action=\"submit\" form=\"fTRUpdateTrackinglist\" data-key=\"" + KeyToJson(true) + "\"" + act.ToDataAttrs() + ">" + icon + caption + "</button>";
                         }
                     }
                 }
@@ -1798,6 +1471,16 @@ public partial class PCM {
             ListOptions option;
             ListOption item;
             var options = OtherOptions;
+            option = options["addedit"];
+
+            // Add
+            item = option.Add("add");
+            string addTitle = Language.Phrase("AddLink", true);
+            if (ModalAdd && !IsMobile())
+                item.Body = $@"<a class=""ew-add-edit ew-add"" title=""{addTitle}"" data-table=""TRUpdateTracking"" data-caption=""{addTitle}"" data-ew-action=""modal"" data-action=""add"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(AddUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("AddLink") + "</a>";
+            else
+                item.Body = $@"<a class=""ew-add-edit ew-add"" title=""{addTitle}"" data-caption=""{addTitle}"" href=""" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("AddLink") + "</a>";
+            item.Visible = AddUrl != "" && Security.CanAdd;
             option = options["action"];
 
             // Show column list for column visibility
@@ -1806,14 +1489,11 @@ public partial class PCM {
                 item = option.AddGroupOption();
                 item.Body = "";
                 item.Visible = UseColumnVisibility;
-                CreateColumnOption(option.Add("IndividualCodeNumber")); // DN
-                CreateColumnOption(option.Add("FullName")); // DN
-                CreateColumnOption(option.Add("EmployeeStatus")); // DN
-                CreateColumnOption(option.Add("RequiredPhoto")); // DN
-                CreateColumnOption(option.Add("VisaPhoto")); // DN
+                CreateColumnOption(option.Add("ID")); // DN
+                CreateColumnOption(option.Add("MTCrewID")); // DN
+                CreateColumnOption(option.Add("TabName")); // DN
                 CreateColumnOption(option.Add("ColumnName")); // DN
                 CreateColumnOption(option.Add("ChangeType")); // DN
-                CreateColumnOption(option.Add("TabName")); // DN
             }
 
             // Set up options default
@@ -1833,10 +1513,10 @@ public partial class PCM {
 
             // Filter button
             item = FilterOptions.Add("savecurrentfilter");
-            item.Body = "<a class=\"ew-save-filter\" data-form=\"fUpdateTrackingsrch\" data-ew-action=\"none\">" + Language.Phrase("SaveCurrentFilter") + "</a>";
+            item.Body = "<a class=\"ew-save-filter\" data-form=\"fTRUpdateTrackingsrch\" data-ew-action=\"none\">" + Language.Phrase("SaveCurrentFilter") + "</a>";
             item.Visible = true;
             item = FilterOptions.Add("deletefilter");
-            item.Body = "<a class=\"ew-delete-filter\" data-form=\"fUpdateTrackingsrch\" data-ew-action=\"none\">" + Language.Phrase("DeleteFilter") + "</a>";
+            item.Body = "<a class=\"ew-delete-filter\" data-form=\"fTRUpdateTrackingsrch\" data-ew-action=\"none\">" + Language.Phrase("DeleteFilter") + "</a>";
             item.Visible = true;
             FilterOptions.UseDropDownButton = true;
             FilterOptions.UseButtonGroup = !FilterOptions.UseDropDownButton;
@@ -1873,7 +1553,7 @@ public partial class PCM {
                     item = option.Add("custom_" + act.Action);
                     string caption = act.Caption;
                     var icon = (act.Icon != "") ? "<i class=\"" + HtmlEncode(act.Icon) + "\" data-caption=\"" + HtmlEncode(caption) + "\"></i>" + caption : caption;
-                    item.Body = "<<button type=\"button\" class=\"btn btn-default ew-action ew-list-action\" title=\"" + HtmlEncode(caption) + "\" data-caption=\"" + HtmlEncode(caption) + "\" data-ew-action=\"submit\" form=\"fUpdateTrackinglist\"" + act.ToDataAttrs() + ">" + icon + "</button>";
+                    item.Body = "<<button type=\"button\" class=\"btn btn-default ew-action ew-list-action\" title=\"" + HtmlEncode(caption) + "\" data-caption=\"" + HtmlEncode(caption) + "\" data-ew-action=\"submit\" form=\"fTRUpdateTrackinglist\"" + act.ToDataAttrs() + ">" + icon + "</button>";
                     item.Visible = act.Allowed;
                 }
 
@@ -2015,7 +1695,7 @@ public partial class PCM {
                     // Set row properties
                     ResetAttributes();
                     RowAttrs.Add("data-rowindex", ConvertToString(RowIndex));
-                    RowAttrs.Add("id", "r0_UpdateTracking");
+                    RowAttrs.Add("id", "r0_TRUpdateTracking");
                     RowAttrs.Add("data-rowtype", ConvertToString((int)RowType.Add));
                     RowAttrs.Add("data-inline", (IsAdd || IsCopy || IsEdit) ? "true" : "false");
                     RowAttrs.AppendClass("ew-template");
@@ -2073,12 +1753,12 @@ public partial class PCM {
             }
 
             // Set up row attributes
-            RowAttrs.Add("data-rowindex", ConvertToString(updateTrackingList.RowCount));
+            RowAttrs.Add("data-rowindex", ConvertToString(trUpdateTrackingList.RowCount));
             RowAttrs.Add("data-key", GetKey(true));
-            RowAttrs.Add("id", "r" + ConvertToString(updateTrackingList.RowCount) + "_UpdateTracking");
+            RowAttrs.Add("id", "r" + ConvertToString(trUpdateTrackingList.RowCount) + "_TRUpdateTracking");
             RowAttrs.Add("data-rowtype", ConvertToString((int)RowType));
-            RowAttrs.AppendClass(updateTrackingList.RowCount % 2 != 1 ? "ew-table-alt-row" : "");
-            if (IsAdd && updateTrackingList.RowType == RowType.Add || IsEdit && updateTrackingList.RowType == RowType.Edit) // Inline-Add/Edit row
+            RowAttrs.AppendClass(trUpdateTrackingList.RowCount % 2 != 1 ? "ew-table-alt-row" : "");
+            if (IsAdd && trUpdateTrackingList.RowType == RowType.Add || IsEdit && trUpdateTrackingList.RowType == RowType.Edit) // Inline-Add/Edit row
                 RowAttrs.AppendClass("table-active");
 
             // Render row
@@ -2096,115 +1776,6 @@ public partial class PCM {
                 Command = "search";
             if (Get(Config.TableBasicSearchType, out StringValues type))
                 BasicSearch.Type = type.ToString();
-        }
-
-        // Load search values for validation // DN
-        protected void LoadSearchValues() {
-            // Load query builder rules
-            string rules = Post("rules");
-            if (!Empty(rules) && Empty(Command)) {
-                QueryRules = rules;
-                Command = "search";
-            }
-
-            // _Action
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x__Action"))
-                    _Action.AdvancedSearch.SearchValue = Get("x__Action");
-                else
-                    _Action.AdvancedSearch.SearchValue = Get("_Action"); // Default Value // DN
-            if (!Empty(_Action.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z__Action"))
-                _Action.AdvancedSearch.SearchOperator = Get("z__Action");
-
-            // IndividualCodeNumber
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_IndividualCodeNumber"))
-                    IndividualCodeNumber.AdvancedSearch.SearchValue = Get("x_IndividualCodeNumber");
-                else
-                    IndividualCodeNumber.AdvancedSearch.SearchValue = Get("IndividualCodeNumber"); // Default Value // DN
-            if (!Empty(IndividualCodeNumber.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_IndividualCodeNumber"))
-                IndividualCodeNumber.AdvancedSearch.SearchOperator = Get("z_IndividualCodeNumber");
-
-            // FullName
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_FullName"))
-                    FullName.AdvancedSearch.SearchValue = Get("x_FullName");
-                else
-                    FullName.AdvancedSearch.SearchValue = Get("FullName"); // Default Value // DN
-            if (!Empty(FullName.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_FullName"))
-                FullName.AdvancedSearch.SearchOperator = Get("z_FullName");
-
-            // EmployeeStatus
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_EmployeeStatus"))
-                    EmployeeStatus.AdvancedSearch.SearchValue = Get("x_EmployeeStatus");
-                else
-                    EmployeeStatus.AdvancedSearch.SearchValue = Get("EmployeeStatus"); // Default Value // DN
-            if (!Empty(EmployeeStatus.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_EmployeeStatus"))
-                EmployeeStatus.AdvancedSearch.SearchOperator = Get("z_EmployeeStatus");
-
-            // RequiredPhoto
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_RequiredPhoto"))
-                    RequiredPhoto.AdvancedSearch.SearchValue = Get("x_RequiredPhoto");
-                else
-                    RequiredPhoto.AdvancedSearch.SearchValue = Get("RequiredPhoto"); // Default Value // DN
-            if (!Empty(RequiredPhoto.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_RequiredPhoto"))
-                RequiredPhoto.AdvancedSearch.SearchOperator = Get("z_RequiredPhoto");
-
-            // VisaPhoto
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_VisaPhoto"))
-                    VisaPhoto.AdvancedSearch.SearchValue = Get("x_VisaPhoto");
-                else
-                    VisaPhoto.AdvancedSearch.SearchValue = Get("VisaPhoto"); // Default Value // DN
-            if (!Empty(VisaPhoto.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_VisaPhoto"))
-                VisaPhoto.AdvancedSearch.SearchOperator = Get("z_VisaPhoto");
-
-            // ColumnName
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_ColumnName"))
-                    ColumnName.AdvancedSearch.SearchValue = Get("x_ColumnName");
-                else
-                    ColumnName.AdvancedSearch.SearchValue = Get("ColumnName"); // Default Value // DN
-            if (!Empty(ColumnName.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_ColumnName"))
-                ColumnName.AdvancedSearch.SearchOperator = Get("z_ColumnName");
-
-            // ChangeType
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_ChangeType"))
-                    ChangeType.AdvancedSearch.SearchValue = Get("x_ChangeType");
-                else
-                    ChangeType.AdvancedSearch.SearchValue = Get("ChangeType"); // Default Value // DN
-            if (!Empty(ChangeType.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_ChangeType"))
-                ChangeType.AdvancedSearch.SearchOperator = Get("z_ChangeType");
-
-            // TabName
-            if (!IsAddOrEdit)
-                if (Query.ContainsKey("x_TabName"))
-                    TabName.AdvancedSearch.SearchValue = Get("x_TabName");
-                else
-                    TabName.AdvancedSearch.SearchValue = Get("TabName"); // Default Value // DN
-            if (!Empty(TabName.AdvancedSearch.SearchValue) && Command == "")
-                Command = "search";
-            if (Query.ContainsKey("z_TabName"))
-                TabName.AdvancedSearch.SearchOperator = Get("z_TabName");
         }
 
         // Load recordset // DN
@@ -2273,15 +1844,10 @@ public partial class PCM {
             // Call Row Selected event
             RowSelected(row);
             ID.SetDbValue(row["ID"]);
-            _Action.SetDbValue(row["Action"]);
-            IndividualCodeNumber.SetDbValue(row["IndividualCodeNumber"]);
-            FullName.SetDbValue(row["FullName"]);
-            EmployeeStatus.SetDbValue(row["EmployeeStatus"]);
-            RequiredPhoto.SetDbValue(row["RequiredPhoto"]);
-            VisaPhoto.SetDbValue(row["VisaPhoto"]);
+            MTCrewID.SetDbValue(row["MTCrewID"]);
+            TabName.SetDbValue(row["TabName"]);
             ColumnName.SetDbValue(row["ColumnName"]);
             ChangeType.SetDbValue(row["ChangeType"]);
-            TabName.SetDbValue(row["TabName"]);
         }
         #pragma warning restore 162, 168, 1998, 4014
 
@@ -2289,15 +1855,10 @@ public partial class PCM {
         protected Dictionary<string, object> NewRow() {
             var row = new Dictionary<string, object>();
             row.Add("ID", ID.DefaultValue ?? DbNullValue); // DN
-            row.Add("Action", _Action.DefaultValue ?? DbNullValue); // DN
-            row.Add("IndividualCodeNumber", IndividualCodeNumber.DefaultValue ?? DbNullValue); // DN
-            row.Add("FullName", FullName.DefaultValue ?? DbNullValue); // DN
-            row.Add("EmployeeStatus", EmployeeStatus.DefaultValue ?? DbNullValue); // DN
-            row.Add("RequiredPhoto", RequiredPhoto.DefaultValue ?? DbNullValue); // DN
-            row.Add("VisaPhoto", VisaPhoto.DefaultValue ?? DbNullValue); // DN
+            row.Add("MTCrewID", MTCrewID.DefaultValue ?? DbNullValue); // DN
+            row.Add("TabName", TabName.DefaultValue ?? DbNullValue); // DN
             row.Add("ColumnName", ColumnName.DefaultValue ?? DbNullValue); // DN
             row.Add("ChangeType", ChangeType.DefaultValue ?? DbNullValue); // DN
-            row.Add("TabName", TabName.DefaultValue ?? DbNullValue); // DN
             return row;
         }
 
@@ -2332,60 +1893,29 @@ public partial class PCM {
             // Common render codes for all row types
 
             // ID
-            ID.CellCssStyle = "white-space: nowrap;";
 
-            // Action
-            _Action.CellCssStyle = "white-space: nowrap;";
-
-            // IndividualCodeNumber
-            IndividualCodeNumber.CellCssStyle = "white-space: nowrap;";
-
-            // FullName
-            FullName.CellCssStyle = "white-space: nowrap;";
-
-            // EmployeeStatus
-            EmployeeStatus.CellCssStyle = "white-space: nowrap;";
-
-            // RequiredPhoto
-            RequiredPhoto.CellCssStyle = "white-space: nowrap;";
-
-            // VisaPhoto
-            VisaPhoto.CellCssStyle = "white-space: nowrap;";
-
-            // ColumnName
-            ColumnName.CellCssStyle = "white-space: nowrap;";
-
-            // ChangeType
-            ChangeType.CellCssStyle = "white-space: nowrap;";
+            // MTCrewID
 
             // TabName
-            TabName.CellCssStyle = "white-space: nowrap;";
+
+            // ColumnName
+
+            // ChangeType
 
             // View row
             if (RowType == RowType.View) {
-                // IndividualCodeNumber
-                IndividualCodeNumber.ViewValue = ConvertToString(IndividualCodeNumber.CurrentValue); // DN
-                IndividualCodeNumber.ViewCustomAttributes = "";
+                // ID
+                ID.ViewValue = ID.CurrentValue;
+                ID.ViewCustomAttributes = "";
 
-                // FullName
-                FullName.ViewValue = ConvertToString(FullName.CurrentValue); // DN
-                FullName.ViewCustomAttributes = "";
+                // MTCrewID
+                MTCrewID.ViewValue = MTCrewID.CurrentValue;
+                MTCrewID.ViewValue = FormatNumber(MTCrewID.ViewValue, MTCrewID.FormatPattern);
+                MTCrewID.ViewCustomAttributes = "";
 
-                // EmployeeStatus
-                EmployeeStatus.ViewValue = ConvertToString(EmployeeStatus.CurrentValue); // DN
-                EmployeeStatus.ViewCustomAttributes = "";
-
-                // RequiredPhoto
-                RequiredPhoto.ViewValue = ConvertToString(RequiredPhoto.CurrentValue); // DN
-                RequiredPhoto.ImageAlt = RequiredPhoto.Alt;
-                    RequiredPhoto.ImageCssClass = "ew-image";
-                RequiredPhoto.ViewCustomAttributes = "";
-
-                // VisaPhoto
-                VisaPhoto.ViewValue = ConvertToString(VisaPhoto.CurrentValue); // DN
-                VisaPhoto.ImageAlt = VisaPhoto.Alt;
-                    VisaPhoto.ImageCssClass = "ew-image";
-                VisaPhoto.ViewCustomAttributes = "";
+                // TabName
+                TabName.ViewValue = ConvertToString(TabName.CurrentValue); // DN
+                TabName.ViewCustomAttributes = "";
 
                 // ColumnName
                 ColumnName.ViewValue = ConvertToString(ColumnName.CurrentValue); // DN
@@ -2395,29 +1925,17 @@ public partial class PCM {
                 ChangeType.ViewValue = ConvertToString(ChangeType.CurrentValue); // DN
                 ChangeType.ViewCustomAttributes = "";
 
+                // ID
+                ID.HrefValue = "";
+                ID.TooltipValue = "";
+
+                // MTCrewID
+                MTCrewID.HrefValue = "";
+                MTCrewID.TooltipValue = "";
+
                 // TabName
-                TabName.ViewValue = ConvertToString(TabName.CurrentValue); // DN
-                TabName.ViewCustomAttributes = "";
-
-                // IndividualCodeNumber
-                IndividualCodeNumber.HrefValue = "";
-                IndividualCodeNumber.TooltipValue = "";
-
-                // FullName
-                FullName.HrefValue = "";
-                FullName.TooltipValue = "";
-
-                // EmployeeStatus
-                EmployeeStatus.HrefValue = "";
-                EmployeeStatus.TooltipValue = "";
-
-                // RequiredPhoto
-                RequiredPhoto.HrefValue = "";
-                RequiredPhoto.TooltipValue = "";
-
-                // VisaPhoto
-                VisaPhoto.HrefValue = "";
-                VisaPhoto.TooltipValue = "";
+                TabName.HrefValue = "";
+                TabName.TooltipValue = "";
 
                 // ColumnName
                 ColumnName.HrefValue = "";
@@ -2426,482 +1944,13 @@ public partial class PCM {
                 // ChangeType
                 ChangeType.HrefValue = "";
                 ChangeType.TooltipValue = "";
-
-                // TabName
-                TabName.HrefValue = "";
-                TabName.TooltipValue = "";
-            } else if (RowType == RowType.Search) {
-                // IndividualCodeNumber
-                IndividualCodeNumber.SetupEditAttributes();
-                if (!IndividualCodeNumber.Raw)
-                    IndividualCodeNumber.AdvancedSearch.SearchValue = HtmlDecode(IndividualCodeNumber.AdvancedSearch.SearchValue);
-                IndividualCodeNumber.EditValue = HtmlEncode(IndividualCodeNumber.AdvancedSearch.SearchValue);
-                IndividualCodeNumber.PlaceHolder = RemoveHtml(IndividualCodeNumber.Caption);
-
-                // FullName
-                FullName.SetupEditAttributes();
-                if (!FullName.Raw)
-                    FullName.AdvancedSearch.SearchValue = HtmlDecode(FullName.AdvancedSearch.SearchValue);
-                FullName.EditValue = HtmlEncode(FullName.AdvancedSearch.SearchValue);
-                FullName.PlaceHolder = RemoveHtml(FullName.Caption);
-
-                // EmployeeStatus
-                EmployeeStatus.SetupEditAttributes();
-                if (!EmployeeStatus.Raw)
-                    EmployeeStatus.AdvancedSearch.SearchValue = HtmlDecode(EmployeeStatus.AdvancedSearch.SearchValue);
-                EmployeeStatus.EditValue = HtmlEncode(EmployeeStatus.AdvancedSearch.SearchValue);
-                EmployeeStatus.PlaceHolder = RemoveHtml(EmployeeStatus.Caption);
-
-                // RequiredPhoto
-                RequiredPhoto.SetupEditAttributes();
-                if (!RequiredPhoto.Raw)
-                    RequiredPhoto.AdvancedSearch.SearchValue = HtmlDecode(RequiredPhoto.AdvancedSearch.SearchValue);
-                RequiredPhoto.EditValue = HtmlEncode(RequiredPhoto.AdvancedSearch.SearchValue);
-                RequiredPhoto.PlaceHolder = RemoveHtml(RequiredPhoto.Caption);
-
-                // VisaPhoto
-                VisaPhoto.SetupEditAttributes();
-                if (!VisaPhoto.Raw)
-                    VisaPhoto.AdvancedSearch.SearchValue = HtmlDecode(VisaPhoto.AdvancedSearch.SearchValue);
-                VisaPhoto.EditValue = HtmlEncode(VisaPhoto.AdvancedSearch.SearchValue);
-                VisaPhoto.PlaceHolder = RemoveHtml(VisaPhoto.Caption);
-
-                // ColumnName
-                ColumnName.SetupEditAttributes();
-                if (!ColumnName.Raw)
-                    ColumnName.AdvancedSearch.SearchValue = HtmlDecode(ColumnName.AdvancedSearch.SearchValue);
-                ColumnName.EditValue = HtmlEncode(ColumnName.AdvancedSearch.SearchValue);
-                ColumnName.PlaceHolder = RemoveHtml(ColumnName.Caption);
-
-                // ChangeType
-                ChangeType.SetupEditAttributes();
-                if (!ChangeType.Raw)
-                    ChangeType.AdvancedSearch.SearchValue = HtmlDecode(ChangeType.AdvancedSearch.SearchValue);
-                ChangeType.EditValue = HtmlEncode(ChangeType.AdvancedSearch.SearchValue);
-                ChangeType.PlaceHolder = RemoveHtml(ChangeType.Caption);
-
-                // TabName
-                TabName.SetupEditAttributes();
-                if (!TabName.Raw)
-                    TabName.AdvancedSearch.SearchValue = HtmlDecode(TabName.AdvancedSearch.SearchValue);
-                TabName.EditValue = HtmlEncode(TabName.AdvancedSearch.SearchValue);
-                TabName.PlaceHolder = RemoveHtml(TabName.Caption);
             }
-            if (RowType == RowType.Add || RowType == RowType.Edit || RowType == RowType.Search) // Add/Edit/Search row
-                SetupFieldTitles();
 
             // Call Row Rendered event
             if (RowType != RowType.AggregateInit)
                 RowRendered();
         }
         #pragma warning restore 1998
-
-        // Validate search
-        protected bool ValidateSearch() {
-            // Check if validation required
-            if (!Config.ServerValidate)
-                return true;
-
-            // Return validate result
-            bool validateSearch = !HasInvalidFields();
-
-            // Call Form CustomValidate event
-            string formCustomError = "";
-            validateSearch = validateSearch && FormCustomValidate(ref formCustomError);
-            if (!Empty(formCustomError))
-                FailureMessage = formCustomError;
-            return validateSearch;
-        }
-
-        /// <summary>
-        /// Send event
-        /// </summary>
-        /// <param name="data">Data</param>
-        /// <param name="type">Type</param>
-        public void SendEvent(object data, string type = "message")
-        {
-            string str = "event: " + type + "\n" + "data: " + ConvertToJson(data) + "\n\n";
-            ResponseWrite(str).Wait();
-            // Flush the output buffer and send echoed messages to the browser
-            Response?.Body.Flush();
-        }
-
-        /// <summary>
-        /// Import file
-        /// </summary>
-        /// <param name="token">File token to locate the uploaded import file</param>
-        /// <param name="rollback">Try import and then rollback</param>
-        /// <returns>Action result</returns>
-        public async Task<JsonBoolResult> Import(string token, bool rollback = false)
-        {
-            if (!Security.CanImport)
-                return JsonBoolResult.FalseResult; // Import not allowed
-
-            // Check if valid token
-            if (Empty(token))
-                return JsonBoolResult.FalseResult;
-
-            // Get uploaded files by token
-            var files = GetUploadedFileNames(token, true).Where(file => Path.GetExtension(file).ToLower() != ".txt"); // Ignore log file
-            var exts = Config.ImportFileAllowedExtensions.Split(',');
-            int totCnt = 0, totSuccessCnt = 0, totFailCnt = 0;
-            object? ov;
-            bool firstRowIsHeader = false;
-            var list = new List<Dictionary<string, object>>();
-            var results = new Dictionary<string, object> { { Config.ApiFileTokenName, token }, { "files", list }, { "success", false } };
-
-            // Add HTTP headers for SSE
-            AddHeader(HeaderNames.CacheControl, "no-store");
-            AddHeader(HeaderNames.ContentType, "text/event-stream");
-
-            // Import records
-            foreach (var file in files) {
-                string fileName = Path.GetFileName(file);
-                Dictionary<string, object> res = new () { { Config.ApiFileTokenName, token }, { "file", fileName }, { "success", false } };
-                string ext = Path.GetExtension(file)?.ToLower().Substring(1) ?? "";
-                if (!exts.Contains(ext)) {
-                    res.Add("error", Language.Phrase("ImportInvalidFileExtension").Replace("%e", ext));
-                    SendEvent(res, "error");
-                    return new JsonBoolResult(res, false);
-                }
-
-                // Set up options for Page Importing event
-
-                // Default Options
-                var options = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) {
-                    { "file", file },
-                    { "activeSheet", 0 },
-                    { "headerRowNumber", 0 },
-                    { "headers", new List<string?>() },
-                    { "offset", 0 },
-                    { "limit", 0 }
-                };
-
-                // Get optional data from POST
-                foreach (string key in Form.Keys) {
-                    if (!(key == "action" || key == "token" || key == "filetoken"))
-                        options.Add(key, Form[key]);
-                }
-
-                // Get data
-                byte[] tempData;
-                if (ext == "csv") {
-                    options.Add("encoding", Config.ImportCsvEncoding);
-                    options.Add("culture", Config.ImportCsvCulture);
-                    options.Add("delimiter", Config.ImportCsvDelimiter);
-                    options.Add("textQualifier", Config.ImportCsvTextQualifier);
-                    options.Add("eol", Config.ImportCsvEol);
-                    options.Add("dataTypes", new eDataTypes[] {});
-                    options.Add("skipLinesBeginning", 0);
-                    options.Add("skipLinesEnd", 0);
-                }
-
-                // Create a new Excel package
-                using var excelPackage = new ExcelPackage();
-
-                // Call Page Importing server event
-                if (!PageImporting(excelPackage, options)) {
-                    SendEvent(res, "error");
-                    return new JsonBoolResult(res, false);
-                }
-                if (ext == "csv") { // CSV file
-                    ExcelTextFormat format = new ();
-                    if (options.TryGetValue("culture", out ov) && ov is CultureInfo)
-                        format.Culture = (CultureInfo)ov;
-                    if (options.TryGetValue("delimiter", out ov))
-                        format.Delimiter = Convert.ToChar(ov);
-                    if (options.TryGetValue("textQualifier", out ov))
-                        format.TextQualifier = Convert.ToChar(ov);
-                    if (options.TryGetValue("dataTypes", out ov))
-                        format.DataTypes = (eDataTypes[])ov;
-                    if (options.TryGetValue("eol", out ov))
-                        format.EOL = ConvertToString(ov);
-                    if (options.TryGetValue("skipLinesBeginning", out ov))
-                        format.SkipLinesBeginning = ConvertToInt(ov);
-                    if (options.TryGetValue("skipLinesEnd", out ov))
-                        format.SkipLinesEnd = ConvertToInt(ov);
-
-                    // Read file
-                    string csvText;
-                    if (options.TryGetValue("encoding", out ov) && ov is Encoding)
-                        csvText = await FileReadAllTextWithEncoding(file, (Encoding)ov);
-                    else
-                        csvText = await FileReadAllText(file);
-
-                    // Append EOL if the file has no EOL at end of file
-                    if (!csvText.EndsWith(format.EOL))
-                        csvText += format.EOL;
-
-                    // Create a worksheet
-                    ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-
-                    // Load the CSV data into cell A1
-                    worksheet.Cells["A1"].LoadFromText(csvText, format);
-                    tempData = excelPackage.GetAsByteArray();
-                } else { // Excel file
-                    tempData = await FileReadAllBytes(file);
-                }
-                int activeSheet = -1, offset = 0, limit = 0;
-                if (options.TryGetValue("offset", out ov))
-                    offset = ConvertToInt(ov);
-                if (options.TryGetValue("limit", out ov))
-                    limit = ConvertToInt(ov);
-                // Get active worksheet for Excel
-                if (ext == "xlsx" && options.TryGetValue("activeSheet", out ov))
-                    activeSheet = ConvertToInt(ov);
-
-                // Create a new Excel package in a memorystream
-                using var stream = new MemoryStream(tempData);
-                using var ep = new ExcelPackage(stream);
-                ExcelWorksheet ws = (activeSheet > -1) ? ep.Workbook.Worksheets[activeSheet] : ep.Workbook.Worksheets.First();
-                if (ws == null) {
-                    var result = new { success = false, error = Language.Phrase("WorksheetNotExist") };
-                    SendEvent(res, "error");
-                    return new JsonBoolResult(result, false);
-                }
-
-                // Get column headers
-                List<string> headers = new ();
-                if (options.TryGetValue("headers", out ov) && ov is List<string>)
-                    headers = (List<string>)ov;
-                int headerRow = 0;
-                int highestColumn = ws.Dimension.End.Column;
-                int highestRow = ws.Dimension.End.Row;
-                if (!IsList(headers) || headers.Count == 0) { // Undetermined, load from header row
-                    headerRow = ConvertToInt(options["headerRowNumber"]) + 1;
-                    headers = GetImportHeaders(ws, headerRow, highestColumn);
-                }
-                if (!IsList(headers) || headers.Count == 0) { // Unable to load header
-                    res.Add("error", Language.Phrase("ImportNoHeaderRow"));
-                    SendEvent(res, "error");
-                    return new JsonBoolResult(res, false);
-                }
-                if (headers.Any(name => !Fields.ContainsKey(name))) {
-                    res.Add("error", Language.Phrase("ImportInvalidFieldName").Replace("%f", String.Join(", ", headers.Where(name => !Fields.ContainsKey(name)))));
-                    SendEvent(res, "error");
-                    return new JsonBoolResult(res, false);
-                }
-                int startRow = headerRow + 1;
-                int endRow = highestRow;
-                if (offset > 0)
-                    startRow += offset;
-                if (limit > 0) {
-                    endRow = startRow + limit - 1;
-                    if (endRow > highestRow)
-                        endRow = highestRow;
-                }
-                var records = new List<List<object>>();
-                if (endRow >= startRow)
-                    records = GetImportRecords(ws, startRow, endRow, highestColumn);
-                int recordCnt = records.Count;
-                int cnt = 0, successCnt = 0, failCnt = 0;
-                var failList = new Dictionary<string, string>();
-                res.Add("totalCount", recordCnt);
-                res.Add("count", cnt);
-                res.Add("successCount", successCnt);
-                res.Add("failCount", 0);
-
-                // Begin transaction
-                if (ImportUseTransaction)
-                    Connection.BeginTrans();
-
-                // Process records
-                foreach (var values in records) {
-                    bool importSuccess = false;
-                    try {
-                        var row = new Dictionary<string, object>();
-                        for (int k = 0; k < highestColumn && k < headers.Count; k++) {
-                            if (!Empty(headers[k]) && !Empty(values[k])) { // Skip empty values // DN
-                                var fld = FieldByName(headers[k]);
-                                if (fld?.IsBoolean ?? false) // Fix boolean field // DN
-                                    values[k] = Connection.IsMsSql ? ConvertToBool(values[k]) : ConvertToString(values[k]);
-                                row.Add(headers[k], values[k]);
-                            }
-                        }
-                        cnt++;
-                        res["count"] = cnt;
-                        res.Add("row", row);
-                        if (await ImportRow(row, cnt)) {
-                            successCnt++;
-                            importSuccess = true;
-                            res["success"] = true;
-                            res.Add("error", false);
-                        } else {
-                            failCnt++;
-                            failList.Add("row" + cnt, FailureMessage);
-                            ClearFailureMessage(); // Clear error message
-                            res["success"] = false;
-                            res.Add("error", FailureMessage);
-                        }
-                    } catch (Exception e) {
-                        failCnt++;
-                        if (!failList.TryGetValue("row" + cnt, out string? fm) || fm == "")
-                            failList["row" + cnt] = e.Message;
-                        res.Add("error", e.Message);
-                        res["success"] = false;
-                    }
-
-                    // Reset count if import fail and use transaction
-                    if (!importSuccess && ImportUseTransaction) {
-                        successCnt = 0;
-                        failCnt = cnt;
-                    }
-
-                    // Save progress to memory cache // DN
-                    res["successCount"] = successCnt;
-                    res["failCount"] = failCnt;
-                    SendEvent(res);
-                    res.Remove("row");
-                    res.Remove("error");
-
-                    // No need to process further if import fail and use transaction
-                    if (!importSuccess && ImportUseTransaction)
-                        break;
-                }
-                res.Add("failList", failList);
-
-                // Commit/Rollback transaction
-                if (ImportUseTransaction) {
-                    if (failCnt > 0) // Rollback
-                        Connection.RollbackTrans();
-                    else // Commit
-                        Connection.CommitTrans();
-                }
-                totCnt += cnt;
-                totSuccessCnt += successCnt;
-                totFailCnt += failCnt;
-
-                // Call Page Imported server event
-                PageImported(ep, res);
-                if (totCnt > 0 && totFailCnt == 0) { // Clean up if all records imported
-                    results["success"] = true;
-                } else {
-                    results["success"] = false;
-                }
-                list.Add(res);
-            }
-            var ret = (bool)results["success"];
-            if (ret)
-                CleanUploadTempPaths(token);
-            SendEvent(results, "complete"); // All files imported
-            return new JsonBoolResult(results, ret);
-        }
-
-        /// <summary>
-        /// Get import header
-        /// </summary>
-        /// <param name="ws">EPPlus worksheet</param>
-        /// <param name="rowIdx">Row index for header row</param>
-        /// <param name="highestColumn">Highest number of column</param>
-        /// <returns>The column headers</returns>
-        protected List<string> GetImportHeaders(ExcelWorksheet ws, int rowIdx, int highestColumn) =>
-            ws.Cells[rowIdx, 1, rowIdx, highestColumn].Select(cell => cell.Value.ToString()).Select(v => ConvertToString(v)).ToList();
-
-        /// <summary>
-        /// Get import records
-        /// </summary>
-        /// <param name="ws">EPPlus worksheet</param>
-        /// <param name="startRowIdx">Start row index</param>
-        /// <param name="endRowIdx">End row index</param>
-        /// <param name="highestColumn">Highest number of Column</param>
-        /// <returns>The records to import</returns>
-        protected List<List<object>> GetImportRecords(ExcelWorksheet ws, int startRowIdx, int endRowIdx, int highestColumn) {
-            object[,] values = (object[,])ws.Cells[startRowIdx, 1, endRowIdx, highestColumn].Value;
-            int bound0 = values.GetUpperBound(0), bound1 = values.GetUpperBound(1);
-            var ar = new List<List<object>>();
-            List<object> record;
-            for (int i = 0; i <= bound0; i++) {
-                record = new List<object>();
-                for (int j = 0; j <= bound1; j++)
-                    record.Add(values[i, j]);
-                ar.Add(record);
-            }
-            return ar;
-        }
-
-        /// <summary>
-        /// Import a row
-        /// </summary>
-        /// <param name="row">Record to import</param>
-        /// <param name="cnt">Imported record count</param>
-        /// <returns>Whether the record is imported</returns>
-        protected async Task<bool> ImportRow(Dictionary<string, object> row, int cnt) {
-            // Call Row Import server event
-            if (!RowImport(row, cnt))
-                return false;
-
-            // Check field values
-            foreach (var (key, value) in row) {
-                if (Fields[key] is DbField<SqlDbType> fld && !CheckValue(fld, value)) {
-                    FailureMessage = Language.Phrase("ImportInvalidFieldValue").Replace("%f", fld.Name).Replace("%v", ConvertToString(value));
-                    return false;
-                }
-            }
-
-            // Insert/Update to database
-            var oldrow = await LoadRow(row);
-            if (!ImportInsertOnly && !Empty(oldrow)) {
-                // Call Row Updating event
-                bool updateRow = RowUpdating(oldrow, row);
-                if (updateRow) {
-                    updateRow = ConvertToBool(await UpdateAsync(row, null, oldrow));
-                    if (updateRow) // Call Row Updated event
-                        RowUpdated(oldrow, row);
-                }
-                return updateRow;
-            } else {
-                // Call Row Inserting event
-                bool insertRow = RowInserting(oldrow, row);
-                if (insertRow) {
-                    insertRow = ConvertToBool(await InsertAsync(row));
-                    if (insertRow)
-                        RowInserted(oldrow, row); // Call Row Updated event
-                }
-                return insertRow;
-            }
-        }
-
-        /// <summary>
-        /// Check field value
-        /// </summary>
-        /// <param name="fld">Field object</param>
-        /// <param name="value">Field value to check</param>
-        /// <returns>Whether the field values is valid</returns>
-        protected bool CheckValue(DbField fld, object value) {
-            if (fld.DataType == DataType.Number && !IsNumeric(value))
-                return false;
-            else if (fld.DataType == DataType.Date && !CheckDate(ConvertToString(value)))
-                return false;
-            return true;
-        }
-
-        // Load row (for import)
-        protected async Task<Dictionary<string, object>?> LoadRow(Dictionary<string, object> row) {
-            string filter = GetRecordFilter(row);
-            if (Empty(filter)) // No primary key
-                return null;
-            CurrentFilter = filter;
-            string sql = CurrentSql;
-            try {
-                return await Connection.GetRowAsync(sql, true); // Use main connection
-            } catch {
-                return null;
-            }
-        }
-
-        // Load advanced search
-        public void LoadAdvancedSearch()
-        {
-            _Action.AdvancedSearch.Load();
-            IndividualCodeNumber.AdvancedSearch.Load();
-            FullName.AdvancedSearch.Load();
-            EmployeeStatus.AdvancedSearch.Load();
-            RequiredPhoto.AdvancedSearch.Load();
-            VisaPhoto.AdvancedSearch.Load();
-            ColumnName.AdvancedSearch.Load();
-            ChangeType.AdvancedSearch.Load();
-            TabName.AdvancedSearch.Load();
-        }
 
         // Get export HTML tag
         protected string GetExportTag(string type, bool custom = false) {
@@ -2913,17 +1962,17 @@ public partial class PCM {
             }
             if (SameText(type, "excel")) {
                 if (custom)
-                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-excel\" title=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" form=\"fUpdateTrackinglist\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"excel\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToExcel") + "</button>";
+                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-excel\" title=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" form=\"fTRUpdateTrackinglist\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"excel\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToExcel") + "</button>";
                 else
                     return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-excel\" title=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToExcel", true)) + "\">" + Language.Phrase("ExportToExcel") + "</a>";
             } else if (SameText(type, "word")) {
                 if (custom)
-                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-word\" title=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" form=\"fUpdateTrackinglist\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"word\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToWord") + "</button>";
+                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-word\" title=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" form=\"fTRUpdateTrackinglist\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"word\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToWord") + "</button>";
                 else
                     return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-word\" title=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToWord", true)) + "\">" + Language.Phrase("ExportToWord") + "</a>";
             } else if (SameText(type, "pdf")) {
                 if (custom)
-                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-pdf\" title=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" form=\"fUpdateTrackinglist\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"pdf\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToPDF") + "</button>";
+                    return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-pdf\" title=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" form=\"fTRUpdateTrackinglist\" data-url=\"" + exportUrl + "\" data-ew-action=\"export\" data-export=\"pdf\" data-custom=\"true\" data-export-selected=\"false\">" + Language.Phrase("ExportToPDF") + "</button>";
                 else
                     return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-pdf\" title=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToPdf", true)) + "\">" + Language.Phrase("ExportToPDF") + "</a>";
             } else if (SameText(type, "html")) {
@@ -2934,7 +1983,7 @@ public partial class PCM {
                 return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-csv\" title=\"" + HtmlEncode(Language.Phrase("ExportToCsv", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("ExportToCsv", true)) + "\">" + Language.Phrase("ExportToCsv") + "</a>";
             } else if (SameText(type, "email")) {
                 string url = custom ? " data-url=\"" + exportUrl + "\"" : "";
-                return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-email\" title=\"" + Language.Phrase("ExportToEmail", true) + "\" data-caption=\"" + Language.Phrase("ExportToEmail", true) + "\" form=\"fUpdateTrackinglist\" data-ew-action=\"email\" data-custom=\"false\" data-hdr=\"" + Language.Phrase("ExportToEmail", true) + "\" data-export-selected=\"false\"" + url + ">" + Language.Phrase("ExportToEmail") + "</button>";
+                return "<button type=\"button\" class=\"btn btn-default ew-export-link ew-email\" title=\"" + Language.Phrase("ExportToEmail", true) + "\" data-caption=\"" + Language.Phrase("ExportToEmail", true) + "\" form=\"fTRUpdateTrackinglist\" data-ew-action=\"email\" data-custom=\"false\" data-hdr=\"" + Language.Phrase("ExportToEmail", true) + "\" data-export-selected=\"false\"" + url + ">" + Language.Phrase("ExportToEmail") + "</button>";
             } else if (SameText(type, "print")) {
                 return "<a href=\"" + exportUrl + "\" class=\"btn btn-default ew-export-link ew-print\" title=\"" + HtmlEncode(Language.Phrase("PrinterFriendly", true)) + "\" data-caption=\"" + HtmlEncode(Language.Phrase("PrinterFriendly", true)) + "\">" + Language.Phrase("PrinterFriendly") + "</a>";
             }
@@ -3007,7 +2056,7 @@ public partial class PCM {
             // Search button
             item = SearchOptions.Add("searchtoggle");
             var searchToggleClass = !Empty(SearchWhere) ? " active" : " active";
-            item.Body = "<a class=\"btn btn-default ew-search-toggle" + searchToggleClass + "\" role=\"button\" title=\"" + Language.Phrase("SearchPanel") + "\" data-caption=\"" + Language.Phrase("SearchPanel") + "\" data-ew-action=\"search-toggle\" data-form=\"fUpdateTrackingsrch\" aria-pressed=\"" + (searchToggleClass == " active" ? "true" : "false") + "\">" + Language.Phrase("SearchLink") + "</a>";
+            item.Body = "<a class=\"btn btn-default ew-search-toggle" + searchToggleClass + "\" role=\"button\" title=\"" + Language.Phrase("SearchPanel") + "\" data-caption=\"" + Language.Phrase("SearchPanel") + "\" data-ew-action=\"search-toggle\" data-form=\"fTRUpdateTrackingsrch\" aria-pressed=\"" + (searchToggleClass == " active" ? "true" : "false") + "\">" + Language.Phrase("SearchLink") + "</a>";
             item.Visible = true;
 
             // Show all button
@@ -3017,14 +2066,6 @@ public partial class PCM {
             else
                 item.Body = "<a class=\"btn btn-default ew-show-all\" role=\"button\" title=\"" + Language.Phrase("ShowAll") + "\" data-caption=\"" + Language.Phrase("ShowAll") + "\" data-ew-action=\"refresh\" data-url=\"" + AppPath(PageUrl) + "cmd=reset\">" + Language.Phrase("ShowAllBtn") + "</a>";
             item.Visible = (SearchWhere != DefaultSearchWhere && SearchWhere != "0=101");
-
-            // Advanced search button
-            item = SearchOptions.Add("advancedsearch");
-            if (ModalSearch && !IsMobile())
-                item.Body = "<a class=\"btn btn-default ew-advanced-search\" title=\"" + Language.Phrase("AdvancedSearch", true) + "\" data-table=\"UpdateTracking\" data-caption=\"" + Language.Phrase("AdvancedSearch", true) + "\" data-ew-action=\"modal\" data-url=\"" + AppPath("UpdateTrackingSearch") + "\" data-btn=\"SearchBtn\">" + Language.Phrase("AdvancedSearch", false) + "</a>";
-            else
-                item.Body = "<a class=\"btn btn-default ew-advanced-search\" title=\"" + Language.Phrase("AdvancedSearch", true) + "\" data-caption=\"" + Language.Phrase("AdvancedSearch", true) + "\" href=\"" + AppPath("UpdateTrackingSearch") + "\">" + Language.Phrase("AdvancedSearch", false) + "</a>";
-            item.Visible = true;
 
             // Button group for search
             SearchOptions.UseDropDownButton = false;
@@ -3056,24 +2097,6 @@ public partial class PCM {
         {
             if (!HasSearchFields() && SearchOptions["searchtoggle"] is ListOption opt)
                 opt.Visible = false;
-        }
-
-        // Set up import options
-        protected void SetupImportOptions() {
-            ListOption item;
-
-            // Import
-            item = ImportOptions.Add("import");
-            item.Body = "<a class=\"ew-import-link ew-import\" role=\"button\" title=\"" + Language.Phrase("Import", true) + "\" data-caption=\"" + Language.Phrase("Import", true) + "\" data-ew-action=\"import\" data-hdr=\"" + Language.Phrase("Import", true) + "\">" + Language.Phrase("Import") + "</a>";
-            item.Visible = Security.CanImport;
-            ImportOptions.UseButtonGroup = true;
-            ImportOptions.UseDropDownButton = false;
-            ImportOptions.DropDownButtonPhrase = "ButtonImport";
-
-            // Add group option item
-            item = ImportOptions.AddGroupOption();
-            item.Body = "";
-            item.Visible = false;
         }
 
         #pragma warning disable 168
@@ -3329,26 +2352,6 @@ public partial class PCM {
         public virtual void PageExported(dynamic doc) {
             //doc.Text.Append("my footer"); // Export footer
             //Log("Text: {Text}", doc.Text.ToString());
-        }
-
-        public virtual bool PageImporting(ExcelPackage excelPackage, dynamic options) {
-            //Log(excelPackage); // Import excelPackage
-            //Log(options); // Show all options for importing
-            //return false; // Return false to skip import
-            return true;
-        }
-
-        // Row Import event
-        public virtual bool RowImport(Dictionary<string, object> row, int cnt) {
-            //Log(cnt); // Import record count
-            //Log(row); // Import row
-            //return false; // Return false to skip import
-            return true;
-        }
-
-        // Page Imported event
-        public virtual void PageImported(ExcelPackage excelPackage, Dictionary<string, object> result) {
-            //Log(result); // Import result
         }
 
         // Grid Inserting event
